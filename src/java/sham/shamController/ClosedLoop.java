@@ -3,16 +3,16 @@ package sham.shamController;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
-import edu.wpi.first.units.measure.AngleUnit;
-import edu.wpi.first.units.measure.AngularVelocityUnit;
-import edu.wpi.first.units.measure.CurrentUnit;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.CurrentUnit;
 import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.measure.PerUnit;
-import edu.wpi.first.units.measure.Unit;
-import edu.wpi.first.units.measure.VoltageUnit;
-import edu.wpi.first.units.measure.measure.Angle;
-import edu.wpi.first.units.measure.measure.AngularVelocity;
-import edu.wpi.first.units.measure.measure.Time;
+import edu.wpi.first.units.PerUnit;
+import edu.wpi.first.units.Unit;
+import edu.wpi.first.units.VoltageUnit;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Time;
 import java.util.Optional;
 import sham.shamController.unitSafeControl.UnitFeedback.PIDFeedback;
 import sham.shamController.unitSafeControl.UnitFeedforward;
@@ -101,7 +101,7 @@ public class ClosedLoop<OUTPUT extends Unit, INPUT extends Unit> {
         return feedback.getInputUnit() instanceof PerUnit;
     }
 
-    private OUTPUT calcFeedForward(Angle position, State<INPUT> state, State<INPUT> step) {
+    private Measure<OUTPUT> calcFeedForward(Angle position, State<INPUT> state, State<INPUT> step) {
         AngularVelocity currentVelocity;
         AngularVelocity nextVelocity;
         if (isVelocity()) {
@@ -120,7 +120,7 @@ public class ClosedLoop<OUTPUT extends Unit, INPUT extends Unit> {
     }
 
     @SuppressWarnings("unchecked")
-    public OUTPUT run(
+    public Measure<OUTPUT> run(
             Angle position,
             State<INPUT> state,
             State<INPUT> goal,
@@ -141,8 +141,8 @@ public class ClosedLoop<OUTPUT extends Unit, INPUT extends Unit> {
         }
 
         var fbResult = feedback.calculate(state.value(), lastGoal.value());
-        OUTPUT feedbackOutput = fbResult.getFirst();
-        OUTPUT feedforwardOutput = (OUTPUT) feedback.getOutputUnit().zero();
+        Measure<OUTPUT> feedbackOutput = fbResult.getFirst();
+        Measure<OUTPUT> feedforwardOutput = (Measure<OUTPUT>) feedback.getOutputUnit().zero();
         if (goal.slew() != null || isVelocity()) {
             feedforwardOutput = calcFeedForward(position, state, goal);
         } else {

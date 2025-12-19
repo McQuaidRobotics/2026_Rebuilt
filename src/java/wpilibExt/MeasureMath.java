@@ -13,24 +13,24 @@ import static edu.wpi.first.units.Units.Second;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.measure.AccelerationUnit;
-import edu.wpi.first.units.measure.AngleUnit;
-import edu.wpi.first.units.measure.DistanceUnit;
+import edu.wpi.first.units.AccelerationUnit;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.measure.Unit;
-import edu.wpi.first.units.measure.VelocityUnit;
-import edu.wpi.first.units.measure.measure.Acceleration;
-import edu.wpi.first.units.measure.measure.Angle;
-import edu.wpi.first.units.measure.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.measure.AngularVelocity;
-import edu.wpi.first.units.measure.measure.Distance;
-import edu.wpi.first.units.measure.measure.Force;
-import edu.wpi.first.units.measure.measure.LinearAcceleration;
-import edu.wpi.first.units.measure.measure.Mass;
-import edu.wpi.first.units.measure.measure.MomentOfInertia;
-import edu.wpi.first.units.measure.measure.Mult;
-import edu.wpi.first.units.measure.measure.Torque;
-import edu.wpi.first.units.measure.measure.Velocity;
+import edu.wpi.first.units.Unit;
+import edu.wpi.first.units.VelocityUnit;
+import edu.wpi.first.units.measure.Acceleration;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Force;
+import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.Mass;
+import edu.wpi.first.units.measure.MomentOfInertia;
+import edu.wpi.first.units.measure.Mult;
+import edu.wpi.first.units.measure.Torque;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.util.struct.Struct;
 import java.util.function.BiFunction;
 import monologue.ProceduralStructGenerator;
@@ -46,21 +46,21 @@ public class MeasureMath {
     }
 
     @SuppressWarnings("unchecked")
-    public static <U extends Unit, M extends U> M abs(M m) {
+    public static <U extends Unit, M extends Measure<U>> M abs(M m) {
         return (M) m.unit().ofBaseUnits(Math.abs(m.baseUnitMagnitude()));
     }
 
     @SuppressWarnings("unchecked")
-    public static <U extends Unit, M extends U> M negate(M m) {
+    public static <U extends Unit, M extends Measure<U>> M negate(M m) {
         return (M) m.unit().ofBaseUnits(-m.baseUnitMagnitude());
     }
 
-    public static <U extends Unit, M extends U> M max(M m1, M m2) {
+    public static <U extends Unit, M extends Measure<U>> M max(M m1, M m2) {
         return m1.baseUnitMagnitude() > m2.baseUnitMagnitude() ? m1 : m2;
     }
 
     @SuppressWarnings("unchecked")
-    public static <U extends Unit, M extends U> M max(M m1, M m2, M... otherMs) {
+    public static <U extends Unit, M extends Measure<U>> M max(M m1, M m2, M... otherMs) {
         M max = max(m1, m2);
         for (M m : otherMs) {
             max = max(max, m);
@@ -68,12 +68,12 @@ public class MeasureMath {
         return max;
     }
 
-    public static <U extends Unit, M extends U> M maxAbs(M m1, M m2) {
+    public static <U extends Unit, M extends Measure<U>> M maxAbs(M m1, M m2) {
         return abs(m1).baseUnitMagnitude() > abs(m2).baseUnitMagnitude() ? m1 : m2;
     }
 
     @SuppressWarnings("unchecked")
-    public static <U extends Unit, M extends U> M maxAbs(M m1, M m2, M... otherMs) {
+    public static <U extends Unit, M extends Measure<U>> M maxAbs(M m1, M m2, M... otherMs) {
         M max = maxAbs(m1, m2);
         for (M m : otherMs) {
             max = max(max, m);
@@ -81,12 +81,12 @@ public class MeasureMath {
         return max;
     }
 
-    public static <U extends Unit, M extends U> M min(M m1, M m2) {
+    public static <U extends Unit, M extends Measure<U>> M min(M m1, M m2) {
         return m1.baseUnitMagnitude() < m2.baseUnitMagnitude() ? m1 : m2;
     }
 
     @SuppressWarnings("unchecked")
-    public static <U extends Unit, M extends U> M min(M m1, M m2, M... otherMs) {
+    public static <U extends Unit, M extends Measure<U>> M min(M m1, M m2, M... otherMs) {
         M min = min(m1, m2);
         for (M m : otherMs) {
             min = min(min, m);
@@ -94,12 +94,12 @@ public class MeasureMath {
         return min;
     }
 
-    public static <U extends Unit, M extends U> M minAbs(M m1, M m2) {
+    public static <U extends Unit, M extends Measure<U>> M minAbs(M m1, M m2) {
         return abs(m1).baseUnitMagnitude() < abs(m2).baseUnitMagnitude() ? m1 : m2;
     }
 
     @SuppressWarnings("unchecked")
-    public static <U extends Unit, M extends U> M minAbs(M m1, M m2, M... otherMs) {
+    public static <U extends Unit, M extends Measure<U>> M minAbs(M m1, M m2, M... otherMs) {
         M min = minAbs(m1, m2);
         for (M m : otherMs) {
             min = min(min, m);
@@ -107,23 +107,23 @@ public class MeasureMath {
         return min;
     }
 
-    public static <U extends Unit, M extends U> M clamp(M m, M min, M max) {
+    public static <U extends Unit, M extends Measure<U>> M clamp(M m, M min, M max) {
         if (min.gt(max)) {
             throw new IllegalArgumentException("min must be less than or equal to max");
         }
         return max(min, min(max, m));
     }
 
-    public static <U extends Unit, M extends U> M clamp(M m, M magnitudeLimit) {
+    public static <U extends Unit, M extends Measure<U>> M clamp(M m, M magnitudeLimit) {
         return max(negate(abs(magnitudeLimit)), min(abs(magnitudeLimit), m));
     }
 
-    public static <U extends Unit, M extends U> double signum(M m) {
+    public static <U extends Unit, M extends Measure<U>> double signum(M m) {
         return Math.signum(m.baseUnitMagnitude());
     }
 
     @SuppressWarnings("unchecked")
-    public static <U extends Unit, M extends U> M nudgeZero(M m, M tolerance) {
+    public static <U extends Unit, M extends Measure<U>> M nudgeZero(M m, M tolerance) {
         return abs(m).baseUnitMagnitude() < tolerance.baseUnitMagnitude() ? (M) m.unit().zero() : m;
     }
 
@@ -142,11 +142,11 @@ public class MeasureMath {
         }
 
         @SuppressWarnings("unchecked")
-        public static <U extends Unit> XY<U> zero(U unit) {
-            return new XY<>((U) unit.zero(), (U) unit.zero());
+        public static <U extends Unit> XY<Measure<U>> zero(U unit) {
+            return new XY<>((Measure<U>) unit.zero(), (Measure<U>) unit.zero());
         }
 
-        public <UN extends Unit, N extends UN, R extends Measure<?>> N cross(
+        public <UN extends Unit, N extends Measure<UN>, R extends Measure<?>> N cross(
                 XY<R> rhs, Class<N> cls, BiFunction<M, R, N> f) {
             var a = f.apply(x, rhs.y);
             var b = f.apply(y, rhs.x);

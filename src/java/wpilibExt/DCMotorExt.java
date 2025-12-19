@@ -13,17 +13,17 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.proto.DCMotorProto;
 import edu.wpi.first.math.system.plant.struct.DCMotorStruct;
-import edu.wpi.first.units.measure.AngularVelocityUnit;
-import edu.wpi.first.units.measure.CurrentUnit;
-import edu.wpi.first.units.measure.TorqueUnit;
-import edu.wpi.first.units.measure.VoltageUnit;
-import edu.wpi.first.units.measure.measure.AngularVelocity;
-import edu.wpi.first.units.measure.measure.Current;
-import edu.wpi.first.units.measure.measure.Per;
-import edu.wpi.first.units.measure.measure.Power;
-import edu.wpi.first.units.measure.measure.Resistance;
-import edu.wpi.first.units.measure.measure.Torque;
-import edu.wpi.first.units.measure.measure.Voltage;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.CurrentUnit;
+import edu.wpi.first.units.TorqueUnit;
+import edu.wpi.first.units.VoltageUnit;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Per;
+import edu.wpi.first.units.measure.Power;
+import edu.wpi.first.units.measure.Resistance;
+import edu.wpi.first.units.measure.Torque;
+import edu.wpi.first.units.measure.Voltage;
 
 public class DCMotorExt extends DCMotor {
 

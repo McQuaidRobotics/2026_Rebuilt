@@ -9,54 +9,54 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
-import edu.wpi.first.units.measure.AngleUnit;
-import edu.wpi.first.units.measure.AngularAccelerationUnit;
-import edu.wpi.first.units.measure.AngularVelocityUnit;
-import edu.wpi.first.units.measure.CurrentUnit;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.AngularAccelerationUnit;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.CurrentUnit;
 import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.measure.PerUnit;
-import edu.wpi.first.units.measure.Unit;
-import edu.wpi.first.units.measure.VoltageUnit;
-import edu.wpi.first.units.measure.measure.Angle;
-import edu.wpi.first.units.measure.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.measure.AngularVelocity;
-import edu.wpi.first.units.measure.measure.Per;
-import edu.wpi.first.units.measure.measure.Time;
+import edu.wpi.first.units.PerUnit;
+import edu.wpi.first.units.Unit;
+import edu.wpi.first.units.VoltageUnit;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Per;
+import edu.wpi.first.units.measure.Time;
 
 public sealed interface UnitFeedforward<O extends Unit> {
     public void logGains(EpilogueBackend logger);
 
-    public O calculate(AngularVelocity goalRate, AngularAcceleration goalRateRate);
+    public Measure<O> calculate(AngularVelocity goalRate, AngularAcceleration goalRateRate);
 
-    public O calculate(AngularVelocity goalRate, AngularVelocity nextGoalRate);
+    public Measure<O> calculate(AngularVelocity goalRate, AngularVelocity nextGoalRate);
 
-    public O calculate(AngularVelocity goalRate);
+    public Measure<O> calculate(AngularVelocity goalRate);
 
-    public default O calculate(
+    public default Measure<O> calculate(
             Angle position, AngularVelocity goalRate, AngularAcceleration goalRateRate) {
         return calculate(goalRate, goalRateRate);
     }
 
-    public default O calculate(
+    public default Measure<O> calculate(
             Angle position, AngularVelocity goalRate, AngularVelocity nextGoalRate) {
         return calculate(goalRate, nextGoalRate);
     }
 
-    public default O calculate(Angle position, AngularVelocity goalRate) {
+    public default Measure<O> calculate(Angle position, AngularVelocity goalRate) {
         return calculate(goalRate);
     }
 
-    public O calculateStatics(Angle position, double sign);
+    public Measure<O> calculateStatics(Angle position, double sign);
 
     public static final class SimpleFeedforward<O extends Unit> implements UnitFeedforward<O> {
         private final edu.wpi.first.math.controller.SimpleMotorFeedforward internalFeedforward;
         private final O outputUnit;
-        final O kS;
+        final Measure<O> kS;
         final Per<O, AngularVelocityUnit> kV;
         final Per<O, AngularAccelerationUnit> kA;
 
         public SimpleFeedforward(
-                O kS,
+                Measure<O> kS,
                 Per<O, AngularVelocityUnit> kV,
                 Per<O, AngularAccelerationUnit> kA,
                 Time dt) {
@@ -102,8 +102,8 @@ public sealed interface UnitFeedforward<O extends Unit> {
 
         @SuppressWarnings({"unchecked", "removal"})
         @Override
-        public O calculate(AngularVelocity goalRate, AngularAcceleration goalRateRate) {
-            return (O)
+        public Measure<O> calculate(AngularVelocity goalRate, AngularAcceleration goalRateRate) {
+            return (Measure<O>)
                     outputUnit.of(
                             internalFeedforward.calculate(
                                     goalRate.in(RadiansPerSecond),
@@ -112,8 +112,8 @@ public sealed interface UnitFeedforward<O extends Unit> {
 
         @SuppressWarnings("unchecked")
         @Override
-        public O calculate(AngularVelocity goalRate, AngularVelocity nextGoalRate) {
-            return (O)
+        public Measure<O> calculate(AngularVelocity goalRate, AngularVelocity nextGoalRate) {
+            return (Measure<O>)
                     outputUnit.of(
                             internalFeedforward.calculateWithVelocities(
                                     goalRate.in(RadiansPerSecond),
@@ -122,13 +122,13 @@ public sealed interface UnitFeedforward<O extends Unit> {
 
         @SuppressWarnings({"unchecked"})
         @Override
-        public O calculate(AngularVelocity goalRate) {
-            return (O)
+        public Measure<O> calculate(AngularVelocity goalRate) {
+            return (Measure<O>)
                     outputUnit.of(internalFeedforward.calculate(goalRate.in(RadiansPerSecond)));
         }
 
         @Override
-        public O calculateStatics(Angle position, double sign) {
+        public Measure<O> calculateStatics(Angle position, double sign) {
             return kS.times(sign);
         }
     }
@@ -136,13 +136,13 @@ public sealed interface UnitFeedforward<O extends Unit> {
     public static final class ElevatorFeedforward<O extends Unit> implements UnitFeedforward<O> {
         private final edu.wpi.first.math.controller.ElevatorFeedforward internalFeedforward;
         private final O outputUnit;
-        final O kS, kG;
+        final Measure<O> kS, kG;
         final Per<O, AngularVelocityUnit> kV;
         final Per<O, AngularAccelerationUnit> kA;
 
         public ElevatorFeedforward(
-                O kS,
-                O kG,
+                Measure<O> kS,
+                Measure<O> kG,
                 Per<O, AngularVelocityUnit> kV,
                 Per<O, AngularAccelerationUnit> kA,
                 Time dt) {
@@ -193,8 +193,8 @@ public sealed interface UnitFeedforward<O extends Unit> {
 
         @SuppressWarnings({"unchecked", "removal"})
         @Override
-        public O calculate(AngularVelocity goalRate, AngularAcceleration goalRateRate) {
-            return (O)
+        public Measure<O> calculate(AngularVelocity goalRate, AngularAcceleration goalRateRate) {
+            return (Measure<O>)
                     outputUnit.of(
                             internalFeedforward.calculate(
                                     goalRate.in(RadiansPerSecond),
@@ -203,8 +203,8 @@ public sealed interface UnitFeedforward<O extends Unit> {
 
         @SuppressWarnings("unchecked")
         @Override
-        public O calculate(AngularVelocity goalRate, AngularVelocity nextGoalRate) {
-            return (O)
+        public Measure<O> calculate(AngularVelocity goalRate, AngularVelocity nextGoalRate) {
+            return (Measure<O>)
                     outputUnit.of(
                             internalFeedforward.calculateWithVelocities(
                                     goalRate.in(RadiansPerSecond),
@@ -213,13 +213,13 @@ public sealed interface UnitFeedforward<O extends Unit> {
 
         @SuppressWarnings({"unchecked"})
         @Override
-        public O calculate(AngularVelocity goalRate) {
-            return (O)
+        public Measure<O> calculate(AngularVelocity goalRate) {
+            return (Measure<O>)
                     outputUnit.of(internalFeedforward.calculate(goalRate.in(RadiansPerSecond)));
         }
 
         @Override
-        public O calculateStatics(Angle position, double sign) {
+        public Measure<O> calculateStatics(Angle position, double sign) {
             return kS.times(sign).plus(kG);
         }
     }
@@ -227,13 +227,13 @@ public sealed interface UnitFeedforward<O extends Unit> {
     public static final class ArmFeedforward<O extends Unit> implements UnitFeedforward<O> {
         private final edu.wpi.first.math.controller.ArmFeedforward internalFeedforward;
         private final O outputUnit;
-        final O kS, kG;
+        final Measure<O> kS, kG;
         final Per<O, AngularVelocityUnit> kV;
         final Per<O, AngularAccelerationUnit> kA;
 
         public ArmFeedforward(
-                O kS,
-                O kG,
+                Measure<O> kS,
+                Measure<O> kG,
                 Per<O, AngularVelocityUnit> kV,
                 Per<O, AngularAccelerationUnit> kA,
                 Time dt) {
@@ -283,25 +283,25 @@ public sealed interface UnitFeedforward<O extends Unit> {
         }
 
         @Override
-        public O calculate(AngularVelocity goalRate) {
+        public Measure<O> calculate(AngularVelocity goalRate) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public O calculate(AngularVelocity goalRate, AngularVelocity nextGoalRate) {
+        public Measure<O> calculate(AngularVelocity goalRate, AngularVelocity nextGoalRate) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public O calculate(AngularVelocity goalRate, AngularAcceleration goalRateRate) {
+        public Measure<O> calculate(AngularVelocity goalRate, AngularAcceleration goalRateRate) {
             throw new UnsupportedOperationException();
         }
 
         @Override
         @SuppressWarnings({"unchecked", "removal"})
-        public O calculate(
+        public Measure<O> calculate(
                 Angle currentAngle, AngularVelocity goalRate, AngularAcceleration goalRateRate) {
-            return (O)
+            return (Measure<O>)
                     outputUnit.of(
                             internalFeedforward.calculate(
                                     currentAngle.in(Radian),
@@ -311,9 +311,9 @@ public sealed interface UnitFeedforward<O extends Unit> {
 
         @Override
         @SuppressWarnings("unchecked")
-        public O calculate(
+        public Measure<O> calculate(
                 Angle currentAngle, AngularVelocity goalRate, AngularVelocity nextGoalRate) {
-            return (O)
+            return (Measure<O>)
                     outputUnit.of(
                             internalFeedforward.calculateWithVelocities(
                                     currentAngle.in(Radian),
@@ -323,15 +323,15 @@ public sealed interface UnitFeedforward<O extends Unit> {
 
         @Override
         @SuppressWarnings({"unchecked"})
-        public O calculate(Angle currentAngle, AngularVelocity goalRate) {
-            return (O)
+        public Measure<O> calculate(Angle currentAngle, AngularVelocity goalRate) {
+            return (Measure<O>)
                     outputUnit.of(
                             internalFeedforward.calculate(
                                     currentAngle.in(Radian), goalRate.in(RadiansPerSecond)));
         }
 
         @Override
-        public O calculateStatics(Angle position, double sign) {
+        public Measure<O> calculateStatics(Angle position, double sign) {
             return kS.times(sign).plus(kG.times(Math.cos(position.in(Radian))));
         }
     }

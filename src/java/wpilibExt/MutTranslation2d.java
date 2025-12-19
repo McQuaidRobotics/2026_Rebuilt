@@ -7,7 +7,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.units.measure.measure.Distance;
+import edu.wpi.first.units.measure.Distance;
 
 public class MutTranslation2d extends Translation2d {
     double x = 0.0;

@@ -9,20 +9,20 @@ import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.units.measure.AngleUnit;
-import edu.wpi.first.units.measure.AngularVelocityUnit;
-import edu.wpi.first.units.measure.CurrentUnit;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.CurrentUnit;
 import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.measure.Unit;
-import edu.wpi.first.units.measure.VelocityUnit;
-import edu.wpi.first.units.measure.VoltageUnit;
-import edu.wpi.first.units.measure.measure.Angle;
-import edu.wpi.first.units.measure.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.measure.AngularVelocity;
-import edu.wpi.first.units.measure.measure.Current;
-import edu.wpi.first.units.measure.measure.Time;
-import edu.wpi.first.units.measure.measure.Velocity;
-import edu.wpi.first.units.measure.measure.Voltage;
+import edu.wpi.first.units.Unit;
+import edu.wpi.first.units.VelocityUnit;
+import edu.wpi.first.units.VoltageUnit;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Velocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.util.struct.StructSerializable;
 import java.util.Optional;
@@ -46,11 +46,11 @@ public class ShamMCX implements ShamMotorController {
                 Time dt, Voltage supply, MechanismState state, EpilogueBackend logger);
 
         public record ClosedLoopOutput<U extends Unit>(
-                ClosedLoop<?, U> controller, U value, Velocity<U> secondOrderValue)
+                ClosedLoop<?, U> controller, Measure<U> value, Velocity<U> secondOrderValue)
                 implements Output {
 
             private State<U> goal() {
-                return new State<>((U) value, (Velocity<U>) secondOrderValue);
+                return new State<>((Measure<U>) value, (Velocity<U>) secondOrderValue);
             }
 
             @SuppressWarnings("unchecked")

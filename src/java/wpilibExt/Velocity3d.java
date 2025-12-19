@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.units.measure.measure.LinearVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
 import java.util.Objects;
 
 public class Velocity3d implements Interpolatable<Velocity3d> {

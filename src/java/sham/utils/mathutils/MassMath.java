@@ -3,13 +3,13 @@ package sham.utils.mathutils;
 import static wpilibExt.MeasureMath.*;
 
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.units.measure.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.measure.Distance;
-import edu.wpi.first.units.measure.measure.Force;
-import edu.wpi.first.units.measure.measure.LinearAcceleration;
-import edu.wpi.first.units.measure.measure.Mass;
-import edu.wpi.first.units.measure.measure.MomentOfInertia;
-import edu.wpi.first.units.measure.measure.Torque;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Force;
+import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.Mass;
+import edu.wpi.first.units.measure.MomentOfInertia;
+import edu.wpi.first.units.measure.Torque;
 import wpilibExt.MeasureMath;
 
 public class MassMath {

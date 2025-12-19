@@ -3,9 +3,9 @@ package sham;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Volts;
 
-import edu.wpi.first.units.measure.measure.Current;
-import edu.wpi.first.units.measure.measure.Time;
-import edu.wpi.first.units.measure.measure.Voltage;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.util.struct.Struct;
 import monologue.ProceduralStructGenerator;
 import sham.ShamMechanism.MechanismState;

@@ -9,21 +9,21 @@ import static edu.wpi.first.units.Units.Second;
 
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.units.measure.AngleUnit;
-import edu.wpi.first.units.measure.AngularAccelerationUnit;
-import edu.wpi.first.units.measure.AngularVelocityUnit;
-import edu.wpi.first.units.measure.DistanceUnit;
-import edu.wpi.first.units.measure.LinearAccelerationUnit;
-import edu.wpi.first.units.measure.LinearVelocityUnit;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.AngularAccelerationUnit;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.DistanceUnit;
+import edu.wpi.first.units.LinearAccelerationUnit;
+import edu.wpi.first.units.LinearVelocityUnit;
 import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.measure.PerUnit;
-import edu.wpi.first.units.measure.Unit;
-import edu.wpi.first.units.measure.VelocityUnit;
-import edu.wpi.first.units.measure.measure.Angle;
-import edu.wpi.first.units.measure.measure.AngularVelocity;
-import edu.wpi.first.units.measure.measure.Distance;
-import edu.wpi.first.units.measure.measure.LinearVelocity;
-import edu.wpi.first.units.measure.measure.Per;
+import edu.wpi.first.units.PerUnit;
+import edu.wpi.first.units.Unit;
+import edu.wpi.first.units.VelocityUnit;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Per;
 
 public class UnitFeedback {
     /** A PD controller that uses units to ensure that the controller is used correctly. */
@@ -81,31 +81,31 @@ public class UnitFeedback {
         }
 
         @SuppressWarnings("unchecked")
-        public Pair<O, Q> calculate(Q measurement, Q setpoint) {
+        public Pair<Measure<O>, Measure<Q>> calculate(Measure<Q> measurement, Measure<Q> setpoint) {
             var o =
-                    (O)
+                    (Measure<O>)
                             outputUnit.of(
                                     internalController.calculate(
                                             measurement.baseUnitMagnitude(),
                                             setpoint.baseUnitMagnitude()));
-            var error = (Q) inputUnit.of(internalController.getError());
+            var error = (Measure<Q>) inputUnit.of(internalController.getError());
             return new Pair<>(o, error);
         }
 
-        public PIDFeedback<O, Q> withTolerance(Q tolerance) {
+        public PIDFeedback<O, Q> withTolerance(Measure<Q> tolerance) {
             internalController.setTolerance(tolerance.baseUnitMagnitude());
             return this;
         }
 
         public PIDFeedback<O, Q> withTolerance(
-                Q positionTolerance, Q velocityTolerance) {
+                Measure<Q> positionTolerance, Measure<Q> velocityTolerance) {
             internalController.setTolerance(
                     positionTolerance.baseUnitMagnitude(), velocityTolerance.baseUnitMagnitude());
             return this;
         }
 
         public PIDFeedback<O, Q> withContinuousInput(
-                Q minimumInput, Q maximumInput) {
+                Measure<Q> minimumInput, Measure<Q> maximumInput) {
             internalController.enableContinuousInput(
                     minimumInput.baseUnitMagnitude(), maximumInput.baseUnitMagnitude());
             return this;
@@ -131,7 +131,7 @@ public class UnitFeedback {
                             .ofNative(kD.baseUnitMagnitude()));
         }
 
-        public Pair<O, DistanceUnit> calculate(
+        public Pair<Measure<O>, Measure<DistanceUnit>> calculate(
                 Distance measurement, Distance setpoint) {
             return super.calculate(measurement, setpoint);
         }
@@ -152,7 +152,7 @@ public class UnitFeedback {
                             .ofNative(kD.baseUnitMagnitude()));
         }
 
-        public Pair<O, LinearVelocityUnit> calculate(
+        public Pair<Measure<O>, Measure<LinearVelocityUnit>> calculate(
                 LinearVelocity measurement, LinearVelocity setpoint) {
             return super.calculate(measurement, setpoint);
         }
@@ -169,7 +169,7 @@ public class UnitFeedback {
                             .ofNative(kD.baseUnitMagnitude()));
         }
 
-        public Pair<O, AngleUnit> calculate(Angle measurement, Angle setpoint) {
+        public Pair<Measure<O>, Measure<AngleUnit>> calculate(Angle measurement, Angle setpoint) {
             return super.calculate(measurement, setpoint);
         }
 
@@ -194,7 +194,7 @@ public class UnitFeedback {
                             .ofNative(kD.baseUnitMagnitude()));
         }
 
-        public Pair<O, AngularVelocityUnit> calculate(
+        public Pair<Measure<O>, Measure<AngularVelocityUnit>> calculate(
                 AngularVelocity measurement, AngularVelocity setpoint) {
             return super.calculate(measurement, setpoint);
         }

@@ -5,10 +5,10 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.measure.measure.AngularVelocity;
-import edu.wpi.first.units.measure.measure.Mass;
-import edu.wpi.first.units.measure.measure.MomentOfInertia;
-import edu.wpi.first.units.measure.measure.Torque;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Mass;
+import edu.wpi.first.units.measure.MomentOfInertia;
+import edu.wpi.first.units.measure.Torque;
 import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.util.struct.StructSerializable;
 import monologue.ProceduralStructGenerator;

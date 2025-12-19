@@ -9,34 +9,34 @@ import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
-import edu.wpi.first.units.measure.AccelerationUnit;
-import edu.wpi.first.units.measure.AngleUnit;
-import edu.wpi.first.units.measure.AngularVelocityUnit;
-import edu.wpi.first.units.measure.DistanceUnit;
-import edu.wpi.first.units.measure.LinearVelocityUnit;
+import edu.wpi.first.units.AccelerationUnit;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.DistanceUnit;
+import edu.wpi.first.units.LinearVelocityUnit;
 import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.measure.Unit;
-import edu.wpi.first.units.measure.VelocityUnit;
-import edu.wpi.first.units.measure.measure.Acceleration;
-import edu.wpi.first.units.measure.measure.Angle;
-import edu.wpi.first.units.measure.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.measure.AngularVelocity;
-import edu.wpi.first.units.measure.measure.Distance;
-import edu.wpi.first.units.measure.measure.LinearAcceleration;
-import edu.wpi.first.units.measure.measure.LinearVelocity;
-import edu.wpi.first.units.measure.measure.Time;
-import edu.wpi.first.units.measure.measure.Velocity;
+import edu.wpi.first.units.Unit;
+import edu.wpi.first.units.VelocityUnit;
+import edu.wpi.first.units.measure.Acceleration;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.util.struct.StructSerializable;
 import monologue.ProceduralStructGenerator;
 import wpilibExt.MeasureMath;
 
 public class UnitTrapezoidProfile<DIM extends Unit> {
-    private final DIM maxValue;
+    private final Measure<DIM> maxValue;
     private final Velocity<DIM> maxSlew;
     private final Acceleration<DIM> maxSlewSlew;
 
-    public record State<DIM extends Unit>(DIM value, Velocity<DIM> slew)
+    public record State<DIM extends Unit>(Measure<DIM> value, Velocity<DIM> slew)
             implements StructSerializable {
         public static State<AngleUnit> of(Angle position, AngularVelocity velocity) {
             return new State<>(
@@ -71,7 +71,7 @@ public class UnitTrapezoidProfile<DIM extends Unit> {
     }
 
     private UnitTrapezoidProfile(
-            DIM maxValue, Velocity<DIM> maxSlew, Acceleration<DIM> maxSlewSlew) {
+            Measure<DIM> maxValue, Velocity<DIM> maxSlew, Acceleration<DIM> maxSlewSlew) {
         this.maxValue = maxValue;
         this.maxSlew = maxSlew;
         this.maxSlewSlew = maxSlewSlew;
@@ -137,7 +137,7 @@ public class UnitTrapezoidProfile<DIM extends Unit> {
                         new edu.wpi.first.math.trajectory.TrapezoidProfile.State(
                                 goal.value.baseUnitMagnitude(), goal.slew.baseUnitMagnitude()));
 
-        DIM value = (DIM) current.value.baseUnit().of(internalState.position);
+        Measure<DIM> value = (Measure<DIM>) current.value.baseUnit().of(internalState.position);
         Velocity<DIM> slew =
                 VelocityUnit.combine(value.baseUnit(), Second).of(internalState.velocity);
 

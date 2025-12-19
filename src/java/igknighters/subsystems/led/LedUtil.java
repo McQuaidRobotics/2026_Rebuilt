@@ -7,8 +7,8 @@ import static edu.wpi.first.units.Units.Microsecond;
 import static edu.wpi.first.units.Units.Seconds;
 
 import dev.doglog.DogLog;
-import edu.wpi.first.units.measure.measure.Distance;
-import edu.wpi.first.units.measure.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
