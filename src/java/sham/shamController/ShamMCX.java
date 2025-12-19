@@ -1,0 +1,498 @@
+package sham.shamController;
+
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
+import edu.wpi.first.epilogue.logging.EpilogueBackend;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.units.measure.AngleUnit;
+import edu.wpi.first.units.measure.AngularVelocityUnit;
+import edu.wpi.first.units.measure.CurrentUnit;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.measure.Unit;
+import edu.wpi.first.units.measure.VelocityUnit;
+import edu.wpi.first.units.measure.VoltageUnit;
+import edu.wpi.first.units.measure.measure.Angle;
+import edu.wpi.first.units.measure.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.measure.AngularVelocity;
+import edu.wpi.first.units.measure.measure.Current;
+import edu.wpi.first.units.measure.measure.Time;
+import edu.wpi.first.units.measure.measure.Velocity;
+import edu.wpi.first.units.measure.measure.Voltage;
+import edu.wpi.first.util.struct.Struct;
+import edu.wpi.first.util.struct.StructSerializable;
+import java.util.Optional;
+import monologue.ProceduralStructGenerator;
+import sham.ShamMechanism.MechanismState;
+import sham.ShamMotorController;
+import sham.ShamMotorController.ControllerOutput.CurrentOutput;
+import sham.ShamMotorController.ControllerOutput.VoltageOutput;
+import sham.shamController.unitSafeControl.UnitTrapezoidProfile.State;
+import sham.utils.RuntimeLog;
+import wpilibExt.DCMotorExt;
+import wpilibExt.MeasureMath;
+
+public class ShamMCX implements ShamMotorController {
+    private static final VelocityUnit<AngleUnit> VU = VelocityUnit.combine(Radians, Seconds);
+    private static final VelocityUnit<AngularVelocityUnit> AU =
+            VelocityUnit.combine(RadiansPerSecond, Seconds);
+
+    private sealed interface Output {
+        public ControllerOutput run(
+                Time dt, Voltage supply, MechanismState state, EpilogueBackend logger);
+
+        public record ClosedLoopOutput<U extends Unit>(
+                ClosedLoop<?, U> controller, U value, Velocity<U> secondOrderValue)
+                implements Output {
+
+            private State<U> goal() {
+                return new State<>((U) value, (Velocity<U>) secondOrderValue);
+            }
+
+            @SuppressWarnings("unchecked")
+            private State<U> current(MechanismState state) {
+                if (controller().isVelocity()) {
+                    return (State<U>) State.of(state.velocity(), state.acceleration());
+                } else {
+                    return (State<U>) State.of(state.position(), state.velocity());
+                }
+            }
+
+            @Override
+            public ControllerOutput run(
+                    Time dt, Voltage supply, MechanismState state, EpilogueBackend logger) {
+                Measure<?> output =
+                        controller().run(state.position(), current(state), goal(), dt, logger);
+                if (output.unit() instanceof VoltageUnit) {
+                    return ControllerOutput.of((Voltage) output);
+                } else {
+                    return ControllerOutput.of((Current) output);
+                }
+            }
+        }
+
+        public record OpenLoopVoltageOutput(Voltage volts) implements Output {
+            @Override
+            public ControllerOutput run(
+                    Time dt, Voltage supply, MechanismState state, EpilogueBackend logger) {
+                return ControllerOutput.of(MeasureMath.clamp(volts, supply));
+            }
+        }
+
+        public record OpenLoopCurrentOutput(Current amps) implements Output {
+            @Override
+            public ControllerOutput run(
+                    Time dt, Voltage supply, MechanismState state, EpilogueBackend logger) {
+                return ControllerOutput.of(amps);
+            }
+        }
+
+        public static OpenLoopVoltageOutput of(Voltage volts) {
+            return new OpenLoopVoltageOutput(volts);
+        }
+
+        public static OpenLoopCurrentOutput of(Current amps) {
+            return new OpenLoopCurrentOutput(amps);
+        }
+
+        public default boolean equals(Output other) {
+            if (!this.getClass().equals(other.getClass())) {
+                return false;
+            }
+            if (this instanceof OpenLoopVoltageOutput castedThis
+                    && other instanceof OpenLoopVoltageOutput castedOther) {
+                return MathUtil.isNear(
+                        castedThis.volts().baseUnitMagnitude(),
+                        castedOther.volts().baseUnitMagnitude(),
+                        0.001);
+            } else if (this instanceof OpenLoopCurrentOutput castedThis
+                    && other instanceof OpenLoopCurrentOutput castedOther) {
+                return MathUtil.isNear(
+                        castedThis.amps().baseUnitMagnitude(),
+                        castedOther.amps().baseUnitMagnitude(),
+                        0.001);
+            } else if (this instanceof ClosedLoopOutput castedThis
+                    && other instanceof ClosedLoopOutput castedOther) {
+                return castedThis.controller().equals(castedOther.controller())
+                        && MathUtil.isNear(
+                                castedThis.value().baseUnitMagnitude(),
+                                castedOther.value().baseUnitMagnitude(),
+                                0.001)
+                        && MathUtil.isNear(
+                                castedThis.secondOrderValue().baseUnitMagnitude(),
+                                castedOther.secondOrderValue().baseUnitMagnitude(),
+                                0.001);
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public record CurrentLimits(
+            Current statorCurrentLimit,
+            Current supplyCurrentLimit,
+            Current supplyCurrentLowerLimit,
+            Time lowerLimitTriggerTime)
+            implements StructSerializable {
+        public static CurrentLimits base() {
+            return new CurrentLimits(Amps.of(120.0), Amps.of(70.0), Amps.of(40.0), Seconds.of(1.0));
+        }
+
+        public static CurrentLimits of(Current stator, Current supply) {
+            final var base = base();
+            return new CurrentLimits(
+                    stator, supply, base.supplyCurrentLimit, base.lowerLimitTriggerTime);
+        }
+
+        public CurrentLimits times(double factor) {
+            return new CurrentLimits(
+                    statorCurrentLimit.times(factor),
+                    supplyCurrentLimit.times(factor),
+                    supplyCurrentLowerLimit.times(factor),
+                    lowerLimitTriggerTime);
+        }
+
+        public static final Struct<CurrentLimits> struct =
+                ProceduralStructGenerator.genRecord(CurrentLimits.class);
+    }
+
+    public record PeakOutputConfig(
+            Voltage peakForwardVoltage,
+            Voltage peakReverseVoltage,
+            Current peakForwardStatorCurrent,
+            Current peakReverseStatorCurrent) {
+        public static final PeakOutputConfig base() {
+            return new PeakOutputConfig(
+                    Volts.of(16.0), Volts.of(-16.0), Amps.of(300.0), Amps.of(-300.0));
+        }
+    }
+
+    public enum SoftLimitTrigger {
+        NONE,
+        REVERSE,
+        FORWARD;
+
+        public static final Struct<SoftLimitTrigger> struct =
+                ProceduralStructGenerator.genEnum(SoftLimitTrigger.class);
+    }
+
+    private final EpilogueBackend logger;
+
+    private DCMotorExt motor = null;
+    private int numMotors = 0;
+    private CurrentLimits currentLimits = CurrentLimits.base();
+    private Time timeOverSupplyLimit = Seconds.of(0.0);
+    private double sensorToMechanismRatio = 1.0;
+
+    private Angle forwardSoftLimit = Radians.of(Double.POSITIVE_INFINITY);
+    private Angle reverseSoftLimit = Radians.of(Double.NEGATIVE_INFINITY);
+
+    private PeakOutputConfig peakOutputConfig = PeakOutputConfig.base();
+
+    private Optional<Output> output = Optional.empty();
+    private boolean brakeMode = false;
+
+    private Current lastStatorCurrent = Amps.of(0.0);
+    private Voltage lastVoltage = Volts.of(0.0);
+    private MechanismState lastState = MechanismState.zero();
+
+    public ShamMCX(String name) {
+        logger = RuntimeLog.loggerFor("/ShamMCX/" + name).lazy();
+    }
+
+    public ShamMCX configureCurrentLimit(CurrentLimits currentLimit) {
+        this.currentLimits = currentLimit;
+        return this;
+    }
+
+    public ShamMCX configureSoftLimits(Angle forwardLimit, Angle reverseLimit) {
+        this.forwardSoftLimit = forwardLimit;
+        this.reverseSoftLimit = reverseLimit;
+        return this;
+    }
+
+    public ShamMCX configSensorToMechanismRatio(double ratio) {
+        this.sensorToMechanismRatio = ratio;
+        return this;
+    }
+
+    public ShamMCX configurePeakOutput(PeakOutputConfig peakOutputConfig) {
+        this.peakOutputConfig = peakOutputConfig;
+        return this;
+    }
+
+    private void logConfig() {
+        logger.log("config/currentLimits", currentLimits, CurrentLimits.struct);
+        logger.log("config/forwardSoftLimit", forwardSoftLimit);
+        logger.log("config/reverseSoftLimit", reverseSoftLimit);
+        logger.log("config/sensorToMechanismRatio", sensorToMechanismRatio);
+    }
+
+    @Override
+    public void configureMotorModel(DCMotorExt motor) {
+        this.motor = motor;
+        this.numMotors = motor.numMotors;
+    }
+
+    public void setBrakeMode(boolean brakeMode) {
+        this.brakeMode = brakeMode;
+    }
+
+    private void updateOutput(Output output) {
+        if ((output == null || !this.output.isPresent() || !this.output.get().equals(output))
+                && output instanceof Output.ClosedLoopOutput clo) {
+            clo.controller.reset();
+        }
+        this.output = Optional.ofNullable(output);
+    }
+
+    public void controlCurrent(
+            ClosedLoop<CurrentUnit, AngleUnit> controller,
+            Angle position,
+            AngularVelocity velocity) {
+        if (controller == null || position == null) {
+            updateOutput(null);
+            return;
+        }
+
+        logger.log("control/position", position);
+        logger.log("control/velocity", velocity);
+        logger.log("control/acceleration", RadiansPerSecondPerSecond.zero());
+        updateOutput(
+                new Output.ClosedLoopOutput<>(
+                        controller, position, VU.of(velocity.baseUnitMagnitude())));
+    }
+
+    public void controlCurrent(ClosedLoop<CurrentUnit, AngleUnit> controller, Angle position) {
+        controlCurrent(controller, position, RadiansPerSecond.zero());
+    }
+
+    public void controlCurrent(
+            ClosedLoop<CurrentUnit, AngularVelocityUnit> controller,
+            AngularVelocity velocity,
+            AngularAcceleration acceleration) {
+        if (controller == null || velocity == null) {
+            updateOutput(null);
+            return;
+        }
+
+        logger.log("control/position", Radians.zero());
+        logger.log("control/velocity", velocity);
+        logger.log("control/acceleration", acceleration);
+        updateOutput(
+                new Output.ClosedLoopOutput<>(
+                        controller, velocity, AU.of(acceleration.baseUnitMagnitude())));
+    }
+
+    public void controlCurrent(
+            ClosedLoop<CurrentUnit, AngularVelocityUnit> controller, AngularVelocity velocity) {
+        controlCurrent(controller, velocity, RadiansPerSecondPerSecond.zero());
+    }
+
+    public void controlCurrent(Current amps) {
+        logger.log("control/position", Radians.zero());
+        logger.log("control/velocity", RadiansPerSecond.zero());
+        logger.log("control/acceleration", RadiansPerSecondPerSecond.zero());
+        updateOutput(Output.of(amps));
+    }
+
+    public void controlVoltage(
+            ClosedLoop<VoltageUnit, AngleUnit> controller,
+            Angle position,
+            AngularVelocity velocity) {
+        if (controller == null || position == null) {
+            updateOutput(null);
+            return;
+        }
+
+        logger.log("control/position", position);
+        logger.log("control/velocity", velocity);
+        logger.log("control/acceleration", RadiansPerSecondPerSecond.zero());
+        updateOutput(
+                new Output.ClosedLoopOutput<>(
+                        controller, position, VU.of(velocity.baseUnitMagnitude())));
+    }
+
+    public void controlVoltage(ClosedLoop<VoltageUnit, AngleUnit> controller, Angle position) {
+        controlVoltage(controller, position, RadiansPerSecond.zero());
+    }
+
+    public void controlVoltage(
+            ClosedLoop<VoltageUnit, AngularVelocityUnit> controller,
+            AngularVelocity velocity,
+            AngularAcceleration acceleration) {
+        if (controller == null || velocity == null) {
+            updateOutput(null);
+            return;
+        }
+
+        logger.log("control/position", Radians.zero());
+        logger.log("control/velocity", velocity);
+        logger.log("control/acceleration", acceleration);
+        updateOutput(
+                new Output.ClosedLoopOutput<>(
+                        controller, velocity, AU.of(acceleration.baseUnitMagnitude())));
+    }
+
+    public void controlVoltage(
+            ClosedLoop<VoltageUnit, AngularVelocityUnit> controller, AngularVelocity velocity) {
+        controlVoltage(controller, velocity, RadiansPerSecondPerSecond.zero());
+    }
+
+    public void controlVoltage(Voltage volts) {
+        logger.log("control/position", Radians.zero());
+        logger.log("control/velocity", RadiansPerSecond.zero());
+        logger.log("control/acceleration", RadiansPerSecondPerSecond.zero());
+        updateOutput(Output.of(volts));
+    }
+
+    public synchronized Angle position() {
+        return lastState.position();
+    }
+
+    public synchronized AngularVelocity velocity() {
+        return lastState.velocity();
+    }
+
+    public synchronized AngularAcceleration acceleration() {
+        return lastState.acceleration();
+    }
+
+    public synchronized Current statorCurrent() {
+        return lastStatorCurrent;
+    }
+
+    public synchronized Current supplyCurrent() {
+        return motor.getSupplyCurrent(lastState.velocity(), lastVoltage, lastStatorCurrent);
+    }
+
+    public synchronized Voltage voltage() {
+        return lastVoltage;
+    }
+
+    @Override
+    public synchronized boolean brakeEnabled() {
+        return brakeMode;
+    }
+
+    @Override
+    public synchronized ControllerOutput run(Time dt, Voltage supply, MechanismState rawState) {
+        logConfig();
+        MechanismState state = rawState.div(sensorToMechanismRatio);
+        lastState = state;
+        return output.map(o -> o.run(dt, supply, state, logger.getNested("controlLoop")))
+                .map(this::logControllerOutput)
+                .map(o -> softLimit(o, state))
+                .map(o -> currentLimit(dt, o, state, supply))
+                .map(this::peakLimit)
+                .orElseGet(() -> ControllerOutput.zero());
+    }
+
+    private ControllerOutput logControllerOutput(ControllerOutput output) {
+        logger.log("output/brake", brakeMode);
+        logger.log("output/mechanismState", lastState, MechanismState.struct);
+        logger.log("output/type", output.type(), ControllerOutput.ControllerOutputTypes.struct);
+        if (output instanceof VoltageOutput vo) {
+            logger.log("output/magnitude", vo.voltage());
+        } else if (output instanceof CurrentOutput co) {
+            logger.log("output/magnitude", co.current());
+        }
+        return output;
+    }
+
+    private ControllerOutput softLimit(ControllerOutput requestedOutput, MechanismState state) {
+        double direction = requestedOutput.signumMagnitude();
+        Angle position = state.position();
+        if (direction > 0 && position.in(Radians) > forwardSoftLimit.in(Radians)) {
+            logger.log("softLimit/trigger", SoftLimitTrigger.FORWARD, SoftLimitTrigger.struct);
+            return ControllerOutput.zero();
+        } else if (direction < 0 && position.in(Radians) < reverseSoftLimit.in(Radians)) {
+            logger.log("softLimit/trigger", SoftLimitTrigger.REVERSE, SoftLimitTrigger.struct);
+            return ControllerOutput.zero();
+        }
+        logger.log("softLimit/trigger", SoftLimitTrigger.NONE, SoftLimitTrigger.struct);
+        return requestedOutput;
+    }
+
+    private ControllerOutput currentLimit(
+            Time dt,
+            ControllerOutput requestedOutput,
+            MechanismState state,
+            Voltage supplyVoltage) {
+        // https://file.tavsys.net/control/controls-engineering-in-frc.pdf (sec 12.1.3)
+        final CurrentLimits limits = currentLimits.times(numMotors);
+        final AngularVelocity velocity = state.velocity();
+        Voltage voltageInput;
+        Current statorCurrent;
+        Current supplyCurrent;
+
+        if (requestedOutput instanceof VoltageOutput vo) {
+            voltageInput = vo.voltage();
+            statorCurrent = motor.getCurrent(velocity, voltageInput);
+        } else {
+            CurrentOutput co = (CurrentOutput) requestedOutput;
+            statorCurrent = co.current();
+            voltageInput = motor.getVoltage(statorCurrent, velocity);
+        }
+
+        voltageInput = MeasureMath.clamp(voltageInput, supplyVoltage);
+        statorCurrent = motor.getCurrent(velocity, voltageInput);
+        supplyCurrent = motor.getSupplyCurrent(velocity, voltageInput, statorCurrent);
+
+        logger.log("output/rawStatorCurrent", statorCurrent);
+        logger.log("output/rawVoltageInput", voltageInput);
+        logger.log("output/rawSupplyCurrent", supplyCurrent);
+        logger.log("output/rawSupplyVoltage", supplyVoltage);
+
+        if (MeasureMath.abs(supplyCurrent).gt(limits.supplyCurrentLimit)) {
+            timeOverSupplyLimit = timeOverSupplyLimit.plus(dt);
+        } else {
+            timeOverSupplyLimit = Seconds.of(0.0);
+        }
+
+        final Current supplyLimit =
+                timeOverSupplyLimit.gt(limits.lowerLimitTriggerTime)
+                        ? limits.supplyCurrentLowerLimit
+                        : limits.supplyCurrentLimit;
+
+        statorCurrent =
+                motor.getCurrent(velocity, voltageInput, supplyLimit, limits.statorCurrentLimit);
+
+        lastStatorCurrent = statorCurrent;
+        lastVoltage = motor.getVoltage(statorCurrent, velocity);
+
+        logger.log("output/timeOverSupplyLimit", timeOverSupplyLimit);
+        logger.log("output/finalStatorCurrent", statorCurrent);
+        logger.log("output/finalVoltageInput", voltageInput);
+        logger.log(
+                "output/finalSupplyCurrent",
+                motor.getSupplyCurrent(velocity, voltageInput, statorCurrent));
+
+        if (requestedOutput instanceof VoltageOutput) {
+            return ControllerOutput.of(voltageInput);
+        } else {
+            return ControllerOutput.of(statorCurrent);
+        }
+    }
+
+    private ControllerOutput peakLimit(ControllerOutput requestedOutput) {
+        if (requestedOutput instanceof VoltageOutput vo) {
+            return ControllerOutput.of(
+                    MeasureMath.clamp(
+                            vo.voltage(),
+                            peakOutputConfig.peakReverseVoltage,
+                            peakOutputConfig.peakForwardVoltage));
+        } else {
+            CurrentOutput co = (CurrentOutput) requestedOutput;
+            return ControllerOutput.of(
+                    MeasureMath.clamp(
+                            co.current(),
+                            peakOutputConfig.peakReverseStatorCurrent,
+                            peakOutputConfig.peakForwardStatorCurrent));
+        }
+    }
+}
