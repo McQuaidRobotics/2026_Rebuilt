@@ -22,6 +22,8 @@ import igknighters.subsystems.LimeLightVision.Helpers.LimelightVisionConstants;
 import igknighters.subsystems.LimeLightVision.LimeLightVisionReal;
 import igknighters.subsystems.LimeLightVision.LimeLightVisionSim;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.elevator.ElevatorReal;
+import igknighters.subsystems.elevator.ElevatorSimulation;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
 import igknighters.subsystems.swerve.swerveconstants.SwerveConsts;
@@ -57,14 +59,17 @@ public class Robot extends TimedRobot {
                     new Subsystems(
                             swerveConsts.createDrivetrain(),
                             new LimeLightVisionReal(LimelightVisionConstants.backLeft),
-                            new Led(40, 1));
+                            new Led(40, 1),
+                            new ElevatorReal());
         } else {
             subsytems =
                     new Subsystems(
                             swerveConsts.createDrivetrain(),
                             new LimeLightVisionSim(),
-                            new Led(40, 1));
+                            new Led(40, 1),
+                            new ElevatorSimulation());
         }
+
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, .8));
 
