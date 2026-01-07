@@ -21,6 +21,7 @@ import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.Helpers.LimelightVisionConstants;
 import igknighters.subsystems.LimeLightVision.LimeLightVisionReal;
 import igknighters.subsystems.LimeLightVision.LimeLightVisionSim;
+import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
@@ -57,12 +58,14 @@ public class Robot extends TimedRobot {
                     new Subsystems(
                             swerveConsts.createDrivetrain(),
                             new LimeLightVisionReal(LimelightVisionConstants.backLeft),
+                            new Luma("NoteCam"),
                             new Led(40, 1));
         } else {
             subsytems =
                     new Subsystems(
                             swerveConsts.createDrivetrain(),
                             new LimeLightVisionSim(),
+                            new Luma("NoteCam"),
                             new Led(40, 1));
         }
         subsytems.swerve.setDefaultCommand(
