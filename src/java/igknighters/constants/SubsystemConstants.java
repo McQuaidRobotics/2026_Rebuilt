@@ -18,5 +18,6 @@ public class SubsystemConstants {
         public static final double kS = 0.2;
         public static final double kG = 0.5;
         public static final double kV = 1.0;
+        public static final double kA = 0.1;
     }
 }
