@@ -127,8 +127,8 @@ public class DriverController {
                         state.kP,
                         state.kI,
                         state.kD));
-        this.DPU.onTrue(ElevatorCommands.MoveToHeightCommand(subsystems.elevator, 0));
-        this.DPD.onTrue(ElevatorCommands.MoveToHeightCommand(subsystems.elevator, 1.0));
+        this.DPU.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 0));
+        this.DPD.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 1.0));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

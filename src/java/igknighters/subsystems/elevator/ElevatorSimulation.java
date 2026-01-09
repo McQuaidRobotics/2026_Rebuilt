@@ -77,6 +77,7 @@ public class ElevatorSimulation extends Elevator {
 
     @Override
     public boolean isAt(double height, double tolerance) {
+
         boolean atGoal = Math.abs(getHeight() - height) <= tolerance;
         DogLog.log("Subsystems/Elevator/AtGoal", atGoal);
         DogLog.log("Subsystems/Elevator/PidError", Math.abs(getHeight() - height));
@@ -86,7 +87,9 @@ public class ElevatorSimulation extends Elevator {
     @Override
     public void periodic() {
         // Calculate the next voltage based on the profile and PID
-        double pidOutput = profiledPIDController.calculate(elevatorSim.getPositionMeters());
+        // double pidOutput = profiledPIDController.calculate(elevatorSim.getPositionMeters());
+
+        double pidOutput = 0.0;
 
         // Calculate feedforward based on the profile's setpoint velocity
         double ffOutput = feedforward.calculate(profiledPIDController.getSetpoint().velocity);
@@ -103,6 +106,7 @@ public class ElevatorSimulation extends Elevator {
         DogLog.log("Subsystems/Elevator/Height", getHeight());
         DogLog.log("Subsystems/Elevator/Velocity", elevatorSim.getVelocityMetersPerSecond());
         DogLog.log("Subsystems/Elevator/AppliedVoltage", input);
+
         DogLog.log("Subsystems/Elevator/repeatedlyCalled", isCalledRepeatedly);
 
         visualizer.update(getHeight(), profiledPIDController.getGoal().position);
