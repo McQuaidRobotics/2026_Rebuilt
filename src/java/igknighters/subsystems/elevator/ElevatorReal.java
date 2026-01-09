@@ -6,7 +6,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -21,7 +21,7 @@ public class ElevatorReal extends Elevator {
 
     private final TalonFX elevatorLeader;
     private final TalonFX elevatorFollower;
-    private final PositionTorqueCurrentFOC positionControl = new PositionTorqueCurrentFOC(0);
+    private final MotionMagicTorqueCurrentFOC positionControl = new MotionMagicTorqueCurrentFOC(0);
     private final VelocityVoltage velocityControl = new VelocityVoltage(0);
     private final StatusSignal<Angle> elevatorHeight;
     private final StatusSignal<AngularVelocity> elevatorVelocity;
@@ -50,14 +50,20 @@ public class ElevatorReal extends Elevator {
         // TODO NEED TO ADD THE REMOTE SENSOR IN HERE BUT IDK HOW
         config.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
         config.HardwareLimitSwitch.ReverseLimitAutosetPositionValue =
-                SubsystemConstants.Elevator.MIN_HEIGHT_METERS;
+                SubsystemConstants.Elevator.MIN_HEIGHT_METERS
+                        / (2.0 * Math.PI * SubsystemConstants.Elevator.DRUM_RADIUS_METERS);
         config.HardwareLimitSwitch.ReverseLimitRemoteSensorID =
                 SubsystemConstants.Elevator.REVERSE_LIMIT_REMOTE_SENSOR_ID;
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-                SubsystemConstants.Elevator.MAX_HEIGHT_METERS;
+                SubsystemConstants.Elevator.MAX_HEIGHT_METERS
+                        / (2.0 * Math.PI * SubsystemConstants.Elevator.DRUM_RADIUS_METERS);
         config.MotionMagic.MotionMagicAcceleration =
-                SubsystemConstants.Elevator.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED;
+                SubsystemConstants.Elevator.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED
+                        / (2.0 * Math.PI * SubsystemConstants.Elevator.DRUM_RADIUS_METERS);
+        config.MotionMagic.MotionMagicCruiseVelocity =
+                SubsystemConstants.Elevator.MAX_SPEED_METERS_PER_SECOND
+                        / (2.0 * Math.PI * SubsystemConstants.Elevator.DRUM_RADIUS_METERS);
 
         elevatorLeader.getConfigurator().apply(config);
         elevatorFollower.setControl(
@@ -67,17 +73,22 @@ public class ElevatorReal extends Elevator {
     @Override
     public void moveToHeight(double height) {
         goal = height;
-        elevatorLeader.setControl(positionControl.withPosition(height));
+        double rotations =
+                height / (2.0 * Math.PI * SubsystemConstants.Elevator.DRUM_RADIUS_METERS);
+        elevatorLeader.setControl(positionControl.withPosition(rotations));
     }
 
     @Override
     public void setHeight(double height) {
-        elevatorLeader.setPosition(height);
+        double rotations =
+                height / (2.0 * Math.PI * SubsystemConstants.Elevator.DRUM_RADIUS_METERS);
+        elevatorLeader.setPosition(rotations);
     }
 
     @Override
     public double getHeight() {
-        return elevatorHeight.getValue().in(Rotation);
+        double rotations = elevatorHeight.getValue().in(Rotation);
+        return rotations * 2.0 * Math.PI * SubsystemConstants.Elevator.DRUM_RADIUS_METERS;
     }
 
     @Override

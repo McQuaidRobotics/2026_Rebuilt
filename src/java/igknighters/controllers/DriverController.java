@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import igknighters.commands.ElevatorComands;
+import igknighters.commands.ElevatorCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveForwardTargetingCmd;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
@@ -127,8 +127,8 @@ public class DriverController {
                         state.kP,
                         state.kI,
                         state.kD));
-        this.DPU.whileTrue(ElevatorComands.MoveToHeightCommand(subsystems.elevator, 0));
-        this.DPD.whileTrue(ElevatorComands.MoveToHeightCommand(subsystems.elevator, 1.0));
+        this.DPU.onTrue(ElevatorCommands.MoveToHeightCommand(subsystems.elevator, 0));
+        this.DPD.onTrue(ElevatorCommands.MoveToHeightCommand(subsystems.elevator, 1.0));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

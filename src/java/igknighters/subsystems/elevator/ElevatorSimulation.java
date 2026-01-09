@@ -11,6 +11,7 @@ import igknighters.constants.SubsystemConstants;
 public class ElevatorSimulation extends Elevator {
     private final ElevatorSim elevatorSim;
     private final ProfiledPIDController profiledPIDController;
+    private boolean isCalledRepeatedly = false;
     private final ElevatorFeedforward feedforward =
             new ElevatorFeedforward(
                     SubsystemConstants.Elevator.kS,
@@ -26,7 +27,7 @@ public class ElevatorSimulation extends Elevator {
                         DCMotor.getKrakenX60(2),
                         SubsystemConstants.Elevator.GEAR_RATIO,
                         SubsystemConstants.Elevator.CARRIAGE_MASS_KG,
-                        1,
+                        SubsystemConstants.Elevator.DRUM_RADIUS_METERS,
                         SubsystemConstants.Elevator.MIN_HEIGHT_METERS,
                         SubsystemConstants.Elevator.MAX_HEIGHT_METERS,
                         true,
@@ -40,23 +41,33 @@ public class ElevatorSimulation extends Elevator {
                                 SubsystemConstants.Elevator.MAX_SPEED_METERS_PER_SECOND,
                                 SubsystemConstants.Elevator
                                         .MAX_ACCELERATION_METERS_PER_SECOND_SQUARED));
-
     }
 
     @Override
     public void moveToHeight(double height) {
+        if (height != profiledPIDController.getGoal().position) {
+            DogLog.log("Subsystems/Elevator/NewGoal", height);
+            // If the goal changes significantly, we might want to reset, or just let the profile
+            // handle it.
+            // resetting to current position prevents a jump if we are far away,
+            // but the profile handles that too.
+            // But if we are disabled and then enabled, we should probably re1set.
+        }
+        profiledPIDController.setGoal(height);
+
         if (height == 0) {
             DogLog.log("Subsystems/Elevator/MovingToZero", true);
         } else {
             DogLog.log("Subsystems/Elevator/MovingToZero", false);
         }
-        profiledPIDController.setGoal(height);
-        input = profiledPIDController.calculate(elevatorSim.getPositionMeters());
+        isCalledRepeatedly = true;
     }
 
     @Override
     public void setHeight(double height) {
         elevatorSim.setState(height, elevatorSim.getVelocityMetersPerSecond());
+        profiledPIDController.reset(height);
+        profiledPIDController.setGoal(height);
     }
 
     @Override
@@ -66,22 +77,36 @@ public class ElevatorSimulation extends Elevator {
 
     @Override
     public boolean isAt(double height, double tolerance) {
-        if (Math.abs(getHeight() - height) <= tolerance) {
-            DogLog.log("Subsystems/Elevator/AtGoal", true);
-        } else {
-            DogLog.log("Subsystems/Elevator/AtGoal", false);
-        }
+        boolean atGoal = Math.abs(getHeight() - height) <= tolerance;
+        DogLog.log("Subsystems/Elevator/AtGoal", atGoal);
         DogLog.log("Subsystems/Elevator/PidError", Math.abs(getHeight() - height));
-        return Math.abs(getHeight() - height) <= tolerance;
+        return atGoal;
     }
 
     @Override
     public void periodic() {
+        // Calculate the next voltage based on the profile and PID
+        double pidOutput = profiledPIDController.calculate(elevatorSim.getPositionMeters());
+
+        // Calculate feedforward based on the profile's setpoint velocity
+        double ffOutput = feedforward.calculate(profiledPIDController.getSetpoint().velocity);
+        double input;
+        if (isCalledRepeatedly) {
+            input = pidOutput + ffOutput;
+        } else {
+            input = 0;
+        }
+
         elevatorSim.setInputVoltage(input);
         elevatorSim.update(0.02);
-        DogLog.log("Subsystems/Elevator/Height", elevatorSim.getPositionMeters());
+
+        DogLog.log("Subsystems/Elevator/Height", getHeight());
         DogLog.log("Subsystems/Elevator/Velocity", elevatorSim.getVelocityMetersPerSecond());
         DogLog.log("Subsystems/Elevator/AppliedVoltage", input);
-        visualizer.update(getHeight(), profiledPIDController.getSetpoint().position);
+        DogLog.log("Subsystems/Elevator/repeatedlyCalled", isCalledRepeatedly);
+
+        visualizer.update(getHeight(), profiledPIDController.getGoal().position);
+        isCalledRepeatedly = false;
+        input = 0;
     }
 }

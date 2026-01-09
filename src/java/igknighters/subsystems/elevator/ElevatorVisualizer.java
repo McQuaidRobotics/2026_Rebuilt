@@ -25,6 +25,6 @@ public class ElevatorVisualizer {
 
     public void update(double currentHeight, double goalHeight) {
         carriage.setLength(currentHeight * 10); // scale for visualization
-        goal.setLength(goalHeight * 10); // scale for visualization
+        // goal.setLength(goalHeight * 10); // scale for visualization
     }
 }
