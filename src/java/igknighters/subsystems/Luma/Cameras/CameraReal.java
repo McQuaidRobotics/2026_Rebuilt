@@ -19,7 +19,8 @@ public class CameraReal extends Camera {
     Translation2d robotToCameraTranslation;
     List<PhotonPipelineResult> results = new ArrayList<>();
 
-    public CameraReal(String cameraName, double cameraHeightMeters, Translation2d robotToCameraTranslation) {
+    public CameraReal(
+            String cameraName, double cameraHeightMeters, Translation2d robotToCameraTranslation) {
         this.camera = new PhotonCamera(cameraName);
         this.cameraHeightMeters = cameraHeightMeters;
         this.robotToCameraTranslation = robotToCameraTranslation;
@@ -37,10 +38,10 @@ public class CameraReal extends Camera {
     @Override
     public void simulationPeriodic() {}
 
-    
     public Translation2d getGamePieceOffsetFromTargetList(List<PhotonTrackedTarget> targets) {
         if (targets.isEmpty()) {
-            throw new IllegalArgumentException("Target list is empty in getGamePieceOffsetFromTargetList");
+            throw new IllegalArgumentException(
+                    "Target list is empty in getGamePieceOffsetFromTargetList");
         }
         targets.sort(Comparator.comparingDouble(t -> t.getArea()));
 
@@ -53,7 +54,8 @@ public class CameraReal extends Camera {
                         Units.degreesToRadians(bestTarget.getPitch()));
 
         double yaw = Units.degreesToRadians(bestTarget.getYaw());
-        return new Translation2d(distance * Math.cos(yaw), distance * Math.sin(yaw)).plus(robotToCameraTranslation);
+        return new Translation2d(distance * Math.cos(yaw), distance * Math.sin(yaw))
+                .plus(robotToCameraTranslation);
     }
 
     @Override

@@ -8,6 +8,7 @@ import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -58,14 +59,14 @@ public class Robot extends TimedRobot {
                     new Subsystems(
                             swerveConsts.createDrivetrain(),
                             new LimeLightVisionReal(LimelightVisionConstants.backLeft),
-                            new Luma("NoteCam"),
+                            new Luma("object-detection"),
                             new Led(40, 1));
         } else {
             subsytems =
                     new Subsystems(
                             swerveConsts.createDrivetrain(),
                             new LimeLightVisionSim(),
-                            new Luma("NoteCam"),
+                            new Luma("object-detection"),
                             new Led(40, 1));
         }
         subsytems.swerve.setDefaultCommand(
@@ -85,6 +86,10 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+
+        Translation2d closestGamePiece = subsytems.luma.getClosestGamePiece();
+        DogLog.log("Subsystems/Luma/ClosestGamePieceX", closestGamePiece.getX());
+        DogLog.log("Subsystems/Luma/ClosestGamePieceY", closestGamePiece.getY());
 
         if (kUseLimelight) {
             var driveState = subsytems.swerve.getState();
