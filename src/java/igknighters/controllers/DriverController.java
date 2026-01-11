@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.ElevatorCommands;
+import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveForwardTargetingCmd;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
@@ -129,6 +130,8 @@ public class DriverController {
                         state.kD));
         this.DPU.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 0));
         this.DPD.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 1.0));
+        this.DPL.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 5000));
+        this.DPR.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 3000));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

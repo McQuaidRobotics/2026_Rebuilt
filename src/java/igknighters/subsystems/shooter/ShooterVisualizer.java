@@ -1,5 +1,3 @@
 package igknighters.subsystems.shooter;
 
-public class ShooterVisualizer {
-    
-}
+public class ShooterVisualizer {}

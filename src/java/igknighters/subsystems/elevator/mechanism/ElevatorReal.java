@@ -1,4 +1,4 @@
-package igknighters.subsystems.elevator;
+package igknighters.subsystems.elevator.mechanism;
 
 import static edu.wpi.first.units.Units.Rotation;
 
@@ -16,8 +16,9 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Temperature;
 import igknighters.constants.SubsystemConstants;
+import igknighters.subsystems.elevator.ElevatorVisualizer;
 
-public class ElevatorReal extends Elevator {
+public class ElevatorReal extends ElevatorMechanism {
 
     private final TalonFX elevatorLeader;
     private final TalonFX elevatorFollower;

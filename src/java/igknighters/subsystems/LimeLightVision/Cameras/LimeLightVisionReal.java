@@ -1,4 +1,4 @@
-package igknighters.subsystems.LimeLightVision;
+package igknighters.subsystems.LimeLightVision.Cameras;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;

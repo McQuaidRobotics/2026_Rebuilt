@@ -1,16 +1,40 @@
 package igknighters.subsystems.elevator;
 
+import igknighters.Robot;
 import igknighters.subsystems.Subsystems.ExclusiveSubsystem;
+import igknighters.subsystems.elevator.mechanism.ElevatorMechanism;
+import igknighters.subsystems.elevator.mechanism.ElevatorReal;
+import igknighters.subsystems.elevator.mechanism.ElevatorSimulation;
 
-public abstract class Elevator implements ExclusiveSubsystem {
+public class Elevator implements ExclusiveSubsystem {
+    private final ElevatorMechanism elevator;
 
-    public abstract void setHeight(double height);
+    public Elevator() {
+        if (Robot.isReal()) {
+            elevator = new ElevatorReal();
+        } else {
+            elevator = new ElevatorSimulation();
+        }
+    }
 
-    public abstract double getHeight();
+    public void setHeight(double height) {
+        elevator.setHeight(height);
+    }
 
-    public abstract void moveToHeight(double height);
+    public double getHeight() {
+        return elevator.getHeight();
+    }
 
-    public abstract boolean isAt(double height, double tolerance);
+    public void moveToHeight(double height) {
+        elevator.moveToHeight(height);
+    }
 
-    public void periodic() {}
+    public boolean isAt(double height, double tolerance) {
+        return elevator.isAt(height, tolerance);
+    }
+
+    @Override
+    public void periodic() {
+        elevator.periodic();
+    }
 }

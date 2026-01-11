@@ -21,4 +21,27 @@ public class SubsystemConstants {
         public static final double kV = 0.1;
         public static final double kA = 0.1;
     }
+
+    public static class Shooter {
+        public static final int LEADER_MOTOR_ID = 20;
+        public static final int FOLLOWER_MOTOR_ID = 21;
+        public static final double WHEEL_RADIUS_METERS = 0.0508; // 2 inch radius
+        public static final double GEAR_RATIO = 5.0;
+        public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
+        public static final double MAX_SPEED_RPM = 5000.0;
+        public static final double MAX_ACCELERATION_RPM = 100.0;
+        public static final double kP = 0.5;
+        public static final double kI = 0.1;
+        public static final double kD = 0.05;
+        public static final double kS = 0.2;
+        public static final double kV = 0.15;
+        public static final double kA = 0.02;
+    }
+
+    public static class LimelightVisionConstants {
+        public static final String frontLeft = "limelight-fl";
+        public static final String frontRight = "limelight-fr";
+        public static final String backLeft = "limelight-bl";
+        public static final String backRight = "limelight-br";
+    }
 }

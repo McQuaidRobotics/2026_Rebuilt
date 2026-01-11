@@ -1,9 +1,32 @@
 package igknighters.subsystems.shooter;
 
-public abstract class Shooter {
+import igknighters.Robot;
+import igknighters.subsystems.Subsystems.ExclusiveSubsystem;
+import igknighters.subsystems.shooter.rollers.Rollers;
+import igknighters.subsystems.shooter.rollers.RollersReal;
+import igknighters.subsystems.shooter.rollers.RollersSim;
 
-    public abstract void setSpeed(double speedMetersPerSecond);
+public class Shooter implements ExclusiveSubsystem {
+    private final Rollers rollers;
 
-    public abstract void setVoltage(double voltage);
-    
+    public Shooter() {
+        if (Robot.isReal()) {
+            rollers = new RollersReal();
+        } else {
+            rollers = new RollersSim();
+        }
+    }
+
+    public void setRollerSpeed(double speedMetersPerSecond) {
+        rollers.setSpeed(speedMetersPerSecond);
+    }
+
+    public void setRollerVoltage(double voltage) {
+        rollers.setVoltage(voltage);
+    }
+
+    @Override
+    public void periodic() {
+        rollers.periodic();
+    }
 }

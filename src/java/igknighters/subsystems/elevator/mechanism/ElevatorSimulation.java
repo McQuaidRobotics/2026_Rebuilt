@@ -1,4 +1,4 @@
-package igknighters.subsystems.elevator;
+package igknighters.subsystems.elevator.mechanism;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -7,8 +7,9 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import igknighters.constants.SubsystemConstants;
+import igknighters.subsystems.elevator.ElevatorVisualizer;
 
-public class ElevatorSimulation extends Elevator {
+public class ElevatorSimulation extends ElevatorMechanism {
     private final ElevatorSim elevatorSim;
     private final ProfiledPIDController profiledPIDController;
     private boolean isCalledRepeatedly = false;
@@ -87,9 +88,9 @@ public class ElevatorSimulation extends Elevator {
     @Override
     public void periodic() {
         // Calculate the next voltage based on the profile and PID
-        // double pidOutput = profiledPIDController.calculate(elevatorSim.getPositionMeters());
+        double pidOutput = profiledPIDController.calculate(elevatorSim.getPositionMeters());
 
-        double pidOutput = 0.0;
+        // double pidOutput = 0.0;
 
         // Calculate feedforward based on the profile's setpoint velocity
         double ffOutput = feedforward.calculate(profiledPIDController.getSetpoint().velocity);

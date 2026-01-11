@@ -2,26 +2,33 @@ package igknighters.subsystems;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import igknighters.subsystems.LimeLightVision.LimeLights;
+import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.elevator.Elevator;
 import igknighters.subsystems.led.Led;
+import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
 
 public class Subsystems {
     public final CommandSwerveDrivetrain swerve;
-    public final LimeLights vision;
+    public final LimeLightVision vision;
     public final Led led;
+    public final Shooter shooter;
     public final Elevator elevator;
     public final ExclusiveSubsystem[] lockedResources;
     public final SharedSubsystem[] locklessResources;
 
     public Subsystems(
-            CommandSwerveDrivetrain drivetrain, LimeLights vision, Led led, Elevator elevator) {
+            CommandSwerveDrivetrain drivetrain,
+            LimeLightVision vision,
+            Led led,
+            Shooter shooter,
+            Elevator elevator) {
         this.swerve = drivetrain;
         this.vision = vision;
         this.led = led;
+        this.shooter = shooter;
         this.elevator = elevator;
-        this.lockedResources = new ExclusiveSubsystem[] {this.swerve, led, elevator};
+        this.lockedResources = new ExclusiveSubsystem[] {this.swerve, led, shooter, elevator};
         this.locklessResources = new SharedSubsystem[] {vision};
 
         CommandScheduler.getInstance().registerSubsystem(this.lockedResources);

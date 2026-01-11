@@ -1,4 +1,4 @@
-package igknighters.subsystems.LimeLightVision;
+package igknighters.subsystems.LimeLightVision.Cameras;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import java.util.ArrayList;
@@ -27,9 +27,6 @@ public class LimeLightVisionSim extends LimeLights {
         // In simulation, we can get the timestamp from the latest results
         return 0.0;
     }
-
-    @Override
-    public void simulationPeriodic() {}
 
     @Override
     public List<Integer> getVisibleTagIds() {

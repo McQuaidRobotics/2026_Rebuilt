@@ -1,6 +1,6 @@
-package igknighters.subsystems.elevator;
+package igknighters.subsystems.elevator.mechanism;
 
-public class ElevatorDisabled extends Elevator {
+public class ElevatorDisabled extends ElevatorMechanism {
     @Override
     public void setHeight(double height) {
         // Do nothing
