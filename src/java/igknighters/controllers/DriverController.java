@@ -128,8 +128,9 @@ public class DriverController {
                         state.kP,
                         state.kI,
                         state.kD));
-        this.DPU.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 0));
-        this.DPD.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 1.0));
+        // this.DPU.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 0));
+        // this.DPD.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 1.0));
+        this.DPD.onTrue(ShooterCommands.stopShooting(subsystems.shooter));
         this.DPL.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 5000));
         this.DPR.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 3000));
     }

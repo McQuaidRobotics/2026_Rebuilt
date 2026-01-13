@@ -30,6 +30,8 @@ public class SubsystemConstants {
         public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
         public static final double MAX_SPEED_RPM = 5000.0;
         public static final double MAX_ACCELERATION_RPM = 100.0;
+        public static final double MOTION_MAGIC_JERK = 20.0;
+        public static final int BEAM_BREAK_SENSOR_CHANNEL = 0;
         public static final double kP = 0.5;
         public static final double kI = 0.1;
         public static final double kD = 0.05;
