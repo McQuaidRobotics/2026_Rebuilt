@@ -87,12 +87,12 @@ public class TeleopSwerveBaseCmd extends Command {
 
     @Override
     public void execute() {
-        DogLog.log("Robot/Commands/Teleop/teleopCommand", summarize());
+        summarize();
     }
 
     @Override
     public void end(boolean interrupted) {
-        DogLog.log("Robot/Commands/Teleop/teleopCommand", TeleopSwerveCommandSummary.kZero);
+        DogLog.log("Commands/Teleop/teleopCommand", "ENDED");
     }
 
     protected record TeleopSwerveCommandSummary(
@@ -115,14 +115,23 @@ public class TeleopSwerveBaseCmd extends Command {
     protected TeleopSwerveCommandSummary summarize() {
         final Translation2d translation = translationStick();
         final Translation2d rotation = rotationStick();
-        return new TeleopSwerveCommandSummary(
-                rawTranslationXSup.getAsDouble(),
-                translation.getX(),
-                rawTranslationYSup.getAsDouble(),
-                translation.getY(),
-                rawRotationXSup.getAsDouble(),
-                rotation.getX(),
-                rawRotationYSup.getAsDouble(),
-                rotation.getY());
+        // return new TeleopSwerveCommandSummary(
+        //         rawTranslationXSup.getAsDouble(),
+        //         translation.getX(),
+        //         rawTranslationYSup.getAsDouble(),
+        //         translation.getY(),
+        //         rawRotationXSup.getAsDouble(),
+        //         rotation.getX(),
+        //         rawRotationYSup.getAsDouble(),
+        //         rotation.getY());
+        DogLog.log("Commands/teleop/rawTranslationX", rawTranslationXSup.getAsDouble());
+        DogLog.log("Commands/teleop/translationX", translation.getX());
+        DogLog.log("Commands/teleop/rawTranslationY", rawTranslationYSup.getAsDouble());
+        DogLog.log("Commands/teleop/translationY", translation.getY());
+        DogLog.log("Commands/teleop/rawRotationX", rawRotationXSup.getAsDouble());
+        DogLog.log("Commands/teleop/rotationX", rotation.getX());
+        DogLog.log("Commands/teleop/rawRotationY", rawRotationYSup.getAsDouble());
+        DogLog.log("Commands/teleop/rotationY", rotation.getY());
+        return null;
     }
 }
