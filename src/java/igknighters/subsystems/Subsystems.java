@@ -3,7 +3,6 @@ package igknighters.subsystems;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
-import igknighters.subsystems.elevator.Elevator;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
@@ -17,15 +16,11 @@ public class Subsystems {
     public final SharedSubsystem[] locklessResources;
 
     public Subsystems(
-            CommandSwerveDrivetrain drivetrain,
-            LimeLightVision vision,
-            Led led,
-            Shooter shooter) {
+            CommandSwerveDrivetrain drivetrain, LimeLightVision vision, Led led, Shooter shooter) {
         this.swerve = drivetrain;
         this.vision = vision;
         this.led = led;
         this.shooter = shooter;
-        this.elevator = elevator;
         this.lockedResources = new ExclusiveSubsystem[] {this.swerve, led, shooter};
         this.locklessResources = new SharedSubsystem[] {vision};
 

@@ -20,7 +20,6 @@ import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.elevator.Elevator;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;

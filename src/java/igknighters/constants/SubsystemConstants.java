@@ -40,6 +40,26 @@ public class SubsystemConstants {
         public static final double kA = 0.02;
     }
 
+    public static class Turret {
+        public static final int MOTOR_ID = 52;
+        public static final int CANCODER_ID = 15;
+        public static final double CANCODER_OFFSET_ROTATIONS = 0.0;
+        public static final double GEAR_RATIO = 12.0;
+        public static final double MAX_ANGLE_DEGREES = 180.0;
+        public static final double MIN_ANGLE_DEGREES = -180.0;
+        public static final double MAX_SPEED_RPM = 90.0;
+        public static final double MAX_ACCELERATION_RPM = 90.0;
+        public static final double MAX_JERK = 10;
+        public static final int STATOR_CURRENT_LIMIT = 40;
+        public static final int SUPPLY_CURRENT_LIMIT = 30;
+        public static final double kP = 0.1;
+        public static final double kI = 0.0;
+        public static final double kD = 0.1;
+        public static final double kS = 0.2;
+        public static final double kV = 0.05;
+        public static final double kA = 0.01;
+    }
+
     public static class LimelightVisionConstants {
         public static final String frontLeft = "limelight-fl";
         public static final String frontRight = "limelight-fr";
