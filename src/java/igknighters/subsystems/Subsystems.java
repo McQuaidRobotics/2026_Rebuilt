@@ -13,7 +13,6 @@ public class Subsystems {
     public final LimeLightVision vision;
     public final Led led;
     public final Shooter shooter;
-    public final Elevator elevator;
     public final ExclusiveSubsystem[] lockedResources;
     public final SharedSubsystem[] locklessResources;
 
@@ -21,14 +20,13 @@ public class Subsystems {
             CommandSwerveDrivetrain drivetrain,
             LimeLightVision vision,
             Led led,
-            Shooter shooter,
-            Elevator elevator) {
+            Shooter shooter) {
         this.swerve = drivetrain;
         this.vision = vision;
         this.led = led;
         this.shooter = shooter;
         this.elevator = elevator;
-        this.lockedResources = new ExclusiveSubsystem[] {this.swerve, led, shooter, elevator};
+        this.lockedResources = new ExclusiveSubsystem[] {this.swerve, led, shooter};
         this.locklessResources = new SharedSubsystem[] {vision};
 
         CommandScheduler.getInstance().registerSubsystem(this.lockedResources);

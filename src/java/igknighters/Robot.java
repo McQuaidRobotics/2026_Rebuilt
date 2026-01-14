@@ -52,30 +52,12 @@ public class Robot extends TimedRobot {
     TunableDouble targetingD = TunableValues.getDouble("Tunables/TargetingD", 0.00);
 
     public Robot() {
-        // if (Robot.isReal()) {
-        //     subsytems =
-        //             new Subsystems(
-        //                     swerveConsts.createDrivetrain(),
-        //                     new LimeLightVisionReal(LimelightVisionConstants.backLeft),
-        //                     new Led(40, 1),
-        //                     new Shooter(),
-        //                     new Elevator());
-        // } else {
-        //     subsytems =
-        //             new Subsystems(
-        //                     swerveConsts.createDrivetrain(),
-        //                     new LimeLightVisionSim(),
-        //                     new Led(40, 1),
-        //                     new Shooter(),
-        //                     new Elevator());
-        // }
         subsytems =
                 new Subsystems(
                         swerveConsts.createDrivetrain(),
                         new LimeLightVision(),
                         new Led(40, 1),
-                        new Shooter(),
-                        new Elevator());
+                        new Shooter());
 
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, .8));
