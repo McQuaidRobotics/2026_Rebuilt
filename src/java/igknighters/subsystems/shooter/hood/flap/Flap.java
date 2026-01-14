@@ -1,18 +1,16 @@
-package igknighters.subsystems.shooter.turret;
+package igknighters.subsystems.shooter.hood.flap;
 
 import edu.wpi.first.epilogue.Logged;
 
 @Logged
-public abstract class Turret {
-
-    @Logged protected double degrees;
-    @Logged protected double targetDegrees;
-
-    public abstract void periodic();
+public abstract class Flap {
+    @Logged(name = "target_in_degrees") protected double targetDegrees = 0.0;
 
     public abstract void setAngleDegrees(double angleDegrees);
 
     public abstract double getAngleDegrees();
+
+    public abstract void periodic();
 
     public abstract void goToAngleDegrees(double angleDegrees);
 }

@@ -8,9 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
-import igknighters.commands.teleop.TeleopSwerveForwardTargetingCmd;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
-import igknighters.commands.teleop.TeleopSwerveReverseTargetingCmd;
 import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
 import igknighters.subsystems.Subsystems;
@@ -111,22 +109,25 @@ public class DriverController {
                         state.kP,
                         state.kI,
                         state.kD));
-        this.LT.whileTrue(
-                new TeleopSwerveReverseTargetingCmd(
-                        swerve,
-                        this,
-                        new Pose2d(13, 4, new Rotation2d(0.0)),
-                        state.kP,
-                        state.kI,
-                        state.kD));
-        this.RT.whileTrue(
-                new TeleopSwerveForwardTargetingCmd(
-                        swerve,
-                        this,
-                        new Pose2d(13, 4, new Rotation2d(0.0)),
-                        state.kP,
-                        state.kI,
-                        state.kD));
+        // this.LT.whileTrue(
+        //         new TeleopSwerveReverseTargetingCmd(
+        //                 swerve,
+        //                 this,
+        //                 new Pose2d(13, 4, new Rotation2d(0.0)),
+        //                 state.kP,
+        //                 state.kI,
+        //                 state.kD));
+        // this.RT.whileTrue(
+        //         new TeleopSwerveForwardTargetingCmd(
+        //                 swerve,
+        //                 this,
+        //                 new Pose2d(13, 4, new Rotation2d(0.0)),
+        //                 state.kP,
+        //                 state.kI,
+        //                 state.kD));
+
+        this.LT.onTrue(ShooterCommands.aimTurretAtAngle(subsystems.shooter, 45));
+        this.RT.onTrue(ShooterCommands.aimTurretAtAngle(subsystems.shooter, -45));
         // this.DPU.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 0));
         // this.DPD.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 1.0));
         this.DPD.onTrue(ShooterCommands.stopShooting(subsystems.shooter));

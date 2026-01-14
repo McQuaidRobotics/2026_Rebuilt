@@ -38,11 +38,35 @@ public class SubsystemConstants {
         public static final double kS = 0.6;
         public static final double kV = 0.15;
         public static final double kA = 0.02;
+        public static final double ShooterHeightMeters =
+                .3; // 30 cm this is made up it will be off ground though
+    }
+
+    public static class Climber {
+        public static final int ARM_MOTOR_ID = 62;
+        public static final int ARM_MOTOR2_ID = 63;
+        public static final double kP = 0.1;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+        public static final double kS = 0.0;
+        public static final double kV = 0.0;
+        public static final double kA = 0.0;
+        public static final double GEAR_RATIO = 15.0;
+        public static final double MAX_VELOCITY_METERS_PER_SECOND = .50;
+        public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = .20;
+        public static final double MAX_JERK = 0.05;
+        public static final double MAX_ANGLE_DEGREES = 90.0;
+        public static final double MASS = 4.0;
+        public static final double MIN_ANGLE_DEGREES = 0.0;
+        public static final double LENGTH_METERS = 0.5;
+        public static final double MOMENT_OF_INERTIA_KG_M2 = 0.5;
+        public static final double STATOR_CURRENT_LIMIT = 40;
+        public static final double SUPPLY_CURRENT_LIMIT = 30;
     }
 
     public static class Turret {
         public static final int MOTOR_ID = 52;
-        public static final int CANCODER_ID = 15;
+        public static final int CANCODER_ID = 51;
         public static final double CANCODER_OFFSET_ROTATIONS = 0.0;
         public static final double GEAR_RATIO = 12.0;
         public static final double MAX_ANGLE_DEGREES = 180.0;
@@ -52,12 +76,34 @@ public class SubsystemConstants {
         public static final double MAX_JERK = 10;
         public static final int STATOR_CURRENT_LIMIT = 40;
         public static final int SUPPLY_CURRENT_LIMIT = 30;
-        public static final double kP = 0.1;
+        public static final double kP = 1.0;
         public static final double kI = 0.0;
         public static final double kD = 0.1;
         public static final double kS = 0.2;
         public static final double kV = 0.05;
         public static final double kA = 0.01;
+    }
+
+    public static class Hood {
+        public static final int MOTOR_ID = 53;
+        public static final double GEAR_RATIO = 10.0;
+        public static final double MAX_ANGLE_DEGREES = 60.0;
+        public static final double MIN_ANGLE_DEGREES = 0.0;
+        public static final double MAX_SPEED_RPM = 60.0;
+        public static final double MAX_ACCELERATION_RPM = 60.0;
+        public static final double MAX_JERK = 10;
+        public static final int STATOR_CURRENT_LIMIT = 30;
+        public static final int SUPPLY_CURRENT_LIMIT = 20;
+        public static final double kP = 0.5;
+        public static final double kI = 0.0;
+        public static final double kD = 0.05;
+        public static final double kS = 0.1;
+        public static final double kV = 0.02;
+        public static final double kA = 0.005;
+        public static final double JKG_M2 = 0.01;
+        public static final double LENGTH_METERS =
+                .25; // distance from central shaft to edge of flap
+        public static final int REVERSE_LIMIT_SWITCH_ID = 7;
     }
 
     public static class LimelightVisionConstants {
