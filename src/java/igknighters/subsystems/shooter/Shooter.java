@@ -17,8 +17,8 @@ public class Shooter implements ExclusiveSubsystem {
         }
     }
 
-    public void setRollerSpeed(double speedMetersPerSecond) {
-        rollers.setSpeed(speedMetersPerSecond);
+    public void setRollerSpeed(double speedRPM) {
+        rollers.setSpeed(speedRPM);
     }
 
     public void setRollerVoltage(double voltage) {
