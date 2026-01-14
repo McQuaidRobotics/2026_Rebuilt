@@ -2,8 +2,8 @@ package igknighters.subsystems.elevator;
 
 import igknighters.Robot;
 import igknighters.subsystems.Subsystems.ExclusiveSubsystem;
+import igknighters.subsystems.elevator.mechanism.ElevatorDisabled;
 import igknighters.subsystems.elevator.mechanism.ElevatorMechanism;
-import igknighters.subsystems.elevator.mechanism.ElevatorReal;
 import igknighters.subsystems.elevator.mechanism.ElevatorSimulation;
 
 public class Elevator implements ExclusiveSubsystem {
@@ -11,7 +11,7 @@ public class Elevator implements ExclusiveSubsystem {
 
     public Elevator() {
         if (Robot.isReal()) {
-            elevator = new ElevatorReal();
+            elevator = new ElevatorDisabled();
         } else {
             elevator = new ElevatorSimulation();
         }

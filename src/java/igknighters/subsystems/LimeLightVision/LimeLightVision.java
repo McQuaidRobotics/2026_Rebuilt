@@ -1,5 +1,6 @@
 package igknighters.subsystems.LimeLightVision;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import igknighters.Robot;
 import igknighters.constants.SubsystemConstants;
@@ -14,7 +15,10 @@ public class LimeLightVision implements SharedSubsystem {
 
     public LimeLightVision() {
         if (Robot.isReal()) {
-            vision = new LimeLightVisionReal(SubsystemConstants.LimelightVisionConstants.backLeft);
+            vision =
+                    new LimeLightVisionReal(
+                            SubsystemConstants.LimelightVisionConstants.backLeft,
+                            SubsystemConstants.LimelightVisionConstants.backRight);
         } else {
             vision = new LimeLightVisionSim();
         }
@@ -35,6 +39,7 @@ public class LimeLightVision implements SharedSubsystem {
             double pitchRate,
             double roll,
             double rollRate) {
+        DogLog.log("Subsystems/Vison/Limelight/", true);
         return vision.getRobotPoseFromVision(yaw, yawRate, pitch, pitchRate, roll, rollRate);
     }
 }
