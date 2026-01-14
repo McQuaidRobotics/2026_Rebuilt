@@ -1,6 +1,6 @@
-package igknighters.subsystems.shooter.hood.flap;
+package igknighters.subsystems.shooter.hood;
 
-public class FlapDisabled extends Flap {
+public class HoodDisabled extends Hood {
     @Override
     public void setAngleDegrees(double angleDegrees) {
         // Do nothing

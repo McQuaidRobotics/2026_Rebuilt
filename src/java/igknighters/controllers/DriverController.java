@@ -126,8 +126,8 @@ public class DriverController {
         //                 state.kI,
         //                 state.kD));
 
-        this.LT.onTrue(ShooterCommands.aimTurretAtAngle(subsystems.shooter, 45));
-        this.RT.onTrue(ShooterCommands.aimTurretAtAngle(subsystems.shooter, -45));
+        this.LT.onTrue(ShooterCommands.aimTurretAtAngle(subsystems.shooter, 45, 0));
+        this.RT.onTrue(ShooterCommands.aimTurretAtAngle(subsystems.shooter, -45, 60));
         // this.DPU.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 0));
         // this.DPD.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 1.0));
         this.DPD.onTrue(ShooterCommands.stopShooting(subsystems.shooter));

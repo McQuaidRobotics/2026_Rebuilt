@@ -1,10 +1,11 @@
-package igknighters.subsystems.shooter.hood.flap;
+package igknighters.subsystems.shooter.hood;
 
 import edu.wpi.first.epilogue.Logged;
 
 @Logged
-public abstract class Flap {
-    @Logged(name = "target_in_degrees") protected double targetDegrees = 0.0;
+public abstract class Hood {
+    @Logged(name = "target_in_degrees")
+    protected double targetDegrees = 0.0;
 
     public abstract void setAngleDegrees(double angleDegrees);
 

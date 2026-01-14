@@ -34,7 +34,7 @@ public class AimSolver {
         double dz = tz - sz;
 
         // --- Turret angle (robot-relative) ---
-        double absoluteAngle = Math.atan2(dy, dx);
+        double absoluteAngle = Math.atan2(dy, dx); // angle to target from robot to field in Field plane
         double robotYaw = shooterPose.getRotation().getZ(); // Rotation3d yaw
         double turretAngle = absoluteAngle - robotYaw;
 
