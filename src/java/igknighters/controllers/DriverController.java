@@ -132,8 +132,8 @@ public class DriverController {
         // this.DPD.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 1.0));
         this.DPD.onTrue(ShooterCommands.stopShooting(subsystems.shooter));
         this.DPL.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 4000));
-        this.DPR.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 3000));
-        this.DPU.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 2000));
+        this.DPR.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 3500));
+        this.DPU.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 4500));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

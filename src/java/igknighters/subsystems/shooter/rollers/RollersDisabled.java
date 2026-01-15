@@ -18,4 +18,9 @@ public class RollersDisabled extends Rollers {
         // TODO Auto-generated method stub
 
     }
+    @Override
+    public double getSpeedRPM() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 }

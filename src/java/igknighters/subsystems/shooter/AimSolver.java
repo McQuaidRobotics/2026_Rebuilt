@@ -3,7 +3,7 @@ package igknighters.subsystems.shooter;
 import edu.wpi.first.math.geometry.Pose3d;
 import igknighters.constants.Conv;
 
-public class AimSolver {
+public  class AimSolver {
 
     // flywheel radius (4 in diameter → 0.0508 m radius)
     private static final double FLYWHEEL_RADIUS = 0.0508;
@@ -11,13 +11,12 @@ public class AimSolver {
     // Gravity
     private static final double G = 9.81;
 
-    public AimSolver() {}
-
     /**
      * @return { turretAngleRadians, hoodAngleRadians, rpm } or null if the shot is impossible at
      *     this RPM
      */
-    public double[] solve(Pose3d targetPose, Pose3d shooterPose, double currentRPM) {
+    public static ShooterState solve_simple_no_AR_or_FutureTiming(
+            Pose3d targetPose, Pose3d shooterPose, double currentRPM) {
 
         // --- Extract positions ---
         double sx = shooterPose.getX();
@@ -34,9 +33,11 @@ public class AimSolver {
         double dz = tz - sz;
 
         // --- Turret angle (robot-relative) ---
-        double absoluteAngle = Math.atan2(dy, dx); // angle to target from robot to field in Field plane
-        double robotYaw = shooterPose.getRotation().getZ(); // Rotation3d yaw
-        double turretAngle = absoluteAngle - robotYaw;
+        double absoluteAngle =
+                Math.atan2(dy, dx); // angle to target from robot to field in Field plane
+        double robotYaw = shooterPose.getRotation().getZ(); // Rotation3d yaw field relative
+        double turretAngle =
+                absoluteAngle - robotYaw; // the angle the turret must turn to face target
 
         // Normalize to [-π, π]
         turretAngle = Math.atan2(Math.sin(turretAngle), Math.cos(turretAngle));
@@ -65,10 +66,9 @@ public class AimSolver {
         // You want the HIGH arc
         double hoodAngle = Math.max(thetaLow, thetaHigh);
 
-        return new double[] {
-            turretAngle * Conv.RADIANS_TO_ROTATIONS * Conv.ROTATIONS_TO_DEGREES,
-            hoodAngle * Conv.RADIANS_TO_ROTATIONS * Conv.ROTATIONS_TO_DEGREES,
-            currentRPM
-        };
+        return new ShooterState(
+                currentRPM,
+                turretAngle,
+                hoodAngle);
     }
 }

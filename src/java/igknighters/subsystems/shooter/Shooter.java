@@ -2,15 +2,16 @@ package igknighters.subsystems.shooter;
 
 import dev.doglog.DogLog;
 import igknighters.Robot;
+import igknighters.constants.Conv;
 import igknighters.subsystems.Subsystems.ExclusiveSubsystem;
 import igknighters.subsystems.shooter.hood.Hood;
-import igknighters.subsystems.shooter.hood.HoodReal;
+import igknighters.subsystems.shooter.hood.HoodDisabled;
 import igknighters.subsystems.shooter.hood.HoodSim;
 import igknighters.subsystems.shooter.rollers.Rollers;
 import igknighters.subsystems.shooter.rollers.RollersReal;
 import igknighters.subsystems.shooter.rollers.RollersSim;
 import igknighters.subsystems.shooter.turret.Turret;
-import igknighters.subsystems.shooter.turret.TurretReal;
+import igknighters.subsystems.shooter.turret.TurretDisabled;
 import igknighters.subsystems.shooter.turret.TurretSim;
 
 public class Shooter implements ExclusiveSubsystem {
@@ -18,11 +19,14 @@ public class Shooter implements ExclusiveSubsystem {
     private final Turret turret;
     private final Hood hood;
 
+    private double goalRPM = 0.0;
+    private double goalTurretAngleDegrees = 0.0;
+    private double goalHoodAngleDegrees = 0.0;
     public Shooter() {
         if (Robot.isReal()) {
             rollers = new RollersReal();
-            turret = new TurretReal();
-            hood = new HoodReal();
+            turret = new TurretDisabled();
+            hood = new HoodDisabled();
         } else {
             rollers = new RollersSim();
             turret = new TurretSim();
@@ -53,11 +57,30 @@ public class Shooter implements ExclusiveSubsystem {
         targetSpeed(rpm);
         goToTurretAngleDegrees(turretAngleDegrees);
         hood.goToAngleDegrees(hoodAngleDegrees);
+        goalRPM = rpm;
+        goalTurretAngleDegrees = turretAngleDegrees;
+        goalHoodAngleDegrees = hoodAngleDegrees;
+    }
+
+    public boolean atTarget(double tolerance) {
+        boolean atSpeed = Math.abs(rollers.getSpeedRPM() - goalRPM) < tolerance;
+        boolean atTurretAngle =
+                Math.abs(getTurretAngleDegrees() - goalTurretAngleDegrees) < tolerance;
+        boolean atHoodAngle =
+                Math.abs(hood.getAngleDegrees() - goalHoodAngleDegrees) < tolerance;
+        return atSpeed && atTurretAngle && atHoodAngle;
     }
 
     public void setTurretPosition(double angleDegrees) {
         DogLog.log("Subsystems/Shooter/SETSTATE/ANGLE", angleDegrees);
         turret.setAngleDegrees(angleDegrees);
+    }
+
+    public ShooterState getCurrentState() {
+        return new ShooterState(
+                rollers.getSpeedRPM(),
+                turret.getAngleDegrees() * Conv.DEGREES_TO_RADIANS,
+                hood.getAngleDegrees() * Conv.DEGREES_TO_RADIANS);
     }
 
     public void setRollerVoltage(double voltage) {
@@ -70,4 +93,6 @@ public class Shooter implements ExclusiveSubsystem {
         turret.periodic();
         hood.periodic();
     }
+
+    
 }

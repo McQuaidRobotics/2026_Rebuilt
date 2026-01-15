@@ -7,4 +7,6 @@ public abstract class Rollers {
     public abstract void setVoltage(double voltage);
 
     public abstract void periodic();
+
+    public abstract double getSpeedRPM();
 }

@@ -92,6 +92,7 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         scheduler.cancelAll();
+        CommandScheduler.getInstance().clearComposedCommands();
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, detune.value()));
         DrivingSharedState.getInstance().setDetune(detune.value());

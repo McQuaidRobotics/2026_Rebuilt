@@ -65,6 +65,11 @@ public class RollersReal extends Rollers {
     }
 
     @Override
+    public double getSpeedRPM() {
+        return shooterVelocity.getValueAsDouble();
+    }
+
+    @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(
                 shooterVelocity, shooterCurrent, shooterVoltage, shooterTemperature);

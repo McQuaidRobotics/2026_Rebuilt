@@ -41,7 +41,10 @@ public class RollersSim extends Rollers {
         inputVoltage = voltage;
         isVoltageControlledThisCycle = true;
     }
-
+    @Override
+    public double getSpeedRPM() {
+        return leaderflywheelSim.getAngularVelocityRPM();
+    }
     @Override
     public void periodic() {
         double voltage = 0.0;

@@ -29,8 +29,8 @@ public class SubsystemConstants {
         public static final double GEAR_RATIO = 1.0;
         public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
         public static final double MAX_SPEED_RPM = 5000.0;
-        public static final double MAX_ACCELERATION_RPM = 50.0; // 60 caused it to jork itself
-        public static final double MOTION_MAGIC_JERK = 8.0;
+        public static final double MAX_ACCELERATION_RPM = 70.0; // 60 caused it to jork itself
+        public static final double MOTION_MAGIC_JERK = 17.0;
         public static final int BEAM_BREAK_SENSOR_CHANNEL = 0;
         public static final double kP = 0.3; // .5 max
         public static final double kI = 0.0;
