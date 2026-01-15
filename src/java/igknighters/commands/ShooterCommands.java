@@ -47,7 +47,7 @@ public class ShooterCommands {
                                                     robotPose.getRotation().getRadians())),
                                     shooter.getCurrentState().rpm);
 
-                    if (targetingData != null) {
+                    if (targetingData.rpm != 0.0) {
                         shooter.targetState(
                                 shooter.getCurrentState().rpm,
                                 Math.toDegrees(targetingData.turretAngleRads),
@@ -55,8 +55,8 @@ public class ShooterCommands {
                     } else {
                         shooter.targetState(
                                 shooter.getCurrentState().rpm + 100.0,
-                                shooter.getCurrentState().turretAngleRads * Conv.RADIANS_TO_DEGREES,
-                                shooter.getCurrentState().hoodAngleRads
+                                targetingData.turretAngleRads * Conv.RADIANS_TO_DEGREES,
+                                targetingData.hoodAngleRads
                                         * Conv.RADIANS_TO_DEGREES); // keep trying to increase RPM
                         // to reach shot
                     }

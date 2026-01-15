@@ -17,7 +17,10 @@ public class AprilTagLayout {
     private final Map<Integer, Pose3d> tagPoses = new HashMap<>();
 
     public AprilTagLayout() throws IOException {
-        File file = new File(System.getProperty("user.dir"), "assets/2025-reefscape.json");
+        File file =
+                new File(
+                        System.getProperty("user.dir"),
+                        "assets/2026_Rebuilt_April_Tags_AndyMark.json");
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(
                 com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,

@@ -56,7 +56,7 @@ public class AimSolver {
         if (inside < 0) {
             // Shot is physically impossible at this RPM
             DogLog.log("Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM", currentRPM);
-            return null;
+            return new ShooterState(0.0, turretAngle, 0.0);
         }
         DogLog.log("Subsystems/Shooter/Aiming/SHOT IS POSSIBLE AT THIS RPM", currentRPM);
 
