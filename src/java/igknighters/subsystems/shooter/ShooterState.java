@@ -10,5 +10,4 @@ public class ShooterState {
         this.turretAngleRads = turretAngleRads;
         this.hoodAngleRads = hoodAngleRads;
     }
-
 }

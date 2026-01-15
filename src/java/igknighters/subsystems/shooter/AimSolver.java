@@ -1,9 +1,9 @@
 package igknighters.subsystems.shooter;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose3d;
-import igknighters.constants.Conv;
 
-public  class AimSolver {
+public class AimSolver {
 
     // flywheel radius (4 in diameter → 0.0508 m radius)
     private static final double FLYWHEEL_RADIUS = 0.0508;
@@ -55,8 +55,10 @@ public  class AimSolver {
 
         if (inside < 0) {
             // Shot is physically impossible at this RPM
+            DogLog.log("Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM", currentRPM);
             return null;
         }
+        DogLog.log("Subsystems/Shooter/Aiming/SHOT IS POSSIBLE AT THIS RPM", currentRPM);
 
         double root = Math.sqrt(inside);
 
@@ -66,9 +68,6 @@ public  class AimSolver {
         // You want the HIGH arc
         double hoodAngle = Math.max(thetaLow, thetaHigh);
 
-        return new ShooterState(
-                currentRPM,
-                turretAngle,
-                hoodAngle);
+        return new ShooterState(currentRPM, turretAngle, hoodAngle);
     }
 }

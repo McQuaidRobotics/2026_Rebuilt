@@ -95,6 +95,7 @@ public class DriverController {
     public void bind(final Subsystems subsystems) {
         DrivingSharedState state = DrivingSharedState.getInstance();
         var swerve = subsystems.swerve;
+
         this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
         this.A.whileTrue(
                 new TeleopSwerveHeadingCmd(swerve, this, 45.0, state.kP, state.kI, state.kD));
@@ -126,7 +127,9 @@ public class DriverController {
         //                 state.kI,
         //                 state.kD));
 
-        this.LT.onTrue(ShooterCommands.aimTurretAtAngle(subsystems.shooter, 45, 0));
+        this.LT.onTrue(
+                ShooterCommands.aimAtHub(
+                        subsystems.shooter, () -> subsystems.swerve.getState().Pose));
         this.RT.onTrue(ShooterCommands.aimTurretAtAngle(subsystems.shooter, -45, 60));
         // this.DPU.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 0));
         // this.DPD.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 1.0));

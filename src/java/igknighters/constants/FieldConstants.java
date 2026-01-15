@@ -16,8 +16,6 @@ public class FieldConstants {
         public static final Pose3d POSE3D =
                 new Pose3d(POSITION.getX(), POSITION.getY(), HEIGHT_METERS, new Rotation3d());
     }
-    
-    public static class PASS {
 
-    }
+    public static class PASS {}
 }

@@ -2,6 +2,7 @@ package igknighters.subsystems;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import igknighters.commands.ShooterCommands;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
@@ -25,6 +26,7 @@ public class Subsystems {
         this.locklessResources = new SharedSubsystem[] {vision};
 
         CommandScheduler.getInstance().registerSubsystem(this.lockedResources);
+        this.shooter.setDefaultCommand(ShooterCommands.idle(shooter));
         for (SharedSubsystem subsystem : this.locklessResources) {
             CommandScheduler.getInstance()
                     .registerSubsystem(

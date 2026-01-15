@@ -21,7 +21,7 @@ public class RollersSim extends Rollers {
                     DCMotor.getKrakenX60(1));
     private final ProfiledPIDController profiledPIDController =
             new ProfiledPIDController(
-                    SubsystemConstants.Shooter.kP,
+                    .8,
                     SubsystemConstants.Shooter.kI,
                     SubsystemConstants.Shooter.kD,
                     new Constraints(
@@ -41,17 +41,19 @@ public class RollersSim extends Rollers {
         inputVoltage = voltage;
         isVoltageControlledThisCycle = true;
     }
+
     @Override
     public double getSpeedRPM() {
         return leaderflywheelSim.getAngularVelocityRPM();
     }
+
     @Override
     public void periodic() {
         double voltage = 0.0;
         if (isPidControlledThisCycle) {
             double pidOutput =
                     profiledPIDController.calculate(leaderflywheelSim.getAngularVelocityRPM());
-            voltage = (pidOutput / SubsystemConstants.Shooter.MAX_SPEED_RPM) * 12.0;
+            voltage = (pidOutput / profiledPIDController.getGoal().position) * 12.0;
         }
         if (isVoltageControlledThisCycle) {
             voltage = inputVoltage;

@@ -1,18 +1,16 @@
 package igknighters.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj2.command.Command;
+import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.shooter.AimSolver;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
+import java.util.function.Supplier;
 
 public class ShooterCommands {
     public static Command shootAtSpeed(Shooter shooter, double RPM) {
@@ -28,6 +26,10 @@ public class ShooterCommands {
         return shooter.run(() -> shooter.targetState(0, turretAngleDegrees, hoodAngleDegrees));
     }
 
+    public static Command idle(Shooter shooter) {
+        return shooter.run(() -> shooter.targetState(3000, 0, 0));
+    }
+
     public static Command aimAtHub(Shooter shooter, Supplier<Pose2d> robotPoseSupplier) {
         return shooter.run(
                 () -> {
@@ -40,16 +42,23 @@ public class ShooterCommands {
                                             robotPose.getY(),
                                             SubsystemConstants.Shooter.ShooterHeightMeters,
                                             new Rotation3d(
-                                                    0.0, 0.0, robotPose.getRotation().getRadians())),
+                                                    0.0,
+                                                    0.0,
+                                                    robotPose.getRotation().getRadians())),
                                     shooter.getCurrentState().rpm);
 
                     if (targetingData != null) {
                         shooter.targetState(
-                                targetingData.rpm,
+                                shooter.getCurrentState().rpm,
                                 Math.toDegrees(targetingData.turretAngleRads),
                                 Math.toDegrees(targetingData.hoodAngleRads));
                     } else {
-                        shooter.setRollerVoltage(0);
+                        shooter.targetState(
+                                shooter.getCurrentState().rpm + 100.0,
+                                shooter.getCurrentState().turretAngleRads * Conv.RADIANS_TO_DEGREES,
+                                shooter.getCurrentState().hoodAngleRads
+                                        * Conv.RADIANS_TO_DEGREES); // keep trying to increase RPM
+                        // to reach shot
                     }
                 });
     }

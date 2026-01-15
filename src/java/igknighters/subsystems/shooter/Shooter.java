@@ -18,10 +18,11 @@ public class Shooter implements ExclusiveSubsystem {
     private final Rollers rollers;
     private final Turret turret;
     private final Hood hood;
-
+    private final ShooterVisualizer visualizer;
     private double goalRPM = 0.0;
     private double goalTurretAngleDegrees = 0.0;
     private double goalHoodAngleDegrees = 0.0;
+
     public Shooter() {
         if (Robot.isReal()) {
             rollers = new RollersReal();
@@ -32,6 +33,7 @@ public class Shooter implements ExclusiveSubsystem {
             turret = new TurretSim();
             hood = new HoodSim();
         }
+        visualizer = new ShooterVisualizer();
     }
 
     private void targetSpeed(double speedRPM) {
@@ -66,8 +68,7 @@ public class Shooter implements ExclusiveSubsystem {
         boolean atSpeed = Math.abs(rollers.getSpeedRPM() - goalRPM) < tolerance;
         boolean atTurretAngle =
                 Math.abs(getTurretAngleDegrees() - goalTurretAngleDegrees) < tolerance;
-        boolean atHoodAngle =
-                Math.abs(hood.getAngleDegrees() - goalHoodAngleDegrees) < tolerance;
+        boolean atHoodAngle = Math.abs(hood.getAngleDegrees() - goalHoodAngleDegrees) < tolerance;
         return atSpeed && atTurretAngle && atHoodAngle;
     }
 
@@ -92,7 +93,7 @@ public class Shooter implements ExclusiveSubsystem {
         rollers.periodic();
         turret.periodic();
         hood.periodic();
-    }
 
-    
+        visualizer.update(getCurrentState(), goalRPM);
+    }
 }
