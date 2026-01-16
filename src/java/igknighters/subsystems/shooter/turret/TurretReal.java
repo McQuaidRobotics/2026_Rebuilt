@@ -19,8 +19,9 @@ public class TurretReal extends Turret {
     private final MotionMagicVoltage positionControl = new MotionMagicVoltage(0.0).withSlot(0);
     private final DutyCycleOut voltageControl = new DutyCycleOut(0.0);
 
-    private final TalonFX motor = new TalonFX(SubsystemConstants.Turret.MOTOR_ID);
-    private final CANcoder turretCaNcoder = new CANcoder(SubsystemConstants.Turret.CANCODER_ID);
+    private final TalonFX motor = new TalonFX(SubsystemConstants.kShooter.kTurret.MOTOR_ID);
+    private final CANcoder turretCaNcoder =
+            new CANcoder(SubsystemConstants.kShooter.kTurret.CANCODER_ID);
 
     private final BaseStatusSignal turretAngle = motor.getPosition();
     private final BaseStatusSignal turretCurrent = motor.getStatorCurrent();
@@ -28,30 +29,32 @@ public class TurretReal extends Turret {
     private final TalonFXConfiguration turretConfiguration() {
         var cfg = new TalonFXConfiguration();
 
-        cfg.Slot0.kP = SubsystemConstants.Turret.kP;
-        cfg.Slot0.kD = SubsystemConstants.Turret.kD;
-        cfg.Slot0.kS = SubsystemConstants.Turret.kS;
-        cfg.Slot0.kV = SubsystemConstants.Turret.kV;
-        cfg.Slot0.kA = SubsystemConstants.Turret.kA;
+        cfg.Slot0.kP = SubsystemConstants.kShooter.kTurret.kP;
+        cfg.Slot0.kD = SubsystemConstants.kShooter.kTurret.kD;
+        cfg.Slot0.kS = SubsystemConstants.kShooter.kTurret.kS;
+        cfg.Slot0.kV = SubsystemConstants.kShooter.kTurret.kV;
+        cfg.Slot0.kA = SubsystemConstants.kShooter.kTurret.kA;
 
-        cfg.Feedback.RotorToSensorRatio = SubsystemConstants.Turret.GEAR_RATIO;
+        cfg.Feedback.RotorToSensorRatio = SubsystemConstants.kShooter.kTurret.GEAR_RATIO;
         cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-        cfg.Feedback.FeedbackRemoteSensorID = SubsystemConstants.Turret.CANCODER_ID;
+        cfg.Feedback.FeedbackRemoteSensorID = SubsystemConstants.kShooter.kTurret.CANCODER_ID;
 
         cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-                SubsystemConstants.Turret.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_ROTATIONS;
+                SubsystemConstants.kShooter.kTurret.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_ROTATIONS;
         cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-                SubsystemConstants.Turret.MAX_ANGLE_DEGREES * Conv.DEGREES_TO_ROTATIONS;
+                SubsystemConstants.kShooter.kTurret.MAX_ANGLE_DEGREES * Conv.DEGREES_TO_ROTATIONS;
 
         cfg.MotionMagic.MotionMagicCruiseVelocity =
-                SubsystemConstants.Turret.MAX_SPEED_RPM * Conv.RPM_TO_RPS;
+                SubsystemConstants.kShooter.kTurret.MAX_SPEED_RPM * Conv.RPM_TO_RPS;
         cfg.MotionMagic.MotionMagicAcceleration =
-                SubsystemConstants.Turret.MAX_ACCELERATION_RPM * Conv.RPM_TO_RPS;
+                SubsystemConstants.kShooter.kTurret.MAX_ACCELERATION_RPM * Conv.RPM_TO_RPS;
 
-        cfg.CurrentLimits.StatorCurrentLimit = SubsystemConstants.Turret.STATOR_CURRENT_LIMIT;
-        cfg.CurrentLimits.SupplyCurrentLimit = SubsystemConstants.Turret.SUPPLY_CURRENT_LIMIT;
+        cfg.CurrentLimits.StatorCurrentLimit =
+                SubsystemConstants.kShooter.kTurret.STATOR_CURRENT_LIMIT;
+        cfg.CurrentLimits.SupplyCurrentLimit =
+                SubsystemConstants.kShooter.kTurret.SUPPLY_CURRENT_LIMIT;
 
         cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -62,7 +65,8 @@ public class TurretReal extends Turret {
     private final CANcoderConfiguration wristCaNcoderConfiguration() {
         var cfg = new CANcoderConfiguration();
 
-        cfg.MagnetSensor.MagnetOffset = SubsystemConstants.Turret.CANCODER_OFFSET_ROTATIONS;
+        cfg.MagnetSensor.MagnetOffset =
+                SubsystemConstants.kShooter.kTurret.CANCODER_OFFSET_ROTATIONS;
         cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
         cfg.MagnetSensor.SensorDirection =
                 SensorDirectionValue.Clockwise_Positive; // Adjust as needed

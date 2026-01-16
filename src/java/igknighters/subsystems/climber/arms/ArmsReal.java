@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import dev.doglog.DogLog;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 
@@ -19,58 +20,58 @@ public class ArmsReal extends Arms {
 
     private final BaseStatusSignal armPosition, armCurrent;
 
-    private final TalonFX armMotor;
-    private final TalonFX armMotor2;
+    private final TalonFX leftMotor;
+    private final TalonFX rightMotor;
 
     public ArmsReal() {
-        armMotor = new TalonFX(SubsystemConstants.Climber.ARM_MOTOR_ID);
-        armMotor2 = new TalonFX(SubsystemConstants.Climber.ARM_MOTOR2_ID);
+        leftMotor = new TalonFX(SubsystemConstants.kClimber.LEFT_MOTOR_ID);
+        rightMotor = new TalonFX(SubsystemConstants.kClimber.RIGHT_MOTOR_ID);
 
-        armPosition = armMotor.getPosition();
-        armCurrent = armMotor.getStatorCurrent();
+        armPosition = leftMotor.getPosition();
+        armCurrent = leftMotor.getStatorCurrent();
 
-        armMotor.getConfigurator().apply(arm1Config());
-        armMotor2.setControl(new Follower(armMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+        leftMotor.getConfigurator().apply(arm1Config());
+        rightMotor.setControl(new Follower(leftMotor.getDeviceID(), MotorAlignmentValue.Opposed));
     }
 
     public TalonFXConfiguration arm1Config() {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
-        config.Slot0.kP = SubsystemConstants.Climber.kP;
-        config.Slot0.kI = SubsystemConstants.Climber.kI;
-        config.Slot0.kD = SubsystemConstants.Climber.kD;
-        config.Slot0.kS = SubsystemConstants.Climber.kS;
-        config.Slot0.kV = SubsystemConstants.Climber.kV;
-        config.Slot0.kA = SubsystemConstants.Climber.kA;
+        config.Slot0.kP = SubsystemConstants.kClimber.kP;
+        config.Slot0.kI = SubsystemConstants.kClimber.kI;
+        config.Slot0.kD = SubsystemConstants.kClimber.kD;
+        config.Slot0.kS = SubsystemConstants.kClimber.kS;
+        config.Slot0.kV = SubsystemConstants.kClimber.kV;
+        config.Slot0.kA = SubsystemConstants.kClimber.kA;
 
-        config.CurrentLimits.StatorCurrentLimit = SubsystemConstants.Climber.STATOR_CURRENT_LIMIT;
-        config.CurrentLimits.SupplyCurrentLimit = SubsystemConstants.Climber.SUPPLY_CURRENT_LIMIT;
+        config.CurrentLimits.StatorCurrentLimit = SubsystemConstants.kClimber.STATOR_CURRENT_LIMIT;
+        config.CurrentLimits.SupplyCurrentLimit = SubsystemConstants.kClimber.SUPPLY_CURRENT_LIMIT;
 
         config.MotionMagic.MotionMagicCruiseVelocity =
-                SubsystemConstants.Climber.MAX_VELOCITY_METERS_PER_SECOND;
+                SubsystemConstants.kClimber.MAX_VELOCITY_METERS_PER_SECOND;
         config.MotionMagic.MotionMagicAcceleration =
-                SubsystemConstants.Climber.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED;
-        config.MotionMagic.MotionMagicJerk = SubsystemConstants.Climber.MAX_JERK;
-        config.Feedback.RotorToSensorRatio = SubsystemConstants.Climber.GEAR_RATIO;
+                SubsystemConstants.kClimber.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED;
+        config.MotionMagic.MotionMagicJerk = SubsystemConstants.kClimber.MAX_JERK;
+        config.Feedback.RotorToSensorRatio = SubsystemConstants.kClimber.GEAR_RATIO;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-                SubsystemConstants.Climber.MAX_ANGLE_DEGREES;
+                SubsystemConstants.kClimber.MAX_ANGLE_DEGREES;
         config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-                SubsystemConstants.Climber.MIN_ANGLE_DEGREES;
+                SubsystemConstants.kClimber.MIN_ANGLE_DEGREES;
 
         return config;
     }
 
     @Override
     void setPosition(double angleDegrees) {
-        armMotor.setPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS);
+        leftMotor.setPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS);
     }
 
     @Override
     void coast() {
-        armMotor.setControl(coastControl);
+        leftMotor.setControl(coastControl);
     }
 
     @Override
@@ -80,16 +81,21 @@ public class ArmsReal extends Arms {
 
     @Override
     void stop() {
-        armMotor.setControl(stop);
+        leftMotor.setControl(stop);
     }
 
     @Override
     void goToAngleDegrees(double angleDegrees) {
-        armMotor.setControl(positionControl.withPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS));
+        leftMotor.setControl(
+                positionControl.withPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS));
     }
 
     @Override
     void periodic() {
         BaseStatusSignal.refreshAll(armPosition, armCurrent);
+        DogLog.log(
+                "Subsystems/Climber/Position",
+                armPosition.getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES);
+        DogLog.log("Subsystems/Climber/Current", armCurrent.getValueAsDouble());
     }
 }

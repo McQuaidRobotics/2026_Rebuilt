@@ -14,23 +14,23 @@ public class HoodSim extends Hood {
             new SingleJointedArmSim(
                     LinearSystemId.createSingleJointedArmSystem(
                             DCMotor.getKrakenX60(1),
-                            SubsystemConstants.Hood.JKG_M2,
-                            SubsystemConstants.Hood.GEAR_RATIO),
+                            SubsystemConstants.kShooter.kHood.JKG_M2,
+                            SubsystemConstants.kShooter.kHood.GEAR_RATIO),
                     DCMotor.getKrakenX60(1),
-                    SubsystemConstants.Hood.GEAR_RATIO,
-                    SubsystemConstants.Hood.LENGTH_METERS,
-                    SubsystemConstants.Hood.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS,
-                    SubsystemConstants.Hood.MAX_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS,
+                    SubsystemConstants.kShooter.kHood.GEAR_RATIO,
+                    SubsystemConstants.kShooter.kHood.LENGTH_METERS,
+                    SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS,
+                    SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS,
                     true,
-                    SubsystemConstants.Hood.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS);
+                    SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS);
     private ProfiledPIDController pidController =
             new ProfiledPIDController(
-                    SubsystemConstants.Hood.kP,
-                    SubsystemConstants.Hood.kI,
-                    SubsystemConstants.Hood.kD,
+                    SubsystemConstants.kShooter.kHood.kP,
+                    SubsystemConstants.kShooter.kHood.kI,
+                    SubsystemConstants.kShooter.kHood.kD,
                     new TrapezoidProfile.Constraints(
-                            SubsystemConstants.Hood.MAX_SPEED_RPM * 360.0,
-                            SubsystemConstants.Hood.MAX_ACCELERATION_RPM
+                            SubsystemConstants.kShooter.kHood.MAX_SPEED_RPM * 360.0,
+                            SubsystemConstants.kShooter.kHood.MAX_ACCELERATION_RPM
                                     * 360.0)); // in degrees per minute
 
     @Override
@@ -38,8 +38,9 @@ public class HoodSim extends Hood {
         double input = pidController.calculate(getAngleDegrees());
         input =
                 input
-                        / (SubsystemConstants.Hood.MAX_ANGLE_DEGREES
-                                - SubsystemConstants.Hood
+                        / (SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES
+                                - SubsystemConstants.kShooter
+                                        .kHood
                                         .MIN_ANGLE_DEGREES); // normalize to -1 to 1
         input = input * 12.0; // scale to voltage
         flapSim.setInput(input);

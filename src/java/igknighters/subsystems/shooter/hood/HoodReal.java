@@ -10,7 +10,7 @@ import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 
 public class HoodReal extends Hood {
-    private final TalonFX motor = new TalonFX(SubsystemConstants.Hood.MOTOR_ID);
+    private final TalonFX motor = new TalonFX(SubsystemConstants.kShooter.kHood.MOTOR_ID);
 
     private final BaseStatusSignal flapAngleRots = motor.getPosition();
 
@@ -18,25 +18,27 @@ public class HoodReal extends Hood {
 
     public TalonFXConfiguration flapConfiguration() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = SubsystemConstants.Hood.kP;
-        config.Slot0.kI = SubsystemConstants.Hood.kI;
-        config.Slot0.kD = SubsystemConstants.Hood.kD;
-        config.Slot0.kS = SubsystemConstants.Hood.kS;
-        config.Slot0.kV = SubsystemConstants.Hood.kV;
-        config.Slot0.kA = SubsystemConstants.Hood.kA;
+        config.Slot0.kP = SubsystemConstants.kShooter.kHood.kP;
+        config.Slot0.kI = SubsystemConstants.kShooter.kHood.kI;
+        config.Slot0.kD = SubsystemConstants.kShooter.kHood.kD;
+        config.Slot0.kS = SubsystemConstants.kShooter.kHood.kS;
+        config.Slot0.kV = SubsystemConstants.kShooter.kHood.kV;
+        config.Slot0.kA = SubsystemConstants.kShooter.kHood.kA;
 
-        config.MotionMagic.MotionMagicJerk = SubsystemConstants.Hood.MAX_JERK;
-        config.MotionMagic.MotionMagicAcceleration = SubsystemConstants.Hood.MAX_ACCELERATION_RPM;
-        config.MotionMagic.MotionMagicCruiseVelocity = SubsystemConstants.Hood.MAX_SPEED_RPM;
+        config.MotionMagic.MotionMagicJerk = SubsystemConstants.kShooter.kHood.MAX_JERK;
+        config.MotionMagic.MotionMagicAcceleration =
+                SubsystemConstants.kShooter.kHood.MAX_ACCELERATION_RPM;
+        config.MotionMagic.MotionMagicCruiseVelocity =
+                SubsystemConstants.kShooter.kHood.MAX_SPEED_RPM;
 
-        config.Feedback.SensorToMechanismRatio = SubsystemConstants.Hood.GEAR_RATIO;
+        config.Feedback.SensorToMechanismRatio = SubsystemConstants.kShooter.kHood.GEAR_RATIO;
         config.HardwareLimitSwitch.ReverseLimitEnable = true;
         config.HardwareLimitSwitch.ReverseLimitRemoteSensorID =
-                SubsystemConstants.Hood.REVERSE_LIMIT_SWITCH_ID;
+                SubsystemConstants.kShooter.kHood.REVERSE_LIMIT_SWITCH_ID;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-                SubsystemConstants.Hood.MAX_ANGLE_DEGREES;
+                SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES;
 
         return config;
     }

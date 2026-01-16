@@ -10,12 +10,15 @@ public class FieldConstants {
         public static final double HEIGHT_METERS = 72.0 * Conv.INCHES_TO_METERS;
         public static final Pose2d POSITION =
                 new Pose2d(
-                        158.84 * Conv.INCHES_TO_METERS,
                         181.56 * Conv.INCHES_TO_METERS,
+                        158.32 * Conv.INCHES_TO_METERS,
                         new Rotation2d());
         public static final Pose3d POSE3D =
                 new Pose3d(POSITION.getX(), POSITION.getY(), HEIGHT_METERS, new Rotation3d());
     }
 
     public static class PASS {}
+
+    public static final double WIDTH = 316.64 * Conv.INCHES_TO_METERS; // meters
+    public static final double LENGTH = 650.12 * Conv.INCHES_TO_METERS; // meters
 }

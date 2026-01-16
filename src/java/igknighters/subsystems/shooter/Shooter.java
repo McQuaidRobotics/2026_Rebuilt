@@ -13,6 +13,8 @@ import igknighters.subsystems.shooter.rollers.RollersSim;
 import igknighters.subsystems.shooter.turret.Turret;
 import igknighters.subsystems.shooter.turret.TurretDisabled;
 import igknighters.subsystems.shooter.turret.TurretSim;
+import igknighters.util.LerpTable;
+import igknighters.util.LerpTable.LerpTableEntry;
 
 public class Shooter implements ExclusiveSubsystem {
     private final Rollers rollers;
@@ -22,6 +24,15 @@ public class Shooter implements ExclusiveSubsystem {
     private double goalRPM = 0.0;
     private double goalTurretAngleDegrees = 0.0;
     private double goalHoodAngleDegrees = 0.0;
+    private LerpTable rpmTable =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(1.0, 3000.0),
+                        new LerpTableEntry(5.0, 4000.0),
+                        new LerpTableEntry(10.0, 5000.0),
+                        new LerpTableEntry(15.0, 5500.0),
+                        new LerpTableEntry(20.0, 6000.0),
+                    });
 
     public Shooter() {
         if (Robot.isReal()) {
@@ -86,6 +97,10 @@ public class Shooter implements ExclusiveSubsystem {
 
     public void setRollerVoltage(double voltage) {
         rollers.setVoltage(voltage);
+    }
+
+    public double getEstimatedRPM(double distanceMeters) {
+        return rpmTable.lerp(distanceMeters);
     }
 
     @Override

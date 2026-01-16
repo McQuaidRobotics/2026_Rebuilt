@@ -49,13 +49,14 @@ public class SwerveCommands {
                         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                         .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
         return swerve.run(
-                () -> {
-                    swerve.setControl(
-                            m_driveRequest
-                                    .withVelocityX(0.0)
-                                    .withVelocityY(0.0)
-                                    .withRotationalRate(0.0));
-                });
+                        () -> {
+                            swerve.setControl(
+                                    m_driveRequest
+                                            .withVelocityX(0.0)
+                                            .withVelocityY(0.0)
+                                            .withRotationalRate(0.0));
+                        })
+                .withTimeout(.5);
     }
 
     public static Command moveToSimple(CommandSwerveDrivetrain swerve, Pose2d targetPose) {

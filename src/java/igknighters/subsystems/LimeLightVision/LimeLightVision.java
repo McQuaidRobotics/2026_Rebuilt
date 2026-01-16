@@ -17,8 +17,8 @@ public class LimeLightVision implements SharedSubsystem {
         if (Robot.isReal()) {
             vision =
                     new LimeLightVisionReal(
-                            SubsystemConstants.LimelightVisionConstants.backLeft,
-                            SubsystemConstants.LimelightVisionConstants.backRight);
+                            SubsystemConstants.kLimelightVision.backLeft,
+                            SubsystemConstants.kLimelightVision.backRight);
         } else {
             vision = new LimeLightVisionSim();
         }

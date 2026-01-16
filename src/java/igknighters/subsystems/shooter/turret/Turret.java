@@ -1,12 +1,9 @@
 package igknighters.subsystems.shooter.turret;
 
-import edu.wpi.first.epilogue.Logged;
-
-@Logged
 public abstract class Turret {
 
-    @Logged protected double degrees;
-    @Logged protected double targetDegrees;
+    protected double degrees;
+    protected double targetDegrees;
 
     public abstract void periodic();
 

@@ -1,4 +1,4 @@
-package igknighters.subsystems.shooter.rollers;
+package igknighters.subsystems.intake.rollers;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -38,20 +38,21 @@ public class RollersSim extends Rollers {
     private boolean isVoltageControlledThisCycle = false;
 
     @Override
-    public void setSpeed(double speedRPM) {
-        profiledPIDController.setGoal(speedRPM);
-        isPidControlledThisCycle = true;
+    public double getSpeedRPM() {
+        return leaderflywheelSim.getAngularVelocityRPM();
     }
 
     @Override
-    public void setVoltage(double voltage) {
-        inputVoltage = voltage;
+    public void stop() {
+        inputVoltage = 0.0;
         isVoltageControlledThisCycle = true;
     }
 
     @Override
-    public double getSpeedRPM() {
-        return leaderflywheelSim.getAngularVelocityRPM();
+    public void goToSpeedRPM(double speedRPM) {
+        DogLog.log("Subsystems/Intake/Rollers/Target Speed RPM", speedRPM);
+        profiledPIDController.setGoal(speedRPM);
+        isPidControlledThisCycle = true;
     }
 
     @Override

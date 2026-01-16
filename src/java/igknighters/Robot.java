@@ -9,6 +9,7 @@ import choreo.auto.AutoFactory;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -51,6 +52,8 @@ public class Robot extends TimedRobot {
     TunableDouble targetingD = TunableValues.getDouble("Tunables/TargetingD", 0.00);
 
     public Robot() {
+        DataLogManager.start();
+
         subsytems =
                 new Subsystems(
                         swerveConsts.createDrivetrain(),
@@ -66,10 +69,39 @@ public class Robot extends TimedRobot {
         driverController.bind(subsytems);
         autoFactory = subsytems.swerve.createAutoFactory();
         final var routines = new AutoRoutines(subsytems, autoFactory);
-        AutoRoutines.addCmd(autoChooser, "ZOOOOOOOOMMMMMMM", routines::driveAround);
+        AutoRoutines.addCmd(autoChooser, "score-then-pass", routines::driveAround);
+        AutoRoutines.addCmd(autoChooser, "shoot-then-move", routines::shootThenMove);
         autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
         subsystemTriggers.SetupTriggers(subsytems.led);
+
+        scheduler.onCommandInitialize(
+                command ->
+                        DogLog.log(
+                                "Commands/Tracking/" + command.getName() + "/ Command Running",
+                                "TRUE"));
+
+        scheduler.onCommandInitialize(
+                command ->
+                        DogLog.log(
+                                "Commands/Tracking/" + command.getName() + "/ Command Interrupted",
+                                "FALSE"));
+
+        scheduler.onCommandInterrupt(
+                command ->
+                        DogLog.log(
+                                "Commands/Tracking/" + command.getName() + "/ Command Interrupted",
+                                "TRUE"));
+        scheduler.onCommandFinish(
+                command ->
+                        DogLog.log(
+                                "Commands/Tracking/" + command.getName() + "/ Command Running",
+                                "FALSE"));
+        scheduler.onCommandFinish(
+                command ->
+                        DogLog.log(
+                                "Commands/Tracking/" + command.getName() + "/ Command Interrupted",
+                                "FALSE"));
     }
 
     @Override

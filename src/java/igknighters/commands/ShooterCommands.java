@@ -30,7 +30,8 @@ public class ShooterCommands {
         return shooter.run(() -> shooter.targetState(3000, 0, 0));
     }
 
-    public static Command aimAtHub(Shooter shooter, Supplier<Pose2d> robotPoseSupplier) {
+    public static Command aimAtHub(
+            Shooter shooter, Supplier<Pose2d> robotPoseSupplier, double RPM) {
         return shooter.run(
                 () -> {
                     Pose2d robotPose = robotPoseSupplier.get();
@@ -40,7 +41,9 @@ public class ShooterCommands {
                                     new Pose3d(
                                             robotPose.getX(),
                                             robotPose.getY(),
-                                            SubsystemConstants.Shooter.ShooterHeightMeters,
+                                            SubsystemConstants.kShooter
+                                                    .kRollers
+                                                    .ShooterHeightMeters,
                                             new Rotation3d(
                                                     0.0,
                                                     0.0,

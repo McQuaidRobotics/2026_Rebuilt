@@ -1,4 +1,4 @@
-package igknighters.subsystems.shooter.turret;
+package igknighters.subsystems.intake.pivot;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -9,9 +9,9 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 
-public class TurretSim extends Turret {
-
-    private SingleJointedArmSim turretSim;
+public class PivotSim extends Pivot {
+    private boolean stop = false;
+    private SingleJointedArmSim pivotSim;
     private final ProfiledPIDController controller =
             new ProfiledPIDController(
                     SubsystemConstants.kShooter.kTurret.kP,
@@ -21,8 +21,8 @@ public class TurretSim extends Turret {
                             SubsystemConstants.kShooter.kTurret.MAX_SPEED_RPM,
                             SubsystemConstants.kShooter.kTurret.MAX_ACCELERATION_RPM));
 
-    public TurretSim() {
-        turretSim =
+    public PivotSim() {
+        pivotSim =
                 new SingleJointedArmSim(
                         LinearSystemId.createSingleJointedArmSystem(
                                 DCMotor.getKrakenX60(1),
@@ -39,36 +39,45 @@ public class TurretSim extends Turret {
     }
 
     @Override
+    public void stop() {
+        stop = true;
+    }
+
+    @Override
     public void setAngleDegrees(double angleDegrees) {
-        super.degrees = angleDegrees;
-        turretSim.setState(angleDegrees * Conv.DEGREES_TO_RADIANS, 0.0);
+        pivotSim.setState(angleDegrees * Conv.DEGREES_TO_RADIANS, 0.0);
         controller.reset(angleDegrees * Conv.DEGREES_TO_RADIANS);
     }
 
     @Override
     public void goToAngleDegrees(double angleDegrees) {
-
+        DogLog.log("Subsystems/Intake/Pivot/Target", angleDegrees);
         controller.setGoal(angleDegrees * Conv.DEGREES_TO_RADIANS);
     }
 
     @Override
     public double getAngleDegrees() {
-        return turretSim.getAngleRads() * Conv.RADIANS_TO_ROTATIONS * Conv.ROTATIONS_TO_DEGREES;
+        return pivotSim.getAngleRads() * Conv.RADIANS_TO_DEGREES;
     }
 
     @Override
     public void periodic() {
+        double input = 0.0;
+        if (stop == false) {
+            controller.reset(getAngleDegrees() * Conv.DEGREES_TO_RADIANS);
 
-        double input = controller.calculate(turretSim.getAngleRads());
+            input = controller.calculate(pivotSim.getAngleRads());
 
-        input = input / Math.PI * 12.0; // scale to volts
+            input = input / controller.getGoal().position * 12.0; // scale to volts
+        }
+        pivotSim.setInput(input);
+        pivotSim.update(0.020);
 
-        turretSim.setInput(input);
-        turretSim.update(0.020);
-
-        DogLog.log("Subsystems/Shooter/Turret/AngleDegrees", getAngleDegrees());
-        DogLog.log("Subsystems/Shooter/Turret/TargetDegrees", super.targetDegrees);
-        DogLog.log("Subsystems/Shooter/Turret/MotorVoltage", input);
+        DogLog.log("Subsystems/Intake/Pivot/AngleDegrees", getAngleDegrees());
+        DogLog.log(
+                "Subsystems/Intake/Pivot/TargetDegrees",
+                controller.getGoal().position * Conv.RADIANS_TO_DEGREES);
+        DogLog.log("Subsystems/Intake/Pivot/MotorVoltage", input);
 
         input = 0;
     }

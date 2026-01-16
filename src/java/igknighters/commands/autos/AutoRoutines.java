@@ -41,9 +41,18 @@ public class AutoRoutines extends AutoCommands {
     }
 
     public Command driveAround() {
-        return newAuto("ZOOOMMMM")
+        return newAuto("shoot_then_pass")
                 .addDrivingTrajectory(
-                        Waypoints.StartingCenter, Waypoints.FarMid_R, Waypoints.IntakeSneaky)
+                        Waypoints.STARTING_RIGHT,
+                        Waypoints.BUMP_LAND_RIGHT,
+                        Waypoints.BALLS_RIGHT,
+                        Waypoints.BALLS_MIDDLE)
+                .build();
+    }
+
+    public Command shootThenMove() {
+        return newRebuiltAuto("SHOOT-THEN-MOVE")
+                .shootThenMove(Waypoints.STARTING_RIGHT, Waypoints.BUMP_LAND_RIGHT, 5.0)
                 .build();
     }
 }

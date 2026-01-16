@@ -16,11 +16,11 @@ public class ShooterVisualizer {
 
     private final double TURRET_LENGTH = 0.3;
 
-    private final double TURRET_WIDTH = 0.3;
+    private final double TURRET_WIDTH = 0.7;
 
     private final double HOOD_LENGTH = 0.2;
 
-    private final double HOOD_WIDTH = 0.1;
+    private final double HOOD_WIDTH = 0.2;
 
     private final MechanismLigament2d turretLigament =
             turret.append(

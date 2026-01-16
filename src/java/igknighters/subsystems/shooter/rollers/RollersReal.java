@@ -9,7 +9,8 @@ import dev.doglog.DogLog;
 import igknighters.constants.SubsystemConstants;
 
 public class RollersReal extends Rollers {
-    private final TalonFX mainShooter = new TalonFX(SubsystemConstants.Shooter.LEADER_MOTOR_ID);
+    private final TalonFX mainShooter =
+            new TalonFX(SubsystemConstants.kShooter.kRollers.LEADER_MOTOR_ID);
 
     // private final MotionMagicVelocityVoltage velocityControl = new
     // MotionMagicVelocityVoltage(0.0);
@@ -30,18 +31,19 @@ public class RollersReal extends Rollers {
 
     public RollersReal() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = SubsystemConstants.Shooter.kP;
-        config.Slot0.kI = SubsystemConstants.Shooter.kI;
-        config.Slot0.kD = SubsystemConstants.Shooter.kD;
-        config.Slot0.kS = SubsystemConstants.Shooter.kS;
-        config.Slot0.kV = SubsystemConstants.Shooter.kV;
+        config.Slot0.kP = SubsystemConstants.kShooter.kRollers.kP;
+        config.Slot0.kI = SubsystemConstants.kShooter.kRollers.kI;
+        config.Slot0.kD = SubsystemConstants.kShooter.kRollers.kD;
+        config.Slot0.kS = SubsystemConstants.kShooter.kRollers.kS;
+        config.Slot0.kV = SubsystemConstants.kShooter.kRollers.kV;
 
-        config.Feedback.SensorToMechanismRatio = SubsystemConstants.Shooter.GEAR_RATIO;
+        config.Feedback.SensorToMechanismRatio = SubsystemConstants.kShooter.kRollers.GEAR_RATIO;
 
-        config.MotionMagic.MotionMagicJerk = SubsystemConstants.Shooter.MOTION_MAGIC_JERK;
+        config.MotionMagic.MotionMagicJerk = SubsystemConstants.kShooter.kRollers.MOTION_MAGIC_JERK;
         config.MotionMagic.MotionMagicAcceleration =
-                SubsystemConstants.Shooter.MAX_ACCELERATION_RPM;
-        config.MotionMagic.MotionMagicCruiseVelocity = SubsystemConstants.Shooter.MAX_SPEED_RPM;
+                SubsystemConstants.kShooter.kRollers.MAX_ACCELERATION_RPM;
+        config.MotionMagic.MotionMagicCruiseVelocity =
+                SubsystemConstants.kShooter.kRollers.MAX_SPEED_RPM;
 
         mainShooter.getConfigurator().apply(config);
 
@@ -55,7 +57,7 @@ public class RollersReal extends Rollers {
 
     @Override
     public void setSpeed(double speedRpm) {
-        DogLog.log("Subsystems/Shooter/setSpeed", speedRpm);
+        DogLog.log("Subsystems/Shooter/Rollers/setSpeed", speedRpm);
         mainShooter.setControl(velocityControl.withVelocity(speedRpm / 60.0));
     }
 
@@ -73,10 +75,10 @@ public class RollersReal extends Rollers {
     public void periodic() {
         BaseStatusSignal.refreshAll(
                 shooterVelocity, shooterCurrent, shooterVoltage, shooterTemperature);
-        DogLog.log("Subsystems/Shooter/velocity", shooterVelocity.getValueAsDouble());
-        DogLog.log("Subsystems/Shooter/current", shooterCurrent.getValueAsDouble());
-        DogLog.log("Subsystems/Shooter/voltage", shooterVoltage.getValueAsDouble());
-        DogLog.log("Subsystems/Shooter/temperature", shooterTemperature.getValueAsDouble());
-        DogLog.log("Subsystems/Shooter/periodicing", true);
+        DogLog.log("Subsystems/Shooter/Rollers/velocity", shooterVelocity.getValueAsDouble());
+        DogLog.log("Subsystems/Shooter/Rollers/current", shooterCurrent.getValueAsDouble());
+        DogLog.log("Subsystems/Shooter/Rollers/voltage", shooterVoltage.getValueAsDouble());
+        DogLog.log("Subsystems/Shooter/Rollers/temperature", shooterTemperature.getValueAsDouble());
+        DogLog.log("Subsystems/Shooter/Rollers/periodicing", true);
     }
 }

@@ -129,7 +129,7 @@ public class DriverController {
 
         this.LT.onTrue(
                 ShooterCommands.aimAtHub(
-                        subsystems.shooter, () -> subsystems.swerve.getState().Pose));
+                        subsystems.shooter, () -> subsystems.swerve.getState().Pose, 5000));
         this.RT.onTrue(ShooterCommands.aimTurretAtAngle(subsystems.shooter, -45, 60));
         // this.DPU.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 0));
         // this.DPD.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 1.0));
