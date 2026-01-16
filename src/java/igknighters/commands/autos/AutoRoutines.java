@@ -53,6 +53,7 @@ public class AutoRoutines extends AutoCommands {
     public Command shootThenMove() {
         return newRebuiltAuto("SHOOT-THEN-MOVE")
                 .shootThenMove(Waypoints.STARTING_RIGHT, Waypoints.BUMP_LAND_RIGHT, 5.0)
+                .addDrivingTrajectory(Waypoints.BUMP_LAND_RIGHT, Waypoints.BALLS_RIGHT)
                 .build();
     }
 }

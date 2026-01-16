@@ -75,6 +75,7 @@ public class AutoCommands {
         private final AutoRoutine routine;
         private final ParallelCommandGroup headCommand = new ParallelCommandGroup();
         private final SequentialCommandGroup bodyCommand = new SequentialCommandGroup();
+        private boolean trajectorybeenadded = false;
 
         private RebuiltAuto(AutoRoutine routine) {
             this.routine = routine;
@@ -109,7 +110,10 @@ public class AutoCommands {
 
         public RebuiltAuto shootThenMove(Waypoints start, Waypoints end, double timeout) {
             AutoTrajectory traj = getTrajectory(start, end);
-            headCommand.addCommands(traj.resetOdometry().withTimeout(0.5));
+            if (!trajectorybeenadded) {
+                trajectorybeenadded = true;
+                headCommand.addCommands(traj.resetOdometry().withTimeout(0.1));
+            }
             bodyCommand.addCommands(
                     loggedCmd(
                             Commands.sequence(
@@ -120,45 +124,17 @@ public class AutoCommands {
             return this;
         }
 
-        private Command finishAlignment(AutoTrajectory trajectory, double distOffset) {
-            if (trajectory.getFinalPose().isPresent()) {
-                Supplier<Command> cmdSup =
-                        () -> {
-                            final Pose2d finalPose =
-                                    trajectory
-                                            .getFinalPose()
-                                            .get()
-                                            .plus(new Transform2d(distOffset, 0, Rotation2d.kZero));
-                            return loggedCmd(
-                                    SwerveCommands.moveToSimple(swerve, finalPose)
-                                            .until(
-                                                    () ->
-                                                            withinTolerance(
-                                                                            SwerveCommands.getPose(
-                                                                                    swerve),
-                                                                            finalPose,
-                                                                            0.1)
-                                                                    && movingSlowerThan(swerve, .08)
-                                                                            .getAsBoolean()));
-                        };
-                return Commands.defer(cmdSup, Set.of(swerve));
-            } else {
-                DriverStation.reportError("NO FINAL POSE IN THE AUTO ROUTINE", false);
-                return Commands.none();
+        public RebuiltAuto addDrivingTrajectory(Waypoints... waypoints) {
+            for (int i = 0; i < waypoints.length - 1; i += 1) {
+                bodyCommand.addCommands(
+                        getTrajectory(waypoints[i], waypoints[i + 1])
+                                .cmd()
+                                .withName(
+                                        "DRIVING FROM " + waypoints[i] + " TO " + waypoints[i + 1]),
+                        SwerveCommands.stopDriving(swerve).withTimeout(3.0));
             }
+            return this;
         }
-
-        // public RebuiltAuto addShootThenMoveTrajectory(Waypoints shootPoint, Waypoints movePoint)
-        // {
-        //     headCommand.addCommands(
-        //             getTrajectory(shootPoint, movePoint).resetOdometry().withTimeout(0.1));
-        //     bodyCommand.addCommands(
-        //             getTrajectory(shootPoint, movePoint).cmd(),
-        //             finishAlignment(getTrajectory(shootPoint, movePoint), 0.0)
-        //                     .withName("FINISHING - ALIGNMENT"),
-        //             SwerveCommands.stopDriving(swerve).withTimeout(3.0));
-        //     return this;
-        // }
     }
 
     protected class GenericAuto {

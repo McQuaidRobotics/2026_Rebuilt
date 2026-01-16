@@ -1,6 +1,7 @@
 package igknighters.subsystems.intake.rollers;
 
 import dev.doglog.DogLog;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -57,35 +58,46 @@ public class RollersSim extends Rollers {
 
     @Override
     public void periodic() {
+        double currentRPM = leaderflywheelSim.getAngularVelocityRPM();
+        double goalRPM = profiledPIDController.getGoal().position;
+        double ffVolts = 0.0;
+        double pidVolts = 0.0;
         double voltage = 0.0;
-        if (isPidControlledThisCycle) {
-            double pidOutput =
-                    profiledPIDController.calculate(leaderflywheelSim.getAngularVelocityRPM());
-            double feedforwardOutput =
-                    (feedforward.calculate(profiledPIDController.getGoal().position)
-                                    / profiledPIDController.getGoal().position)
-                            * 12.0;
 
-            DogLog.log("Subsystems/Shooter/Rollers/PIDOutput", pidOutput);
-            voltage =
-                    (pidOutput / profiledPIDController.getGoal().position) * 12.0
-                            + feedforwardOutput;
+        if (isPidControlledThisCycle) {
+
+            // Feedforward in volts
+            ffVolts = feedforward.calculate(goalRPM);
+
+            // PID output is in RPM, convert to volts with a small gain
+            // Tune this value (start around 0.001)
+            double kRPM_to_volts = 0.001;
+
+            double pidRPM = profiledPIDController.calculate(currentRPM);
+            pidVolts = pidRPM * kRPM_to_volts;
+
+            voltage = ffVolts + pidVolts;
         }
+
         if (isVoltageControlledThisCycle) {
             voltage = inputVoltage;
         }
+
+        // Clamp to real motor limits
+        voltage = MathUtil.clamp(voltage, -12.0, 12.0);
+
+        // Logging
         DogLog.log("Subsystems/Shooter/Rollers/SimVoltage", voltage);
-        DogLog.log(
-                "Subsystems/Shooter/Rollers/SimSpeedRPM",
-                leaderflywheelSim.getAngularVelocityRPM());
-        DogLog.log(
-                "Subsystems/Shooter/Rollers/GoalSpeedRPM",
-                profiledPIDController.getGoal().position);
-        DogLog.log("Subsystems/Shooter/Rollers/CommandedVoltage", inputVoltage);
-        DogLog.log("Subsystems/Shooter/Rollers/PIDCONTROLLED", isPidControlledThisCycle);
-        DogLog.log("Subsystems/Shooter/Rollers/VOLTAGECONTROLLED", isVoltageControlledThisCycle);
+        DogLog.log("Subsystems/Shooter/Rollers/SimSpeedRPM", currentRPM);
+        DogLog.log("Subsystems/Shooter/Rollers/GoalSpeedRPM", goalRPM);
+        DogLog.log("Subsystems/Shooter/Rollers/PIDError", profiledPIDController.getPositionError());
+        DogLog.log("Subsystems/Shooter/Rollers/PIDVolts", pidVolts);
+        DogLog.log("Subsystems/Shooter/Rollers/FeedforwardVolts", ffVolts);
+
+        // Apply to sim
         leaderflywheelSim.setInputVoltage(voltage);
         leaderflywheelSim.update(0.02);
+
         isPidControlledThisCycle = false;
         isVoltageControlledThisCycle = false;
     }
