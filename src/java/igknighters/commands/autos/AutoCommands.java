@@ -125,10 +125,10 @@ public class AutoCommands {
         }
 
         public RebuiltAuto shootAndMove(Waypoints start, Waypoints end) {
-            AutoTrajectory trajectory = getTrajectory(start, end);
+            AutoTrajectory traj = getTrajectory(start, end);
             if (!trajectorybeenadded) {
                 trajectorybeenadded = true;
-                headCommand.addCommands(trajectory.resetOdometry().withTimeout(0.1));
+                headCommand.addCommands(traj.resetOdometry().withTimeout(0.1));
             }
 
             bodyCommand.addCommands(
@@ -137,9 +137,9 @@ public class AutoCommands {
                                             Commands.parallel(
                                                     HigherOrderCommands.shootTillEmpty(
                                                             subsystems, 3.0),
-                                                    trajectory.cmd()),
+                                                    traj.cmd()),
                                             SwerveCommands.stopDriving(swerve))
-                                    .withName(trajectory.getRawTrajectory().name())));
+                                    .withName(traj.getRawTrajectory().name())));
             return this;
         }
 
