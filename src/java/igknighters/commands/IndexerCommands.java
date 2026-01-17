@@ -8,7 +8,7 @@ import java.util.function.BooleanSupplier;
 public class IndexerCommands {
 
     public static Command dispense() {
-        return Commands.none();
+        return Commands.none().withName("DISPENSE BALLS INTO SHOOTER");
     }
 
     public static BooleanSupplier isBallPresent() {

@@ -1,10 +1,9 @@
 package igknighters.subsystems.LimeLightVision.Cameras;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import igknighters.subsystems.Subsystems.SharedSubsystem;
 import java.util.List;
 
-public abstract class LimeLights implements SharedSubsystem {
+public abstract class LimeLights {
     public abstract Pose2d getRobotPoseFromVision(
             double yaw,
             double yawRate,

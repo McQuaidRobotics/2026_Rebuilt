@@ -20,6 +20,7 @@ public class HigherOrderCommands {
                                                                 * FieldConstants.HUB.POSITION_BLUE
                                                                         .getY()))),
                         IndexerCommands.dispense())
+                .withName("Shoot till empty")
                 .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
     }
 }

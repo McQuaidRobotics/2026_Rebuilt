@@ -1,11 +1,11 @@
 package igknighters.subsystems.led;
 
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import igknighters.subsystems.Subsystems.ExclusiveSubsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.subsystems.led.driver.PWMDriver;
 import wpilibExt.Tracer;
 
-public class Led implements ExclusiveSubsystem {
+public class Led extends SubsystemBase {
 
     public final PWMDriver pwm1;
 

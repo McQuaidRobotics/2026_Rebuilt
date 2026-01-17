@@ -15,57 +15,60 @@ import java.util.function.Supplier;
 
 public class ShooterCommands {
     public static Command shootAtSpeed(Shooter shooter, double RPM) {
-        return shooter.run(() -> shooter.targetState(RPM, 0, 0));
+        return shooter.run(() -> shooter.targetState(RPM, 0, 0)).withName("shoot at speed: " + RPM);
     }
 
     public static Command stopShooting(Shooter shooter) {
-        return shooter.runOnce(() -> shooter.setRollerVoltage(0));
+        return shooter.runOnce(() -> shooter.setRollerVoltage(0)).withName("stop shooting");
     }
 
     public static Command aimTurretAtAngle(
             Shooter shooter, double turretAngleDegrees, double hoodAngleDegrees) {
-        return shooter.run(() -> shooter.targetState(0, turretAngleDegrees, hoodAngleDegrees));
+        return shooter.run(() -> shooter.targetState(0, turretAngleDegrees, hoodAngleDegrees))
+                .withName("aiming turret + hood");
     }
 
     public static Command idle(Shooter shooter) {
-        return shooter.run(() -> shooter.targetState(3000, 0, 0));
+        return shooter.run(() -> shooter.targetState(3000, 0, 0)).withName("Idle Shooter");
     }
 
     public static Command aimAtHub(
             Shooter shooter, Supplier<Pose2d> robotPoseSupplier, double RPM) {
         return shooter.run(
-                () -> {
-                    Pose2d robotPose = robotPoseSupplier.get();
-                    ShooterState targetingData =
-                            AimSolver.solve_simple_no_AR_or_FutureTiming(
-                                    Robot.isBlue()
-                                            ? FieldConstants.HUB.POSE3D_BLUE
-                                            : FieldConstants.HUB.POSE3D_RED,
-                                    new Pose3d(
-                                            robotPose.getX(),
-                                            robotPose.getY(),
-                                            SubsystemConstants.kShooter
-                                                    .kRollers
-                                                    .ShooterHeightMeters,
-                                            new Rotation3d(
-                                                    0.0,
-                                                    0.0,
-                                                    robotPose.getRotation().getRadians())),
-                                    shooter.getCurrentState().rpm);
+                        () -> {
+                            Pose2d robotPose = robotPoseSupplier.get();
+                            ShooterState targetingData =
+                                    AimSolver.solve_simple_no_AR_or_FutureTiming(
+                                            Robot.isBlue()
+                                                    ? FieldConstants.HUB.POSE3D_BLUE
+                                                    : FieldConstants.HUB.POSE3D_RED,
+                                            new Pose3d(
+                                                    robotPose.getX(),
+                                                    robotPose.getY(),
+                                                    SubsystemConstants.kShooter
+                                                            .kRollers
+                                                            .ShooterHeightMeters,
+                                                    new Rotation3d(
+                                                            0.0,
+                                                            0.0,
+                                                            robotPose.getRotation().getRadians())),
+                                            shooter.getCurrentState().rpm);
 
-                    if (targetingData.rpm != 0.0) {
-                        shooter.targetState(
-                                RPM,
-                                Math.toDegrees(targetingData.turretAngleRads),
-                                Math.toDegrees(targetingData.hoodAngleRads));
-                    } else {
-                        shooter.targetState(
-                                shooter.getCurrentState().rpm + 100.0,
-                                targetingData.turretAngleRads * Conv.RADIANS_TO_DEGREES,
-                                targetingData.hoodAngleRads
-                                        * Conv.RADIANS_TO_DEGREES); // keep trying to increase RPM
-                        // to reach shot
-                    }
-                });
+                            if (targetingData.rpm != 0.0) {
+                                shooter.targetState(
+                                        RPM,
+                                        Math.toDegrees(targetingData.turretAngleRads),
+                                        Math.toDegrees(targetingData.hoodAngleRads));
+                            } else {
+                                shooter.targetState(
+                                        shooter.getCurrentState().rpm + 100.0,
+                                        targetingData.turretAngleRads * Conv.RADIANS_TO_DEGREES,
+                                        targetingData.hoodAngleRads
+                                                * Conv.RADIANS_TO_DEGREES); // keep trying to
+                                // increase RPM
+                                // to reach shot
+                            }
+                        })
+                .withName("Aiming at hub");
     }
 }

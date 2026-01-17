@@ -95,7 +95,7 @@ public class SubsystemConstants {
     public static class kShooter {
         public static class kRollers {
             public static final int LEADER_MOTOR_ID = 50;
-            public static final int FOLLOWER_MOTOR_ID = 21;
+            public static final int FOLLOWER_MOTOR_ID = 51;
             public static final double WHEEL_RADIUS_METERS = 0.0508; // 2 inch radius
             public static final double GEAR_RATIO = 1.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
@@ -117,7 +117,7 @@ public class SubsystemConstants {
 
         public static class kTurret {
             public static final int MOTOR_ID = 52;
-            public static final int CANCODER_ID = 51;
+            public static final int CANCODER_ID = 53;
             public static final double CANCODER_OFFSET_ROTATIONS = 0.0;
             public static final double GEAR_RATIO = 12.0;
             public static final double MAX_ANGLE_DEGREES = 180.0;

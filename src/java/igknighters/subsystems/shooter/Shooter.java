@@ -1,9 +1,9 @@
 package igknighters.subsystems.shooter;
 
 import dev.doglog.DogLog;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.constants.Conv;
-import igknighters.subsystems.Subsystems.ExclusiveSubsystem;
 import igknighters.subsystems.shooter.flywheel.Flywheel;
 import igknighters.subsystems.shooter.flywheel.FlywheelReal;
 import igknighters.subsystems.shooter.flywheel.FlywheelSimulator;
@@ -16,7 +16,7 @@ import igknighters.subsystems.shooter.turret.TurretSim;
 import igknighters.util.LerpTable;
 import igknighters.util.LerpTable.LerpTableEntry;
 
-public class Shooter implements ExclusiveSubsystem {
+public class Shooter extends SubsystemBase {
     private final Flywheel rollers;
     private final Turret turret;
     private final Hood hood;

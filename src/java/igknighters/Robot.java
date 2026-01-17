@@ -63,6 +63,10 @@ public class Robot extends TimedRobot {
                         new LimeLightVision(),
                         new Led(40, 1),
                         new Shooter());
+        SmartDashboard.putData(CommandScheduler.getInstance());
+        SmartDashboard.putData(subsytems.shooter);
+        SmartDashboard.putData(subsytems.led);
+        SmartDashboard.putData(subsytems.vision);
 
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, .8));
@@ -72,9 +76,7 @@ public class Robot extends TimedRobot {
         driverController.bind(subsytems);
         autoFactory = subsytems.swerve.createAutoFactory();
         final var routines = new AutoRoutines(subsytems, autoFactory);
-        AutoRoutines.addCmd(autoChooser, "score-then-pass", routines::driveAround);
         autoChooser.addCmd("shoot-then-move", routines.shootThenMove());
-        AutoRoutines.addCmd(autoChooser, "shoot-and-move", routines::rightToLeft);
         autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
         subsystemTriggers.SetupTriggers(subsytems.led);
@@ -192,9 +194,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void simulationPeriodic() {
-        for (var subsystem : subsytems.locklessResources) {
-            subsystem.simulationPeriodic();
-        }
+        // for (var subsystem : subsytems.locklessResources) {
+        //     subsystem.simulationPeriodic();
+        // }
     }
 
     public static boolean isBlue() {

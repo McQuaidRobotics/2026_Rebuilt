@@ -16,11 +16,53 @@ public class ShooterVisualizer {
 
     private final double TURRET_LENGTH = 0.3;
 
-    private final double TURRET_WIDTH = 0.7;
+    private final double TURRET_WIDTH = 30;
+
+    private final double ROBOT_LENGTH = .6;
 
     private final double HOOD_LENGTH = 0.2;
 
     private final double HOOD_WIDTH = 0.2;
+
+    private final Color8Bit RobotColor = new Color8Bit(Color.kAliceBlue);
+    private final Color8Bit frontRobot = new Color8Bit(Color.kBeige);
+
+    private final MechanismLigament2d robotBridge =
+            turret.append(
+                    new MechanismLigament2d(
+                            "bridge", ROBOT_LENGTH / 2, 0.0, 0.0, new Color8Bit(Color.kBlack)));
+    private final MechanismLigament2d bridgeToTop =
+            robotBridge.append(
+                    new MechanismLigament2d(
+                            "bridge-to-top",
+                            ROBOT_LENGTH / 2,
+                            90.0,
+                            5,
+                            new Color8Bit(Color.kYellow)));
+    private final MechanismLigament2d topRtoTopL =
+            bridgeToTop.append(
+                    new MechanismLigament2d(
+                            "top-to-right", ROBOT_LENGTH, 90.0, 5, new Color8Bit(Color.kAqua)));
+    private final MechanismLigament2d topLToBottomL =
+            topRtoTopL.append(
+                    new MechanismLigament2d(
+                            "topL-to-bottomL",
+                            ROBOT_LENGTH,
+                            90.0,
+                            5,
+                            new Color8Bit(Color.kViolet)));
+    private final MechanismLigament2d bottomLToBottomR =
+            topLToBottomL.append(
+                    new MechanismLigament2d(
+                            "botomL-to-right", ROBOT_LENGTH, 90.0, 5, new Color8Bit(Color.kAqua)));
+    private final MechanismLigament2d bottomToBridge =
+            bottomLToBottomR.append(
+                    new MechanismLigament2d(
+                            "bottom-to-bridge",
+                            ROBOT_LENGTH / 2,
+                            90.0,
+                            5,
+                            new Color8Bit(Color.kYellow)));
 
     private final MechanismLigament2d turretLigament =
             turret.append(
@@ -43,7 +85,7 @@ public class ShooterVisualizer {
     public ShooterVisualizer() {
         shooter.setBackgroundColor(new Color8Bit(Color.kBlack));
 
-        SmartDashboard.putData("Shooter", shooter);
+        SmartDashboard.putData("Shooter Visualizer", shooter);
     }
 
     public Color8Bit getRPMColor(double rpm, double targetRPM) {

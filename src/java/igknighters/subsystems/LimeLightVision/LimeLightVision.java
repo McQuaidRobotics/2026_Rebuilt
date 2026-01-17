@@ -2,15 +2,15 @@ package igknighters.subsystems.LimeLightVision;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.LimeLightVision.Cameras.LimeLightVisionReal;
 import igknighters.subsystems.LimeLightVision.Cameras.LimeLightVisionSim;
 import igknighters.subsystems.LimeLightVision.Cameras.LimeLights;
-import igknighters.subsystems.Subsystems.SharedSubsystem;
 import java.util.List;
 
-public class LimeLightVision implements SharedSubsystem {
+public class LimeLightVision extends SubsystemBase {
     private LimeLights vision;
 
     public LimeLightVision() {

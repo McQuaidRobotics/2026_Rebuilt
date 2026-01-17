@@ -3,22 +3,26 @@ package igknighters.subsystems.shooter.flywheel;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import dev.doglog.DogLog;
 import igknighters.constants.SubsystemConstants;
 
 public class FlywheelReal extends Flywheel {
     private final TalonFX mainShooter =
             new TalonFX(SubsystemConstants.kShooter.kRollers.LEADER_MOTOR_ID);
+    private final TalonFX followerShooter =
+            new TalonFX(SubsystemConstants.kShooter.kRollers.FOLLOWER_MOTOR_ID);
 
     // private final MotionMagicVelocityVoltage velocityControl = new
     // MotionMagicVelocityVoltage(0.0);
 
     private final MotionMagicVelocityVoltage velocityControl;
-    private final MotionMagicVelocityTorqueCurrentFOC velocityTorqueCurrentFOC =
-            new MotionMagicVelocityTorqueCurrentFOC(0.0).withSlot(0);
+    // private final MotionMagicVelocityTorqueCurrentFOC velocityTorqueCurrentFOC =
+    //         new MotionMagicVelocityTorqueCurrentFOC(0.0).withSlot(0);
     private final DutyCycleOut dutyCycleControl = new DutyCycleOut(0.0);
 
     // private final DigitalInput beamBreakSensor = new
@@ -41,13 +45,17 @@ public class FlywheelReal extends Flywheel {
 
         config.Feedback.SensorToMechanismRatio = SubsystemConstants.kShooter.kRollers.GEAR_RATIO;
 
+        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
         config.MotionMagic.MotionMagicJerk = SubsystemConstants.kShooter.kRollers.MOTION_MAGIC_JERK;
         config.MotionMagic.MotionMagicAcceleration =
                 SubsystemConstants.kShooter.kRollers.MAX_ACCELERATION_RPM;
         config.MotionMagic.MotionMagicCruiseVelocity =
                 SubsystemConstants.kShooter.kRollers.MAX_SPEED_RPM;
-        config.TorqueCurrent.PeakReverseTorqueCurrent =
-                0.0; // do not allow the motor to run in reverse
+        config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLimit =
+                SubsystemConstants.kShooter.kRollers.SUPPLY_CURRENT_LIMIT;
+        config.MotorOutput.PeakReverseDutyCycle = 0.0; // do not allow the motor to run in reverse
         config.TorqueCurrent.PeakForwardTorqueCurrent =
                 SubsystemConstants.kShooter.kRollers.PEAK_CURRENT_LIMIT;
 
@@ -57,6 +65,8 @@ public class FlywheelReal extends Flywheel {
     public FlywheelReal() {
 
         mainShooter.getConfigurator().apply(getLeaderConfig());
+        followerShooter.setControl(
+                new Follower(mainShooter.getDeviceID(), MotorAlignmentValue.Aligned));
 
         velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(0);
 
@@ -70,7 +80,7 @@ public class FlywheelReal extends Flywheel {
     public void setSpeed(double speedRpm) {
         DogLog.log("Subsystems/Shooter/Rollers/setSpeed", speedRpm);
         // mainShooter.setControl(velocityControl.withVelocity(speedRpm / 60.0));
-        mainShooter.setControl(velocityTorqueCurrentFOC.withVelocity(speedRpm / 60.0));
+        mainShooter.setControl(velocityControl.withVelocity(speedRpm / 60.0));
     }
 
     @Override
@@ -87,7 +97,8 @@ public class FlywheelReal extends Flywheel {
     public void periodic() {
         BaseStatusSignal.refreshAll(
                 shooterVelocity, shooterCurrent, shooterVoltage, shooterTemperature);
-        DogLog.log("Subsystems/Shooter/Rollers/velocity", shooterVelocity.getValueAsDouble());
+        DogLog.log(
+                "Subsystems/Shooter/Rollers/velocity", shooterVelocity.getValueAsDouble() * 60.0);
         DogLog.log("Subsystems/Shooter/Rollers/current", shooterCurrent.getValueAsDouble());
         DogLog.log("Subsystems/Shooter/Rollers/voltage", shooterVoltage.getValueAsDouble());
         DogLog.log("Subsystems/Shooter/Rollers/temperature", shooterTemperature.getValueAsDouble());

@@ -43,7 +43,8 @@ public class AutoRoutines extends AutoCommands {
     // public Command driveAround() {
     //     return newAuto("shoot_then_pass")
     //             .addDrivingTrajectory(
-    //                     Waypoints.STARTING_RIGHT, Waypoints.BUMP_LAND_RIGHT, Waypoints.BALLS_RIGHT)
+    //                     Waypoints.STARTING_RIGHT, Waypoints.BUMP_LAND_RIGHT,
+    // Waypoints.BALLS_RIGHT)
     //             .build();
     // }
 

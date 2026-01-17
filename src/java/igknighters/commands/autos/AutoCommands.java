@@ -6,10 +6,7 @@ import choreo.auto.AutoTrajectory;
 import choreo.trajectory.Trajectory;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -21,9 +18,7 @@ import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
 
 public class AutoCommands {
 
@@ -100,7 +95,7 @@ public class AutoCommands {
                                             new ScheduleCommand(
                                                     Commands.print("BODY COMMAND IS SCHEDULED")))
                                     .withName(routine.toString() + "_AutoHead"));
-            routine.anyDone(null, null).onTrue(Commands.runOnce(() -> routine.reset()));
+            // routine.anyDone(null, null).onTrue(Commands.runOnce(() -> routine.reset()));
             return routine.cmd(flag::get);
         }
 
@@ -166,7 +161,6 @@ public class AutoCommands {
             return this;
         }
     }
-
 
     protected RebuiltAuto newRebuiltAuto(String name) {
         DogLog.log("Robot/Commands/Autos/Creation", "Creating new rebuilt auto: " + name);
