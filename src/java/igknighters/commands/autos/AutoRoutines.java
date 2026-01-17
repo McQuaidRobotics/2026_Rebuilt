@@ -40,27 +40,26 @@ public class AutoRoutines extends AutoCommands {
         chooser.addCmd(name, () -> auto.generate());
     }
 
-    public Command driveAround() {
-        return newAuto("shoot_then_pass")
-                .addDrivingTrajectory(
-                        Waypoints.STARTING_RIGHT,
-                        Waypoints.BUMP_LAND_RIGHT,
-                        Waypoints.BALLS_RIGHT,
-                        Waypoints.BALLS_MIDDLE)
-                .build();
-    }
+    // public Command driveAround() {
+    //     return newAuto("shoot_then_pass")
+    //             .addDrivingTrajectory(
+    //                     Waypoints.STARTING_RIGHT, Waypoints.BUMP_LAND_RIGHT, Waypoints.BALLS_RIGHT)
+    //             .build();
+    // }
 
-    public Command shootThenMove() {
-        return newRebuiltAuto("SHOOT-THEN-MOVE")
-                .shootThenMove(Waypoints.STARTING_RIGHT, Waypoints.BUMP_LAND_RIGHT, 5.0)
-                .addDrivingTrajectory(Waypoints.BUMP_LAND_RIGHT, Waypoints.BALLS_RIGHT)
-                .shootAndMove(Waypoints.BALLS_RIGHT, Waypoints.BALLS_MIDDLE)
-                .build();
+    public Supplier<Command> shootThenMove() {
+        return () ->
+                newRebuiltAuto("SHOOT-THEN-MOVE")
+                        .shootThenMove(Waypoints.STARTING_RIGHT, Waypoints.BUMP_LAND_RIGHT, 5.0)
+                        .addDrivingTrajectory(Waypoints.BUMP_LAND_RIGHT, Waypoints.BALLS_RIGHT)
+                        .shootAndMove(Waypoints.BALLS_RIGHT, Waypoints.BALLS_MIDDLE)
+                        .build();
     }
 
     public Command rightToLeft() {
         return newRebuiltAuto("right to left")
-                .shootAndMove(Waypoints.RIGHT, Waypoints.LEFT)
+                .shootAndMove(Waypoints.STARTING_RIGHT, Waypoints.BUMP_LAND_RIGHT)
+                .shootAndMove(Waypoints.BALLS_RIGHT, Waypoints.BALLS_MIDDLE)
                 .build();
     }
 }

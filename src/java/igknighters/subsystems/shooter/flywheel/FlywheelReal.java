@@ -3,6 +3,7 @@ package igknighters.subsystems.shooter.flywheel;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import dev.doglog.DogLog;
@@ -16,7 +17,8 @@ public class FlywheelReal extends Flywheel {
     // MotionMagicVelocityVoltage(0.0);
 
     private final MotionMagicVelocityVoltage velocityControl;
-
+    private final MotionMagicVelocityTorqueCurrentFOC velocityTorqueCurrentFOC =
+            new MotionMagicVelocityTorqueCurrentFOC(0.0).withSlot(0);
     private final DutyCycleOut dutyCycleControl = new DutyCycleOut(0.0);
 
     // private final DigitalInput beamBreakSensor = new
@@ -29,7 +31,7 @@ public class FlywheelReal extends Flywheel {
 
     // private BaseStatusSignal isBeamBreakTripped;
 
-    public FlywheelReal() {
+    public TalonFXConfiguration getLeaderConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.Slot0.kP = SubsystemConstants.kShooter.kRollers.kP;
         config.Slot0.kI = SubsystemConstants.kShooter.kRollers.kI;
@@ -44,8 +46,17 @@ public class FlywheelReal extends Flywheel {
                 SubsystemConstants.kShooter.kRollers.MAX_ACCELERATION_RPM;
         config.MotionMagic.MotionMagicCruiseVelocity =
                 SubsystemConstants.kShooter.kRollers.MAX_SPEED_RPM;
+        config.TorqueCurrent.PeakReverseTorqueCurrent =
+                0.0; // do not allow the motor to run in reverse
+        config.TorqueCurrent.PeakForwardTorqueCurrent =
+                SubsystemConstants.kShooter.kRollers.PEAK_CURRENT_LIMIT;
 
-        mainShooter.getConfigurator().apply(config);
+        return config;
+    }
+
+    public FlywheelReal() {
+
+        mainShooter.getConfigurator().apply(getLeaderConfig());
 
         velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(0);
 
@@ -58,7 +69,8 @@ public class FlywheelReal extends Flywheel {
     @Override
     public void setSpeed(double speedRpm) {
         DogLog.log("Subsystems/Shooter/Rollers/setSpeed", speedRpm);
-        mainShooter.setControl(velocityControl.withVelocity(speedRpm / 60.0));
+        // mainShooter.setControl(velocityControl.withVelocity(speedRpm / 60.0));
+        mainShooter.setControl(velocityTorqueCurrentFOC.withVelocity(speedRpm / 60.0));
     }
 
     @Override

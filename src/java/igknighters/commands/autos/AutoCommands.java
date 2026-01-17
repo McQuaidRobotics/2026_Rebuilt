@@ -82,6 +82,7 @@ public class AutoCommands {
         }
 
         public Command build() {
+            System.out.println("Building auto: " + routine.toString());
             final AtomicBoolean flag = new AtomicBoolean(false);
             headCommand.addCommands(Commands.print(bodyCommand.getRequirements().toString()));
             bodyCommand.addCommands(
@@ -90,20 +91,22 @@ public class AutoCommands {
             routine.active()
                     .onTrue(
                             headCommand
+                                    .andThen(
+                                            Commands.print(
+                                                    "HEAD COMMAND FINISHED - SHOULD HAVE RESET THE"
+                                                            + " POSE"))
                                     .andThen(new ScheduleCommand(bodyCommand))
                                     .andThen(
                                             new ScheduleCommand(
                                                     Commands.print("BODY COMMAND IS SCHEDULED")))
                                     .withName(routine.toString() + "_AutoHead"));
+            routine.anyDone(null, null).onTrue(Commands.runOnce(() -> routine.reset()));
             return routine.cmd(flag::get);
         }
 
         private AutoTrajectory getTrajectory(Waypoints start, Waypoints end) {
-
             Trajectory<?> rawTraj = autoFactory.cache().loadTrajectory(start.to(end)).orElseThrow();
             return routine.trajectory(rawTraj);
-            // HOW TO HANDLE MIRRORING ACROSS X such that (x, y, theta) becomes (x, FIELD_WIDTH - y,
-            // -theta)
         }
 
         // public Command intakeTrajectory()
@@ -119,13 +122,14 @@ public class AutoCommands {
                             Commands.sequence(
                                             HigherOrderCommands.shootTillEmpty(subsystems, timeout),
                                             traj.cmd(),
-                                            SwerveCommands.stopDriving(swerve))
+                                            SwerveCommands.stopDriving(swerve).withTimeout(.1))
                                     .withName(traj.getRawTrajectory().name())));
             return this;
         }
 
         public RebuiltAuto shootAndMove(Waypoints start, Waypoints end) {
             AutoTrajectory traj = getTrajectory(start, end);
+
             if (!trajectorybeenadded) {
                 trajectorybeenadded = true;
                 headCommand.addCommands(traj.resetOdometry().withTimeout(0.1));
@@ -135,10 +139,17 @@ public class AutoCommands {
                     loggedCmd(
                             Commands.sequence(
                                             Commands.parallel(
-                                                    HigherOrderCommands.shootTillEmpty(
-                                                            subsystems, 3.0),
-                                                    traj.cmd()),
-                                            SwerveCommands.stopDriving(swerve))
+                                                            HigherOrderCommands.shootTillEmpty(
+                                                                            subsystems, 3.0)
+                                                                    .withName("SHOOT_TILL_EMPTY"),
+                                                            traj.cmd()
+                                                                    .withName(
+                                                                            "FOLLOWING TRAJECTORY"))
+                                                    .withName("SHOOT THEN MOVE"),
+                                            SwerveCommands.stopDriving(swerve)
+                                                    .withTimeout(.1)
+                                                    .withName("Stop Driving"))
+                                    .withName("shoot and move command full thing")
                                     .withName(traj.getRawTrajectory().name())));
             return this;
         }
@@ -150,91 +161,12 @@ public class AutoCommands {
                                 .cmd()
                                 .withName(
                                         "DRIVING FROM " + waypoints[i] + " TO " + waypoints[i + 1]),
-                        SwerveCommands.stopDriving(swerve).withTimeout(3.0));
+                        SwerveCommands.stopDriving(swerve).withTimeout(.1));
             }
             return this;
         }
     }
 
-    protected class GenericAuto {
-        private final AutoRoutine routine;
-        private final ParallelCommandGroup headCommand = new ParallelCommandGroup();
-        private final SequentialCommandGroup bodyCommand = new SequentialCommandGroup();
-        private boolean trajectorybeenadded = false;
-
-        private GenericAuto(AutoRoutine routine) {
-            this.routine = routine;
-        }
-
-        private AutoTrajectory getTrajectory(Waypoints start, Waypoints end) {
-
-            Trajectory<?> rawTraj = autoFactory.cache().loadTrajectory(start.to(end)).orElseThrow();
-            return routine.trajectory(rawTraj);
-        }
-
-        private Command finishAlignment(AutoTrajectory trajectory, double distOffset) {
-            if (trajectory.getFinalPose().isPresent()) {
-                Supplier<Command> cmdSup =
-                        () -> {
-                            final Pose2d finalPose =
-                                    trajectory
-                                            .getFinalPose()
-                                            .get()
-                                            .plus(new Transform2d(distOffset, 0, Rotation2d.kZero));
-                            return loggedCmd(
-                                    SwerveCommands.moveToSimple(swerve, finalPose)
-                                            .until(
-                                                    () ->
-                                                            withinTolerance(
-                                                                            SwerveCommands.getPose(
-                                                                                    swerve),
-                                                                            finalPose,
-                                                                            0.1)
-                                                                    && movingSlowerThan(swerve, .08)
-                                                                            .getAsBoolean()));
-                        };
-                return Commands.defer(cmdSup, Set.of(swerve));
-            } else {
-                DriverStation.reportError("NO FINAL POSE IN THE AUTO ROUTINE", false);
-                return Commands.none();
-            }
-        }
-
-        public GenericAuto addDrivingTrajectory(Waypoints... waypoints) {
-            headCommand.addCommands(
-                    getTrajectory(waypoints[0], waypoints[1]).resetOdometry().withTimeout(0.1));
-            for (int i = 0; i < waypoints.length - 1; i += 1) {
-                bodyCommand.addCommands(
-                        getTrajectory(waypoints[i], waypoints[i + 1]).cmd(),
-                        finishAlignment(getTrajectory(waypoints[i], waypoints[i + 1]), 0.0)
-                                .withName("FINISHING - ALIGNMENT"),
-                        SwerveCommands.stopDriving(swerve).withTimeout(3.0));
-            }
-            return this;
-        }
-
-        public Command build() {
-            final AtomicBoolean flag = new AtomicBoolean(false);
-            headCommand.addCommands(Commands.print(bodyCommand.getRequirements().toString()));
-            bodyCommand.addCommands(
-                    Commands.runOnce(() -> DogLog.log("Robot/Autos/ending the auto", true)),
-                    new ScheduleCommand(Commands.runOnce(() -> flag.set(true))));
-            routine.active()
-                    .onTrue(
-                            headCommand
-                                    .andThen(new ScheduleCommand(bodyCommand))
-                                    .andThen(
-                                            new ScheduleCommand(
-                                                    Commands.print("BODY COMMAND IS SCHEDULED")))
-                                    .withName(routine.toString() + "_AutoHead"));
-            return routine.cmd(flag::get);
-        }
-    }
-
-    protected GenericAuto newAuto(String name) {
-        DogLog.log("Robot/Commands/Autos/Creation", "Creating new auto: " + name);
-        return new GenericAuto(autoFactory.newRoutine(name));
-    }
 
     protected RebuiltAuto newRebuiltAuto(String name) {
         DogLog.log("Robot/Commands/Autos/Creation", "Creating new rebuilt auto: " + name);

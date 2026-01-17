@@ -9,13 +9,13 @@ import choreo.auto.AutoFactory;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import igknighters.commands.SubsystemTriggers;
 import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
@@ -35,6 +35,7 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
     private final AutoFactory autoFactory;
     public final AutoChooser autoChooser = new AutoChooser();
+
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
 
@@ -55,7 +56,6 @@ public class Robot extends TimedRobot {
     TunableDouble targetingD = TunableValues.getDouble("Tunables/TargetingD", 0.00);
 
     public Robot() {
-        DataLogManager.start();
 
         subsytems =
                 new Subsystems(
@@ -73,11 +73,13 @@ public class Robot extends TimedRobot {
         autoFactory = subsytems.swerve.createAutoFactory();
         final var routines = new AutoRoutines(subsytems, autoFactory);
         AutoRoutines.addCmd(autoChooser, "score-then-pass", routines::driveAround);
-        AutoRoutines.addCmd(autoChooser, "shoot-then-move", routines::shootThenMove);
+        autoChooser.addCmd("shoot-then-move", routines.shootThenMove());
         AutoRoutines.addCmd(autoChooser, "shoot-and-move", routines::rightToLeft);
         autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
         subsystemTriggers.SetupTriggers(subsytems.led);
+
+        RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
 
         scheduler.onCommandInitialize(
                 command ->
@@ -128,6 +130,8 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         scheduler.cancelAll();
+        autoChooser.select("Nothing");
+        autoChooser.selectedCommand().initialize();
         CommandScheduler.getInstance().clearComposedCommands();
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, detune.value()));
@@ -147,10 +151,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        Command autoCmd = autoChooser.selectedCommand();
-        String msg = "---- Starting auto command: " + autoCmd.getName() + " ----";
-        DogLog.log("AutoEvent", msg);
-        scheduler.schedule(autoCmd);
+        // Command autoCmd = autoChooser.selectedCommand();
+        // String msg = "---- Starting auto command: " + autoCmd.getName() + " ----";
+        // DogLog.log("AutoEvent", msg);
+        // scheduler.schedule(autoCmd);
     }
 
     @Override
@@ -163,6 +167,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        scheduler.cancelAll();
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
