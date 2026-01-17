@@ -46,10 +46,10 @@ public class SubsystemConstants {
     }
 
     public static class kIndexer {
-        public static final int LEADER_MOTOR_ID = 52;
+        public static final int LEADER_MOTOR_ID = 50;
         public static final int FOLLOWER_MOTOR_ID = 22;
         public static final double WHEEL_RADIUS_METERS = 0.0508; // 2 inch radius
-        public static final double GEAR_RATIO = 1.0;
+        public static final double GEAR_RATIO = 5.0;
         public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
         public static final double MAX_SPEED_RPM = 5000.0;
         public static final double MAX_ACCELERATION_RPM = 70.0;
