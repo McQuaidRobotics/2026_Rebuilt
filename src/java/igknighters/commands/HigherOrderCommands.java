@@ -13,10 +13,11 @@ public class HigherOrderCommands {
                                 () -> subsystems.swerve.getState().Pose,
                                 subsystems.shooter.getEstimatedRPM(
                                         Math.sqrt(
-                                                FieldConstants.HUB.POSITION.getX()
-                                                                * FieldConstants.HUB.POSITION.getX()
-                                                        + FieldConstants.HUB.POSITION.getY()
-                                                                * FieldConstants.HUB.POSITION
+                                                FieldConstants.HUB.POSITION_BLUE.getX()
+                                                                * FieldConstants.HUB.POSITION_BLUE
+                                                                        .getX()
+                                                        + FieldConstants.HUB.POSITION_BLUE.getY()
+                                                                * FieldConstants.HUB.POSITION_BLUE
                                                                         .getY()))),
                         IndexerCommands.dispense())
                 .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()

@@ -8,13 +8,23 @@ import edu.wpi.first.math.geometry.Rotation3d;
 public class FieldConstants {
     public static class HUB {
         public static final double HEIGHT_METERS = 72.0 * Conv.INCHES_TO_METERS;
-        public static final Pose2d POSITION =
+        public static final Pose2d POSITION_BLUE =
                 new Pose2d(
                         181.56 * Conv.INCHES_TO_METERS,
                         158.32 * Conv.INCHES_TO_METERS,
                         new Rotation2d());
-        public static final Pose3d POSE3D =
-                new Pose3d(POSITION.getX(), POSITION.getY(), HEIGHT_METERS, new Rotation3d());
+        public static final Pose3d POSE3D_BLUE =
+                new Pose3d(
+                        POSITION_BLUE.getX(),
+                        POSITION_BLUE.getY(),
+                        HEIGHT_METERS,
+                        new Rotation3d());
+
+        public static final Pose2d POSITION_RED =
+                new Pose2d(LENGTH - POSITION_BLUE.getX(), POSITION_BLUE.getY(), new Rotation2d());
+        public static final Pose3d POSE3D_RED =
+                new Pose3d(
+                        POSITION_RED.getX(), POSITION_RED.getY(), HEIGHT_METERS, new Rotation3d());
     }
 
     public static class PASS {}

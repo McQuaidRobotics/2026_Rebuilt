@@ -87,12 +87,12 @@ public class RollersSim extends Rollers {
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
 
         // Logging
-        DogLog.log("Subsystems/Shooter/Rollers/SimVoltage", voltage);
-        DogLog.log("Subsystems/Shooter/Rollers/SimSpeedRPM", currentRPM);
-        DogLog.log("Subsystems/Shooter/Rollers/GoalSpeedRPM", goalRPM);
-        DogLog.log("Subsystems/Shooter/Rollers/PIDError", profiledPIDController.getPositionError());
-        DogLog.log("Subsystems/Shooter/Rollers/PIDVolts", pidVolts);
-        DogLog.log("Subsystems/Shooter/Rollers/FeedforwardVolts", ffVolts);
+        DogLog.log("Subsystems/Intake/Rollers/SimVoltage", voltage);
+        DogLog.log("Subsystems/Intake/Rollers/SimSpeedRPM", currentRPM);
+        DogLog.log("Subsystems/Intake/Rollers/GoalSpeedRPM", goalRPM);
+        DogLog.log("Subsystems/Intake/Rollers/PIDError", profiledPIDController.getPositionError());
+        DogLog.log("Subsystems/Intake/Rollers/PIDVolts", pidVolts);
+        DogLog.log("Subsystems/Intake/Rollers/FeedforwardVolts", ffVolts);
 
         // Apply to sim
         leaderflywheelSim.setInputVoltage(voltage);

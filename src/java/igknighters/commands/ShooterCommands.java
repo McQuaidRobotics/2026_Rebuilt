@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj2.command.Command;
+import igknighters.Robot;
 import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.SubsystemConstants;
@@ -37,7 +38,9 @@ public class ShooterCommands {
                     Pose2d robotPose = robotPoseSupplier.get();
                     ShooterState targetingData =
                             AimSolver.solve_simple_no_AR_or_FutureTiming(
-                                    FieldConstants.HUB.POSE3D,
+                                    Robot.isBlue()
+                                            ? FieldConstants.HUB.POSE3D_BLUE
+                                            : FieldConstants.HUB.POSE3D_RED,
                                     new Pose3d(
                                             robotPose.getX(),
                                             robotPose.getY(),
@@ -52,7 +55,7 @@ public class ShooterCommands {
 
                     if (targetingData.rpm != 0.0) {
                         shooter.targetState(
-                                shooter.getCurrentState().rpm,
+                                RPM,
                                 Math.toDegrees(targetingData.turretAngleRads),
                                 Math.toDegrees(targetingData.hoodAngleRads));
                     } else {

@@ -10,6 +10,8 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,6 +29,7 @@ import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
 import igknighters.subsystems.swerve.swerveconstants.SwerveConsts;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
+import java.util.Optional;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -185,6 +188,16 @@ public class Robot extends TimedRobot {
     public void simulationPeriodic() {
         for (var subsystem : subsytems.locklessResources) {
             subsystem.simulationPeriodic();
+        }
+    }
+
+    public static boolean isBlue() {
+        Optional<Alliance> ally = DriverStation.getAlliance();
+
+        if (ally.isPresent()) {
+            return (ally.get() == Alliance.Blue);
+        } else {
+            return true; // Default to blue if alliance is unknown
         }
     }
 }

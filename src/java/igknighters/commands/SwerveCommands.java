@@ -11,9 +11,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import igknighters.Robot;
 import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
-import wpilibExt.AllianceSymmetry;
 
 public class SwerveCommands {
 
@@ -33,7 +33,7 @@ public class SwerveCommands {
                                                 swerve.getState().Pose.getX(),
                                                 swerve.getState().Pose.getY(),
                                                 new Rotation2d(Math.PI)))),
-                AllianceSymmetry::isBlue);
+                () -> Robot.isBlue());
     }
 
     public static Pose2d getPose(CommandSwerveDrivetrain swerve) {
