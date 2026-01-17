@@ -3,6 +3,7 @@ package igknighters.subsystems.indexer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.subsystems.indexer.spindexer.Spindexer;
+import igknighters.subsystems.indexer.spindexer.SpindexerDisabled;
 import igknighters.subsystems.indexer.spindexer.SpindexerReal;
 import igknighters.subsystems.indexer.spindexer.SpindexerSim;
 
@@ -11,7 +12,7 @@ public class Indexer extends SubsystemBase {
 
     public Indexer() {
         if (Robot.isReal()) {
-            spindexer = new SpindexerReal();
+            spindexer = new SpindexerDisabled();
         } else {
             spindexer = new SpindexerSim();
         }
@@ -27,5 +28,10 @@ public class Indexer extends SubsystemBase {
 
     public void stop() {
         spindexer.stop();
+    }
+
+    @Override
+    public void periodic() {
+        spindexer.periodic();
     }
 }

@@ -58,7 +58,7 @@ public class SpindexerSim extends Spindexer {
     @Override
     public void periodic() {
         double currentRPM = indexerSim.getAngularVelocityRPM();
-        double goalRPM = profiledPIDController.getGoal().position;
+        double goalRPS = profiledPIDController.getGoal().position;
         double pidOutput = 0.0;
         double ffOutput = 0.0;
 
@@ -67,8 +67,6 @@ public class SpindexerSim extends Spindexer {
         if (isPidControlledThisCycle) {
 
             // Feedforward in volts
-
-            double goalRPS = goalRPM / 60.0;
 
             ffOutput = kIndexer.kS + kIndexer.kV * goalRPS;
 
@@ -92,7 +90,7 @@ public class SpindexerSim extends Spindexer {
         // Logging
         DogLog.log("Subsystems/Indexer/Spindexer/SimVoltage", voltage);
         DogLog.log("Subsystems/Indexer/Spindexer/SimSpeedRPM", currentRPM);
-        DogLog.log("Subsystems/Indexer/Spindexer/GoalSpeedRPM", goalRPM);
+        DogLog.log("Subsystems/Indexer/Spindexer/GoalSpeedRPM", goalRPS * 60.0);
         DogLog.log(
                 "Subsystems/Indexer/Spindexer/PIDOutputRPM",
                 profiledPIDController.getPositionError());
