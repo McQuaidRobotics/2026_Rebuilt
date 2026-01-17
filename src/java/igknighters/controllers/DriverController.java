@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import igknighters.commands.IndexerCommands;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
@@ -127,9 +128,8 @@ public class DriverController {
         //                 state.kI,
         //                 state.kD));
 
-        // this.LT.onTrue(
-        //         ShooterCommands.aimAtHub(
-        //                 subsystems.shooter, () -> subsystems.swerve.getState().Pose, 5000));
+        this.LT.onTrue(IndexerCommands.dispense(subsystems.indexer, 100));
+        this.RT.onTrue(IndexerCommands.dispense(subsystems.indexer, 120));
         // this.RT.onTrue(ShooterCommands.aimTurretAtAngle(subsystems.shooter, -45, 60));
         // this.DPU.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 0));
         // this.DPD.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 1.0));

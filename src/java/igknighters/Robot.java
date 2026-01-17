@@ -23,6 +23,7 @@ import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
@@ -62,11 +63,13 @@ public class Robot extends TimedRobot {
                         swerveConsts.createDrivetrain(),
                         new LimeLightVision(),
                         new Led(40, 1),
-                        new Shooter());
+                        new Shooter(),
+                        new Indexer());
         SmartDashboard.putData(CommandScheduler.getInstance());
         SmartDashboard.putData(subsytems.shooter);
         SmartDashboard.putData(subsytems.led);
         SmartDashboard.putData(subsytems.vision);
+        SmartDashboard.putData(subsytems.indexer);
 
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, .8));
