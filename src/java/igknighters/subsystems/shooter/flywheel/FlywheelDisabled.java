@@ -1,6 +1,6 @@
-package igknighters.subsystems.shooter.rollers;
+package igknighters.subsystems.shooter.flywheel;
 
-public class RollersDisabled extends Rollers {
+public class FlywheelDisabled extends Flywheel {
     @Override
     public void setSpeed(double speedMetersPerSecond) {
         // TODO Auto-generated method stub

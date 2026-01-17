@@ -74,6 +74,7 @@ public class Robot extends TimedRobot {
         final var routines = new AutoRoutines(subsytems, autoFactory);
         AutoRoutines.addCmd(autoChooser, "score-then-pass", routines::driveAround);
         AutoRoutines.addCmd(autoChooser, "shoot-then-move", routines::shootThenMove);
+        AutoRoutines.addCmd(autoChooser, "shoot-and-move", routines::rightToLeft);
         autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
         subsystemTriggers.SetupTriggers(subsytems.led);

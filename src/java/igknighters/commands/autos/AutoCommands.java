@@ -124,6 +124,25 @@ public class AutoCommands {
             return this;
         }
 
+        public RebuiltAuto shootAndMove(Waypoints start, Waypoints end) {
+            AutoTrajectory trajectory = getTrajectory(start, end);
+            if (!trajectorybeenadded) {
+                trajectorybeenadded = true;
+                headCommand.addCommands(trajectory.resetOdometry().withTimeout(0.1));
+            }
+
+            bodyCommand.addCommands(
+                    loggedCmd(
+                            Commands.sequence(
+                                            Commands.parallel(
+                                                    HigherOrderCommands.shootTillEmpty(
+                                                            subsystems, 3.0),
+                                                    trajectory.cmd()),
+                                            SwerveCommands.stopDriving(swerve))
+                                    .withName(trajectory.getRawTrajectory().name())));
+            return this;
+        }
+
         public RebuiltAuto addDrivingTrajectory(Waypoints... waypoints) {
             for (int i = 0; i < waypoints.length - 1; i += 1) {
                 bodyCommand.addCommands(

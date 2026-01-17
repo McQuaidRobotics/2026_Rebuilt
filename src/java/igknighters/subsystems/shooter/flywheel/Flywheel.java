@@ -1,6 +1,6 @@
-package igknighters.subsystems.shooter.rollers;
+package igknighters.subsystems.shooter.flywheel;
 
-public abstract class Rollers {
+public abstract class Flywheel {
 
     public abstract void setSpeed(double speedMetersPerSecond);
 

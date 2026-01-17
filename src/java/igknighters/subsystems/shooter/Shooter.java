@@ -4,12 +4,12 @@ import dev.doglog.DogLog;
 import igknighters.Robot;
 import igknighters.constants.Conv;
 import igknighters.subsystems.Subsystems.ExclusiveSubsystem;
+import igknighters.subsystems.shooter.flywheel.Flywheel;
+import igknighters.subsystems.shooter.flywheel.FlywheelReal;
+import igknighters.subsystems.shooter.flywheel.FlywheelSimulator;
 import igknighters.subsystems.shooter.hood.Hood;
 import igknighters.subsystems.shooter.hood.HoodDisabled;
 import igknighters.subsystems.shooter.hood.HoodSim;
-import igknighters.subsystems.shooter.rollers.Rollers;
-import igknighters.subsystems.shooter.rollers.RollersReal;
-import igknighters.subsystems.shooter.rollers.RollersSim;
 import igknighters.subsystems.shooter.turret.Turret;
 import igknighters.subsystems.shooter.turret.TurretDisabled;
 import igknighters.subsystems.shooter.turret.TurretSim;
@@ -17,7 +17,7 @@ import igknighters.util.LerpTable;
 import igknighters.util.LerpTable.LerpTableEntry;
 
 public class Shooter implements ExclusiveSubsystem {
-    private final Rollers rollers;
+    private final Flywheel rollers;
     private final Turret turret;
     private final Hood hood;
     private final ShooterVisualizer visualizer;
@@ -36,11 +36,11 @@ public class Shooter implements ExclusiveSubsystem {
 
     public Shooter() {
         if (Robot.isReal()) {
-            rollers = new RollersReal();
+            rollers = new FlywheelReal();
             turret = new TurretDisabled();
             hood = new HoodDisabled();
         } else {
-            rollers = new RollersSim();
+            rollers = new FlywheelSimulator();
             turret = new TurretSim();
             hood = new HoodSim();
         }

@@ -56,4 +56,10 @@ public class AutoRoutines extends AutoCommands {
                 .addDrivingTrajectory(Waypoints.BUMP_LAND_RIGHT, Waypoints.BALLS_RIGHT)
                 .build();
     }
+
+    public Command rightToLeft() {
+        return newRebuiltAuto("right to left")
+                .shootAndMove(Waypoints.RIGHT, Waypoints.LEFT)
+                .build();
+    }
 }

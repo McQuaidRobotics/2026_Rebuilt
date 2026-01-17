@@ -1,4 +1,4 @@
-package igknighters.subsystems.shooter.rollers;
+package igknighters.subsystems.shooter.flywheel;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
 
-public class RollersSim extends Rollers {
+public class FlywheelSimulator extends Flywheel {
 
     private double inputVoltage = 0.0;
 

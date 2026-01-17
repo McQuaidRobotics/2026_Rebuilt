@@ -1,4 +1,4 @@
-package igknighters.subsystems.shooter.rollers;
+package igknighters.subsystems.shooter.flywheel;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -8,7 +8,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import dev.doglog.DogLog;
 import igknighters.constants.SubsystemConstants;
 
-public class RollersReal extends Rollers {
+public class FlywheelReal extends Flywheel {
     private final TalonFX mainShooter =
             new TalonFX(SubsystemConstants.kShooter.kRollers.LEADER_MOTOR_ID);
 
@@ -29,7 +29,7 @@ public class RollersReal extends Rollers {
 
     // private BaseStatusSignal isBeamBreakTripped;
 
-    public RollersReal() {
+    public FlywheelReal() {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.Slot0.kP = SubsystemConstants.kShooter.kRollers.kP;
         config.Slot0.kI = SubsystemConstants.kShooter.kRollers.kI;
