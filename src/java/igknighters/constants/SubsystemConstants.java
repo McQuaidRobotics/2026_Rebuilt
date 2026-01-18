@@ -35,8 +35,8 @@ public class SubsystemConstants {
         public static final double MAX_VELOCITY_METERS_PER_SECOND = 0.50;
         public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 0.20;
         public static final double GEAR_RATIO = 15.0;
-        public static final double MAX_ANGLE_DEGREES = 90.0;
-        public static final double MIN_ANGLE_DEGREES = 0.0;
+        public static final double MAX_HEIGHT_INCHES = 20.0 * Conv.INCHES_TO_METERS;
+        public static final double MIN_HEIGHT_INCHES = 0.0;
         public static final double LENGTH_METERS = 0.5;
         public static final double MASS = 4.0;
         public static final double PEAK_FORWARD_CURRENT_LIMIT = 40;
@@ -60,12 +60,12 @@ public class SubsystemConstants {
         public static final int STATOR_CURRENT_LIMIT = 35;
         public static final int SUPPLY_CURRENT_LIMIT = 25;
         public static final int PEAK_CURRENT_LIMIT = 40;
-        public static final double kP = 0.3; // .5 max
-        public static final double kI = 0.1;
-        public static final double kD = 0.0;
-        public static final double kS = 0.6;
-        public static final double kV = 0.15;
-        public static final double kA = 0.02;
+        public static final double kP = 0.5;
+        public static final double kI = 0;
+        public static final double kD = 0.001;
+        public static final double kS = 0.178;
+        public static final double kV = 0.5;
+        public static final double kA = 0;
     }
 
     public static class kIntake {

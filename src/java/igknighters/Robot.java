@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import igknighters.commands.IndexerCommands;
 import igknighters.commands.SubsystemTriggers;
 import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
@@ -56,7 +57,7 @@ public class Robot extends TimedRobot {
     TunableDouble targetingI = TunableValues.getDouble("Tunables/TargetingI", 0.00);
     TunableDouble targetingD = TunableValues.getDouble("Tunables/TargetingD", 0.00);
 
-    public void setUpCommandLogging(){
+    public void setUpCommandLogging() {
         scheduler.onCommandInitialize(
                 command ->
                         DogLog.log(
@@ -84,17 +85,16 @@ public class Robot extends TimedRobot {
                         DogLog.log(
                                 "Commands/Tracking/" + command.getName() + "/ Command Interrupted",
                                 "FALSE"));
-
     }
 
-    public void publishCommandsAndSubystems(Subsystems subsystems){
+    public void publishCommandsAndSubystems(Subsystems subsystems) {
         SmartDashboard.putData(CommandScheduler.getInstance());
-        for (var subsystem : subsystems.lockedResources){
+        for (var subsystem : subsystems.lockedResources) {
             SmartDashboard.putData(subsystem);
         }
     }
 
-    public void setUpAutos(Subsystems subsystems){
+    public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsytems.swerve.createAutoFactory();
         final var routines = new AutoRoutines(subsytems, autoFactory);
         autoChooser.addCmd("shoot-then-move", routines.shootThenMove());
@@ -103,13 +103,36 @@ public class Robot extends TimedRobot {
                 "NEW METHOD IDK IF THIS WILL WORK HOPEFULLY IT WILL", routines.scoreThenPass());
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
     }
-    public void setUpSwerve(Subsystems subsystems){
+
+    public void setUpSwerve(Subsystems subsystems) {
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, 1.0));
 
         logger = new Telemetry(swerveConsts.getMaxSpeedMetersPerSecond(), subsytems);
         subsytems.swerve.registerTelemetry(logger::telemeterize);
     }
+
+    public void setUpTest(Subsystems subsystems) {
+        SmartDashboard.putData(
+                "Commands/Spindexer/Spindexer - 120 RPM",
+                IndexerCommands.dispense(subsystems.indexer, 120));
+        SmartDashboard.putData(
+                "Commands/Spindexer/Spindexer - 140 RPM",
+                IndexerCommands.dispense(subsystems.indexer, 140));
+        SmartDashboard.putData(
+                "Commands/Spindexer/Spindexer - 160 RPM",
+                IndexerCommands.dispense(subsystems.indexer, 160));
+        SmartDashboard.putData(
+                "Commands/Spindexer/Spindexer - 180 RPM",
+                IndexerCommands.dispense(subsystems.indexer, 180));
+        SmartDashboard.putData(
+                "Commands/Spindexer/Spindexer - 200 RPM",
+                IndexerCommands.dispense(subsystems.indexer, 200));
+        SmartDashboard.putData(
+                "Commands/Spindexer/Spindexer - 220 RPM",
+                IndexerCommands.dispense(subsystems.indexer, 220));
+    }
+
     public Robot() {
         setUpCommandLogging();
         subsytems =
@@ -120,15 +143,13 @@ public class Robot extends TimedRobot {
                         new Shooter(),
                         new Indexer(),
                         new Intake());
+        setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
-
-        
+        setUpTest(subsytems);
         driverController.bind(subsytems);
-        
-        subsystemTriggers.SetupTriggers(subsytems.led);
 
-        
+        subsystemTriggers.SetupTriggers(subsytems.led);
     }
 
     @Override

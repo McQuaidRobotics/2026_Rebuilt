@@ -1,4 +1,4 @@
-package igknighters.subsystems.climber.arms;
+package igknighters.subsystems.climber.chainsaw;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -12,7 +12,7 @@ import dev.doglog.DogLog;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 
-public class ArmsReal extends Arms {
+public class ChainsawReal extends Chainsaw {
     private final MotionMagicExpoVoltage positionControl =
             new MotionMagicExpoVoltage(0.0).withSlot(0);
     private final DutyCycleOut stop = new DutyCycleOut(0.0);
@@ -21,17 +21,17 @@ public class ArmsReal extends Arms {
     private final BaseStatusSignal armPosition, armCurrent;
 
     private final TalonFX leftMotor;
-    private final TalonFX rightMotor;
+    // private final TalonFX rightMotor;
 
-    public ArmsReal() {
+    public ChainsawReal() {
         leftMotor = new TalonFX(SubsystemConstants.kClimber.LEFT_MOTOR_ID);
-        rightMotor = new TalonFX(SubsystemConstants.kClimber.RIGHT_MOTOR_ID);
+        // rightMotor = new TalonFX(SubsystemConstants.kClimber.RIGHT_MOTOR_ID);
 
         armPosition = leftMotor.getPosition();
         armCurrent = leftMotor.getStatorCurrent();
 
         leftMotor.getConfigurator().apply(arm1Config());
-        rightMotor.setControl(new Follower(leftMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+        // rightMotor.setControl(new Follower(leftMotor.getDeviceID(), MotorAlignmentValue.Opposed));
     }
 
     public TalonFXConfiguration arm1Config() {
@@ -56,17 +56,17 @@ public class ArmsReal extends Arms {
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-                SubsystemConstants.kClimber.MAX_ANGLE_DEGREES;
+                SubsystemConstants.kClimber.MAX_HEIGHT_INCHES;
         config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-                SubsystemConstants.kClimber.MIN_ANGLE_DEGREES;
+                SubsystemConstants.kClimber.MIN_HEIGHT_INCHES;
 
         return config;
     }
 
     @Override
-    void setPosition(double angleDegrees) {
-        leftMotor.setPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS);
+    void setPosition(double positionMeters) {
+        leftMotor.setPosition(positionMeters * Conv.METERS_TO_INCHES);
     }
 
     @Override
@@ -75,8 +75,8 @@ public class ArmsReal extends Arms {
     }
 
     @Override
-    double getPositionDegrees() {
-        return armPosition.getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
+    double getPositionMeters() {
+        return armPosition.getValueAsDouble() * Conv.INCHES_TO_METERS;
     }
 
     @Override
@@ -85,9 +85,9 @@ public class ArmsReal extends Arms {
     }
 
     @Override
-    void goToAngleDegrees(double angleDegrees) {
+    void goToMeters(double meters) {
         leftMotor.setControl(
-                positionControl.withPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS));
+                positionControl.withPosition(meters * Conv.METERS_TO_INCHES));
     }
 
     @Override

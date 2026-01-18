@@ -112,8 +112,8 @@ public class DriverController {
                         state.kI,
                         state.kD));
 
-        this.LT.onTrue(IndexerCommands.dispense(subsystems.indexer, 140));
-        this.RT.onTrue(IndexerCommands.dispense(subsystems.indexer, 160));
+        this.LT.onTrue(IndexerCommands.dispense(subsystems.indexer, 120));
+        this.RT.onTrue(IndexerCommands.dispense(subsystems.indexer, 180));
         this.DPD.onTrue(ShooterCommands.stopShooting(subsystems.shooter));
         this.DPL.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 4000));
         this.DPR.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 3500));

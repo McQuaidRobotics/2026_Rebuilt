@@ -40,7 +40,7 @@ public class SpindexerReal extends Spindexer {
 
         config.Feedback.SensorToMechanismRatio = SubsystemConstants.kIndexer.GEAR_RATIO;
 
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         config.MotionMagic.MotionMagicJerk = SubsystemConstants.kIndexer.MOTION_MAGIC_JERK;
         config.MotionMagic.MotionMagicAcceleration =
