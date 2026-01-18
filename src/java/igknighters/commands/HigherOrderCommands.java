@@ -11,11 +11,13 @@ public class HigherOrderCommands {
             Subsystems subsystems, double timeout, Supplier<Pose3d> targetPoseSupplier) {
         return Commands.parallel(
                         ShooterCommands.aimAt(
-                                subsystems.shooter,
-                                () -> subsystems.swerve.getState().Pose,
-                                targetPoseSupplier),
+                                        subsystems.shooter,
+                                        () -> subsystems.swerve.getState().Pose,
+                                        targetPoseSupplier)
+                                .withName("Aim At in Shoot till Empty"),
                         IndexerCommands.dispense(subsystems.indexer, 100.0))
                 .onlyIf(() -> subsystems.shooter.atTarget(.5))
+                .withName("dispense balls into shooter")
                 .withName("Shoot till empty")
                 .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
     }

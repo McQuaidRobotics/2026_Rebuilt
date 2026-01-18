@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import igknighters.commands.SubsystemTriggers;
 import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
@@ -35,7 +34,7 @@ import java.util.Optional;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
-    private final AutoFactory autoFactory;
+    private AutoFactory autoFactory;
     public final AutoChooser autoChooser = new AutoChooser();
 
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
@@ -51,45 +50,13 @@ public class Robot extends TimedRobot {
 
     private final CommonSwerveConsts swerveConsts = swerveConstGetter.getSwerveConsts();
 
-    private final Telemetry logger;
+    private Telemetry logger;
     TunableDouble detune = TunableValues.getDouble("Tunables/Detune", 0.6);
     TunableDouble targetingP = TunableValues.getDouble("Tunables/TargetingP", 0.07);
     TunableDouble targetingI = TunableValues.getDouble("Tunables/TargetingI", 0.00);
     TunableDouble targetingD = TunableValues.getDouble("Tunables/TargetingD", 0.00);
 
-    public Robot() {
-
-        subsytems =
-                new Subsystems(
-                        swerveConsts.createDrivetrain(),
-                        new LimeLightVision(),
-                        new Led(40, 1),
-                        new Shooter(),
-                        new Indexer(),
-                        new Intake());
-        SmartDashboard.putData(CommandScheduler.getInstance());
-        SmartDashboard.putData(subsytems.shooter);
-        SmartDashboard.putData(subsytems.led);
-        SmartDashboard.putData(subsytems.vision);
-        SmartDashboard.putData(subsytems.indexer);
-
-        subsytems.swerve.setDefaultCommand(
-                new TeleopSwerveWithDetune(subsytems.swerve, driverController, .8));
-
-        logger = new Telemetry(swerveConsts.getMaxSpeedMetersPerSecond(), subsytems);
-        subsytems.swerve.registerTelemetry(logger::telemeterize);
-        driverController.bind(subsytems);
-        autoFactory = subsytems.swerve.createAutoFactory();
-        final var routines = new AutoRoutines(subsytems, autoFactory);
-        autoChooser.addCmd("shoot-then-move", routines.shootThenMove());
-        autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
-        autoChooser.addCmd(
-                "NEW METHOD IDK IF THIS WILL WORK HOPEFULLY IT WILL", routines.scoreThenPass());
-        SmartDashboard.putData("AUTO CHOOSER", autoChooser);
-        subsystemTriggers.SetupTriggers(subsytems.led);
-
-        RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
-
+    public void setUpCommandLogging(){
         scheduler.onCommandInitialize(
                 command ->
                         DogLog.log(
@@ -117,6 +84,51 @@ public class Robot extends TimedRobot {
                         DogLog.log(
                                 "Commands/Tracking/" + command.getName() + "/ Command Interrupted",
                                 "FALSE"));
+
+    }
+
+    public void publishCommandsAndSubystems(Subsystems subsystems){
+        SmartDashboard.putData(CommandScheduler.getInstance());
+        for (var subsystem : subsystems.lockedResources){
+            SmartDashboard.putData(subsystem);
+        }
+    }
+
+    public void setUpAutos(Subsystems subsystems){
+        autoFactory = subsytems.swerve.createAutoFactory();
+        final var routines = new AutoRoutines(subsytems, autoFactory);
+        autoChooser.addCmd("shoot-then-move", routines.shootThenMove());
+        autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
+        autoChooser.addCmd(
+                "NEW METHOD IDK IF THIS WILL WORK HOPEFULLY IT WILL", routines.scoreThenPass());
+        SmartDashboard.putData("AUTO CHOOSER", autoChooser);
+    }
+    public void setUpSwerve(Subsystems subsystems){
+        subsytems.swerve.setDefaultCommand(
+                new TeleopSwerveWithDetune(subsytems.swerve, driverController, 1.0));
+
+        logger = new Telemetry(swerveConsts.getMaxSpeedMetersPerSecond(), subsytems);
+        subsytems.swerve.registerTelemetry(logger::telemeterize);
+    }
+    public Robot() {
+        setUpCommandLogging();
+        subsytems =
+                new Subsystems(
+                        swerveConsts.createDrivetrain(),
+                        new LimeLightVision(),
+                        new Led(40, 1),
+                        new Shooter(),
+                        new Indexer(),
+                        new Intake());
+        publishCommandsAndSubystems(subsytems);
+        setUpAutos(subsytems);
+
+        
+        driverController.bind(subsytems);
+        
+        subsystemTriggers.SetupTriggers(subsytems.led);
+
+        
     }
 
     @Override
@@ -139,12 +151,8 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         scheduler.cancelAll();
-        scheduler.clearComposedCommands();
         scheduler.getActiveButtonLoop().clear();
-    
-        autoChooser.select("Nothing");
-        autoChooser.selectedCommand().initialize();
-        CommandScheduler.getInstance().clearComposedCommands();
+        // CommandScheduler.getInstance().clearComposedCommands();
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, detune.value()));
         DrivingSharedState.getInstance().setDetune(detune.value());
@@ -163,10 +171,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        // Command autoCmd = autoChooser.selectedCommand();
-        // String msg = "---- Starting auto command: " + autoCmd.getName() + " ----";
-        // DogLog.log("AutoEvent", msg);
-        // scheduler.schedule(autoCmd);
+        Command autoCommand = autoChooser.selectedCommand();
+        scheduler.schedule(autoCommand);
     }
 
     @Override

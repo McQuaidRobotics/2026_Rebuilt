@@ -97,17 +97,23 @@ public class AutoRoutines extends AutoCommands {
         routine.active()
                 .onTrue(
                         Commands.sequence(
-                                moveTraj.resetOdometry().withTimeout(0.1),
-                                HigherOrderCommands.shootTillEmpty(
-                                                subsystems, 3.0, () -> getHubTarget())
-                                        .withName("SCORE_THEN_PASS_Shoot"),
-                                moveTraj.cmd().withName("SCORE_THEN_PASS_Move")));
+                                        moveTraj.resetOdometry().withTimeout(0.1),
+                                        HigherOrderCommands.shootTillEmpty(
+                                                        subsystems, 3.0, () -> getHubTarget())
+                                                .withName("SCORE_THEN_PASS_Shoot"),
+                                        Commands.print("FINISHED SCORING"),
+                                        Commands.waitSeconds(3),
+                                        moveTraj.cmd().withName("SCORE_THEN_PASS_Move"))
+                                .withName("SCORE THEN MOVE ELEMENT"));
 
         moveTraj.atTime("Intake")
                 .onTrue(
-                        Commands.parallel(
-                                IntakeCommands.intakeBalls(subsystems.intake),
-                                HigherOrderCommands.shootNoStop(subsystems, () -> getHubTarget())));
+                        Commands.sequence(
+                                Commands.print("INTAKE BALLS"),
+                                Commands.parallel(
+                                        IntakeCommands.intakeBalls(subsystems.intake),
+                                        HigherOrderCommands.shootNoStop(
+                                                subsystems, () -> getHubTarget()))));
 
         return () -> routine.cmd();
     }
