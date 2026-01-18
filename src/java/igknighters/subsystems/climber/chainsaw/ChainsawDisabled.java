@@ -5,24 +5,19 @@ public class ChainsawDisabled extends Chainsaw {
     double getPositionInches() {
         return 0;
     }
+
     @Override
-    void setPositionInches(double position) {
-        
-    }
+    void setPositionInches(double position) {}
+
     @Override
-    void goToInches(double inches) {
-        
-    }
+    void goToInches(double inches) {}
+
     @Override
-    void periodic() {
-        
-    }
+    void periodic() {}
+
     @Override
-    void stop() {
-        
-    }
+    void stop() {}
+
     @Override
-    void coast() {
-        
-    }
+    void coast() {}
 }

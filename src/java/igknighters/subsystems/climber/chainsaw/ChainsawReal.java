@@ -4,10 +4,8 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import dev.doglog.DogLog;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
@@ -21,6 +19,7 @@ public class ChainsawReal extends Chainsaw {
     private final BaseStatusSignal armPosition, armCurrent;
 
     private final TalonFX leftMotor;
+
     // private final TalonFX rightMotor;
 
     public ChainsawReal() {
@@ -31,7 +30,8 @@ public class ChainsawReal extends Chainsaw {
         armCurrent = leftMotor.getStatorCurrent();
 
         leftMotor.getConfigurator().apply(arm1Config());
-        // rightMotor.setControl(new Follower(leftMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+        // rightMotor.setControl(new Follower(leftMotor.getDeviceID(),
+        // MotorAlignmentValue.Opposed));
     }
 
     public TalonFXConfiguration arm1Config() {
@@ -87,13 +87,12 @@ public class ChainsawReal extends Chainsaw {
     @Override
     void goToInches(double inches) {
         DogLog.log("Subsystems/Climber/Target", inches);
-        leftMotor.setControl(
-                positionControl.withPosition(inches));
+        leftMotor.setControl(positionControl.withPosition(inches));
     }
 
     @Override
     void periodic() {
-        
+
         BaseStatusSignal.refreshAll(armPosition, armCurrent);
         DogLog.log(
                 "Subsystems/Climber/Inches",

@@ -9,8 +9,8 @@ import igknighters.subsystems.climber.chainsaw.ChainsawReal;
 public class Climber extends SubsystemBase {
     private Chainsaw chainsaw;
 
-    public Climber(){
-        if(Robot.isReal()){
+    public Climber() {
+        if (Robot.isReal()) {
             chainsaw = new ChainsawReal();
         } else {
             chainsaw = new ChainsawDisabled();

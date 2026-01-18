@@ -36,7 +36,7 @@ public class SubsystemConstants {
         public static final double MAX_VELOCITY_METERS_PER_SECOND = 0.50;
         public static final boolean inverted = false;
         public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 0.20;
-        public static final double GEAR_RATIO = 25.0/4.0;
+        public static final double GEAR_RATIO = 25.0 / 4.0;
         public static final double MAX_HEIGHT_INCHES = 20.0 * Conv.INCHES_TO_METERS;
         public static final double MIN_HEIGHT_INCHES = 0.0;
         public static final double LENGTH_METERS = 0.5;
