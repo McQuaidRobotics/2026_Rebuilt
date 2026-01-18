@@ -25,6 +25,7 @@ public class SubsystemConstants {
     public static class kClimber {
         public static final int LEFT_MOTOR_ID = 60;
         public static final int RIGHT_MOTOR_ID = 61;
+        public static final double MOMENT_OF_INERTIA_KG_M2 = 0.05; // this is made up
         public static final double kP = 0.1;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
@@ -33,8 +34,9 @@ public class SubsystemConstants {
         public static final double kA = 0.0;
         public static final double MAX_JERK = 0.05;
         public static final double MAX_VELOCITY_METERS_PER_SECOND = 0.50;
+        public static final boolean inverted = false;
         public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 0.20;
-        public static final double GEAR_RATIO = 15.0;
+        public static final double GEAR_RATIO = 25.0/4.0;
         public static final double MAX_HEIGHT_INCHES = 20.0 * Conv.INCHES_TO_METERS;
         public static final double MIN_HEIGHT_INCHES = 0.0;
         public static final double LENGTH_METERS = 0.5;

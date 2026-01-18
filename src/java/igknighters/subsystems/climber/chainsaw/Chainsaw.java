@@ -2,13 +2,13 @@ package igknighters.subsystems.climber.chainsaw;
 
 public abstract class Chainsaw {
 
-    abstract void setPosition(double position);
+    abstract void setPositionInches(double position);
 
-    abstract void goToMeters(double meters);
+    abstract void goToInches(double meters);
 
     abstract void periodic();
 
-    abstract double getPositionMeters();
+    abstract double getPositionInches();
 
     abstract void stop();
 
