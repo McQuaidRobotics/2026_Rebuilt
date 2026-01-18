@@ -6,6 +6,7 @@ import choreo.auto.AutoTrajectory;
 import choreo.trajectory.Trajectory;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -14,8 +15,10 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WrapperCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import igknighters.Robot;
 import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.SwerveCommands;
+import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -76,6 +79,10 @@ public class AutoCommands {
             this.routine = routine;
         }
 
+        public Pose3d getHubTarget() {
+            return Robot.isBlue() ? FieldConstants.HUB.POSE3D_BLUE : FieldConstants.HUB.POSE3D_RED;
+        }
+
         public Command build() {
             System.out.println("Building auto: " + routine.toString());
             final AtomicBoolean flag = new AtomicBoolean(false);
@@ -115,7 +122,11 @@ public class AutoCommands {
             bodyCommand.addCommands(
                     loggedCmd(
                             Commands.sequence(
-                                            HigherOrderCommands.shootTillEmpty(subsystems, timeout),
+                                            HigherOrderCommands.shootTillEmpty(
+                                                            subsystems,
+                                                            timeout,
+                                                            () -> getHubTarget())
+                                                    .withName("SHOOT_TILL_EMPTY"),
                                             traj.cmd(),
                                             SwerveCommands.stopDriving(swerve).withTimeout(.1))
                                     .withName(traj.getRawTrajectory().name())));
@@ -135,7 +146,9 @@ public class AutoCommands {
                             Commands.sequence(
                                             Commands.parallel(
                                                             HigherOrderCommands.shootTillEmpty(
-                                                                            subsystems, 3.0)
+                                                                            subsystems,
+                                                                            3.0,
+                                                                            () -> getHubTarget())
                                                                     .withName("SHOOT_TILL_EMPTY"),
                                                             traj.cmd()
                                                                     .withName(

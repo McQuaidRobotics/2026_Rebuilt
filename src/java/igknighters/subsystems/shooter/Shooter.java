@@ -21,9 +21,9 @@ public class Shooter extends SubsystemBase {
     private final Turret turret;
     private final Hood hood;
     private final ShooterVisualizer visualizer;
-    private double goalRPM = 0.0;
-    private double goalTurretAngleDegrees = 0.0;
-    private double goalHoodAngleDegrees = 0.0;
+    private double goalRPM = 100.0;
+    private double goalTurretAngleDegrees = 10.0;
+    private double goalHoodAngleDegrees = 10.0;
     private LerpTable rpmTable =
             new LerpTable(
                     new LerpTableEntry[] {

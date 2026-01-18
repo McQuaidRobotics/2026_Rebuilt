@@ -27,7 +27,23 @@ public class FieldConstants {
                         POSITION_RED.getX(), POSITION_RED.getY(), HEIGHT_METERS, new Rotation3d());
     }
 
-    public static class PASS {}
+    public static class PASS {
+        public static final Pose3d POSITION_RIGHT_BLUE =
+                new Pose3d(
+                        0.0 * Conv.INCHES_TO_METERS,
+                        0.0 * Conv.INCHES_TO_METERS,
+                        0.0 * Conv.INCHES_TO_METERS,
+                        new Rotation3d());
+
+        public static final Pose3d POSITION_LEFT_BLUE =
+                new Pose3d(0.0, FieldConstants.WIDTH, 0.0, new Rotation3d());
+
+        public static final Pose3d POSITION_RIGHT_RED =
+                new Pose3d(FieldConstants.LENGTH - 0.0, 0.0, 0.0, new Rotation3d());
+
+        public static final Pose3d POSITION_LEFT_RED =
+                new Pose3d(FieldConstants.LENGTH, FieldConstants.WIDTH, 0.0, new Rotation3d());
+    }
 
     public static final double WIDTH = 316.64 * Conv.INCHES_TO_METERS; // meters
     public static final double LENGTH = 650.12 * Conv.INCHES_TO_METERS; // meters

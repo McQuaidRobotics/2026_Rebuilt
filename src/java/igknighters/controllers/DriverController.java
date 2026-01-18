@@ -111,28 +111,9 @@ public class DriverController {
                         state.kP,
                         state.kI,
                         state.kD));
-        // this.LT.whileTrue(
-        //         new TeleopSwerveReverseTargetingCmd(
-        //                 swerve,
-        //                 this,
-        //                 new Pose2d(13, 4, new Rotation2d(0.0)),
-        //                 state.kP,
-        //                 state.kI,
-        //                 state.kD));
-        // this.RT.whileTrue(
-        //         new TeleopSwerveForwardTargetingCmd(
-        //                 swerve,
-        //                 this,
-        //                 new Pose2d(13, 4, new Rotation2d(0.0)),
-        //                 state.kP,
-        //                 state.kI,
-        //                 state.kD));
 
         this.LT.onTrue(IndexerCommands.dispense(subsystems.indexer, 140));
         this.RT.onTrue(IndexerCommands.dispense(subsystems.indexer, 160));
-        // this.RT.onTrue(ShooterCommands.aimTurretAtAngle(subsystems.shooter, -45, 60));
-        // this.DPU.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 0));
-        // this.DPD.onTrue(ElevatorCommands.holdAt(subsystems.elevator, 1.0));
         this.DPD.onTrue(ShooterCommands.stopShooting(subsystems.shooter));
         this.DPL.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 4000));
         this.DPR.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 3500));

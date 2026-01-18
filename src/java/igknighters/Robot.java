@@ -24,6 +24,7 @@ import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.indexer.Indexer;
+import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
@@ -64,7 +65,8 @@ public class Robot extends TimedRobot {
                         new LimeLightVision(),
                         new Led(40, 1),
                         new Shooter(),
-                        new Indexer());
+                        new Indexer(),
+                        new Intake());
         SmartDashboard.putData(CommandScheduler.getInstance());
         SmartDashboard.putData(subsytems.shooter);
         SmartDashboard.putData(subsytems.led);
@@ -81,6 +83,8 @@ public class Robot extends TimedRobot {
         final var routines = new AutoRoutines(subsytems, autoFactory);
         autoChooser.addCmd("shoot-then-move", routines.shootThenMove());
         autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
+        autoChooser.addCmd(
+                "NEW METHOD IDK IF THIS WILL WORK HOPEFULLY IT WILL", routines.scoreThenPass());
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
         subsystemTriggers.SetupTriggers(subsytems.led);
 
@@ -135,6 +139,9 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         scheduler.cancelAll();
+        scheduler.clearComposedCommands();
+        scheduler.getActiveButtonLoop().clear();
+    
         autoChooser.select("Nothing");
         autoChooser.selectedCommand().initialize();
         CommandScheduler.getInstance().clearComposedCommands();

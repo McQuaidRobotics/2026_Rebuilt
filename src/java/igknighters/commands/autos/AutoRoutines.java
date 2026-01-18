@@ -2,12 +2,19 @@ package igknighters.commands.autos;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
+import choreo.auto.AutoRoutine;
+import choreo.auto.AutoTrajectory;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.Robot;
+import igknighters.commands.HigherOrderCommands;
+import igknighters.commands.IntakeCommands;
+import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
 import java.util.function.Supplier;
 
@@ -62,5 +69,46 @@ public class AutoRoutines extends AutoCommands {
                 .shootAndMove(Waypoints.STARTING_RIGHT, Waypoints.BUMP_LAND_RIGHT)
                 .shootAndMove(Waypoints.BALLS_RIGHT, Waypoints.BALLS_MIDDLE)
                 .build();
+    }
+
+    public Pose3d getHubTarget() {
+        return Robot.isBlue() ? FieldConstants.HUB.POSE3D_BLUE : FieldConstants.HUB.POSE3D_RED;
+    }
+
+    public Pose3d getPassTarget() {
+        if (Robot.isBlue()) {
+            Pose2d robotPose2d = subsystems.swerve.getState().Pose;
+            return robotPose2d.getY() > FieldConstants.WIDTH / 2
+                    ? FieldConstants.PASS.POSITION_LEFT_BLUE
+                    : FieldConstants.PASS.POSITION_RIGHT_BLUE;
+        } else {
+            Pose2d robotPose2d = subsystems.swerve.getState().Pose;
+            return robotPose2d.getY() > FieldConstants.WIDTH / 2
+                    ? FieldConstants.PASS.POSITION_LEFT_RED
+                    : FieldConstants.PASS.POSITION_RIGHT_RED;
+        }
+    }
+
+    public Supplier<Command> scoreThenPass() {
+        AutoRoutine routine = autoFactory.newRoutine("Score then pass");
+
+        AutoTrajectory moveTraj = routine.trajectory("ShootThenIntake.traj");
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                moveTraj.resetOdometry().withTimeout(0.1),
+                                HigherOrderCommands.shootTillEmpty(
+                                                subsystems, 3.0, () -> getHubTarget())
+                                        .withName("SCORE_THEN_PASS_Shoot"),
+                                moveTraj.cmd().withName("SCORE_THEN_PASS_Move")));
+
+        moveTraj.atTime("Intake")
+                .onTrue(
+                        Commands.parallel(
+                                IntakeCommands.intakeBalls(subsystems.intake),
+                                HigherOrderCommands.shootNoStop(subsystems, () -> getHubTarget())));
+
+        return () -> routine.cmd();
     }
 }
