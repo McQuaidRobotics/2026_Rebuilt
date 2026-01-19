@@ -6,12 +6,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import igknighters.commands.IndexerCommands;
+import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
-import igknighters.commands.teleop.TeleopSwerveForwardTargetingCmd;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
-import igknighters.commands.teleop.TeleopSwerveReverseTargetingCmd;
 import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
-import igknighters.commands.teleop.TeleopSwerveWithDetune;
 import igknighters.constants.DrivingSharedState;
 import igknighters.subsystems.Subsystems;
 import java.util.function.DoubleSupplier;
@@ -97,8 +96,10 @@ public class DriverController {
     public void bind(final Subsystems subsystems) {
         DrivingSharedState state = DrivingSharedState.getInstance();
         var swerve = subsystems.swerve;
+
         this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
-        this.A.whileTrue(new TeleopSwerveWithDetune(swerve, this, 1.0));
+        this.A.whileTrue(
+                new TeleopSwerveHeadingCmd(swerve, this, 45.0, state.kP, state.kI, state.kD));
         this.B.whileTrue(
                 new TeleopSwerveHeadingCmd(swerve, this, 180.0, state.kP, state.kI, state.kD));
         this.Y.whileTrue(
@@ -110,31 +111,24 @@ public class DriverController {
                         state.kP,
                         state.kI,
                         state.kD));
-        this.LT.whileTrue(
-                new TeleopSwerveReverseTargetingCmd(
-                        swerve,
-                        this,
-                        new Pose2d(13, 4, new Rotation2d(0.0)),
-                        state.kP,
-                        state.kI,
-                        state.kD));
-        this.RT.whileTrue(
-                new TeleopSwerveForwardTargetingCmd(
-                        swerve,
-                        this,
-                        new Pose2d(13, 4, new Rotation2d(0.0)),
-                        state.kP,
-                        state.kI,
-                        state.kD));
+
+        this.LT.onTrue(IndexerCommands.dispense(subsystems.indexer, 120));
+        this.RT.onTrue(IndexerCommands.dispense(subsystems.indexer, 180));
+        this.DPD.onTrue(ShooterCommands.stopShooting(subsystems.shooter));
+        this.DPL.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 4000));
+        this.DPR.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 3500));
+        this.DPU.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 4500));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {
+
         return () -> {
             double val = supplier.getAsDouble();
             if (Math.abs(val) > deadband) {
                 if (val > 0.0) {
                     val = (val - deadband) / (1.0 - deadband);
                 } else {
+
                     val = (val + deadband) / (1.0 - deadband);
                 }
             } else {

@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.util.struct.StructSerializable;
 import edu.wpi.first.wpilibj2.command.Command;
+import igknighters.Robot;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
 import igknighters.subsystems.swerve.swerveconstants.ControllerConstants;
@@ -13,7 +14,6 @@ import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import java.util.function.DoubleSupplier;
 import monologue.ProceduralStructGenerator;
-import wpilibExt.AllianceSymmetry;
 
 public class TeleopSwerveBaseCmd extends Command {
     protected final CommandSwerveDrivetrain swerve;
@@ -64,9 +64,11 @@ public class TeleopSwerveBaseCmd extends Command {
         if (demo) magnitude *= translationMod.value();
         double processedX = magnitude * Math.cos(angle);
         double processedY = magnitude * Math.sin(angle);
-        if (AllianceSymmetry.isRed()) {
+        if (Robot.isBlue()) {
+            DogLog.log("TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
             return new Translation2d(-processedY, processedX);
         } else {
+            DogLog.log("TeleopSwerveBaseCmd", "Red Alliance - Inversion");
             return new Translation2d(processedY, -processedX);
         }
     }
@@ -87,12 +89,12 @@ public class TeleopSwerveBaseCmd extends Command {
 
     @Override
     public void execute() {
-        DogLog.log("Robot/Commands/Teleop/teleopCommand", summarize());
+        summarize();
     }
 
     @Override
     public void end(boolean interrupted) {
-        DogLog.log("Robot/Commands/Teleop/teleopCommand", TeleopSwerveCommandSummary.kZero);
+        DogLog.log("Commands/Teleop/teleopCommand", "ENDED");
     }
 
     protected record TeleopSwerveCommandSummary(
@@ -115,14 +117,23 @@ public class TeleopSwerveBaseCmd extends Command {
     protected TeleopSwerveCommandSummary summarize() {
         final Translation2d translation = translationStick();
         final Translation2d rotation = rotationStick();
-        return new TeleopSwerveCommandSummary(
-                rawTranslationXSup.getAsDouble(),
-                translation.getX(),
-                rawTranslationYSup.getAsDouble(),
-                translation.getY(),
-                rawRotationXSup.getAsDouble(),
-                rotation.getX(),
-                rawRotationYSup.getAsDouble(),
-                rotation.getY());
+        // return new TeleopSwerveCommandSummary(
+        //         rawTranslationXSup.getAsDouble(),
+        //         translation.getX(),
+        //         rawTranslationYSup.getAsDouble(),
+        //         translation.getY(),
+        //         rawRotationXSup.getAsDouble(),
+        //         rotation.getX(),
+        //         rawRotationYSup.getAsDouble(),
+        //         rotation.getY());
+        DogLog.log("Commands/teleop/rawTranslationX", rawTranslationXSup.getAsDouble());
+        DogLog.log("Commands/teleop/translationX", translation.getX());
+        DogLog.log("Commands/teleop/rawTranslationY", rawTranslationYSup.getAsDouble());
+        DogLog.log("Commands/teleop/translationY", translation.getY());
+        DogLog.log("Commands/teleop/rawRotationX", rawRotationXSup.getAsDouble());
+        DogLog.log("Commands/teleop/rotationX", rotation.getX());
+        DogLog.log("Commands/teleop/rawRotationY", rawRotationYSup.getAsDouble());
+        DogLog.log("Commands/teleop/rotationY", rotation.getY());
+        return null;
     }
 }
