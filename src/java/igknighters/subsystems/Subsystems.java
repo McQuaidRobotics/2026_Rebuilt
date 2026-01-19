@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
+import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
@@ -17,6 +18,7 @@ public class Subsystems {
     public final Shooter shooter;
     public final Indexer indexer;
     public final Intake intake;
+    public final Luma luma;
     public final SubsystemBase[] lockedResources;
     public final ExclusiveSubsystem[] notPublished;
 
@@ -26,14 +28,16 @@ public class Subsystems {
             Led led,
             Shooter shooter,
             Indexer indexer,
-            Intake intake) {
+            Intake intake,
+            Luma luma) {
         this.swerve = drivetrain;
         this.vision = vision;
         this.led = led;
         this.shooter = shooter;
         this.intake = intake;
         this.indexer = indexer;
-        this.lockedResources = new SubsystemBase[] {led, shooter, vision, indexer, intake};
+        this.luma = luma;
+        this.lockedResources = new SubsystemBase[] {led, shooter, vision, indexer, intake, luma};
         this.notPublished = new ExclusiveSubsystem[] {swerve};
 
         CommandScheduler.getInstance().registerSubsystem(this.lockedResources);

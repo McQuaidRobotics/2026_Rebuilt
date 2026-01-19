@@ -2,9 +2,8 @@ package igknighters.subsystems.Luma.Cameras;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import igknighters.subsystems.Subsystems.SharedSubsystem;
 
-public abstract class Camera implements SharedSubsystem {
+public abstract class Camera {
     public abstract void periodic();
 
     public abstract void simulationPeriodic();

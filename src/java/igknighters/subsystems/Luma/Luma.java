@@ -2,15 +2,15 @@ package igknighters.subsystems.Luma;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.subsystems.Luma.Cameras.Camera;
 import igknighters.subsystems.Luma.Cameras.CameraReal;
 import igknighters.subsystems.Luma.Cameras.CameraSim;
-import igknighters.subsystems.Subsystems.SharedSubsystem;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Luma implements SharedSubsystem {
+public class Luma extends SubsystemBase {
     private final List<Camera> cameras;
 
     public Luma(String... cameraNames) {

@@ -22,6 +22,7 @@ import igknighters.commands.teleop.TeleopSwerveWithDetune;
 import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
+import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.Intake;
@@ -142,7 +143,8 @@ public class Robot extends TimedRobot {
                         new Led(40, 1),
                         new Shooter(),
                         new Indexer(),
-                        new Intake());
+                        new Intake(),
+                        new Luma("object-detection"));
         setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
