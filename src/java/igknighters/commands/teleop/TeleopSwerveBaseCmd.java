@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.util.struct.StructSerializable;
 import edu.wpi.first.wpilibj2.command.Command;
+import igknighters.Robot;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
 import igknighters.subsystems.swerve.swerveconstants.ControllerConstants;
@@ -13,7 +14,6 @@ import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import java.util.function.DoubleSupplier;
 import monologue.ProceduralStructGenerator;
-import wpilibExt.AllianceSymmetry;
 
 public class TeleopSwerveBaseCmd extends Command {
     protected final CommandSwerveDrivetrain swerve;
@@ -64,9 +64,11 @@ public class TeleopSwerveBaseCmd extends Command {
         if (demo) magnitude *= translationMod.value();
         double processedX = magnitude * Math.cos(angle);
         double processedY = magnitude * Math.sin(angle);
-        if (AllianceSymmetry.isRed()) {
+        if (Robot.isBlue()) {
+            DogLog.log("TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
             return new Translation2d(-processedY, processedX);
         } else {
+            DogLog.log("TeleopSwerveBaseCmd", "Red Alliance - Inversion");
             return new Translation2d(processedY, -processedX);
         }
     }

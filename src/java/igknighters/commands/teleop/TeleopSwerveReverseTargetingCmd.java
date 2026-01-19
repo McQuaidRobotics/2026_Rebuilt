@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
-import wpilibExt.AllianceSymmetry;
 
 public class TeleopSwerveReverseTargetingCmd extends TeleopSwerveBaseCmd {
 
@@ -77,12 +76,12 @@ public class TeleopSwerveReverseTargetingCmd extends TeleopSwerveBaseCmd {
         double omega = rotationController.calculate(currentAngleRad, desiredAngleRad);
 
         Translation2d vt = translationStick();
-        double allianceFlipper = 0.0;
-        if (AllianceSymmetry.isBlue()) {
-            allianceFlipper = 1.0;
-        } else {
-            allianceFlipper = -1.0;
-        }
+        double allianceFlipper = 1.0;
+        // if (AllianceSymmetry.isBlue()) {
+        //     allianceFlipper = 1.0;
+        // } else {
+        //     allianceFlipper = -1.0;
+        // }
 
         swerve.setControl(
                 m_driveRequest

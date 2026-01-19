@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
-import wpilibExt.AllianceSymmetry;
 
 public class TeleopSwerveWithDetune extends TeleopSwerveBaseCmd {
     private final double detune;
@@ -32,12 +31,12 @@ public class TeleopSwerveWithDetune extends TeleopSwerveBaseCmd {
     public void execute() {
         super.execute();
         Translation2d vt = translationStick();
-        double allianceFlipper = 0.0;
-        if (AllianceSymmetry.isBlue()) {
-            allianceFlipper = 1.0;
-        } else {
-            allianceFlipper = -1.0;
-        }
+        double allianceFlipper = 1.0;
+        // if (Robot.isBlue()) {
+        //     allianceFlipper = 1.0;
+        // } else {
+        //     allianceFlipper = -1.0;
+        // }
         swerve.setControl(
                 m_driveRequest
                         .withVelocityX(
