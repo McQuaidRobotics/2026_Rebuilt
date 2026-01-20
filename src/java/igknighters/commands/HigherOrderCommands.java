@@ -17,8 +17,6 @@ public class HigherOrderCommands {
                                 .withName("Aim At in Shoot till Empty"),
                         IndexerCommands.dispense(subsystems.indexer, 100.0))
                 .onlyIf(() -> subsystems.shooter.atTarget(.5))
-                .withName("dispense balls into shooter")
-                .withName("Shoot till empty")
                 .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
     }
 
@@ -29,7 +27,6 @@ public class HigherOrderCommands {
                                 () -> subsystems.swerve.getState().Pose,
                                 targetPoseSupplier),
                         IndexerCommands.dispense(subsystems.indexer, 100.0))
-                .onlyIf(() -> subsystems.shooter.atTarget(.5))
-                .withName("Shoot no stop");
+                .onlyIf(() -> subsystems.shooter.atTarget(.5));
     }
 }

@@ -2,22 +2,22 @@ package igknighters.subsystems.climber.chainsaw;
 
 public class ChainsawDisabled extends Chainsaw {
     @Override
-    double getPositionInches() {
+    public double getPositionInches() {
         return 0;
     }
 
     @Override
-    void setPositionInches(double position) {}
+    public void setPositionInches(double position) {}
 
     @Override
-    void goToInches(double inches) {}
+    public void goToInches(double inches) {}
 
     @Override
-    void periodic() {}
+    public void periodic() {}
 
     @Override
-    void stop() {}
+    public void stop() {}
 
     @Override
-    void coast() {}
+    public void coast() {}
 }

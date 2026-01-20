@@ -7,7 +7,6 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import dev.doglog.DogLog;
-import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 
 public class ChainsawReal extends Chainsaw {
@@ -65,33 +64,35 @@ public class ChainsawReal extends Chainsaw {
     }
 
     @Override
-    void setPositionInches(double positionInches) {
+    public void setPositionInches(double positionInches) {
         leftMotor.setPosition(positionInches * SubsystemConstants.kClimber.INCHES_TO_ROTATIONS);
     }
 
     @Override
-    void coast() {
+    public void coast() {
         leftMotor.setControl(coastControl);
     }
 
     @Override
-    double getPositionInches() {
+    public double getPositionInches() {
         return armPosition.getValueAsDouble() / SubsystemConstants.kClimber.INCHES_TO_ROTATIONS;
     }
 
     @Override
-    void stop() {
+    public void stop() {
         leftMotor.setControl(stop);
     }
 
     @Override
-    void goToInches(double inches) {
+    public void goToInches(double inches) {
         DogLog.log("Subsystems/Climber/Target", inches);
-        leftMotor.setControl(positionControl.withPosition(inches/SubsystemConstants.kClimber.INCHES_TO_ROTATIONS));
+        leftMotor.setControl(
+                positionControl.withPosition(
+                        inches / SubsystemConstants.kClimber.INCHES_TO_ROTATIONS));
     }
 
     @Override
-    void periodic() {
+    public void periodic() {
 
         BaseStatusSignal.refreshAll(armPosition, armCurrent);
         DogLog.log(

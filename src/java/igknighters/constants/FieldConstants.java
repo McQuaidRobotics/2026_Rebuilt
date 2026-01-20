@@ -47,4 +47,6 @@ public class FieldConstants {
 
     public static final double WIDTH = 316.64 * Conv.INCHES_TO_METERS; // meters
     public static final double LENGTH = 650.12 * Conv.INCHES_TO_METERS; // meters
+    public static final double ALIANCE_ZONE_BLUE = 181.56 * Conv.INCHES_TO_METERS; // meters
+    public static final double ALIANCE_ZONE_RED = LENGTH - ALIANCE_ZONE_BLUE;
 }

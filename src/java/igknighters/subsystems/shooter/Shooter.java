@@ -109,6 +109,6 @@ public class Shooter extends SubsystemBase {
         turret.periodic();
         hood.periodic();
 
-        visualizer.update(getCurrentState(), goalRPM);
+        visualizer.update(getCurrentState(), goalRPM, goalHoodAngleDegrees);
     }
 }

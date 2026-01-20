@@ -8,11 +8,13 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import igknighters.constants.SubsystemConstants;
 import igknighters.constants.Conv;
+import igknighters.constants.SubsystemConstants;
 
-public class ChainsawSim extends Chainsaw{
+public class ChainsawSim
+        extends Chainsaw { // when you tell the motor to go to inches motor is controlled in
+    // rotations and 4 inches = 1 motor rotation after config so times inches
+    // by 4 to go to rotations and divide by 4 to go
     private double inputVoltage = 0.0;
 
     private final ElevatorSim indexerSim =
@@ -20,7 +22,8 @@ public class ChainsawSim extends Chainsaw{
                     LinearSystemId.createElevatorSystem(
                             DCMotor.getKrakenX60(2),
                             60.0,
-                            0.03),
+                            0.02,
+                            SubsystemConstants.kClimber.GEAR_RATIO),
                     DCMotor.getKrakenX60(2),
                     SubsystemConstants.kClimber.MIN_HEIGHT_INCHES * Conv.INCHES_TO_METERS,
                     SubsystemConstants.kClimber.MAX_HEIGHT_INCHES * Conv.INCHES_TO_METERS,
@@ -33,7 +36,8 @@ public class ChainsawSim extends Chainsaw{
                     SubsystemConstants.kClimber.kD,
                     new Constraints(
                             SubsystemConstants.kClimber.MAX_VELOCITY_METERS_PER_SECOND,
-                            SubsystemConstants.kClimber.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED));
+                            SubsystemConstants.kClimber
+                                    .MAX_ACCELERATION_METERS_PER_SECOND_SQUARED));
     // Create a new SimpleMotorFeedforward with gains kS, kV, and kA
     private final SimpleMotorFeedforward feedforward =
             new SimpleMotorFeedforward(
@@ -44,9 +48,20 @@ public class ChainsawSim extends Chainsaw{
     private boolean isVoltageControlledThisCycle = false;
 
     @Override
+    public void coast() {
+        inputVoltage = 0.0;
+        isVoltageControlledThisCycle = true;
+    }
+
+    @Override
     public void goToInches(double inches) {
-        profiledPIDController.setGoal(inches / SubsystemConstants.kClimber.INCHES_TO_ROTATIONS);
+        profiledPIDController.setGoal(inches * SubsystemConstants.kClimber.INCHES_TO_ROTATIONS);
         isPidControlledThisCycle = true;
+    }
+
+    @Override
+    public void setPositionInches(double position) {
+        indexerSim.setState(position * SubsystemConstants.kClimber.INCHES_TO_ROTATIONS, 0.0);
     }
 
     @Override
@@ -62,8 +77,10 @@ public class ChainsawSim extends Chainsaw{
 
     @Override
     public void periodic() {
-        double currentRPM = indexerSim.getAngularVelocityRPM();
-        double goalRPS = profiledPIDController.getGoal().position;
+        double currentPositionR =
+                indexerSim.getPositionMeters(); // this is actually in rotations because the gear
+        // ratio just includes gearbox
+        double goalR = profiledPIDController.getGoal().position;
         double pidOutput = 0.0;
         double ffOutput = 0.0;
 
@@ -73,14 +90,14 @@ public class ChainsawSim extends Chainsaw{
 
             // Feedforward in volts
 
-            ffOutput = kClimber.kS + kClimber.kV * goalRPS;
+            ffOutput = SubsystemConstants.kClimber.kS + SubsystemConstants.kClimber.kV * goalR;
 
-            // PID output is in RPM, convert to volts with a small gain
+            // PID output is in Rotations, convert to volts with a small gain
             // Tune this value (start around 0.001)
-            double kRPM_to_volts = 0.002;
+            double kRots_to_volts = 0.002;
 
-            double pidRPM = profiledPIDController.calculate(currentRPM);
-            pidOutput = pidRPM * kRPM_to_volts;
+            double pidM = profiledPIDController.calculate(currentPositionR) * kRots_to_volts;
+            pidOutput = pidM * kRots_to_volts;
 
             voltage = pidOutput + ffOutput;
         }
@@ -94,8 +111,8 @@ public class ChainsawSim extends Chainsaw{
 
         // Logging
         DogLog.log("Subsystems/Indexer/Spindexer/SimVoltage", voltage);
-        DogLog.log("Subsystems/Indexer/Spindexer/SimSpeedRPM", currentRPM);
-        DogLog.log("Subsystems/Indexer/Spindexer/GoalSpeedRPM", goalRPS * 60.0);
+        DogLog.log("Subsystems/Indexer/Spindexer/SimSpeedRPM", currentPositionR);
+        DogLog.log("Subsystems/Indexer/Spindexer/GoalSpeedRPM", goalR * 60.0);
         DogLog.log(
                 "Subsystems/Indexer/Spindexer/PIDOutputRPM",
                 profiledPIDController.getPositionError());

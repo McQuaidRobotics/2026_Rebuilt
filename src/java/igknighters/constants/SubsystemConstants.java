@@ -37,7 +37,8 @@ public class SubsystemConstants {
         public static final boolean inverted = false;
         public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 0.20;
         public static final double GEAR_RATIO = 25.0;
-        public static final double INCHES_TO_ROTATIONS = 4.0; // 25 motor rots = 4 inches so when comanding the motor we can convert
+        public static final double INCHES_TO_ROTATIONS =
+                4.5; // 25 motor rots = 4.5 inches so when comanding the motor we can convert
         public static final double MAX_HEIGHT_INCHES = 20.0 * Conv.INCHES_TO_METERS;
         public static final double MIN_HEIGHT_INCHES = 0.0;
         public static final double LENGTH_METERS = 0.5;

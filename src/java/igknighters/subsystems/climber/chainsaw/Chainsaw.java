@@ -2,15 +2,15 @@ package igknighters.subsystems.climber.chainsaw;
 
 public abstract class Chainsaw {
 
-    abstract void setPositionInches(double position);
+    public abstract void setPositionInches(double position);
 
-    abstract void goToInches(double meters);
+    public abstract void goToInches(double meters);
 
-    abstract void periodic();
+    public abstract void periodic();
 
-    abstract double getPositionInches();
+    public abstract double getPositionInches();
 
-    abstract void stop();
+    public abstract void stop();
 
-    abstract void coast();
+    public abstract void coast();
 }
