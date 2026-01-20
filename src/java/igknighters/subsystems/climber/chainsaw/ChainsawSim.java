@@ -7,19 +7,25 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import igknighters.constants.SubsystemConstants;
+import igknighters.constants.Conv;
 
 public class ChainsawSim extends Chainsaw{
-        private double inputVoltage = 0.0;
+    private double inputVoltage = 0.0;
 
-    private final FlywheelSim indexerSim =
-            new FlywheelSim(
-                    LinearSystemId.createFlywheelSystem(
-                            DCMotor.getKrakenX60(1),
-                            SubsystemConstants.kClimber.MOMENT_OF_INERTIA_KG_M2,
-                            SubsystemConstants.kClimber.GEAR_RATIO),
-                    DCMotor.getKrakenX60(1));
+    private final ElevatorSim indexerSim =
+            new ElevatorSim(
+                    LinearSystemId.createElevatorSystem(
+                            DCMotor.getKrakenX60(2),
+                            60.0,
+                            0.03),
+                    DCMotor.getKrakenX60(2),
+                    SubsystemConstants.kClimber.MIN_HEIGHT_INCHES * Conv.INCHES_TO_METERS,
+                    SubsystemConstants.kClimber.MAX_HEIGHT_INCHES * Conv.INCHES_TO_METERS,
+                    true,
+                    0.0);
     private final ProfiledPIDController profiledPIDController =
             new ProfiledPIDController(
                     .8,
@@ -39,7 +45,7 @@ public class ChainsawSim extends Chainsaw{
 
     @Override
     public void goToInches(double inches) {
-        profiledPIDController.setGoal(inches);
+        profiledPIDController.setGoal(inches / SubsystemConstants.kClimber.INCHES_TO_ROTATIONS);
         isPidControlledThisCycle = true;
     }
 
@@ -51,7 +57,7 @@ public class ChainsawSim extends Chainsaw{
 
     @Override
     public double getPositionInches() {
-        return indexerSim.getAngularVelocityRPM();
+        return indexerSim.getPositionMeters() / SubsystemConstants.kClimber.INCHES_TO_ROTATIONS;
     }
 
     @Override
