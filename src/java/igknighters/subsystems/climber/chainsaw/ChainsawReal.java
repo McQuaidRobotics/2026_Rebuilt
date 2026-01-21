@@ -88,7 +88,7 @@ public class ChainsawReal extends Chainsaw {
         DogLog.log("Subsystems/Climber/Target", inches);
         leftMotor.setControl(
                 positionControl.withPosition(
-                        inches / SubsystemConstants.kClimber.INCHES_TO_ROTATIONS));
+                        inches * SubsystemConstants.kClimber.INCHES_TO_ROTATIONS));
     }
 
     @Override
@@ -97,7 +97,7 @@ public class ChainsawReal extends Chainsaw {
         BaseStatusSignal.refreshAll(armPosition, armCurrent);
         DogLog.log(
                 "Subsystems/Climber/Inches",
-                armPosition.getValueAsDouble() / SubsystemConstants.kClimber.INCHES_TO_ROTATIONS);
+                armPosition.getValueAsDouble() * SubsystemConstants.kClimber.ROTATIONS_TO_INCHES);
         DogLog.log("Subsystems/Climber/Current", armCurrent.getValueAsDouble());
     }
 }

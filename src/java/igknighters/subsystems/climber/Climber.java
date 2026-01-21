@@ -32,4 +32,9 @@ public class Climber extends SubsystemBase {
     public boolean isAt(double targetInches, double toleranceInches) {
         return Math.abs(getPositionInches() - targetInches) <= toleranceInches;
     }
+
+    @Override
+    public void periodic() {
+        chainsaw.periodic();
+    }
 }

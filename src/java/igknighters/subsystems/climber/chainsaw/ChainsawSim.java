@@ -2,8 +2,8 @@ package igknighters.subsystems.climber.chainsaw;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -11,13 +11,15 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 
-public class ChainsawSim
-        extends Chainsaw { // when you tell the motor to go to inches motor is controlled in
-    // rotations and 4 inches = 1 motor rotation after config so times inches
-    // by 4 to go to rotations and divide by 4 to go
+public class ChainsawSim extends Chainsaw {
+
     private double inputVoltage = 0.0;
 
-    private final ElevatorSim indexerSim =
+    // 1 rotation = 4.5 inches = 0.1143 meters
+    private static final double ROT_TO_METERS = 4.5 * Conv.INCHES_TO_METERS;
+    private static final double METERS_TO_ROT = 1.0 / ROT_TO_METERS;
+
+    private final ElevatorSim chainsawSim =
             new ElevatorSim(
                     LinearSystemId.createElevatorSystem(
                             DCMotor.getKrakenX60(2),
@@ -29,21 +31,24 @@ public class ChainsawSim
                     SubsystemConstants.kClimber.MAX_HEIGHT_INCHES * Conv.INCHES_TO_METERS,
                     true,
                     0.0);
+
     private final ProfiledPIDController profiledPIDController =
             new ProfiledPIDController(
-                    .8,
+                    SubsystemConstants.kClimber.kP,
                     SubsystemConstants.kClimber.kI,
                     SubsystemConstants.kClimber.kD,
                     new Constraints(
                             SubsystemConstants.kClimber.MAX_VELOCITY_METERS_PER_SECOND,
                             SubsystemConstants.kClimber
                                     .MAX_ACCELERATION_METERS_PER_SECOND_SQUARED));
-    // Create a new SimpleMotorFeedforward with gains kS, kV, and kA
-    private final SimpleMotorFeedforward feedforward =
-            new SimpleMotorFeedforward(
+
+    private final ElevatorFeedforward feedforward =
+            new ElevatorFeedforward(
                     SubsystemConstants.kClimber.kS,
+                    SubsystemConstants.kClimber.kG,
                     SubsystemConstants.kClimber.kV,
                     SubsystemConstants.kClimber.kA);
+
     private boolean isPidControlledThisCycle = false;
     private boolean isVoltageControlledThisCycle = false;
 
@@ -55,13 +60,15 @@ public class ChainsawSim
 
     @Override
     public void goToInches(double inches) {
-        profiledPIDController.setGoal(inches * SubsystemConstants.kClimber.INCHES_TO_ROTATIONS);
+        double goalRot = inches / 4.5; // inches → rotations
+        profiledPIDController.setGoal(goalRot);
         isPidControlledThisCycle = true;
     }
 
     @Override
     public void setPositionInches(double position) {
-        indexerSim.setState(position * SubsystemConstants.kClimber.INCHES_TO_ROTATIONS, 0.0);
+        double rot = position / 4.5;
+        chainsawSim.setState(rot * ROT_TO_METERS, 0.0); // rotations → meters
     }
 
     @Override
@@ -72,56 +79,54 @@ public class ChainsawSim
 
     @Override
     public double getPositionInches() {
-        return indexerSim.getPositionMeters() / SubsystemConstants.kClimber.INCHES_TO_ROTATIONS;
+        double meters = chainsawSim.getPositionMeters();
+        return (meters * METERS_TO_ROT) * 4.5; // meters → rotations → inches
     }
 
     @Override
     public void periodic() {
-        double currentPositionR =
-                indexerSim.getPositionMeters(); // this is actually in rotations because the gear
-        // ratio just includes gearbox
-        double goalR = profiledPIDController.getGoal().position;
-        double pidOutput = 0.0;
-        double ffOutput = 0.0;
 
+        // Convert sim meters → rotations
+        double currentRot = chainsawSim.getPositionMeters() * METERS_TO_ROT;
+
+        double goalRot = profiledPIDController.getGoal().position;
+
+        double pidVolts = 0.0;
+        double ffVolts = 0.0;
         double voltage = 0.0;
 
         if (isPidControlledThisCycle) {
 
-            // Feedforward in volts
+            // PID in rotations
+            pidVolts = profiledPIDController.calculate(currentRot);
 
-            ffOutput = SubsystemConstants.kClimber.kS + SubsystemConstants.kClimber.kV * goalR;
+            // Feedforward expects velocity in rotations/sec
+            double velRotPerSec = profiledPIDController.getSetpoint().velocity;
 
-            // PID output is in Rotations, convert to volts with a small gain
-            // Tune this value (start around 0.001)
-            double kRots_to_volts = 0.002;
+            ffVolts = feedforward.calculate(velRotPerSec);
 
-            double pidM = profiledPIDController.calculate(currentPositionR) * kRots_to_volts;
-            pidOutput = pidM * kRots_to_volts;
-
-            voltage = pidOutput + ffOutput;
+            voltage = pidVolts + ffVolts;
         }
 
         if (isVoltageControlledThisCycle) {
             voltage = inputVoltage;
         }
 
-        // Clamp to real motor limits
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
 
         // Logging
-        DogLog.log("Subsystems/Indexer/Spindexer/SimVoltage", voltage);
-        DogLog.log("Subsystems/Indexer/Spindexer/SimSpeedRPM", currentPositionR);
-        DogLog.log("Subsystems/Indexer/Spindexer/GoalSpeedRPM", goalR * 60.0);
+        DogLog.log("Subsystems/Climber/Chainsaw/SimVoltage", voltage);
+        DogLog.log("Subsystems/Climber/Chainsaw/SimPositionRot", currentRot);
+        DogLog.log("Subsystems/Climber/Chainsaw/GoalRot", goalRot);
         DogLog.log(
-                "Subsystems/Indexer/Spindexer/PIDOutputRPM",
+                "Subsystems/Climber/Chainsaw/PIDErrorRot",
                 profiledPIDController.getPositionError());
-        DogLog.log("Subsystems/Indexer/Spindexer/PIDVolts", pidOutput);
-        DogLog.log("Subsystems/Indexer/Spindexer/FFVolts", ffOutput);
+        DogLog.log("Subsystems/Climber/Chainsaw/PIDVolts", pidVolts);
+        DogLog.log("Subsystems/Climber/Chainsaw/FFVolts", ffVolts);
 
-        // Apply to sim
-        indexerSim.setInputVoltage(voltage);
-        indexerSim.update(0.02);
+        // Convert rotations → meters for sim
+        chainsawSim.setInputVoltage(voltage);
+        chainsawSim.update(0.02);
 
         isPidControlledThisCycle = false;
         isVoltageControlledThisCycle = false;

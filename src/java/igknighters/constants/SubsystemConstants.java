@@ -30,6 +30,7 @@ public class SubsystemConstants {
         public static final double kI = 0.0;
         public static final double kD = 0.0;
         public static final double kS = 0.0;
+        public static final double kG = 0.2;
         public static final double kV = 0.0;
         public static final double kA = 0.0;
         public static final double MAX_JERK = 0.05;
@@ -38,8 +39,9 @@ public class SubsystemConstants {
         public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 0.20;
         public static final double GEAR_RATIO = 25.0;
         public static final double INCHES_TO_ROTATIONS =
-                4.5; // 25 motor rots = 4.5 inches so when comanding the motor we can convert
-        public static final double MAX_HEIGHT_INCHES = 20.0 * Conv.INCHES_TO_METERS;
+                1 / 4.5; // 25 motor rots = 4.5 inches so when comanding the motor we can convert
+        public static final double ROTATIONS_TO_INCHES = 4.5;
+        public static final double MAX_HEIGHT_INCHES = 20.0;
         public static final double MIN_HEIGHT_INCHES = 0.0;
         public static final double LENGTH_METERS = 0.5;
         public static final double MASS = 4.0;

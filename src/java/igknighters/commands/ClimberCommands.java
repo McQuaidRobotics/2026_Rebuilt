@@ -14,7 +14,7 @@ public class ClimberCommands {
     public static Command goToMin(Climber climber) {
         return climber.run(() -> climber.goToInches(SubsystemConstants.kClimber.MIN_HEIGHT_INCHES))
                 .until(() -> climber.isAt(SubsystemConstants.kClimber.MIN_HEIGHT_INCHES, .5))
-                .withName("GOING TO MAX");
+                .withName("GOING TO MIN");
     }
 
     public static Command goTo(Climber climber, double inches) {
