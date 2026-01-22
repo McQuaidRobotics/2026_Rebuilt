@@ -7,6 +7,11 @@ public class ChainsawDisabled extends Chainsaw {
     }
 
     @Override
+    public boolean isSensorHit() {
+        return false;
+    }
+
+    @Override
     public void setPositionInches(double position) {}
 
     @Override

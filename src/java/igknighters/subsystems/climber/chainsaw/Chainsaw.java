@@ -13,4 +13,6 @@ public abstract class Chainsaw {
     public abstract void stop();
 
     public abstract void coast();
+
+    public abstract boolean isSensorHit();
 }

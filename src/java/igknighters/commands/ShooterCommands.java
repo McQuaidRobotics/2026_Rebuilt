@@ -14,6 +14,7 @@ import igknighters.subsystems.shooter.ShooterState;
 import java.util.function.Supplier;
 
 public class ShooterCommands {
+
     public static Command shootAtSpeed(Shooter shooter, double RPM) {
         return shooter.run(() -> shooter.targetState(RPM, 0, 0)).withName("shoot at speed: " + RPM);
     }
@@ -48,7 +49,7 @@ public class ShooterCommands {
                                                             targetPose.getY() - robotPose.getY(),
                                                             2)));
                     ShooterState targetingData =
-                            AimSolver.solve_simple_no_AR_or_FutureTiming(
+                            AimSolver.Solvers.solve_simple_no_AR_or_FutureTiming(
                                     targetPose,
                                     new Pose3d(
                                             robotPose.getX(),
@@ -135,7 +136,7 @@ public class ShooterCommands {
                             Pose2d robotPose = robotPoseSupplier.get();
                             Pose3d targetPose = targetPoseSupplier.get();
                             ShooterState targetingData =
-                                    AimSolver.solve_simple_no_AR_or_FutureTiming(
+                                    AimSolver.Solvers.solve_simple_no_AR_or_FutureTiming(
                                             targetPose,
                                             new Pose3d(
                                                     robotPose.getX(),
@@ -176,7 +177,7 @@ public class ShooterCommands {
                             double RPM = getRPM(robotPose, () -> targetPose, shooter);
 
                             ShooterState targetingData =
-                                    AimSolver.solve_simple_no_AR_or_FutureTiming(
+                                    AimSolver.Solvers.solve_simple_no_AR_or_FutureTiming(
                                             targetPose,
                                             new Pose3d(
                                                     robotPose2d.getX(),
@@ -224,7 +225,7 @@ public class ShooterCommands {
                             double RPM = getRPM(robotPose, () -> targetPose, shooter);
 
                             ShooterState targetingData =
-                                    AimSolver.solve_moving(
+                                    AimSolver.Solvers.solve_moving(
                                             targetPose,
                                             new Pose3d(
                                                     robotPose2d.getX(),
@@ -248,7 +249,7 @@ public class ShooterCommands {
                                         Math.toDegrees(targetingData.turretAngleRads),
                                         Math.toDegrees(targetingData.hoodAngleRads));
                             } else {
-                                if (shooter.getCurrentState().rpm < RPM) {
+                                if (shooter.getCurrentState().rpm < (RPM - 500)) {
                                     shooter.targetState(
                                             RPM,
                                             targetingData.turretAngleRads * Conv.RADIANS_TO_DEGREES,

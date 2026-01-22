@@ -138,7 +138,7 @@ public class DriverController {
                                                     swerve.getState()
                                                             .Speeds
                                                             .omegaRadiansPerSecond))));
-            this.B.whileTrue(
+            this.LT.whileTrue(
                     ShooterCommands.aimAt(
                             shooter,
                             () -> swerve.getState().Pose,

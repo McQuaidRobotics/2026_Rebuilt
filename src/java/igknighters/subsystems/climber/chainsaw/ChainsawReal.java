@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import dev.doglog.DogLog;
+import edu.wpi.first.wpilibj.DigitalInput;
 import igknighters.constants.SubsystemConstants;
 
 public class ChainsawReal extends Chainsaw {
@@ -14,6 +15,9 @@ public class ChainsawReal extends Chainsaw {
             new MotionMagicExpoVoltage(0.0).withSlot(0);
     private final DutyCycleOut stop = new DutyCycleOut(0.0);
     private final CoastOut coastControl = new CoastOut();
+
+    private final DigitalInput bumberSensor =
+            new DigitalInput(SubsystemConstants.kClimber.BUMPER_SENSOR_ID);
 
     private final BaseStatusSignal armPosition, armCurrent;
 
@@ -75,7 +79,7 @@ public class ChainsawReal extends Chainsaw {
 
     @Override
     public double getPositionInches() {
-        return armPosition.getValueAsDouble() / SubsystemConstants.kClimber.INCHES_TO_ROTATIONS;
+        return armPosition.getValueAsDouble() * SubsystemConstants.kClimber.ROTATIONS_TO_INCHES;
     }
 
     @Override
@@ -89,6 +93,11 @@ public class ChainsawReal extends Chainsaw {
         leftMotor.setControl(
                 positionControl.withPosition(
                         inches * SubsystemConstants.kClimber.INCHES_TO_ROTATIONS));
+    }
+
+    @Override
+    public boolean isSensorHit() {
+        return !bumberSensor.get(); // assuming that when pushed the current flows
     }
 
     @Override

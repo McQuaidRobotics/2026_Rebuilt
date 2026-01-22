@@ -60,15 +60,19 @@ public class ChainsawSim extends Chainsaw {
 
     @Override
     public void goToInches(double inches) {
-        double goalRot = inches / 4.5; // inches → rotations
+        double goalRot =
+                inches * SubsystemConstants.kClimber.INCHES_TO_ROTATIONS; // inches → rotations
         profiledPIDController.setGoal(goalRot);
         isPidControlledThisCycle = true;
     }
 
     @Override
     public void setPositionInches(double position) {
-        double rot = position / 4.5;
-        chainsawSim.setState(rot * ROT_TO_METERS, 0.0); // rotations → meters
+        double rot =
+                position * SubsystemConstants.kClimber.INCHES_TO_ROTATIONS; // inches → rotations
+        chainsawSim.setState(
+                rot * SubsystemConstants.kClimber.ROTATIONS_TO_INCHES * Conv.INCHES_TO_METERS,
+                0.0); // rotations → meters
     }
 
     @Override
@@ -78,9 +82,15 @@ public class ChainsawSim extends Chainsaw {
     }
 
     @Override
+    public boolean isSensorHit() {
+        return false;
+    }
+
+    @Override
     public double getPositionInches() {
         double meters = chainsawSim.getPositionMeters();
-        return (meters * METERS_TO_ROT) * 4.5; // meters → rotations → inches
+        return (meters * METERS_TO_ROT)
+                * SubsystemConstants.kClimber.ROTATIONS_TO_INCHES; // meters → rotations → inches
     }
 
     @Override

@@ -8,12 +8,15 @@ import igknighters.subsystems.climber.chainsaw.ChainsawSim;
 
 public class Climber extends SubsystemBase {
     private Chainsaw chainsaw;
+    private boolean usingRealSensor;
 
     public Climber() {
         if (Robot.isReal()) {
             chainsaw = new ChainsawReal();
+            usingRealSensor = true;
         } else {
             chainsaw = new ChainsawSim();
+            usingRealSensor = false;
         }
     }
 
@@ -31,6 +34,10 @@ public class Climber extends SubsystemBase {
 
     public boolean isAt(double targetInches, double toleranceInches) {
         return Math.abs(getPositionInches() - targetInches) <= toleranceInches;
+    }
+
+    public boolean isSensorHit() {
+        return chainsaw.isSensorHit();
     }
 
     @Override
