@@ -25,29 +25,29 @@ public class ChainsawSim extends Chainsaw {
                             DCMotor.getKrakenX60(2),
                             60.0,
                             0.02,
-                            SubsystemConstants.kClimber.GEAR_RATIO),
+                            SubsystemConstants.kClimber.kChainsaw.GEAR_RATIO),
                     DCMotor.getKrakenX60(2),
-                    SubsystemConstants.kClimber.MIN_HEIGHT_INCHES * Conv.INCHES_TO_METERS,
-                    SubsystemConstants.kClimber.MAX_HEIGHT_INCHES * Conv.INCHES_TO_METERS,
+                    SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_INCHES * Conv.INCHES_TO_METERS,
+                    SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_INCHES * Conv.INCHES_TO_METERS,
                     true,
                     0.0);
 
     private final ProfiledPIDController profiledPIDController =
             new ProfiledPIDController(
-                    SubsystemConstants.kClimber.kP,
-                    SubsystemConstants.kClimber.kI,
-                    SubsystemConstants.kClimber.kD,
+                    SubsystemConstants.kClimber.kChainsaw.kP,
+                    SubsystemConstants.kClimber.kChainsaw.kI,
+                    SubsystemConstants.kClimber.kChainsaw.kD,
                     new Constraints(
-                            SubsystemConstants.kClimber.MAX_VELOCITY_METERS_PER_SECOND,
-                            SubsystemConstants.kClimber
+                            SubsystemConstants.kClimber.kChainsaw.MAX_VELOCITY_METERS_PER_SECOND,
+                            SubsystemConstants.kClimber.kChainsaw
                                     .MAX_ACCELERATION_METERS_PER_SECOND_SQUARED));
 
     private final ElevatorFeedforward feedforward =
             new ElevatorFeedforward(
-                    SubsystemConstants.kClimber.kS,
-                    SubsystemConstants.kClimber.kG,
-                    SubsystemConstants.kClimber.kV,
-                    SubsystemConstants.kClimber.kA);
+                    SubsystemConstants.kClimber.kChainsaw.kS,
+                    SubsystemConstants.kClimber.kChainsaw.kG,
+                    SubsystemConstants.kClimber.kChainsaw.kV,
+                    SubsystemConstants.kClimber.kChainsaw.kA);
 
     private boolean isPidControlledThisCycle = false;
     private boolean isVoltageControlledThisCycle = false;
@@ -61,7 +61,7 @@ public class ChainsawSim extends Chainsaw {
     @Override
     public void goToInches(double inches) {
         double goalRot =
-                inches * SubsystemConstants.kClimber.INCHES_TO_ROTATIONS; // inches → rotations
+                inches * SubsystemConstants.kClimber.kChainsaw.INCHES_TO_ROTATIONS; // inches → rotations
         profiledPIDController.setGoal(goalRot);
         isPidControlledThisCycle = true;
     }
@@ -69,9 +69,9 @@ public class ChainsawSim extends Chainsaw {
     @Override
     public void setPositionInches(double position) {
         double rot =
-                position * SubsystemConstants.kClimber.INCHES_TO_ROTATIONS; // inches → rotations
+                position * SubsystemConstants.kClimber.kChainsaw.INCHES_TO_ROTATIONS; // inches → rotations
         chainsawSim.setState(
-                rot * SubsystemConstants.kClimber.ROTATIONS_TO_INCHES * Conv.INCHES_TO_METERS,
+                rot * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES * Conv.INCHES_TO_METERS,
                 0.0); // rotations → meters
     }
 
@@ -90,7 +90,7 @@ public class ChainsawSim extends Chainsaw {
     public double getPositionInches() {
         double meters = chainsawSim.getPositionMeters();
         return (meters * METERS_TO_ROT)
-                * SubsystemConstants.kClimber.ROTATIONS_TO_INCHES; // meters → rotations → inches
+                * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES; // meters → rotations → inches
     }
 
     @Override

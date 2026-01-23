@@ -27,6 +27,19 @@ public class FieldConstants {
                         POSITION_RED.getX(), POSITION_RED.getY(), HEIGHT_METERS, new Rotation3d());
     }
 
+    public static class CLIMB {
+        public static final Pose2d POSITION_BLUE =
+                new Pose2d(
+                        33.0 * Conv.INCHES_TO_METERS,
+                        158.32 * Conv.INCHES_TO_METERS,
+                        new Rotation2d());
+        public static final Pose2d POSITION_RED =
+                new Pose2d(
+                        LENGTH - POSITION_BLUE.getX(),
+                        POSITION_BLUE.getY(),
+                        new Rotation2d());
+    }
+
     public static class PASS {
         public static final Pose3d POSITION_RIGHT_BLUE =
                 new Pose3d(
