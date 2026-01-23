@@ -31,7 +31,8 @@ public class AimSolver {
             }
         }
 
-        private static final double FLYWHEEL_RADIUS = SubsystemConstants.kShooter.kRollers.WHEEL_RADIUS_METERS;
+        private static final double FLYWHEEL_RADIUS =
+                SubsystemConstants.kShooter.kRollers.WHEEL_RADIUS_METERS;
 
         // Gravity
         private static final double G = 9.81;

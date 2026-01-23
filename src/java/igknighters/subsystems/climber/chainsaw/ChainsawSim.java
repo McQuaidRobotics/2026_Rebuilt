@@ -39,7 +39,8 @@ public class ChainsawSim extends Chainsaw {
                     SubsystemConstants.kClimber.kChainsaw.kD,
                     new Constraints(
                             SubsystemConstants.kClimber.kChainsaw.MAX_VELOCITY_METERS_PER_SECOND,
-                            SubsystemConstants.kClimber.kChainsaw
+                            SubsystemConstants.kClimber
+                                    .kChainsaw
                                     .MAX_ACCELERATION_METERS_PER_SECOND_SQUARED));
 
     private final ElevatorFeedforward feedforward =
@@ -61,7 +62,10 @@ public class ChainsawSim extends Chainsaw {
     @Override
     public void goToInches(double inches) {
         double goalRot =
-                inches * SubsystemConstants.kClimber.kChainsaw.INCHES_TO_ROTATIONS; // inches → rotations
+                inches
+                        * SubsystemConstants.kClimber
+                                .kChainsaw
+                                .INCHES_TO_ROTATIONS; // inches → rotations
         profiledPIDController.setGoal(goalRot);
         isPidControlledThisCycle = true;
     }
@@ -69,9 +73,14 @@ public class ChainsawSim extends Chainsaw {
     @Override
     public void setPositionInches(double position) {
         double rot =
-                position * SubsystemConstants.kClimber.kChainsaw.INCHES_TO_ROTATIONS; // inches → rotations
+                position
+                        * SubsystemConstants.kClimber
+                                .kChainsaw
+                                .INCHES_TO_ROTATIONS; // inches → rotations
         chainsawSim.setState(
-                rot * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES * Conv.INCHES_TO_METERS,
+                rot
+                        * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES
+                        * Conv.INCHES_TO_METERS,
                 0.0); // rotations → meters
     }
 
@@ -90,7 +99,9 @@ public class ChainsawSim extends Chainsaw {
     public double getPositionInches() {
         double meters = chainsawSim.getPositionMeters();
         return (meters * METERS_TO_ROT)
-                * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES; // meters → rotations → inches
+                * SubsystemConstants.kClimber
+                        .kChainsaw
+                        .ROTATIONS_TO_INCHES; // meters → rotations → inches
     }
 
     @Override

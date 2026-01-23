@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.ClimberCommands;
+import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
@@ -164,7 +165,7 @@ public class DriverController {
             this.A.onTrue(ClimberCommands.goToMax(climber));
             this.B.onTrue(ClimberCommands.goToMin(climber));
             this.X.onTrue(ClimberCommands.goTo(climber, 10.0));
-            this.Y.onTrue(ClimberCommands.goTo(climber, 20.0));
+            this.Y.onTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
         } else if (debugType == DebugType.INTAKE) {
 
         } else {

@@ -34,10 +34,7 @@ public class FieldConstants {
                         158.32 * Conv.INCHES_TO_METERS,
                         new Rotation2d());
         public static final Pose2d POSITION_RED =
-                new Pose2d(
-                        LENGTH - POSITION_BLUE.getX(),
-                        POSITION_BLUE.getY(),
-                        new Rotation2d());
+                new Pose2d(LENGTH - POSITION_BLUE.getX(), POSITION_BLUE.getY(), new Rotation2d());
     }
 
     public static class PASS {

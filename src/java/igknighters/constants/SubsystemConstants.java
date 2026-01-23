@@ -5,36 +5,37 @@ public class SubsystemConstants {
     public static final int firstMotorID = 15;
 
     public static class kClimber {
-        public static class kChainsaw{
-        public static final int LEFT_MOTOR_ID = 15;
-        public static final int RIGHT_MOTOR_ID = 16;
-        public static final int BUMPER_SENSOR_ID = 0;
-        public static final int CANCODER_ID = 17;
-        public static final double CANCODER_OFFSET = 0.0; // this is made up
-        public static final double MOMENT_OF_INERTIA_KG_M2 = 0.05; // this is made up
-        public static final double kP = 0.1;
-        public static final double kI = 0.0;
-        public static final double kD = 0.0;
-        public static final double kS = 0.0;
-        public static final double kG = 0.2;
-        public static final double kV = 0.0;
-        public static final double kA = 0.0;
-        public static final double MAX_JERK = 0.05;
-        public static final double MAX_VELOCITY_METERS_PER_SECOND = 0.50;
-        public static final boolean inverted = false;
-        public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 0.20;
-        public static final double GEAR_RATIO = 25.0 / 4.5;
-        public static final double INCHES_TO_ROTATIONS =
-                1 / 4.5; // rotations of the thing the cancoder is on to inches need number for it
-        public static final double ROTATIONS_TO_INCHES = 4.5;
-        public static final double MAX_HEIGHT_INCHES = 20.0;
-        public static final double MIN_HEIGHT_INCHES = 0.0;
-        public static final double LENGTH_METERS = 0.5;
-        public static final double MASS = 4.0;
-        public static final double PEAK_FORWARD_CURRENT_LIMIT = 40;
-        public static final double PEAK_REVERSE_CURRENT_LIMIT = 30;
-        public static final double STATOR_CURRENT_LIMIT = 35;
-        public static final double SUPPLY_CURRENT_LIMIT = 25;
+        public static class kChainsaw {
+            public static final int LEFT_MOTOR_ID = 15;
+            public static final int RIGHT_MOTOR_ID = 16;
+            public static final int BUMPER_SENSOR_ID = 0;
+            public static final int CANCODER_ID = 17;
+            public static final double CANCODER_OFFSET = 0.0; // this is made up
+            public static final double MOMENT_OF_INERTIA_KG_M2 = 0.05; // this is made up
+            public static final double kP = 0.1;
+            public static final double kI = 0.0;
+            public static final double kD = 0.0;
+            public static final double kS = 0.0;
+            public static final double kG = 0.2;
+            public static final double kV = 0.0;
+            public static final double kA = 0.0;
+            public static final double MAX_JERK = 0.05;
+            public static final double MAX_VELOCITY_METERS_PER_SECOND = 0.50;
+            public static final boolean inverted = false;
+            public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 0.20;
+            public static final double GEAR_RATIO = 25.0 / 4.5;
+            public static final double INCHES_TO_ROTATIONS =
+                    1 / 4.5; // rotations of the thing the cancoder is on to inches need
+            // number for it
+            public static final double ROTATIONS_TO_INCHES = 4.5;
+            public static final double MAX_HEIGHT_INCHES = 20.0;
+            public static final double MIN_HEIGHT_INCHES = 0.0;
+            public static final double LENGTH_METERS = 0.5;
+            public static final double MASS = 4.0;
+            public static final double PEAK_FORWARD_CURRENT_LIMIT = 40;
+            public static final double PEAK_REVERSE_CURRENT_LIMIT = 30;
+            public static final double STATOR_CURRENT_LIMIT = 35;
+            public static final double SUPPLY_CURRENT_LIMIT = 25;
         }
     }
 

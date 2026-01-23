@@ -4,8 +4,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import java.util.function.BooleanSupplier;
-
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
@@ -17,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
 import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
+import java.util.function.BooleanSupplier;
 
 public class SwerveCommands {
 
@@ -62,7 +61,11 @@ public class SwerveCommands {
                 .withTimeout(.5);
     }
 
-    public static BooleanSupplier isAt(CommandSwerveDrivetrain swerve, Pose2d targetPose, double positionToleranceMeters, double angleToleranceRadians) {
+    public static BooleanSupplier isAt(
+            CommandSwerveDrivetrain swerve,
+            Pose2d targetPose,
+            double positionToleranceMeters,
+            double angleToleranceRadians) {
         return () -> {
             Pose2d currentPose = swerve.getState().Pose;
             double positionError =
@@ -107,7 +110,9 @@ public class SwerveCommands {
                                                     targetPose.getRotation().getRadians())));
                 });
     }
-    public static Command moveToSimpleWithVelocityControl(CommandSwerveDrivetrain swerve, Pose2d targetPose, Pose2d maxVelocities){
+
+    public static Command moveToSimpleWithVelocityControl(
+            CommandSwerveDrivetrain swerve, Pose2d targetPose, Pose2d maxVelocities) {
         final PIDController xController =
                 new PIDController(.1, 0.0, 0.0); // Adjust gains as necessary
         final PIDController yController = new PIDController(.1, 0.0, 0.0);
@@ -123,21 +128,35 @@ public class SwerveCommands {
         return swerve.run(
                 () -> {
                     Pose2d currentPose = swerve.getState().Pose;
-                    ChassisSpeeds speeds = new ChassisSpeeds(
-                            xController.calculate(currentPose.getX(), targetPose.getX()),
-                            yController.calculate(currentPose.getY(), targetPose.getY()),
-                            thetaController.calculate(currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians())
-                    );
+                    ChassisSpeeds speeds =
+                            new ChassisSpeeds(
+                                    xController.calculate(currentPose.getX(), targetPose.getX()),
+                                    yController.calculate(currentPose.getY(), targetPose.getY()),
+                                    thetaController.calculate(
+                                            currentPose.getRotation().getRadians(),
+                                            targetPose.getRotation().getRadians()));
 
                     // Clamp speeds to max velocities
-                    double clampedVx = Math.max(Math.min(speeds.vxMetersPerSecond, maxVelocities.getX()), -maxVelocities.getX());
-                    double clampedVy = Math.max(Math.min(speeds.vyMetersPerSecond, maxVelocities.getY()), -maxVelocities.getY());
-                    double clampedOmega = Math.max(Math.min(speeds.omegaRadiansPerSecond, maxVelocities.getRotation().getRadians()), -maxVelocities.getRotation().getRadians());
+                    double clampedVx =
+                            Math.max(
+                                    Math.min(speeds.vxMetersPerSecond, maxVelocities.getX()),
+                                    -maxVelocities.getX());
+                    double clampedVy =
+                            Math.max(
+                                    Math.min(speeds.vyMetersPerSecond, maxVelocities.getY()),
+                                    -maxVelocities.getY());
+                    double clampedOmega =
+                            Math.max(
+                                    Math.min(
+                                            speeds.omegaRadiansPerSecond,
+                                            maxVelocities.getRotation().getRadians()),
+                                    -maxVelocities.getRotation().getRadians());
 
-                    swerve.setControl(m_driveRequest
-                            .withVelocityX(clampedVx)
-                            .withVelocityY(clampedVy)
-                            .withRotationalRate(clampedOmega));
+                    swerve.setControl(
+                            m_driveRequest
+                                    .withVelocityX(clampedVx)
+                                    .withVelocityY(clampedVy)
+                                    .withRotationalRate(clampedOmega));
                 });
     }
 }
