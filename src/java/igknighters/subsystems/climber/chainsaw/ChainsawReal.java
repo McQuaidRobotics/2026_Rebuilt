@@ -1,15 +1,11 @@
 package igknighters.subsystems.climber.chainsaw;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj.DigitalInput;
 import igknighters.constants.SubsystemConstants;
@@ -30,8 +26,8 @@ public class ChainsawReal extends Chainsaw {
 
     private final TalonFX leftMotor;
 
-    private final CANcoder positionCanCoder =
-            new CANcoder(SubsystemConstants.kClimber.kChainsaw.CANCODER_ID);
+    //     private final CANcoder positionCanCoder =
+    //             new CANcoder(SubsystemConstants.kClimber.kChainsaw.CANCODER_ID);
 
     // private final TalonFX rightMotor;
 
@@ -47,17 +43,18 @@ public class ChainsawReal extends Chainsaw {
         // MotorAlignmentValue.Opposed));
     }
 
-    public CANcoderConfiguration canCoderConfig() {
-        CANcoderConfiguration config = new CANcoderConfiguration();
+    //     public CANcoderConfiguration canCoderConfig() {
+    //         CANcoderConfiguration config = new CANcoderConfiguration();
 
-        config.MagnetSensor.MagnetOffset = SubsystemConstants.kClimber.kChainsaw.CANCODER_OFFSET;
-        config.MagnetSensor.SensorDirection =
-                SensorDirectionValue.Clockwise_Positive; // this is made up
-        config.MagnetSensor.AbsoluteSensorDiscontinuityPoint =
-                1.0; // at 1 rotation it wraps and says its at 0
+    //         config.MagnetSensor.MagnetOffset =
+    // SubsystemConstants.kClimber.kChainsaw.CANCODER_OFFSET;
+    //         config.MagnetSensor.SensorDirection =
+    //                 SensorDirectionValue.Clockwise_Positive; // this is made up
+    //         config.MagnetSensor.AbsoluteSensorDiscontinuityPoint =
+    //                 1.0; // at 1 rotation it wraps and says its at 0
 
-        return config;
-    }
+    //         return config;
+    //     }
 
     public TalonFXConfiguration arm1Config() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -79,13 +76,13 @@ public class ChainsawReal extends Chainsaw {
         config.MotionMagic.MotionMagicAcceleration =
                 SubsystemConstants.kClimber.kChainsaw.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED;
         config.MotionMagic.MotionMagicJerk = SubsystemConstants.kClimber.kChainsaw.MAX_JERK;
-        // DO NOT RUN UNTILL THIS IS FIGURED OUT !!!!!!!!!!!!!!!!!!
-        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-        config.Feedback.FeedbackRemoteSensorID = positionCanCoder.getDeviceID();
-        config.Feedback.RotorToSensorRatio =
-                SubsystemConstants.kClimber
-                        .kChainsaw
-                        .GEAR_RATIO; // ratio from motor output to cancoder shaft which is 25/4.5
+
+        // config.Feedback.RotorToSensorRatio =
+        //         SubsystemConstants.kClimber
+        //                 .kChainsaw
+        //                 .GEAR_RATIO; // ratio from motor output to gears = 25
+
+        config.Feedback.SensorToMechanismRatio = SubsystemConstants.kClimber.kChainsaw.GEAR_RATIO;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =

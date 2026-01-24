@@ -41,4 +41,9 @@ public class ClimberCommands {
     public static BooleanSupplier isBumperPressed(Climber climber) {
         return () -> climber.isSensorHit();
     }
+
+    public static Command home(Climber climber) {
+        return climber.runOnce(
+                () -> climber.setPositionInches(0.0)); // Set current position to 0 inches
+    }
 }

@@ -74,7 +74,7 @@ public class AimSolver {
 
             // --- Convert RPM → launch velocity ---
             double omega = currentRPM * 2.0 * Math.PI / 60.0; // rad/s
-            double v = omega * FLYWHEEL_RADIUS; // m/s
+            double v = (omega * FLYWHEEL_RADIUS) / 2.0; // m/s
 
             // --- Solve for hood angle (high arc) ---
             double inside = v * v * v * v - G * (G * d * d + 2 * h * v * v);
@@ -168,7 +168,10 @@ public class AimSolver {
             // 6. Compute launch velocity including swerve projection
             // -----------------------------
             double flywheelOmega = currentRPM * 2.0 * Math.PI / 60.0; // rad/s
-            double vFlywheel = flywheelOmega * FLYWHEEL_RADIUS;
+            double vFlywheel =
+                    flywheelOmega
+                            * FLYWHEEL_RADIUS
+                            / 2.0; // only one half of the flywheel is being moved by flywheel
 
             // Project robot velocity onto shot direction
             double shotDirX = Math.cos(turretAngle);
@@ -185,7 +188,10 @@ public class AimSolver {
 
             DogLog.log("Subsystems/Shooter/Aiming/Distance", d);
             DogLog.log("Subsystems/Shooter/Aiming/Height", h);
+            DogLog.log("Subsystems/Shooter/Aiming/Robot Velocity Projection", vRobotProj);
+            DogLog.log("Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
             DogLog.log("Subsystems/Shooter/Aiming/Launch Velocity", v);
+            DogLog.log("Subsystems/Shooter/Aiming/RPM", currentRPM);
             DogLog.log("Subsystems/Shooter/Aiming/Ballistic Discriminant", inside);
 
             if (inside < 0) {

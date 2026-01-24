@@ -162,10 +162,11 @@ public class DriverController {
             this.Y.onTrue(IndexerCommands.dispense(indexer, 160));
 
         } else if (debugType == DebugType.CLIMBER) {
-            this.A.onTrue(ClimberCommands.goToMax(climber));
+            this.A.onTrue(ClimberCommands.goTo(climber, 5.0));
             this.B.onTrue(ClimberCommands.goToMin(climber));
             this.X.onTrue(ClimberCommands.goTo(climber, 10.0));
-            this.Y.onTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
+            this.Y.onTrue(ClimberCommands.home(climber));
+            this.LT.onTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
         } else if (debugType == DebugType.INTAKE) {
 
         } else {
