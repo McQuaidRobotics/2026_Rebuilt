@@ -123,4 +123,5 @@ public class ShooterCommands {
                         })
                 .withName("Aiming at hub");
     }
+    
 }
