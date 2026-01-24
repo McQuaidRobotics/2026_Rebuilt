@@ -54,27 +54,21 @@ public class HigherOrderCommands {
     }
 
     public static Command prepToClimbFirstRung(Subsystems subsystems) {
-        return Commands.runOnce(
-                        () ->
-                                SwerveCommands.moveToSimple(subsystems.swerve, getClimbStartPose())
-                                        .until(
-                                                SwerveCommands.isAt(
-                                                        subsystems.swerve,
-                                                        getClimbStartPose(),
-                                                        .05,
-                                                        0.1))
-                                        .withName("Moving to start pose")
-                                        .andThen(
-                                                SwerveCommands.moveToSimpleWithVelocityControl(
-                                                        subsystems.swerve,
-                                                        getClimbEndPose(),
-                                                        new Pose2d(.1, 1., new Rotation2d(0.2))))
-                                        .withName("Moving to end pose")
-                                        .until(ClimberCommands.isBumperPressed(subsystems.climber))
-                                        .andThen(SwerveCommands.stopDriving(subsystems.swerve))
-                                        .withName("stopping driving")
-                                        .andThen(ClimberCommands.goToMax(subsystems.climber)))
-                .withName("raising to max height")
+        return Commands.sequence(
+                        Commands.print("STARTING AUTO ALIGNMENT TO CLIMB"),
+                        SwerveCommands.moveToSimple(subsystems.swerve, getClimbStartPose())
+                                .until(
+                                        SwerveCommands.isAt(
+                                                subsystems.swerve, getClimbStartPose(), 0.03, 0.1)),
+                        Commands.print("REACHED STARTING POSE FOR CLIMB LINEUP"),
+                        SwerveCommands.moveToSimpleWithVelocityControl(
+                                        subsystems.swerve,
+                                        getClimbEndPose(),
+                                        new Pose2d(.5, .5, new Rotation2d(1)))
+                                .until(ClimberCommands.isBumperPressed(subsystems.climber)),
+                        Commands.print("REACHED CLIMBING POSITION"),
+                        ClimberCommands.goToMax(subsystems.climber),
+                        Commands.print("CLIMBER IS PREPED TO RUN"))
                 .withName("Moving to Climber and raising to max height");
     }
 }

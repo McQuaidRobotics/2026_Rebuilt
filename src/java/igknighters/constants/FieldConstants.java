@@ -32,7 +32,7 @@ public class FieldConstants {
                 new Pose2d(
                         33.0 * Conv.INCHES_TO_METERS,
                         158.32 * Conv.INCHES_TO_METERS,
-                        new Rotation2d());
+                        new Rotation2d(Math.PI)); // made up value
         public static final Pose2d POSITION_RED =
                 new Pose2d(LENGTH - POSITION_BLUE.getX(), POSITION_BLUE.getY(), new Rotation2d());
     }
