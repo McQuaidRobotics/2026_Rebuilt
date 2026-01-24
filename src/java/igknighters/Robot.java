@@ -15,7 +15,10 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
+import igknighters.commands.IntakeCommands;
 import igknighters.commands.SubsystemTriggers;
 import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
@@ -97,6 +100,8 @@ public class Robot extends TimedRobot {
 
     public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsytems.swerve.createAutoFactory();
+        autoFactory.bind("Shoot_Untill_Empty", HigherOrderCommands.shootNoStop(subsystems));
+        autoFactory.bind("Hippo_Shoot", Commands.parallel(IntakeCommands.intakeBalls(subsystems.intake), HigherOrderCommands.shootNoStop(subsystems)));
         final var routines = new AutoRoutines(subsytems, autoFactory);
         autoChooser.addCmd("shoot-then-move", routines.shootThenMove());
         autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
