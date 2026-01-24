@@ -99,6 +99,8 @@ public class Robot extends TimedRobot {
         final var routines = new AutoRoutines(subsytems, autoFactory);
         autoChooser.addCmd("shoot-then-move", routines.shootThenMove());
         autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
+        autoChooser.addCmd("leftDepoClimb", routines.leftDepoClimb());
+        autoChooser.addCmd("rightNeutralHippo", routines.rightNeutralHippo());
         autoChooser.addCmd(
                 "NEW METHOD IDK IF THIS WILL WORK HOPEFULLY IT WILL", routines.scoreThenPass());
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);

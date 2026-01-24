@@ -117,4 +117,17 @@ public class AutoRoutines extends AutoCommands {
 
         return () -> routine.cmd();
     }
+
+    public Supplier<Command> leftDepoClimb() {
+        return () ->
+                newRebuiltAuto("left depo climb")
+                        .shootAndMove(Waypoints.STARTING_RIGHT, Waypoints.BUMP_LAND_RIGHT)
+                        .addDrivingTrajectory(Waypoints.BUMP_LAND_RIGHT, Waypoints.CLIMB_LEFT)
+                        .build();
+    }
+
+    public Supplier<Command> rightNeutralHippo() {
+        AutoRoutine routine = autoFactory.newRoutine("Right Neutral Hippo");
+        AutoTrajectory moveTraj = routine.trajectory("RightNeutralHippo.traj");
+    }
 }
