@@ -9,13 +9,11 @@ public class SubsystemConstants {
             public static final int LEFT_MOTOR_ID = 15;
             public static final int RIGHT_MOTOR_ID = 16;
             public static final int BUMPER_SENSOR_ID = 0;
-            public static final int CANCODER_ID = 17;
-            public static final double CANCODER_OFFSET = 0.0; // this is made up
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.05; // this is made up
-            public static final double kP = 0.1;
+            public static final double kP = 0.8;
             public static final double kI = 0.0;
             public static final double kD = 0.0;
-            public static final double kS = 0.0;
+            public static final double kS = 0.2;
             public static final double kG = 0.2;
             public static final double kV = 0.0;
             public static final double kA = 0.0;
@@ -23,10 +21,9 @@ public class SubsystemConstants {
             public static final double MAX_VELOCITY_METERS_PER_SECOND = 0.50;
             public static final boolean inverted = false;
             public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 0.20;
-            public static final double GEAR_RATIO = 25.0 / 4.5;
+            public static final double GEAR_RATIO = 25.0;
             public static final double INCHES_TO_ROTATIONS =
-                    1 / 4.5; // rotations of the thing the cancoder is on to inches need
-            // number for it
+                    1 / 4.5; // 1 rot at end of gearbox is 4.5 inches of linear movement
             public static final double ROTATIONS_TO_INCHES = 4.5;
             public static final double MAX_HEIGHT_INCHES = 20.0;
             public static final double MIN_HEIGHT_INCHES = 0.0;
