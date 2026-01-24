@@ -101,13 +101,18 @@ public class Robot extends TimedRobot {
     public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsytems.swerve.createAutoFactory();
         autoFactory.bind("Shoot_Untill_Empty", HigherOrderCommands.shootNoStop(subsystems));
-        autoFactory.bind("Hippo_Shoot", Commands.parallel(IntakeCommands.intakeBalls(subsystems.intake), HigherOrderCommands.shootNoStop(subsystems)));
+        autoFactory.bind(
+                "Hippo_Shoot",
+                Commands.parallel(
+                        IntakeCommands.intakeBalls(subsystems.intake),
+                        HigherOrderCommands.shootNoStop(subsystems)));
         final var routines = new AutoRoutines(subsytems, autoFactory);
         autoChooser.addCmd("shoot-then-move", routines.shootThenMove());
         autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
         autoChooser.addRoutine(
                 "NEW METHOD IDK IF THIS WILL WORK HOPEFULLY IT WILL", routines::scoreThenPass);
         autoChooser.addRoutine("NEW LEFT NUETRAL HIPPO", routines::newLeftNuetralHippo);
+        autoChooser.addRoutine("CENTER OUTPOST CLIMB", routines::centerOutpostClimb);
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
     }
 

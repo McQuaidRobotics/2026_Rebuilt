@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.Robot;
 import igknighters.commands.HigherOrderCommands;
+import igknighters.commands.IndexerCommands;
 import igknighters.commands.IntakeCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.constants.FieldConstants;
@@ -105,7 +106,7 @@ public class AutoRoutines extends AutoCommands {
                                 moveTraj.cmd()));
 
         moveTraj.atTime("Intake")
-               .onTrue(
+                .onTrue(
                         Commands.sequence(
                                 Commands.print("INTAKE BALLS"),
                                 Commands.parallel(
@@ -131,6 +132,25 @@ public class AutoRoutines extends AutoCommands {
                                                 HigherOrderCommands.shootNoStop(subsystems),
                                                 moveTraj.cmd()))
                                 .withName("LEFT NUETRAL HIPPO"));
+        moveTraj.atTimeBeforeEnd(0.0).onTrue(SwerveCommands.stopDriving(swerve));
+        return routine;
+    }
+
+    public AutoRoutine centerOutpostClimb() {
+        AutoRoutine routine = autoFactory.newRoutine("Center Outpost climb");
+
+        AutoTrajectory moveTraj = routine.trajectory("CENTER_OUTPOST_CLIMB.traj");
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                        moveTraj.resetOdometry(),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 2),
+                                        Commands.parallel(
+                                                IndexerCommands.dispense(subsystems.indexer, 2.0),
+                                                HigherOrderCommands.shootNoStop(subsystems),
+                                                moveTraj.cmd()))
+                                .withName("Move and Shoot"));
         moveTraj.atTimeBeforeEnd(0.0).onTrue(SwerveCommands.stopDriving(swerve));
         return routine;
     }
