@@ -102,8 +102,8 @@ public class Robot extends TimedRobot {
         autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
         autoChooser.addRoutine(
                 "NEW METHOD IDK IF THIS WILL WORK HOPEFULLY IT WILL", routines::scoreThenPass);
+        autoChooser.addRoutine("NEW LEFT NUETRAL HIPPO", routines::newLeftNuetralHippo);
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
-        autoChooser.addRoutine("left neutral hippo", routines::leftNeutralHippo);
     }
 
     public void setUpSwerve(Subsystems subsystems) {
