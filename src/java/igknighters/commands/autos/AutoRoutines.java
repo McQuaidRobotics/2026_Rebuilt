@@ -89,7 +89,7 @@ public class AutoRoutines extends AutoCommands {
         }
     }
 
-    public Supplier<Command> scoreThenPass() {
+    public AutoRoutine scoreThenPass() {
         AutoRoutine routine = autoFactory.newRoutine("Score then pass");
 
         AutoTrajectory moveTraj = routine.trajectory("ShootThenIntake.traj");
@@ -115,6 +115,42 @@ public class AutoRoutines extends AutoCommands {
                                         HigherOrderCommands.shootNoStop(
                                                 subsystems, () -> getHubTarget()))));
 
-        return () -> routine.cmd();
+        return routine;
+    }
+
+    public AutoRoutine leftNeutralHippo() {
+        AutoRoutine routine = autoFactory.newRoutine("Left Neutral Hippo");
+
+        AutoTrajectory moveTraj = routine.trajectory("LeftNeutralHippo.traj");
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                        moveTraj.resetOdometry().withTimeout(0.1),
+                                        HigherOrderCommands.shootTillEmpty(
+                                                        subsystems, 3.0, () -> getHubTarget())
+                                                .withName("LEFT_NEUTRAL_HIPPO_Shoot"),
+                                        Commands.print("FINISHED SCORING"),
+                                        Commands.waitSeconds(1),
+                                        moveTraj.cmd().withName("LEFT_NEUTRAL_HIPPO_Move"))
+                                .withName("LEFT NEUTRAL HIPPO MOVE ELEMENT"));
+
+        moveTraj.atTime("Start Intaking")
+                .onTrue(
+                        Commands.sequence(
+                                Commands.print("INTAKE BALLS"),
+                                Commands.parallel(
+                                        IntakeCommands.intakeBalls(subsystems.intake),
+                                        HigherOrderCommands.shootNoStop(
+                                                subsystems, () -> getHubTarget()))));
+        moveTraj.atTime("Intake and Pass.")
+                .onTrue(
+                        Commands.sequence(
+                                Commands.print("INTAKE BALLS"),
+                                Commands.parallel(
+                                        IntakeCommands.intakeBalls(subsystems.intake),
+                                        HigherOrderCommands.shootNoStop(
+                                                subsystems, () -> getHubTarget()))));                                        
+        return routine;
     }
 }
