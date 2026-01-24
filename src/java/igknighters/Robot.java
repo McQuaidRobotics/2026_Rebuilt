@@ -23,6 +23,7 @@ import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.climber.Climber;
 import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
@@ -143,12 +144,13 @@ public class Robot extends TimedRobot {
                         new Led(40, 1),
                         new Shooter(),
                         new Indexer(),
-                        new Intake());
+                        new Intake(),
+                        new Climber());
         setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
         setUpTest(subsytems);
-        driverController.bind(subsytems);
+        bindDriverController();
 
         subsystemTriggers.SetupTriggers(subsytems.led);
     }
@@ -170,6 +172,10 @@ public class Robot extends TimedRobot {
         }
     }
 
+    public void bindDriverController() {
+        driverController.bind(subsytems, DriverController.DebugType.CLIMBER);
+    }
+
     @Override
     public void disabledInit() {
         scheduler.cancelAll();
@@ -182,7 +188,7 @@ public class Robot extends TimedRobot {
         DrivingSharedState.getInstance().setKI(targetingI.value());
         DrivingSharedState.getInstance().setKD(targetingD.value());
 
-        driverController.bind(subsytems);
+        bindDriverController();
     }
 
     @Override

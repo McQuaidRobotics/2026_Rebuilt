@@ -9,11 +9,13 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
 import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
+import java.util.function.BooleanSupplier;
 
 public class SwerveCommands {
 
@@ -59,6 +61,25 @@ public class SwerveCommands {
                 .withTimeout(.5);
     }
 
+    public static BooleanSupplier isAt(
+            CommandSwerveDrivetrain swerve,
+            Pose2d targetPose,
+            double positionToleranceMeters,
+            double angleToleranceRadians) {
+        return () -> {
+            Pose2d currentPose = swerve.getState().Pose;
+            double positionError =
+                    Math.hypot(
+                            currentPose.getX() - targetPose.getX(),
+                            currentPose.getY() - targetPose.getY());
+            double angleError =
+                    Math.abs(
+                            currentPose.getRotation().getRadians()
+                                    - targetPose.getRotation().getRadians());
+            return positionError <= positionToleranceMeters && angleError <= angleToleranceRadians;
+        };
+    }
+
     public static Command moveToSimple(CommandSwerveDrivetrain swerve, Pose2d targetPose) {
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
@@ -87,6 +108,55 @@ public class SwerveCommands {
                                             thetaController.calculate(
                                                     currentPose.getRotation().getRadians(),
                                                     targetPose.getRotation().getRadians())));
+                });
+    }
+
+    public static Command moveToSimpleWithVelocityControl(
+            CommandSwerveDrivetrain swerve, Pose2d targetPose, Pose2d maxVelocities) {
+        final PIDController xController =
+                new PIDController(.1, 0.0, 0.0); // Adjust gains as necessary
+        final PIDController yController = new PIDController(.1, 0.0, 0.0);
+        final PIDController thetaController = new PIDController(.1, 0.0, 0.0);
+        final SwerveRequest.FieldCentric m_driveRequest =
+                new SwerveRequest.FieldCentric()
+                        .withDeadband(knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond) * 1.0)
+                        .withRotationalDeadband(
+                                RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 1.0)
+                        .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
+                        .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
+
+        return swerve.run(
+                () -> {
+                    Pose2d currentPose = swerve.getState().Pose;
+                    ChassisSpeeds speeds =
+                            new ChassisSpeeds(
+                                    xController.calculate(currentPose.getX(), targetPose.getX()),
+                                    yController.calculate(currentPose.getY(), targetPose.getY()),
+                                    thetaController.calculate(
+                                            currentPose.getRotation().getRadians(),
+                                            targetPose.getRotation().getRadians()));
+
+                    // Clamp speeds to max velocities
+                    double clampedVx =
+                            Math.max(
+                                    Math.min(speeds.vxMetersPerSecond, maxVelocities.getX()),
+                                    -maxVelocities.getX());
+                    double clampedVy =
+                            Math.max(
+                                    Math.min(speeds.vyMetersPerSecond, maxVelocities.getY()),
+                                    -maxVelocities.getY());
+                    double clampedOmega =
+                            Math.max(
+                                    Math.min(
+                                            speeds.omegaRadiansPerSecond,
+                                            maxVelocities.getRotation().getRadians()),
+                                    -maxVelocities.getRotation().getRadians());
+
+                    swerve.setControl(
+                            m_driveRequest
+                                    .withVelocityX(clampedVx)
+                                    .withVelocityY(clampedVy)
+                                    .withRotationalRate(clampedOmega));
                 });
     }
 }
