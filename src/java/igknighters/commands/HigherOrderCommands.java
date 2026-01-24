@@ -11,13 +11,12 @@ import igknighters.subsystems.Subsystems;
 import java.util.function.Supplier;
 
 public class HigherOrderCommands {
-    public static Command shootTillEmpty(
-            Subsystems subsystems, double timeout, Supplier<Pose3d> targetPoseSupplier) {
+    public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
         return Commands.parallel(
-                        ShooterCommands.aimAt(
+                        ShooterCommands.shootIChoseTargetWithLookAhead(
                                         subsystems.shooter,
                                         () -> subsystems.swerve.getState().Pose,
-                                        targetPoseSupplier)
+                                        () -> subsystems.swerve.getState().Speeds)
                                 .withName("Aim At in Shoot till Empty"),
                         IndexerCommands.dispense(subsystems.indexer, 100.0))
                 .onlyIf(() -> subsystems.shooter.atTarget(.5))

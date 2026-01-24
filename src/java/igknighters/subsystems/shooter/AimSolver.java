@@ -1,8 +1,8 @@
 package igknighters.subsystems.shooter;
 
 import dev.doglog.DogLog;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -117,15 +117,15 @@ public class AimSolver {
                 Pose3d targetPose,
                 Pose3d shooterPose,
                 double currentRPM,
-                Pose2d shooterVel, // vx, vy, omega
+                ChassisSpeeds shooterVel, // vx, vy, omega
                 double delaySeconds) {
 
             // -----------------------------
             // 1. Predict shooter future pose
             // -----------------------------
-            double vx = shooterVel.getX();
-            double vy = shooterVel.getY();
-            double omega = shooterVel.getRotation().getRadians(); // rad/s
+            double vx = shooterVel.vxMetersPerSecond;
+            double vy = shooterVel.vyMetersPerSecond;
+            double omega = shooterVel.omegaRadiansPerSecond; // rad/s
 
             double sx = shooterPose.getX() + vx * delaySeconds;
             double sy = shooterPose.getY() + vy * delaySeconds;

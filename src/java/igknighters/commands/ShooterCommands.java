@@ -3,6 +3,7 @@ package igknighters.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
 import igknighters.constants.Conv;
@@ -217,7 +218,7 @@ public class ShooterCommands {
     }
 
     public static Command shootIChoseTargetWithLookAhead(
-            Shooter shooter, Supplier<Pose2d> robotPose, Supplier<Pose2d> robotVelocity) {
+            Shooter shooter, Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotVelocity) {
         return shooter.run(
                         () -> {
                             Pose2d robotPose2d = robotPose.get();

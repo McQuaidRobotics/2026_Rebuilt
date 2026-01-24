@@ -129,16 +129,7 @@ public class DriverController {
         } else if (debugType == DebugType.SHOOTER) {
             this.A.whileTrue(
                     ShooterCommands.shootIChoseTargetWithLookAhead(
-                            shooter,
-                            () -> swerve.getState().Pose,
-                            () ->
-                                    new Pose2d(
-                                            swerve.getState().Speeds.vxMetersPerSecond,
-                                            swerve.getState().Speeds.vyMetersPerSecond,
-                                            new Rotation2d(
-                                                    swerve.getState()
-                                                            .Speeds
-                                                            .omegaRadiansPerSecond))));
+                            shooter, () -> swerve.getState().Pose, () -> swerve.getState().Speeds));
             this.LT.whileTrue(
                     ShooterCommands.aimAt(
                             shooter,
