@@ -1,6 +1,8 @@
 package igknighters;
 
-/** Automatically generated file containing build version information. */
+/**
+ * Automatically generated file containing build version information.
+ */
 public final class BuildConstants {
     public static final String MAVEN_GROUP = "";
     public static final String MAVEN_NAME = "2026_Rebuilt";
@@ -13,5 +15,5 @@ public final class BuildConstants {
     public static final long BUILD_UNIX_TIME = 1769285240288L;
     public static final int DIRTY = 1;
 
-    private BuildConstants() {}
+    private BuildConstants(){}
 }

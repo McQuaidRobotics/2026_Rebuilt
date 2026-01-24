@@ -15,7 +15,10 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
+import igknighters.commands.IntakeCommands;
 import igknighters.commands.SubsystemTriggers;
 import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
@@ -23,6 +26,7 @@ import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.climber.Climber;
 import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
@@ -96,13 +100,14 @@ public class Robot extends TimedRobot {
 
     public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsytems.swerve.createAutoFactory();
+        autoFactory.bind("Shoot_Untill_Empty", HigherOrderCommands.shootNoStop(subsystems));
+        autoFactory.bind("Hippo_Shoot", Commands.parallel(IntakeCommands.intakeBalls(subsystems.intake), HigherOrderCommands.shootNoStop(subsystems)));
         final var routines = new AutoRoutines(subsytems, autoFactory);
         autoChooser.addCmd("shoot-then-move", routines.shootThenMove());
         autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
-        autoChooser.addCmd("leftDepoClimb", routines.leftDepoClimb());
-        autoChooser.addCmd("rightNeutralHippo", routines.rightNeutralHippo());
-        autoChooser.addCmd(
-                "NEW METHOD IDK IF THIS WILL WORK HOPEFULLY IT WILL", routines.scoreThenPass());
+        autoChooser.addRoutine(
+                "NEW METHOD IDK IF THIS WILL WORK HOPEFULLY IT WILL", routines::scoreThenPass);
+        autoChooser.addRoutine("NEW LEFT NUETRAL HIPPO", routines::newLeftNuetralHippo);
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
     }
 
@@ -144,12 +149,13 @@ public class Robot extends TimedRobot {
                         new Led(40, 1),
                         new Shooter(),
                         new Indexer(),
-                        new Intake());
+                        new Intake(),
+                        new Climber());
         setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
         setUpTest(subsytems);
-        driverController.bind(subsytems);
+        bindDriverController();
 
         subsystemTriggers.SetupTriggers(subsytems.led);
     }
@@ -171,6 +177,10 @@ public class Robot extends TimedRobot {
         }
     }
 
+    public void bindDriverController() {
+        driverController.bind(subsytems, DriverController.DebugType.SHOOTER);
+    }
+
     @Override
     public void disabledInit() {
         scheduler.cancelAll();
@@ -183,7 +193,7 @@ public class Robot extends TimedRobot {
         DrivingSharedState.getInstance().setKI(targetingI.value());
         DrivingSharedState.getInstance().setKD(targetingD.value());
 
-        driverController.bind(subsytems);
+        bindDriverController();
     }
 
     @Override

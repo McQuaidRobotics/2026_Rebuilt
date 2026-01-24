@@ -122,10 +122,7 @@ public class AutoCommands {
             bodyCommand.addCommands(
                     loggedCmd(
                             Commands.sequence(
-                                            HigherOrderCommands.shootTillEmpty(
-                                                            subsystems,
-                                                            timeout,
-                                                            () -> getHubTarget())
+                                            HigherOrderCommands.shootTillEmpty(subsystems, timeout)
                                                     .withName("SHOOT_TILL_EMPTY"),
                                             traj.cmd(),
                                             SwerveCommands.stopDriving(swerve).withTimeout(.1))
@@ -146,9 +143,7 @@ public class AutoCommands {
                             Commands.sequence(
                                             Commands.parallel(
                                                             HigherOrderCommands.shootTillEmpty(
-                                                                            subsystems,
-                                                                            3.0,
-                                                                            () -> getHubTarget())
+                                                                            subsystems, 3.0)
                                                                     .withName("SHOOT_TILL_EMPTY"),
                                                             traj.cmd()
                                                                     .withName(

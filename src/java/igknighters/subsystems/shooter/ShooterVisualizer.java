@@ -82,6 +82,15 @@ public class ShooterVisualizer {
                             HOOD_WIDTH,
                             new Color8Bit(Color.kGreen)));
 
+    private final MechanismLigament2d hoodGoalLigament =
+            hood.append(
+                    new MechanismLigament2d(
+                            "HOOD_GOAL",
+                            HOOD_LENGTH,
+                            0.0,
+                            HOOD_WIDTH,
+                            new Color8Bit(Color.kAliceBlue)));
+
     public ShooterVisualizer() {
         shooter.setBackgroundColor(new Color8Bit(Color.kBlack));
 
@@ -103,13 +112,14 @@ public class ShooterVisualizer {
         return new Color8Bit((int) r, (int) g, 0);
     }
 
-    public void update(ShooterState shooterState, double targetRPM) {
+    public void update(ShooterState shooterState, double targetRPM, double targetHoodAngleDegs) {
         double turretAngleDegrees = Math.toDegrees(shooterState.turretAngleRads);
         double hoodAngleDegrees = Math.toDegrees(shooterState.hoodAngleRads);
         double rpm = shooterState.rpm;
 
         turretLigament.setAngle(turretAngleDegrees);
         hoodLigament.setAngle(hoodAngleDegrees);
+        hoodGoalLigament.setAngle(targetHoodAngleDegs);
         hoodLigament.setColor(getRPMColor(rpm, targetRPM));
     }
 }
