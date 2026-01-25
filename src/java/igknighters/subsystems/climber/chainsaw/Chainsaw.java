@@ -4,7 +4,7 @@ public abstract class Chainsaw {
 
     public abstract void setPositionInches(double position);
 
-    public abstract void goToInches(double meters);
+    public abstract void goToInches(double inches);
 
     public abstract void periodic();
 

@@ -34,6 +34,15 @@ public class SubsystemConstants {
             public static final double STATOR_CURRENT_LIMIT = 35;
             public static final double SUPPLY_CURRENT_LIMIT = 25;
         }
+
+        public static class kServos {
+            public static final int SERVO_PORT_1 = 1;
+            public static final int SERVO_PORT_2 = 2;
+            public static final int SERVO_PORT_3 = 3;
+            public static final int SERVO_PORT_4 = 4;
+            public static final double MAX_ANGLE_DEGREES = 180.0;
+            public static final double MIN_ANGLE_DEGREES = 0.0;
+        }
     }
 
     public static class kIndexer {

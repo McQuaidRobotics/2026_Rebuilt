@@ -166,7 +166,7 @@ public class DriverController {
             this.B.onTrue(ClimberCommands.goToMin(climber));
             this.X.onTrue(ClimberCommands.goTo(climber, 10.0));
             this.Y.onTrue(ClimberCommands.home(climber));
-            this.LT.onTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
+            this.LT.whileTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
         } else if (debugType == DebugType.INTAKE) {
 
         } else {

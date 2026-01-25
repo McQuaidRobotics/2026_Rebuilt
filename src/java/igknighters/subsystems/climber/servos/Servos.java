@@ -1,14 +1,13 @@
 package igknighters.subsystems.climber.servos;
 
 public abstract class Servos {
-    public abstract void setAngleDegrees(double angleDegrees);
-    
-    public abstract double getAngleDegrees();
-    
+
+    public static enum ServoID {
+        MOVING_SERVOS,
+        FIXED_SERVOS
+    }
+
     public abstract void periodic();
-    
-    public abstract void goToAngleDegrees(double angleDegrees);
 
-    public abstract boolean isAt(double targetAngleDegrees, double toleranceDegrees);
-
+    public abstract void goToAngleDegrees(double angleDegrees, ServoID servoID);
 }

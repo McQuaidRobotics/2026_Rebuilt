@@ -172,7 +172,7 @@ public class Robot extends TimedRobot {
     }
 
     public void bindDriverController() {
-        driverController.bind(subsytems, DriverController.DebugType.SHOOTER);
+        driverController.bind(subsytems, DriverController.DebugType.CLIMBER);
     }
 
     @Override
