@@ -145,6 +145,7 @@ public class DriverController {
                             shooter,
                             () -> swerve.getState().Pose,
                             () -> FieldConstants.PASS.POSITION_RIGHT_BLUE));
+            this.LT.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
 
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer, 120));
