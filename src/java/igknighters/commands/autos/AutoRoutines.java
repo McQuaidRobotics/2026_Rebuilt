@@ -151,6 +151,8 @@ public class AutoRoutines extends AutoCommands {
                                                 HigherOrderCommands.shootNoStop(subsystems),
                                                 moveTraj.cmd()))
                                 .withName("Move and Shoot"));
+        HigherOrderCommands.prepToClimbFirstRung(subsystems);
+        moveTraj.cmd();
         moveTraj.atTimeBeforeEnd(0.0).onTrue(SwerveCommands.stopDriving(swerve));
         return routine;
     }
