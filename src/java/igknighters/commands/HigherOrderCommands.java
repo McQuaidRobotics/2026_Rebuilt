@@ -53,6 +53,14 @@ public class HigherOrderCommands {
         }
     }
 
+    public static Command hippoShoot(Subsystems subsystems, double timeout) {
+        return Commands.parallel(
+                        shootNoStop(subsystems),
+                        Commands.print("IM HIPPPOING TILL I HIPPO").repeatedly(),
+                        IntakeCommands.intakeBalls(subsystems.intake))
+                .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
+    }
+
     public static Command prepToClimbFirstRung(Subsystems subsystems) {
         return Commands.sequence(
                         Commands.print("STARTING AUTO ALIGNMENT TO CLIMB"),

@@ -163,15 +163,20 @@ public class AutoRoutines extends AutoCommands {
         routine.active()
                 .onTrue(
                         Commands.sequence(
-                                        moveTraj.resetOdometry(),
-                                        HigherOrderCommands.shootTillEmpty(subsystems, 2),
-                                        IntakeCommands.intakeBalls(subsystems.intake),
-                                        moveTraj.cmd())
-                                .withName("Intake and Shoot"));
-        HigherOrderCommands.shootNoStop(subsystems);
-        HigherOrderCommands.prepToClimbFirstRung(subsystems);
-        moveTraj.cmd();
-        moveTraj.atTimeBeforeEnd(0.0).onTrue(SwerveCommands.stopDriving(swerve));
+                                moveTraj.resetOdometry(),
+                                Commands.print("ODOMETRY RESET"),
+                                moveTraj.cmd()
+                                        .alongWith(
+                                                HigherOrderCommands.hippoShoot(subsystems, 4)
+                                                        .repeatedly(),
+                                                Commands.print("IM PARELELING").repeatedly())
+                                        .withName("Intake and Shoot")));
+
+        moveTraj.done()
+                .onTrue(
+                        Commands.sequence(
+                                SwerveCommands.stopDriving(swerve),
+                                HigherOrderCommands.prepToClimbFirstRung(subsystems)));
         return routine;
     }
 }
