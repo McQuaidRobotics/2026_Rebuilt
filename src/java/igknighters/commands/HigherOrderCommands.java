@@ -17,7 +17,7 @@ public class HigherOrderCommands {
                                         () -> subsystems.swerve.getState().Speeds)
                                 .withName("Aim At in Shoot till Empty"),
                         IndexerCommands.dispense(subsystems.indexer, 100.0)
-                                .onlyIf(() -> subsystems.shooter.atTarget(.5)))
+                                .onlyIf(() -> subsystems.shooter.atTarget(300, 2, 2)))
                 .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
     }
 
@@ -28,7 +28,7 @@ public class HigherOrderCommands {
                                 () -> subsystems.swerve.getState().Pose,
                                 () -> subsystems.swerve.getState().Speeds),
                         IndexerCommands.dispense(subsystems.indexer, 100.0))
-                .onlyIf(() -> subsystems.shooter.atTarget(.5));
+                .onlyIf(() -> subsystems.shooter.atTarget(300, 2, 2));
     }
 
     public static Pose2d getClimbStartPose() {
