@@ -114,6 +114,9 @@ public class Robot extends TimedRobot {
         autoChooser.addRoutine("NEW LEFT NUETRAL HIPPO", routines::newLeftNuetralHippo);
         autoChooser.addRoutine("NEW RIGHT NUETRAL HIPPO", routines::rightNeutralHippo);
         autoChooser.addRoutine("Right Depo Climb", routines::rightDepoClimb);
+        autoChooser.addRoutine("Left Depo Climb", routines::leftDepoClimb);
+        autoChooser.addRoutine("Left Outpost Climb", routines::leftOutpostClimb);
+        autoChooser.addRoutine("Right Outpost Climb", routines::rightOutpostClimb);
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
     }
 

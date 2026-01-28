@@ -196,4 +196,50 @@ public class AutoRoutines extends AutoCommands {
 
         return routine;
     }
+
+    public AutoRoutine leftOutpostClimb() {
+        AutoRoutine routine = autoFactory.newRoutine("Left Outpost Climb");
+        AutoTrajectory outpostTraj = routine.trajectory("LEFT_OUTPOST_CLIMB.traj");
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                        outpostTraj.resetOdometry(),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                        Commands.parallel(
+                                                IntakeCommands.intakeBalls(subsystems.intake),
+                                                HigherOrderCommands.shootNoStop(subsystems),
+                                                outpostTraj.cmd()))
+                                .withName("Left Outpost Climb"));
+        outpostTraj
+                .done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .andThen(HigherOrderCommands.prepToClimbFirstRung(subsystems)));
+
+        return routine;
+    }
+
+    public AutoRoutine rightOutpostClimb() {
+        AutoRoutine routine = autoFactory.newRoutine("Right Outpost Climb");
+        AutoTrajectory outpostTraj = routine.trajectory("RIGHT_OUTPOST_CLIMB.traj");
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                        outpostTraj.resetOdometry(),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                        Commands.parallel(
+                                                IntakeCommands.intakeBalls(subsystems.intake),
+                                                HigherOrderCommands.shootNoStop(subsystems),
+                                                outpostTraj.cmd()))
+                                .withName("Right Outpost Climb"));
+        outpostTraj
+                .done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .andThen(HigherOrderCommands.prepToClimbFirstRung(subsystems)));
+
+        return routine;
+    }
 }

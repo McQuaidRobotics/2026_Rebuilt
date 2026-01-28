@@ -17,18 +17,28 @@ public class HigherOrderCommands {
                                         () -> subsystems.swerve.getState().Speeds)
                                 .withName("Aim At in Shoot till Empty"),
                         IndexerCommands.dispense(subsystems.indexer, 100.0)
-                                .onlyIf(() -> subsystems.shooter.atTarget(.5)))
+                                .onlyIf(() -> subsystems.shooter.atTarget(.5))
+                                .repeatedly(),
+                        Commands.print("Shooting until empty").repeatedly(),
+                        Commands.print("DISPENSING BALLS")
+                                .onlyIf(() -> subsystems.shooter.atTarget(0.5))
+                                .repeatedly())
                 .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
     }
 
     public static Command shootNoStop(Subsystems subsystems) {
         return Commands.parallel(
-                        ShooterCommands.shootIChoseTargetWithLookAhead(
-                                subsystems.shooter,
-                                () -> subsystems.swerve.getState().Pose,
-                                () -> subsystems.swerve.getState().Speeds),
-                        IndexerCommands.dispense(subsystems.indexer, 100.0))
-                .onlyIf(() -> subsystems.shooter.atTarget(.5));
+                ShooterCommands.shootIChoseTargetWithLookAhead(
+                        subsystems.shooter,
+                        () -> subsystems.swerve.getState().Pose,
+                        () -> subsystems.swerve.getState().Speeds),
+                IndexerCommands.dispense(subsystems.indexer, 100.0)
+                        .onlyIf(() -> subsystems.shooter.atTarget(10))
+                        .repeatedly(),
+                Commands.print("Shooting without stopping"),
+                Commands.print("DISPENSING BALLS")
+                        .onlyIf(() -> subsystems.shooter.atTarget(0.5))
+                        .repeatedly());
     }
 
     public static Pose2d getClimbStartPose() {
