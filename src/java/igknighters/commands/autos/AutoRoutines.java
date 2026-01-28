@@ -178,9 +178,9 @@ public class AutoRoutines extends AutoCommands {
     }
 
     public AutoRoutine rightNeutralHippo() {
-        AutoRoutine routine = autoFactory.newRoutine("Left Neutral Hippo");
-        AutoTrajectory hippoTraj = routine.trajectory("LEFT_NEUTRAL_HIPPO.traj");
-        AutoTrajectory climbTraj = routine.trajectory("LEFT_NEUTRAL_HIPPO_CLIMB.traj");
+        AutoRoutine routine = autoFactory.newRoutine("Right Neutral Hippo");
+        AutoTrajectory hippoTraj = routine.trajectory("RIGHT_NEUTRAL_HIPPO.traj");
+        AutoTrajectory climbTraj = routine.trajectory("RIGHT_NEUTRAL_HIPPO_CLIMB.traj");
 
         routine.active()
                 .onTrue(
@@ -191,7 +191,7 @@ public class AutoRoutines extends AutoCommands {
                                                 IntakeCommands.intakeBalls(subsystems.intake),
                                                 HigherOrderCommands.shootNoStop(subsystems),
                                                 hippoTraj.cmd()))
-                                .withName("Left Neutral Hippo"));
+                                .withName("Right Neutral Hippo"));
         hippoTraj.done().onTrue(SwerveCommands.stopDriving(swerve));
 
         return routine;
