@@ -113,7 +113,7 @@ public class Robot extends TimedRobot {
                 "NEW METHOD IDK IF THIS WILL WORK HOPEFULLY IT WILL", routines::scoreThenPass);
         autoChooser.addRoutine("NEW LEFT NUETRAL HIPPO", routines::newLeftNuetralHippo);
         autoChooser.addRoutine("NEW RIGHT NUETRAL HIPPO", routines::rightNeutralHippo);
-        autoChooser.addRoutine("Left Depo Climb", routines::leftDepoClimb);
+        autoChooser.addRoutine("Right Depo Climb", routines::rightDepoClimb);
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
     }
 

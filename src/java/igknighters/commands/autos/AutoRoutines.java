@@ -135,10 +135,31 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine rightDepoClimb() {
+        AutoRoutine routine = autoFactory.newRoutine("Right Depo Climb");
+        AutoTrajectory depoTraj = routine.trajectory("RIGHT_DEPO_CLIMB.traj");
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                        depoTraj.resetOdometry(),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                        Commands.parallel(
+                                                IntakeCommands.intakeBalls(subsystems.intake),
+                                                HigherOrderCommands.shootNoStop(subsystems),
+                                                depoTraj.cmd()))
+                                .withName("Right Depo Climb"));
+        depoTraj.done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .andThen(HigherOrderCommands.prepToClimbFirstRung(subsystems)));
+
+        return routine;
+    }
+
     public AutoRoutine leftDepoClimb() {
         AutoRoutine routine = autoFactory.newRoutine("Left Depo Climb");
         AutoTrajectory depoTraj = routine.trajectory("LEFT_DEPO_CLIMB.traj");
-
         routine.active()
                 .onTrue(
                         Commands.sequence(
@@ -153,14 +174,13 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
                                 .andThen(HigherOrderCommands.prepToClimbFirstRung(subsystems)));
-
         return routine;
     }
 
     public AutoRoutine rightNeutralHippo() {
-        AutoRoutine routine = autoFactory.newRoutine("Right Neutral Hippo");
-        AutoTrajectory hippoTraj = routine.trajectory("RIGHT_NEUTRAL_HIPPO.traj");
-        AutoTrajectory climbTraj = routine.trajectory("RIGHT_NEUTRAL_HIPPO_CLIMB.traj");
+        AutoRoutine routine = autoFactory.newRoutine("Left Neutral Hippo");
+        AutoTrajectory hippoTraj = routine.trajectory("LEFT_NEUTRAL_HIPPO.traj");
+        AutoTrajectory climbTraj = routine.trajectory("LEFT_NEUTRAL_HIPPO_CLIMB.traj");
 
         routine.active()
                 .onTrue(
@@ -171,7 +191,7 @@ public class AutoRoutines extends AutoCommands {
                                                 IntakeCommands.intakeBalls(subsystems.intake),
                                                 HigherOrderCommands.shootNoStop(subsystems),
                                                 hippoTraj.cmd()))
-                                .withName("Right Neutral Hippo"));
+                                .withName("Left Neutral Hippo"));
         hippoTraj.done().onTrue(SwerveCommands.stopDriving(swerve));
 
         return routine;
