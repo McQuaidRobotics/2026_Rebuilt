@@ -71,7 +71,7 @@ public class ExitRollersReal extends ExitRollers {
     }
 
     @Override
-    boolean isAtSpeed(double targetRPM, double toleranceRPM) {
+    public boolean isAtSpeed(double targetRPM, double toleranceRPM) {
         double currentRPM = getSpeedRPM();
         return Math.abs(currentRPM - targetRPM) <= toleranceRPM;
     }

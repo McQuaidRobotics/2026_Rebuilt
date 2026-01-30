@@ -1,13 +1,12 @@
 package igknighters.subsystems.indexer.launcherRollers;
 
 public abstract class ExitRollers {
-    abstract void setSpeedRPM(double rpm);
+    public abstract void setSpeedRPM(double rpm);
 
-    abstract void setVoltage(double voltage);
+    public abstract void setVoltage(double voltage);
 
-    abstract double getSpeedRPM();
+    public abstract double getSpeedRPM();
+    public abstract boolean isAtSpeed(double targetRPM, double toleranceRPM);
 
-    abstract boolean isAtSpeed(double targetRPM, double toleranceRPM);
-
-    abstract void periodic();
+    public abstract void periodic();
 }
