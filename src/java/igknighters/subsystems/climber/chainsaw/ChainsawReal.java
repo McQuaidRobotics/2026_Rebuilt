@@ -6,6 +6,8 @@ import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.ForwardLimitValue;
+import com.ctre.phoenix6.signals.ReverseLimitValue;
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj.DigitalInput;
 import igknighters.constants.SubsystemConstants;
@@ -19,7 +21,7 @@ public class ChainsawReal extends Chainsaw {
     private double currentPosition = 0.0;
     private double previousPosition = 0.0;
 
-    private final DigitalInput bumberSensor =
+    private final DigitalInput bumperSensor =
             new DigitalInput(SubsystemConstants.kClimber.kChainsaw.BUMPER_SENSOR_ID);
 
     private final BaseStatusSignal armPosition, armCurrent;
@@ -33,28 +35,12 @@ public class ChainsawReal extends Chainsaw {
 
     public ChainsawReal() {
         leftMotor = new TalonFX(SubsystemConstants.kClimber.kChainsaw.LEFT_MOTOR_ID);
-        // rightMotor = new TalonFX(SubsystemConstants.kClimber.kChainsaw.RIGHT_MOTOR_ID);
 
         armPosition = leftMotor.getPosition();
         armCurrent = leftMotor.getStatorCurrent();
 
         leftMotor.getConfigurator().apply(arm1Config());
-        // rightMotor.setControl(new Follower(leftMotor.getDeviceID(),
-        // MotorAlignmentValue.Opposed));
     }
-
-    //     public CANcoderConfiguration canCoderConfig() {
-    //         CANcoderConfiguration config = new CANcoderConfiguration();
-
-    //         config.MagnetSensor.MagnetOffset =
-    // SubsystemConstants.kClimber.kChainsaw.CANCODER_OFFSET;
-    //         config.MagnetSensor.SensorDirection =
-    //                 SensorDirectionValue.Clockwise_Positive; // this is made up
-    //         config.MagnetSensor.AbsoluteSensorDiscontinuityPoint =
-    //                 1.0; // at 1 rotation it wraps and says its at 0
-
-    //         return config;
-    //     }
 
     public TalonFXConfiguration arm1Config() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -91,6 +77,21 @@ public class ChainsawReal extends Chainsaw {
         config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
                 SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_INCHES;
 
+        config.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = true;
+        config.HardwareLimitSwitch.ForwardLimitAutosetPositionValue =
+                SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_INCHES;
+
+        config.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
+        config.HardwareLimitSwitch.ReverseLimitAutosetPositionValue =
+                SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_INCHES;
+        config.HardwareLimitSwitch.ForwardLimitEnable = true;
+        config.HardwareLimitSwitch.ReverseLimitEnable = true;
+
+        config.HardwareLimitSwitch.ForwardLimitRemoteSensorID =
+                SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_SENSOR_ID;
+        config.HardwareLimitSwitch.ReverseLimitRemoteSensorID =
+                SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_SENSOR_ID;
+
         return config;
     }
 
@@ -126,7 +127,7 @@ public class ChainsawReal extends Chainsaw {
 
     @Override
     public boolean isSensorHit() {
-        return !bumberSensor.get(); // assuming that when pushed the current flows
+        return !bumperSensor.get(); // assuming that when pushed the current flows
     }
 
     @Override
@@ -137,6 +138,12 @@ public class ChainsawReal extends Chainsaw {
                 "Subsystems/Climber/Inches",
                 armPosition.getValueAsDouble()
                         * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES);
+        DogLog.log(
+                "Subsystems/Climber/IS REVERSE LIMIT HIT",
+                leftMotor.getReverseLimit().refresh().getValue().equals(ReverseLimitValue.Open));
+        DogLog.log(
+                "Subsystems/Climber/IS FORWARD LIMIT HIT",
+                leftMotor.getForwardLimit().refresh().getValue().equals(ForwardLimitValue.Open));
         DogLog.log("Subsystems/Climber/Current", armCurrent.getValueAsDouble());
     }
 }

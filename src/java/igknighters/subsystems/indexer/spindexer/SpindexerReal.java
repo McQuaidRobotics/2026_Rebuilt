@@ -10,7 +10,7 @@ import dev.doglog.DogLog;
 import igknighters.constants.SubsystemConstants;
 
 public class SpindexerReal extends Spindexer {
-    private final TalonFX mainShooter = new TalonFX(SubsystemConstants.kIndexer.LEADER_MOTOR_ID);
+    private final TalonFX mainShooter = new TalonFX(SubsystemConstants.kIndexer.kSpindexer.LEADER_MOTOR_ID);
 
     // private final MotionMagicVelocityVoltage velocityControl = new
     // MotionMagicVelocityVoltage(0.0);
@@ -32,25 +32,25 @@ public class SpindexerReal extends Spindexer {
 
     public TalonFXConfiguration getLeaderConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = SubsystemConstants.kIndexer.kP;
-        config.Slot0.kI = SubsystemConstants.kIndexer.kI;
-        config.Slot0.kD = SubsystemConstants.kIndexer.kD;
-        config.Slot0.kS = SubsystemConstants.kIndexer.kS;
-        config.Slot0.kV = SubsystemConstants.kIndexer.kV;
+        config.Slot0.kP = SubsystemConstants.kIndexer.kSpindexer.kP;
+        config.Slot0.kI = SubsystemConstants.kIndexer.kSpindexer.kI;
+        config.Slot0.kD = SubsystemConstants.kIndexer.kSpindexer.kD;
+        config.Slot0.kS = SubsystemConstants.kIndexer.kSpindexer.kS;
+        config.Slot0.kV = SubsystemConstants.kIndexer.kSpindexer.kV;
 
-        config.Feedback.SensorToMechanismRatio = SubsystemConstants.kIndexer.GEAR_RATIO;
+        config.Feedback.SensorToMechanismRatio = SubsystemConstants.kIndexer.kSpindexer.GEAR_RATIO;
 
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        config.MotionMagic.MotionMagicJerk = SubsystemConstants.kIndexer.MOTION_MAGIC_JERK;
+        config.MotionMagic.MotionMagicJerk = SubsystemConstants.kIndexer.kSpindexer.MOTION_MAGIC_JERK;
         config.MotionMagic.MotionMagicAcceleration =
-                SubsystemConstants.kIndexer.MAX_ACCELERATION_RPM;
-        config.MotionMagic.MotionMagicCruiseVelocity = SubsystemConstants.kIndexer.MAX_SPEED_RPM;
+                SubsystemConstants.kIndexer.kSpindexer.MAX_ACCELERATION_RPM;
+        config.MotionMagic.MotionMagicCruiseVelocity = SubsystemConstants.kIndexer.kSpindexer.MAX_SPEED_RPM;
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
-        config.CurrentLimits.SupplyCurrentLimit = SubsystemConstants.kIndexer.SUPPLY_CURRENT_LIMIT;
+        config.CurrentLimits.SupplyCurrentLimit = SubsystemConstants.kIndexer.kSpindexer.SUPPLY_CURRENT_LIMIT;
         config.MotorOutput.PeakReverseDutyCycle = 0.0; // do not allow the motor to run in reverse
         config.TorqueCurrent.PeakForwardTorqueCurrent =
-                SubsystemConstants.kIndexer.PEAK_CURRENT_LIMIT;
+                SubsystemConstants.kIndexer.kSpindexer.PEAK_CURRENT_LIMIT;
 
         return config;
     }

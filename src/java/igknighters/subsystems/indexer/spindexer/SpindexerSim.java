@@ -9,7 +9,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import igknighters.constants.SubsystemConstants;
-import igknighters.constants.SubsystemConstants.kIndexer;
+import igknighters.constants.SubsystemConstants.kIndexer.kSpindexer;
 
 public class SpindexerSim extends Spindexer {
     private double inputVoltage = 0.0;
@@ -18,23 +18,23 @@ public class SpindexerSim extends Spindexer {
             new FlywheelSim(
                     LinearSystemId.createFlywheelSystem(
                             DCMotor.getKrakenX60(1),
-                            SubsystemConstants.kIndexer.MOMENT_OF_INERTIA_KG_M2,
-                            SubsystemConstants.kIndexer.GEAR_RATIO),
+                            SubsystemConstants.kIndexer.kSpindexer.MOMENT_OF_INERTIA_KG_M2,
+                            SubsystemConstants.kIndexer.kSpindexer.GEAR_RATIO),
                     DCMotor.getKrakenX60(1));
     private final ProfiledPIDController profiledPIDController =
             new ProfiledPIDController(
                     .8,
-                    SubsystemConstants.kIndexer.kI,
-                    SubsystemConstants.kIndexer.kD,
+                    SubsystemConstants.kIndexer.kSpindexer.kI,
+                    SubsystemConstants.kIndexer.kSpindexer.kD,
                     new Constraints(
-                            SubsystemConstants.kIndexer.MAX_SPEED_RPM,
-                            SubsystemConstants.kIndexer.MAX_ACCELERATION_RPM));
+                            SubsystemConstants.kIndexer.kSpindexer.MAX_SPEED_RPM,
+                            SubsystemConstants.kIndexer.kSpindexer.MAX_ACCELERATION_RPM));
     // Create a new SimpleMotorFeedforward with gains kS, kV, and kA
     private final SimpleMotorFeedforward feedforward =
             new SimpleMotorFeedforward(
-                    SubsystemConstants.kIndexer.kS,
-                    SubsystemConstants.kIndexer.kV,
-                    SubsystemConstants.kIndexer.kA);
+                    SubsystemConstants.kIndexer.kSpindexer.kS,
+                    SubsystemConstants.kIndexer.kSpindexer.kV,
+                    SubsystemConstants.kIndexer.kSpindexer.kA);
     private boolean isPidControlledThisCycle = false;
     private boolean isVoltageControlledThisCycle = false;
 
@@ -68,7 +68,7 @@ public class SpindexerSim extends Spindexer {
 
             // Feedforward in volts
 
-            ffOutput = kIndexer.kS + kIndexer.kV * goalRPS;
+            ffOutput = kSpindexer.kS + kSpindexer.kV * goalRPS;
 
             // PID output is in RPM, convert to volts with a small gain
             // Tune this value (start around 0.001)
