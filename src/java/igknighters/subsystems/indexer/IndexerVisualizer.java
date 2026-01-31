@@ -28,9 +28,13 @@ public class IndexerVisualizer {
         indexerMechanism.setBackgroundColor(new Color8Bit(Color.kBlack));
 
         SmartDashboard.putData("Visualizers/Indexer/Indexer-Visualizer", indexerMechanism);
+    }
+
     public void update(double spindexerRPM, double exitRollerRPM) {
         spindexerTheta += spindexerRPM * 0.02;
         exitRollerTheta += exitRollerRPM * 0.02;
 
         spindexer.setAngle(new Rotation2d(spindexerTheta * 2 * Math.PI));
         exitRollers.setAngle(new Rotation2d(exitRollerTheta * 2 * Math.PI));
+    }
+}

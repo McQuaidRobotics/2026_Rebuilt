@@ -23,7 +23,7 @@ public class HigherOrderCommands {
 
     public static Command shootNoStop(Subsystems subsystems) {
         return Commands.parallel(
-                        ShooterCommands.shootIChoseTargetWithLookAhead(
+                ShooterCommands.shootIChoseTargetWithLookAhead(
                                 subsystems.shooter,
                                 () -> subsystems.swerve.getState().Pose,
                                 () -> subsystems.swerve.getState().Speeds)
