@@ -144,7 +144,7 @@ public class AutoRoutines extends AutoCommands {
                         Commands.sequence(
                                         moveTraj.resetOdometry(),
                                         HigherOrderCommands.shootTillEmpty(subsystems, 2),
-                                        Commands.sequence(
+                                        Commands.parallel(
                                                 HigherOrderCommands.shootNoStop(subsystems),
                                                 moveTraj.cmd()))
                                 .withName("Move and Shoot"));
