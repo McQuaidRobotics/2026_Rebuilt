@@ -149,7 +149,7 @@ public class DriverController {
 
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));
-            this.B.onTrue(IndexerCommands.stop(indexer));
+            this.B.onTrue(IndexerCommands.stopDispensing(indexer));
 
         } else if (debugType == DebugType.CLIMBER) {
             this.A.onTrue(ClimberCommands.goTo(climber, 5.0));

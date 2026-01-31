@@ -126,7 +126,7 @@ public class AutoRoutines extends AutoCommands {
                                         moveTraj.resetOdometry(),
                                         HigherOrderCommands.shootTillEmpty(subsystems, 3),
                                         Commands.parallel(
-                                                IntakeCommands.intakeBalls(subsystems.intake),
+                                                IntakeCommands.goToIntake(subsystems.intake),
                                                 HigherOrderCommands.shootNoStop(subsystems),
                                                 moveTraj.cmd()))
                                 .withName("LEFT NUETRAL HIPPO"));
@@ -148,8 +148,8 @@ public class AutoRoutines extends AutoCommands {
                                                 HigherOrderCommands.shootNoStop(subsystems),
                                                 moveTraj.cmd()))
                                 .withName("Move and Shoot"));
-                                        HigherOrderCommands.prepToClimbFirstRung(subsystems);
-                                          moveTraj.cmd();
+        HigherOrderCommands.prepToClimbFirstRung(subsystems);
+        moveTraj.cmd();
         moveTraj.atTimeBeforeEnd(0.0).onTrue(SwerveCommands.stopDriving(swerve));
         return routine;
     }

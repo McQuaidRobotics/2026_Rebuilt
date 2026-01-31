@@ -15,10 +15,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
-import igknighters.commands.IntakeCommands;
 import igknighters.commands.SubsystemTriggers;
 import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
@@ -121,7 +118,8 @@ public class Robot extends TimedRobot {
 
     public void setUpTest(Subsystems subsystems) {
         SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - STOP", IndexerCommands.);
+                "Commands/Spindexer/Spindexer - STOP",
+                IndexerCommands.stopDispensing(subsystems.indexer));
         SmartDashboard.putData(
                 "Commands/Spindexer/Spindexer - DISPENSE BALLS",
                 IndexerCommands.dispense(subsystems.indexer));

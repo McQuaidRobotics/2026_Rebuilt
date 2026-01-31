@@ -23,12 +23,15 @@ public class HigherOrderCommands {
 
     public static Command shootNoStop(Subsystems subsystems) {
         return Commands.parallel(
-                        ShooterCommands.shootIChoseTargetWithLookAhead(
+                ShooterCommands.shootIChoseTargetWithLookAhead(
                                 subsystems.shooter,
                                 () -> subsystems.swerve.getState().Pose,
-                                () -> subsystems.swerve.getState().Speeds),
-                        IndexerCommands.dispense(subsystems.indexer))
-                .onlyIf(() -> subsystems.shooter.atTarget(300, 2, 2));
+                                () -> subsystems.swerve.getState().Speeds)
+                        .repeatedly()
+                        .withName("SHOOTING WHILE DOING OTHER STUFF"),
+                IndexerCommands.dispense(subsystems.indexer)
+                        .withName("ALLOWED TO SHOOT THEIRFORE DISPENSING TS")
+                        .onlyIf(() -> subsystems.shooter.atTarget(300, 2, 2)));
     }
 
     public static Pose2d getClimbStartPose() {

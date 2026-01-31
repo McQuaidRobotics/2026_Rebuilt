@@ -49,6 +49,7 @@ public class ServosReal extends Servos {
             // angleDegrees
         }
     }
+
     public void goToAngleDegrees(boolean deployed, ServoID servoID) {
         double targetAngle;
         if (deployed) {
@@ -58,6 +59,7 @@ public class ServosReal extends Servos {
         }
         goToAngleDegrees(targetAngle, servoID);
     }
+
     @Override
     public void periodic() {
         DogLog.log("Subsystems/Climber/Servos/Position", desiredAngleUpperServos);
@@ -65,5 +67,4 @@ public class ServosReal extends Servos {
         // 100ms
         // silly silly why dont you go find a source for that
     }
-    
 }
