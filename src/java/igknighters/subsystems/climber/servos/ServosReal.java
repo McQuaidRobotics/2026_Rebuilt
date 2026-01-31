@@ -49,7 +49,15 @@ public class ServosReal extends Servos {
             // angleDegrees
         }
     }
-
+    public void goToAngleDegrees(boolean deployed, ServoID servoID) {
+        double targetAngle;
+        if (deployed) {
+            targetAngle = SubsystemConstants.kClimber.kServos.MAX_ANGLE_DEGREES;
+        } else {
+            targetAngle = SubsystemConstants.kClimber.kServos.MIN_ANGLE_DEGREES;
+        }
+        goToAngleDegrees(targetAngle, servoID);
+    }
     @Override
     public void periodic() {
         DogLog.log("Subsystems/Climber/Servos/Position", desiredAngleUpperServos);
@@ -57,4 +65,5 @@ public class ServosReal extends Servos {
         // 100ms
         // silly silly why dont you go find a source for that
     }
+    
 }

@@ -32,4 +32,13 @@ public class ServosSim extends Servos {
                             SubsystemConstants.kClimber.kServos.MAX_ANGLE_DEGREES);
         }
     }
+    public void goToAngleDegrees(boolean deployed, ServoID servoID) {
+        double targetAngle;
+        if (deployed) {
+            targetAngle = SubsystemConstants.kClimber.kServos.MAX_ANGLE_DEGREES;
+        } else {
+            targetAngle = SubsystemConstants.kClimber.kServos.MIN_ANGLE_DEGREES;
+        }
+        goToAngleDegrees(targetAngle, servoID);
+    }
 }
