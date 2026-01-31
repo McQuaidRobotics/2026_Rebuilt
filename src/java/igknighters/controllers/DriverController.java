@@ -171,16 +171,15 @@ public class DriverController {
 
         this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
 
-        this.A.whileTrue(IntakeCommands.intakeBalls(subsystems.intake));
-        this.A.onFalse(IntakeCommands.stow(subsystems.intake))
-        this.LT.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
+        this.A.whileTrue(IntakeCommands.goToIntake(subsystems.intake));
+        this.A.onFalse(IntakeCommands.goToStow(subsystems.intake));
 
-        // this.LT.onTrue(IndexerCommands.dispense(subsystems.indexer, 120));
-        // this.RT.onTrue(IndexerCommands.dispense(subsystems.indexer, 180));
-        this.DPD.onTrue(ShooterCommands.stopShooting(subsystems.shooter));
-        this.DPL.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 4000));
-        this.DPR.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 3500));
-        this.DPU.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 4500));
+        this.LT.whileTrue(
+                ShooterCommands.shootIChoseTargetWithLookAhead(
+                        subsystems.shooter,
+                        () -> subsystems.swerve.getState().Pose,
+                        () -> subsystems.swerve.getState().Speeds));
+        this.RT.whileTrue(IndexerCommands.dispense(subsystems.indexer));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

@@ -111,7 +111,7 @@ public class AutoRoutines extends AutoCommands {
                         Commands.sequence(
                                 Commands.print("INTAKE BALLS"),
                                 Commands.parallel(
-                                        IntakeCommands.intakeBalls(subsystems.intake),
+                                        IntakeCommands.goToIntake(subsystems.intake),
                                         HigherOrderCommands.shootNoStop(subsystems))));
 
         return () -> routine.cmd();
