@@ -28,11 +28,13 @@ public class ExitRollersReal extends ExitRollers {
         config.Slot0.kS = SubsystemConstants.kIndexer.kExitRollers.kS;
         config.Slot0.kV = SubsystemConstants.kIndexer.kExitRollers.kV;
 
-        config.Feedback.SensorToMechanismRatio = SubsystemConstants.kIndexer.kExitRollers.GEAR_RATIO;
+        config.Feedback.SensorToMechanismRatio =
+                SubsystemConstants.kIndexer.kExitRollers.GEAR_RATIO;
 
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
-        config.MotionMagic.MotionMagicJerk = SubsystemConstants.kIndexer.kExitRollers.MOTION_MAGIC_JERK;
+        config.MotionMagic.MotionMagicJerk =
+                SubsystemConstants.kIndexer.kExitRollers.MOTION_MAGIC_JERK;
         config.MotionMagic.MotionMagicAcceleration =
                 SubsystemConstants.kIndexer.kExitRollers.MAX_ACCELERATION_RPM;
         config.MotionMagic.MotionMagicCruiseVelocity =
@@ -61,7 +63,7 @@ public class ExitRollersReal extends ExitRollers {
 
     @Override
     public void setSpeedRPM(double speedRpm) {
-        DogLog.log("Subsystems/Shooter/Rollers/setSpeed", speedRpm);
+        DogLog.log("Subsystems/Indexer/ExitRollers/setSpeed", speedRpm);
         exitRollerMotor.setControl(velocityControl.withVelocity(speedRpm / 60.0));
     }
 
@@ -86,10 +88,13 @@ public class ExitRollersReal extends ExitRollers {
         BaseStatusSignal.refreshAll(
                 shooterVelocity, shooterCurrent, shooterVoltage, shooterTemperature);
         DogLog.log(
-                "Subsystems/Shooter/Rollers/velocity", shooterVelocity.getValueAsDouble() * 60.0);
-        DogLog.log("Subsystems/Shooter/Rollers/current", shooterCurrent.getValueAsDouble());
-        DogLog.log("Subsystems/Shooter/Rollers/voltage", shooterVoltage.getValueAsDouble());
-        DogLog.log("Subsystems/Shooter/Rollers/temperature", shooterTemperature.getValueAsDouble());
-        DogLog.log("Subsystems/Shooter/Rollers/periodicing", true);
+                "Subsystems/Indexer/ExitRollers/velocity",
+                shooterVelocity.getValueAsDouble() * 60.0);
+        DogLog.log("Subsystems/Indexer/ExitRollers/current", shooterCurrent.getValueAsDouble());
+        DogLog.log("Subsystems/Indexer/ExitRollers/voltage", shooterVoltage.getValueAsDouble());
+        DogLog.log(
+                "Subsystems/Indexer/ExitRollers/temperature",
+                shooterTemperature.getValueAsDouble());
+        DogLog.log("Subsystems/Indexer/ExitRollers/periodicing", true);
     }
 }

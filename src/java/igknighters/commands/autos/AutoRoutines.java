@@ -112,8 +112,7 @@ public class AutoRoutines extends AutoCommands {
                                 Commands.print("INTAKE BALLS"),
                                 Commands.parallel(
                                         IntakeCommands.intakeBalls(subsystems.intake),
-                                        HigherOrderCommands.shootNoStop(
-                                                subsystems, () -> getHubTarget()))));
+                                        HigherOrderCommands.shootNoStop(subsystems))));
 
         return () -> routine.cmd();
     }

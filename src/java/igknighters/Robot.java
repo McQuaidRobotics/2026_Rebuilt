@@ -115,23 +115,10 @@ public class Robot extends TimedRobot {
 
     public void setUpTest(Subsystems subsystems) {
         SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 120 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 120));
+                "Commands/Spindexer/Spindexer - STOP", IndexerCommands.stop(subsystems.indexer));
         SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 140 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 140));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 160 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 160));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 180 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 180));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 200 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 200));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 220 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 220));
+                "Commands/Spindexer/Spindexer - DISPENSE BALLS",
+                IndexerCommands.dispense(subsystems.indexer));
     }
 
     public Robot() {
@@ -172,7 +159,7 @@ public class Robot extends TimedRobot {
     }
 
     public void bindDriverController() {
-        driverController.bind(subsytems, DriverController.DebugType.CLIMBER);
+        driverController.bind(subsytems, DriverController.DebugType.INDEXER);
     }
 
     @Override

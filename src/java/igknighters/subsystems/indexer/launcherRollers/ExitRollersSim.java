@@ -37,11 +37,13 @@ public class ExitRollersSim extends ExitRollers {
                     SubsystemConstants.kIndexer.kExitRollers.kA);
     private boolean isPidControlledThisCycle = false;
     private boolean isVoltageControlledThisCycle = false;
+
     @Override
     public boolean isAtSpeed(double targetRPM, double toleranceRPM) {
         double currentRPM = getSpeedRPM();
         return Math.abs(currentRPM - targetRPM) <= toleranceRPM;
     }
+
     @Override
     public void setSpeedRPM(double speedRPM) {
         profiledPIDController.setGoal(speedRPM);
@@ -94,14 +96,14 @@ public class ExitRollersSim extends ExitRollers {
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
 
         // Logging
-        DogLog.log("Subsystems/Shooter/Rollers/SimVoltage", voltage);
-        DogLog.log("Subsystems/Shooter/Rollers/SimSpeedRPM", currentRPM);
-        DogLog.log("Subsystems/Shooter/Rollers/GoalSpeedRPM", goalRPM);
+        DogLog.log("Subsystems/Indexer/ExitRollers/SimVoltage", voltage);
+        DogLog.log("Subsystems/Indexer/ExitRollers/SimSpeedRPM", currentRPM);
+        DogLog.log("Subsystems/Indexer/ExitRollers/GoalSpeedRPM", goalRPM);
         DogLog.log(
-                "Subsystems/Shooter/Rollers/PIDOutputRPM",
+                "Subsystems/Indexer/ExitRollers/PIDOutputRPM",
                 profiledPIDController.getPositionError());
-        DogLog.log("Subsystems/Shooter/Rollers/PIDVolts", pidOutput);
-        DogLog.log("Subsystems/Shooter/Rollers/FFVolts", ffOutput);
+        DogLog.log("Subsystems/Indexer/ExitRollers/PIDVolts", pidOutput);
+        DogLog.log("Subsystems/Indexer/ExitRollers/FFVolts", ffOutput);
 
         // Apply to sim
         leaderflywheelSim.setInputVoltage(voltage);

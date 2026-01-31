@@ -19,18 +19,18 @@ public class HigherOrderCommands {
                                         () -> subsystems.swerve.getState().Pose,
                                         targetPoseSupplier)
                                 .withName("Aim At in Shoot till Empty"),
-                        IndexerCommands.dispense(subsystems.indexer, 100.0))
+                        IndexerCommands.dispense(subsystems.indexer))
                 .onlyIf(() -> subsystems.shooter.atTarget(.5))
                 .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
     }
 
-    public static Command shootNoStop(Subsystems subsystems, Supplier<Pose3d> targetPoseSupplier) {
+    public static Command shootNoStop(Subsystems subsystems) {
         return Commands.parallel(
-                        ShooterCommands.aimAt(
+                        ShooterCommands.shootIChoseTargetWithLookAhead(
                                 subsystems.shooter,
                                 () -> subsystems.swerve.getState().Pose,
-                                targetPoseSupplier),
-                        IndexerCommands.dispense(subsystems.indexer, 100.0))
+                                () -> subsystems.swerve.getState().Speeds),
+                        IndexerCommands.dispense(subsystems.indexer))
                 .onlyIf(() -> subsystems.shooter.atTarget(.5));
     }
 

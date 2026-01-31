@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.ClimberCommands;
 import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
+import igknighters.commands.IntakeCommands;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
@@ -129,16 +130,7 @@ public class DriverController {
         } else if (debugType == DebugType.SHOOTER) {
             this.A.whileTrue(
                     ShooterCommands.shootIChoseTargetWithLookAhead(
-                            shooter,
-                            () -> swerve.getState().Pose,
-                            () ->
-                                    new Pose2d(
-                                            swerve.getState().Speeds.vxMetersPerSecond,
-                                            swerve.getState().Speeds.vyMetersPerSecond,
-                                            new Rotation2d(
-                                                    swerve.getState()
-                                                            .Speeds
-                                                            .omegaRadiansPerSecond))));
+                            shooter, () -> swerve.getState().Pose, () -> swerve.getState().Speeds));
             this.LT.whileTrue(
                     ShooterCommands.aimAt(
                             shooter,
@@ -156,10 +148,8 @@ public class DriverController {
                             () -> FieldConstants.PASS.POSITION_RIGHT_BLUE));
 
         } else if (debugType == DebugType.INDEXER) {
-            this.A.onTrue(IndexerCommands.dispense(indexer, 120));
-            this.B.onTrue(IndexerCommands.dispense(indexer, 180));
-            this.X.onTrue(IndexerCommands.dispense(indexer, 140));
-            this.Y.onTrue(IndexerCommands.dispense(indexer, 160));
+            this.A.onTrue(IndexerCommands.dispense(indexer));
+            this.B.onTrue(IndexerCommands.stop(indexer));
 
         } else if (debugType == DebugType.CLIMBER) {
             this.A.onTrue(ClimberCommands.goTo(climber, 5.0));
@@ -180,22 +170,13 @@ public class DriverController {
         var swerve = subsystems.swerve;
 
         this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
-        this.A.whileTrue(
-                new TeleopSwerveHeadingCmd(swerve, this, 45.0, state.kP, state.kI, state.kD));
-        this.B.whileTrue(
-                new TeleopSwerveHeadingCmd(swerve, this, 180.0, state.kP, state.kI, state.kD));
-        this.Y.whileTrue(
-                new TeleopSwerveTargetingFutureCmd(
-                        swerve,
-                        this,
-                        new Pose2d(13, 4, new Rotation2d(0)),
-                        .5,
-                        state.kP,
-                        state.kI,
-                        state.kD));
 
-        this.LT.onTrue(IndexerCommands.dispense(subsystems.indexer, 120));
-        this.RT.onTrue(IndexerCommands.dispense(subsystems.indexer, 180));
+        this.A.whileTrue(IntakeCommands.intakeBalls(subsystems.intake));
+        this.A.onFalse(IntakeCommands.stow(subsystems.intake))
+        this.LT.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
+
+        // this.LT.onTrue(IndexerCommands.dispense(subsystems.indexer, 120));
+        // this.RT.onTrue(IndexerCommands.dispense(subsystems.indexer, 180));
         this.DPD.onTrue(ShooterCommands.stopShooting(subsystems.shooter));
         this.DPL.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 4000));
         this.DPR.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 3500));

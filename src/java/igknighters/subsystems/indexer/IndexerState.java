@@ -1,8 +1,9 @@
 package igknighters.subsystems.indexer;
 
 public enum IndexerState {
-    IDLE(0.0, 0.0),
-    DISPENSE_BALL(100.0, 100.0);
+    STOP(0.0, 0.0),
+    DISPENSE_BALL(100.0, 100.0),
+    PREP_TO_STOP(0.0, 100.0);
 
     public final double spindexerRPM;
     public final double exitRollerRPM;
@@ -11,6 +12,4 @@ public enum IndexerState {
         this.spindexerRPM = spindexerRPM;
         this.exitRollerRPM = exitRollerRPM;
     }
-
-
 }

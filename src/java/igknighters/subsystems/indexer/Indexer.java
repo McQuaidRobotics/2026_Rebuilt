@@ -12,6 +12,7 @@ import igknighters.subsystems.indexer.spindexer.SpindexerSim;
 public class Indexer extends SubsystemBase {
     private Spindexer spindexer;
     private ExitRollers exitRollers;
+    private final IndexerVisualizer visualizer = new IndexerVisualizer();
 
     public Indexer() {
         if (Robot.isReal()) {
@@ -45,5 +46,6 @@ public class Indexer extends SubsystemBase {
     public void periodic() {
         spindexer.periodic();
         exitRollers.periodic();
+        visualizer.update(spindexer.getRPM(), exitRollers.getSpeedRPM());
     }
 }

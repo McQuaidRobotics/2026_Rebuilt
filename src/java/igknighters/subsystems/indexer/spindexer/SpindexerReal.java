@@ -10,7 +10,8 @@ import dev.doglog.DogLog;
 import igknighters.constants.SubsystemConstants;
 
 public class SpindexerReal extends Spindexer {
-    private final TalonFX mainShooter = new TalonFX(SubsystemConstants.kIndexer.kSpindexer.LEADER_MOTOR_ID);
+    private final TalonFX mainShooter =
+            new TalonFX(SubsystemConstants.kIndexer.kSpindexer.LEADER_MOTOR_ID);
 
     // private final MotionMagicVelocityVoltage velocityControl = new
     // MotionMagicVelocityVoltage(0.0);
@@ -23,10 +24,10 @@ public class SpindexerReal extends Spindexer {
     // private final DigitalInput beamBreakSensor = new
     // DigitalInput(SubsystemConstants.Shooter.BEAM_BREAK_SENSOR_CHANNEL);
 
-    private BaseStatusSignal shooterVelocity;
-    private BaseStatusSignal shooterCurrent;
-    private BaseStatusSignal shooterVoltage;
-    private BaseStatusSignal shooterTemperature;
+    private BaseStatusSignal spindexerVelocity;
+    private BaseStatusSignal spindexerCurrent;
+    private BaseStatusSignal spindexerVoltage;
+    private BaseStatusSignal spindexerTemperature;
 
     // private BaseStatusSignal isBeamBreakTripped;
 
@@ -42,12 +43,15 @@ public class SpindexerReal extends Spindexer {
 
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        config.MotionMagic.MotionMagicJerk = SubsystemConstants.kIndexer.kSpindexer.MOTION_MAGIC_JERK;
+        config.MotionMagic.MotionMagicJerk =
+                SubsystemConstants.kIndexer.kSpindexer.MOTION_MAGIC_JERK;
         config.MotionMagic.MotionMagicAcceleration =
                 SubsystemConstants.kIndexer.kSpindexer.MAX_ACCELERATION_RPM;
-        config.MotionMagic.MotionMagicCruiseVelocity = SubsystemConstants.kIndexer.kSpindexer.MAX_SPEED_RPM;
+        config.MotionMagic.MotionMagicCruiseVelocity =
+                SubsystemConstants.kIndexer.kSpindexer.MAX_SPEED_RPM;
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
-        config.CurrentLimits.SupplyCurrentLimit = SubsystemConstants.kIndexer.kSpindexer.SUPPLY_CURRENT_LIMIT;
+        config.CurrentLimits.SupplyCurrentLimit =
+                SubsystemConstants.kIndexer.kSpindexer.SUPPLY_CURRENT_LIMIT;
         config.MotorOutput.PeakReverseDutyCycle = 0.0; // do not allow the motor to run in reverse
         config.TorqueCurrent.PeakForwardTorqueCurrent =
                 SubsystemConstants.kIndexer.kSpindexer.PEAK_CURRENT_LIMIT;
@@ -61,10 +65,10 @@ public class SpindexerReal extends Spindexer {
 
         velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(0);
 
-        shooterVelocity = mainShooter.getVelocity();
-        shooterCurrent = mainShooter.getSupplyCurrent();
-        shooterVoltage = mainShooter.getSupplyVoltage();
-        shooterTemperature = mainShooter.getDeviceTemp();
+        spindexerVelocity = mainShooter.getVelocity();
+        spindexerCurrent = mainShooter.getSupplyCurrent();
+        spindexerVoltage = mainShooter.getSupplyVoltage();
+        spindexerTemperature = mainShooter.getDeviceTemp();
     }
 
     @Override
@@ -81,18 +85,20 @@ public class SpindexerReal extends Spindexer {
 
     @Override
     public double getRPM() {
-        return shooterVelocity.getValueAsDouble() * 60;
+        return spindexerVelocity.getValueAsDouble() * 60;
     }
 
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(
-                shooterVelocity, shooterCurrent, shooterVoltage, shooterTemperature);
+                spindexerVelocity, spindexerCurrent, spindexerVoltage, spindexerTemperature);
         DogLog.log(
-                "Subsystems/Indexer/Spindexer/velocity", shooterVelocity.getValueAsDouble() * 60.0);
-        DogLog.log("Subsystems/Indexer/Spindexer/current", shooterCurrent.getValueAsDouble());
-        DogLog.log("Subsystems/Indexer/Spindexer/voltage", shooterVoltage.getValueAsDouble());
+                "Subsystems/Indexer/Spindexer/velocity",
+                spindexerVelocity.getValueAsDouble() * 60.0);
+        DogLog.log("Subsystems/Indexer/Spindexer/current", spindexerCurrent.getValueAsDouble());
+        DogLog.log("Subsystems/Indexer/Spindexer/voltage", spindexerVoltage.getValueAsDouble());
         DogLog.log(
-                "Subsystems/Indexer/Spindexer/temperature", shooterTemperature.getValueAsDouble());
+                "Subsystems/Indexer/Spindexer/temperature",
+                spindexerTemperature.getValueAsDouble());
     }
 }

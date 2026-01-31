@@ -6,6 +6,7 @@ public abstract class ExitRollers {
     public abstract void setVoltage(double voltage);
 
     public abstract double getSpeedRPM();
+
     public abstract boolean isAtSpeed(double targetRPM, double toleranceRPM);
 
     public abstract void periodic();
