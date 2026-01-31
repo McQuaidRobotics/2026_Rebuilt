@@ -9,7 +9,7 @@ public class ClimberCommands {
     public static Command goToMax(Climber climber) {
         return climber.run(
                         () ->
-                                climber.goToInches(
+                                climber(
                                         SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_INCHES))
                 .until(
                         () ->

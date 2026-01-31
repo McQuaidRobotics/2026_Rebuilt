@@ -28,6 +28,10 @@ public class Intake extends SubsystemBase {
         rollers.goToSpeedRPM(speedRPM);
     }
 
+    public void goTo(IntakeState state) {
+        goTo(state.pivotDegrees, state.rollerSpeedRPM);
+    }
+
     public void stop() {
         pivot.stop();
         rollers.stop();

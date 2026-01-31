@@ -1,4 +1,4 @@
-package igknighters.subsystems.indexer.spindexer;
+package igknighters.subsystems.indexer.launcherRollers;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
@@ -9,56 +9,62 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import igknighters.constants.SubsystemConstants;
-import igknighters.constants.SubsystemConstants.kIndexer.kSpindexer;
+import igknighters.constants.SubsystemConstants.kIndexer.kExitRollers;
 
-public class SpindexerSim extends Spindexer {
+public class ExitRollersSim extends ExitRollers {
     private double inputVoltage = 0.0;
 
-    private final FlywheelSim indexerSim =
+    private final FlywheelSim leaderflywheelSim =
             new FlywheelSim(
                     LinearSystemId.createFlywheelSystem(
                             DCMotor.getKrakenX60(1),
-                            SubsystemConstants.kIndexer.kSpindexer.MOMENT_OF_INERTIA_KG_M2,
-                            SubsystemConstants.kIndexer.kSpindexer.GEAR_RATIO),
+                            SubsystemConstants.kIndexer.kExitRollers.MOMENT_OF_INERTIA_KG_M2,
+                            SubsystemConstants.kIndexer.kExitRollers.GEAR_RATIO),
                     DCMotor.getKrakenX60(1));
     private final ProfiledPIDController profiledPIDController =
             new ProfiledPIDController(
                     .8,
-                    SubsystemConstants.kIndexer.kSpindexer.kI,
-                    SubsystemConstants.kIndexer.kSpindexer.kD,
+                    SubsystemConstants.kIndexer.kExitRollers.kI,
+                    SubsystemConstants.kIndexer.kExitRollers.kD,
                     new Constraints(
-                            SubsystemConstants.kIndexer.kSpindexer.MAX_SPEED_RPM,
-                            SubsystemConstants.kIndexer.kSpindexer.MAX_ACCELERATION_RPM));
+                            SubsystemConstants.kIndexer.kExitRollers.MAX_SPEED_RPM,
+                            SubsystemConstants.kIndexer.kExitRollers.MAX_ACCELERATION_RPM));
     // Create a new SimpleMotorFeedforward with gains kS, kV, and kA
     private final SimpleMotorFeedforward feedforward =
             new SimpleMotorFeedforward(
-                    SubsystemConstants.kIndexer.kSpindexer.kS,
-                    SubsystemConstants.kIndexer.kSpindexer.kV,
-                    SubsystemConstants.kIndexer.kSpindexer.kA);
+                    SubsystemConstants.kIndexer.kExitRollers.kS,
+                    SubsystemConstants.kIndexer.kExitRollers.kV,
+                    SubsystemConstants.kIndexer.kExitRollers.kA);
     private boolean isPidControlledThisCycle = false;
     private boolean isVoltageControlledThisCycle = false;
 
     @Override
-    public void goToRPM(double RPM) {
-        profiledPIDController.setGoal(RPM / 60);
+    public boolean isAtSpeed(double targetRPM, double toleranceRPM) {
+        double currentRPM = getSpeedRPM();
+        return Math.abs(currentRPM - targetRPM) <= toleranceRPM;
+    }
+
+    @Override
+    public void setSpeedRPM(double speedRPM) {
+        profiledPIDController.setGoal(speedRPM);
         isPidControlledThisCycle = true;
     }
 
     @Override
-    public void stop() {
-        inputVoltage = 0.0;
+    public void setVoltage(double voltage) {
+        inputVoltage = voltage;
         isVoltageControlledThisCycle = true;
     }
 
     @Override
-    public double getRPM() {
-        return indexerSim.getAngularVelocityRPM();
+    public double getSpeedRPM() {
+        return leaderflywheelSim.getAngularVelocityRPM();
     }
 
     @Override
     public void periodic() {
-        double currentRPM = indexerSim.getAngularVelocityRPM();
-        double goalRPS = profiledPIDController.getGoal().position;
+        double currentRPM = leaderflywheelSim.getAngularVelocityRPM();
+        double goalRPM = profiledPIDController.getGoal().position;
         double pidOutput = 0.0;
         double ffOutput = 0.0;
 
@@ -68,7 +74,9 @@ public class SpindexerSim extends Spindexer {
 
             // Feedforward in volts
 
-            ffOutput = kSpindexer.kS + kSpindexer.kV * goalRPS;
+            double goalRPS = goalRPM / 60.0;
+
+            ffOutput = kExitRollers.kS + kExitRollers.kV * goalRPS;
 
             // PID output is in RPM, convert to volts with a small gain
             // Tune this value (start around 0.001)
@@ -88,18 +96,18 @@ public class SpindexerSim extends Spindexer {
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
 
         // Logging
-        DogLog.log("Subsystems/Indexer/Spindexer/SimVoltage", voltage);
-        DogLog.log("Subsystems/Indexer/Spindexer/SimSpeedRPM", currentRPM);
-        DogLog.log("Subsystems/Indexer/Spindexer/GoalSpeedRPM", goalRPS * 60.0);
+        DogLog.log("Subsystems/Indexer/ExitRollers/SimVoltage", voltage);
+        DogLog.log("Subsystems/Indexer/ExitRollers/SimSpeedRPM", currentRPM);
+        DogLog.log("Subsystems/Indexer/ExitRollers/GoalSpeedRPM", goalRPM);
         DogLog.log(
-                "Subsystems/Indexer/Spindexer/PIDOutputRPM",
+                "Subsystems/Indexer/ExitRollers/PIDOutputRPM",
                 profiledPIDController.getPositionError());
-        DogLog.log("Subsystems/Indexer/Spindexer/PIDVolts", pidOutput);
-        DogLog.log("Subsystems/Indexer/Spindexer/FFVolts", ffOutput);
+        DogLog.log("Subsystems/Indexer/ExitRollers/PIDVolts", pidOutput);
+        DogLog.log("Subsystems/Indexer/ExitRollers/FFVolts", ffOutput);
 
         // Apply to sim
-        indexerSim.setInputVoltage(voltage);
-        indexerSim.update(0.02);
+        leaderflywheelSim.setInputVoltage(voltage);
+        leaderflywheelSim.update(0.02);
 
         isPidControlledThisCycle = false;
         isVoltageControlledThisCycle = false;

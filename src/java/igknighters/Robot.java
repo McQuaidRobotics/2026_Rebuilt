@@ -100,12 +100,6 @@ public class Robot extends TimedRobot {
 
     public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsytems.swerve.createAutoFactory();
-        autoFactory.bind("Shoot_Untill_Empty", HigherOrderCommands.shootNoStop(subsystems));
-        autoFactory.bind(
-                "Hippo_Shoot",
-                Commands.parallel(
-                        IntakeCommands.intakeBalls(subsystems.intake),
-                        HigherOrderCommands.shootNoStop(subsystems)));
         final var routines = new AutoRoutines(subsytems, autoFactory);
         autoChooser.addCmd("shoot-then-move", routines.shootThenMove());
         autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
@@ -127,23 +121,10 @@ public class Robot extends TimedRobot {
 
     public void setUpTest(Subsystems subsystems) {
         SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 120 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 120));
+                "Commands/Spindexer/Spindexer - STOP", IndexerCommands.);
         SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 140 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 140));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 160 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 160));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 180 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 180));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 200 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 200));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 220 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 220));
+                "Commands/Spindexer/Spindexer - DISPENSE BALLS",
+                IndexerCommands.dispense(subsystems.indexer));
     }
 
     public Robot() {
@@ -184,7 +165,7 @@ public class Robot extends TimedRobot {
     }
 
     public void bindDriverController() {
-        driverController.bind(subsytems, DriverController.DebugType.SHOOTER);
+        driverController.bind(subsytems);
     }
 
     @Override

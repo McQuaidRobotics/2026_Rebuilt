@@ -16,7 +16,7 @@ public class HigherOrderCommands {
                                         () -> subsystems.swerve.getState().Pose,
                                         () -> subsystems.swerve.getState().Speeds)
                                 .withName("Aim At in Shoot till Empty"),
-                        IndexerCommands.dispense(subsystems.indexer, 100.0)
+                        IndexerCommands.dispense(subsystems.indexer)
                                 .onlyIf(() -> subsystems.shooter.atTarget(300, 2, 2)))
                 .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
     }
@@ -27,7 +27,7 @@ public class HigherOrderCommands {
                                 subsystems.shooter,
                                 () -> subsystems.swerve.getState().Pose,
                                 () -> subsystems.swerve.getState().Speeds),
-                        IndexerCommands.dispense(subsystems.indexer, 100.0))
+                        IndexerCommands.dispense(subsystems.indexer))
                 .onlyIf(() -> subsystems.shooter.atTarget(300, 2, 2));
     }
 
@@ -57,7 +57,7 @@ public class HigherOrderCommands {
         return Commands.parallel(
                         shootNoStop(subsystems),
                         Commands.print("IM HIPPPOING TILL I HIPPO").repeatedly(),
-                        IntakeCommands.intakeBalls(subsystems.intake))
+                        IntakeCommands.goToIntake(subsystems.intake))
                 .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
     }
 
