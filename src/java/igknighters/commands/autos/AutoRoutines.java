@@ -145,12 +145,12 @@ public class AutoRoutines extends AutoCommands {
                         Commands.sequence(
                                         moveTraj.resetOdometry(),
                                         HigherOrderCommands.shootTillEmpty(subsystems, 2),
-                                        Commands.parallel(
+                                        Commands.sequence(
                                                 HigherOrderCommands.shootNoStop(subsystems),
                                                 moveTraj.cmd()))
                                 .withName("Move and Shoot"));
-        HigherOrderCommands.prepToClimbFirstRung(subsystems);
-        moveTraj.cmd();
+                                        HigherOrderCommands.prepToClimbFirstRung(subsystems);
+                                          moveTraj.cmd();
         moveTraj.atTimeBeforeEnd(0.0).onTrue(SwerveCommands.stopDriving(swerve));
         return routine;
     }
