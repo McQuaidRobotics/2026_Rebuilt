@@ -55,5 +55,6 @@ public class ServosReal extends Servos {
         DogLog.log("Subsystems/Climber/Servos/Position", desiredAngleUpperServos);
         // the angle needs to be set periodically, or the servo will get angry and turn off after
         // 100ms
+        // silly silly why dont you go find a source for that
     }
 }
