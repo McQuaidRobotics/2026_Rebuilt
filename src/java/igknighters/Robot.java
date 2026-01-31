@@ -159,7 +159,7 @@ public class Robot extends TimedRobot {
     }
 
     public void bindDriverController() {
-        driverController.bind(subsytems, DriverController.DebugType.INDEXER);
+        driverController.bind(subsytems);
     }
 
     @Override
