@@ -15,10 +15,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
-import igknighters.commands.IntakeCommands;
 import igknighters.commands.SubsystemTriggers;
 import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
@@ -100,23 +97,16 @@ public class Robot extends TimedRobot {
 
     public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsytems.swerve.createAutoFactory();
-        autoFactory.bind("Shoot_Untill_Empty", HigherOrderCommands.shootNoStop(subsystems));
-        autoFactory.bind(
-                "Hippo_Shoot",
-                Commands.parallel(
-                        IntakeCommands.intakeBalls(subsystems.intake),
-                        HigherOrderCommands.shootNoStop(subsystems)));
         final var routines = new AutoRoutines(subsytems, autoFactory);
         autoChooser.addCmd("shoot-then-move", routines.shootThenMove());
         autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
         autoChooser.addRoutine(
                 "NEW METHOD IDK IF THIS WILL WORK HOPEFULLY IT WILL", routines::scoreThenPass);
         autoChooser.addRoutine("NEW LEFT NUETRAL HIPPO", routines::newLeftNuetralHippo);
+        autoChooser.addRoutine("CENTER OUTPOST CLIMB", routines::centerOutpostClimb);
+        autoChooser.addRoutine("Center Depot climb", routines::centerDepotClimb);
         autoChooser.addRoutine("NEW RIGHT NUETRAL HIPPO", routines::rightNeutralHippo);
         autoChooser.addRoutine("Right Depo Climb", routines::rightDepoClimb);
-        autoChooser.addRoutine("Left Depo Climb", routines::leftDepoClimb);
-        autoChooser.addRoutine("Left Outpost Climb", routines::leftOutpostClimb);
-        autoChooser.addRoutine("Right Outpost Climb", routines::rightOutpostClimb);
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
     }
 
@@ -130,23 +120,11 @@ public class Robot extends TimedRobot {
 
     public void setUpTest(Subsystems subsystems) {
         SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 120 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 120));
+                "Commands/Spindexer/Spindexer - STOP",
+                IndexerCommands.stopDispensing(subsystems.indexer));
         SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 140 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 140));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 160 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 160));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 180 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 180));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 200 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 200));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 220 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 220));
+                "Commands/Spindexer/Spindexer - DISPENSE BALLS",
+                IndexerCommands.dispense(subsystems.indexer));
     }
 
     public Robot() {
@@ -187,7 +165,7 @@ public class Robot extends TimedRobot {
     }
 
     public void bindDriverController() {
-        driverController.bind(subsytems, DriverController.DebugType.SHOOTER);
+        driverController.bind(subsytems);
     }
 
     @Override

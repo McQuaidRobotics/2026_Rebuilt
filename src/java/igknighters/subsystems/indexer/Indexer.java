@@ -1,32 +1,41 @@
 package igknighters.subsystems.indexer;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
+import igknighters.subsystems.indexer.launcherRollers.ExitRollers;
+import igknighters.subsystems.indexer.launcherRollers.ExitRollersReal;
+import igknighters.subsystems.indexer.launcherRollers.ExitRollersSim;
 import igknighters.subsystems.indexer.spindexer.Spindexer;
 import igknighters.subsystems.indexer.spindexer.SpindexerReal;
 import igknighters.subsystems.indexer.spindexer.SpindexerSim;
 
 public class Indexer extends SubsystemBase {
     private Spindexer spindexer;
-    private IndexerVisualizer visualizer = new IndexerVisualizer();
+    private ExitRollers exitRollers;
+    private final IndexerVisualizer visualizer = new IndexerVisualizer();
 
     public Indexer() {
         if (Robot.isReal()) {
             spindexer = new SpindexerReal();
+            exitRollers = new ExitRollersReal();
+
         } else {
             spindexer = new SpindexerSim();
+            exitRollers = new ExitRollersSim();
         }
     }
 
     public void setRPM(double RPM) {
-        DogLog.log("Subsystems/Spindexer/TARGET RPM", RPM);
         spindexer.goToRPM(RPM);
     }
 
     public double getRPM() {
-        DogLog.log("Subsystems/Spindexer/ACTUAL RPM", spindexer.getRPM());
         return spindexer.getRPM();
+    }
+
+    public void goToState(IndexerState state) {
+        spindexer.goToRPM(state.spindexerRPM);
+        exitRollers.setSpeedRPM(state.exitRollerRPM);
     }
 
     public void stop() {
@@ -36,10 +45,7 @@ public class Indexer extends SubsystemBase {
     @Override
     public void periodic() {
         spindexer.periodic();
-        if (spindexer.getRPM() != 0) {
-            visualizer.update(true);
-        } else {
-            visualizer.update(false);
-        }
+        exitRollers.periodic();
+        visualizer.update(spindexer.getRPM(), exitRollers.getSpeedRPM());
     }
 }

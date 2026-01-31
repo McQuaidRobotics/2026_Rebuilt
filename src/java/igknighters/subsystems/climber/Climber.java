@@ -5,17 +5,23 @@ import igknighters.Robot;
 import igknighters.subsystems.climber.chainsaw.Chainsaw;
 import igknighters.subsystems.climber.chainsaw.ChainsawReal;
 import igknighters.subsystems.climber.chainsaw.ChainsawSim;
+import igknighters.subsystems.climber.servos.Servos;
+import igknighters.subsystems.climber.servos.ServosReal;
+import igknighters.subsystems.climber.servos.ServosSim;
 
 public class Climber extends SubsystemBase {
     private Chainsaw chainsaw;
+    private Servos servos;
     private boolean usingRealSensor;
 
     public Climber() {
         if (Robot.isReal()) {
             chainsaw = new ChainsawReal();
+            servos = new ServosReal();
             usingRealSensor = true;
         } else {
             chainsaw = new ChainsawSim();
+            servos = new ServosSim();
             usingRealSensor = false;
         }
     }
@@ -30,6 +36,12 @@ public class Climber extends SubsystemBase {
 
     public void goToInches(double inches) {
         chainsaw.goToInches(inches);
+    }
+
+    public void goToState(ClimberState state) {
+        chainsaw.goToInches(state.targetHeightInches);
+        servos.goToAngleDegrees(state.movingClimberServosDeployed, Servos.ServoID.MOVING_SERVOS);
+        servos.goToAngleDegrees(state.stationaryClimberServosDeployed, Servos.ServoID.FIXED_SERVOS);
     }
 
     public boolean isAt(double targetInches, double toleranceInches) {

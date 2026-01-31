@@ -3,6 +3,7 @@ package igknighters.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.climber.Climber;
+import igknighters.subsystems.climber.ClimberState;
 import java.util.function.BooleanSupplier;
 
 public class ClimberCommands {
@@ -40,6 +41,10 @@ public class ClimberCommands {
 
     public static BooleanSupplier isBumperPressed(Climber climber) {
         return () -> climber.isSensorHit();
+    }
+
+    public static Command goToState(Climber climber, ClimberState state) {
+        return climber.run(() -> climber.goToState(state));
     }
 
     public static Command home(Climber climber) {
