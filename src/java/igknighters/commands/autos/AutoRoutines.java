@@ -114,7 +114,8 @@ public class AutoRoutines extends AutoCommands {
 
         return routine;
     }
-     public AutoRoutine rightOutpostClimb() {
+
+    public AutoRoutine rightOutpostClimb() {
         AutoRoutine routine = autoFactory.newRoutine("Right Outpost Climb");
         AutoTrajectory outpostTraj = routine.trajectory("RIGHT_OUTPOST_CLIMB.traj");
 
@@ -136,6 +137,7 @@ public class AutoRoutines extends AutoCommands {
 
         return routine;
     }
+
     public AutoRoutine leftOutpostClimb() {
         AutoRoutine routine = autoFactory.newRoutine("Left Outpost Climb");
         AutoTrajectory outpostTraj = routine.trajectory("LEFT_OUTPOST_CLIMB.traj");
@@ -158,6 +160,7 @@ public class AutoRoutines extends AutoCommands {
 
         return routine;
     }
+
     public AutoRoutine leftDepoClimb() {
         AutoRoutine routine = autoFactory.newRoutine("Left Depo Climb");
         AutoTrajectory depoTraj = routine.trajectory("LEFT_DEPO_CLIMB.traj");
@@ -177,7 +180,8 @@ public class AutoRoutines extends AutoCommands {
                                 .andThen(HigherOrderCommands.prepToClimbFirstRung(subsystems)));
         return routine;
     }
-     public AutoRoutine rightDepoClimb() {
+
+    public AutoRoutine rightDepoClimb() {
         AutoRoutine routine = autoFactory.newRoutine("Right Depo Climb");
         AutoTrajectory depoTraj = routine.trajectory("RIGHT_DEPO_CLIMB.traj");
 
@@ -187,8 +191,7 @@ public class AutoRoutines extends AutoCommands {
                                         depoTraj.resetOdometry(),
                                         HigherOrderCommands.shootTillEmpty(subsystems, 3),
                                         Commands.parallel(
-                                                IntakeCommands.goToIntake(subsystems.intake),
-                                                HigherOrderCommands.shootNoStop(subsystems),
+                                                HigherOrderCommands.hippoShoot(subsystems),
                                                 depoTraj.cmd()))
                                 .withName("Right Depo Climb"));
         depoTraj.done()
@@ -199,7 +202,26 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
-    public AutoRoutine newLeftNuetralHippo() {
+    public AutoRoutine rightNuetralHippo() {
+        AutoRoutine routine = autoFactory.newRoutine("Right Neutral Hippo");
+
+        AutoTrajectory moveTraj = routine.trajectory("RIGHT_NEUTRAL_HIPPO.traj");
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                        moveTraj.resetOdometry(),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                        Commands.parallel(
+                                                IntakeCommands.goToIntake(subsystems.intake),
+                                                HigherOrderCommands.shootNoStop(subsystems),
+                                                moveTraj.cmd()))
+                                .withName("RIGHT NUETRAL HIPPO"));
+        moveTraj.atTimeBeforeEnd(0.0).onTrue(SwerveCommands.stopDriving(swerve));
+        return routine;
+    }
+
+    public AutoRoutine leftNuetralHippo() {
         AutoRoutine routine = autoFactory.newRoutine("New Left Neutral Hippo");
 
         AutoTrajectory moveTraj = routine.trajectory("LEFT_NEUTRAL_HIPPO_1.traj");
@@ -250,7 +272,7 @@ public class AutoRoutines extends AutoCommands {
                                 Commands.print("ODOMETRY RESET"),
                                 moveTraj.cmd()
                                         .alongWith(
-                                                HigherOrderCommands.hippoShoot(subsystems, 4)
+                                                HigherOrderCommands.hippoShoot(subsystems)
                                                         .repeatedly(),
                                                 Commands.print("IM PARELELING").repeatedly())
                                         .withName("Intake and Shoot")));

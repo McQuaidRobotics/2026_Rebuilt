@@ -56,12 +56,11 @@ public class HigherOrderCommands {
         }
     }
 
-    public static Command hippoShoot(Subsystems subsystems, double timeout) {
+    public static Command hippoShoot(Subsystems subsystems) {
         return Commands.parallel(
-                        shootNoStop(subsystems),
-                        Commands.print("IM HIPPPOING TILL I HIPPO").repeatedly(),
-                        IntakeCommands.goToIntake(subsystems.intake))
-                .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
+                shootNoStop(subsystems),
+                Commands.print("IM HIPPPOING TILL I HIPPO").repeatedly(),
+                IntakeCommands.goToIntake(subsystems.intake));
     }
 
     public static Command prepToClimbFirstRung(Subsystems subsystems) {
