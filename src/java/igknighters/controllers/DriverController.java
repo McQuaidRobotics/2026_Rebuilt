@@ -17,6 +17,7 @@ import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.climber.ClimberState;
 import java.util.function.DoubleSupplier;
 
 public class DriverController {
@@ -153,7 +154,7 @@ public class DriverController {
             this.B.onTrue(IndexerCommands.stopDispensing(indexer));
 
         } else if (debugType == DebugType.CLIMBER) {
-            this.A.onTrue(ClimberCommands.goTo(climber, 5.0));
+            this.A.onTrue(ClimberCommands.goToState(climber, ClimberState.EXTENDED_WITH_CLINGING));
             this.B.onTrue(ClimberCommands.goToMin(climber));
             this.X.onTrue(ClimberCommands.goTo(climber, 10.0));
             this.Y.onTrue(ClimberCommands.home(climber));
