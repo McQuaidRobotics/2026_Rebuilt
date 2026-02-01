@@ -38,7 +38,7 @@ public class LimeLightVisionReal extends LimeLights {
 
     //         if (llMeasurement != null && llMeasurement.tagCount > 0) {
     //             DogLog.log(
-    //                     "Robot/Subsystems/LimeLightVision/RawPose_" + cameraName,
+    //                     "Robot/Subsystems/Vision/LimeLightVision/RawPose_" + cameraName,
     //                     llMeasurement.pose);
 
     //             poses.add(llMeasurement.pose);
@@ -52,8 +52,8 @@ public class LimeLightVisionReal extends LimeLights {
     //         timestamp /= poses.size();
     //     }
     //     lastTimeStamp = timestamp;
-    //     DogLog.log("Robot/Subsystems/LimeLightVision/TimeStampOfMeasurments", timestamp);
-    //     DogLog.log("Robot/Subsystems/LimeLightVision/NumberOfTagsSeen", poses.size());
+    //     DogLog.log("Robot/Subsystems/Vision/LimeLightVision/TimeStampOfMeasurments", timestamp);
+    //     DogLog.log("Robot/Subsystems/Vision/LimeLightVision/NumberOfTagsSeen", poses.size());
 
     //     return averagePose2ds(poses);
     // }
@@ -105,8 +105,8 @@ public class LimeLightVisionReal extends LimeLights {
 
                 // Optional: Log which rotation source we used for debugging
                 DogLog.log(
-                        "Robot/Subsystems/LimeLightVision/Source_" + cameraName,
-                        (mt1Estimate.tagCount >= 2) ? "VISION_CORRECTION" : "GYRO_ONLY");
+                        "Subsystems/Vision/LimeLightVision/Source_" + cameraName,
+                        (mt1Estimate.tagCount >= 2) ? "VISION_CORRECTION" : "ROBOT_GYRO_ONLY");
             }
         }
 
@@ -117,8 +117,8 @@ public class LimeLightVisionReal extends LimeLights {
         }
 
         lastTimeStamp = timestamp;
-        DogLog.log("Robot/Subsystems/LimeLightVision/TimeStampOfMeasurments", timestamp);
-        DogLog.log("Robot/Subsystems/LimeLightVision/NumberOfTagsSeen", poses.size());
+        DogLog.log("Subsystems/Vision/LimeLightVision/TimeStampOfMeasurments", timestamp);
+        DogLog.log("Subsystems/Vision/LimeLightVision/NumberOfTagsSeen", poses.size());
 
         return averagePose2ds(poses);
     }
@@ -129,10 +129,10 @@ public class LimeLightVisionReal extends LimeLights {
 
     public Pose2d averagePose2ds(List<Pose2d> poses) {
         if (poses.isEmpty()) {
-            DogLog.log("Robot/Subsystems/LimeLightVision/TagsSeen", "NO TAGS SEEN");
+            DogLog.log("Subsystems/Vision/LimeLightVision/TagsSeen", "NO TAGS SEEN");
             return null; // safer than returning (0,0,0)
         } else {
-            DogLog.log("Robot/Subsystems/LimeLightVision/TagsSeen", "Tag is seen we have a pose");
+            DogLog.log("Subsystems/Vision/LimeLightVision/TagsSeen", "Tag is seen we have a pose");
         }
 
         double xSum = 0.0, ySum = 0.0;
@@ -150,11 +150,11 @@ public class LimeLightVisionReal extends LimeLights {
         int count = poses.size();
         double avgX = xSum / count;
         double avgY = ySum / count;
-        DogLog.log("Robot/Subsystems/LimeLightVision/RotationList", rotations.toString());
+        DogLog.log("Subsystems/Vision/LimeLightVision/RotationList", rotations.toString());
         Rotation2d avgRot = new Rotation2d(Math.atan2(sinSum / count, cosSum / count));
-        DogLog.log("Robot/Subsystems/LimeLightVision/Rotation", avgRot.getDegrees());
+        DogLog.log("Subsystems/Vision/LimeLightVision/Rotation", avgRot.getDegrees());
         Pose2d averaged = new Pose2d(avgX, avgY, avgRot);
-        DogLog.log("Robot/Subsystems/LimeLightVision/TagsSeen", averaged);
+        DogLog.log("Subsystems/Vision/LimeLightVision/TagsSeen", averaged);
         return averaged;
     }
 
