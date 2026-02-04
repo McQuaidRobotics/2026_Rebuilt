@@ -3,6 +3,7 @@ package igknighters.subsystems.shooter;
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
+import igknighters.constants.AbleToShootSharedState; // Import the shared state
 import igknighters.constants.Conv;
 import igknighters.subsystems.shooter.flywheel.Flywheel;
 import igknighters.subsystems.shooter.flywheel.FlywheelDisabled;
@@ -110,5 +111,13 @@ public class Shooter extends SubsystemBase {
         hood.periodic();
 
         visualizer.update(getCurrentState(), goalRPM);
+
+        // Define a reasonable tolerance for the shooter to be considered "at target"
+        // This value might need to be tuned.
+        final double SHOOTER_TOLERANCE = 100.0; // Example tolerance for RPM and angles
+        boolean currentShooterAtTarget = atTarget(SHOOTER_TOLERANCE);
+
+        // Update the AbleToShootSharedState singleton
+        AbleToShootSharedState.getInstance().setCanShoot(currentShooterAtTarget);
     }
 }
