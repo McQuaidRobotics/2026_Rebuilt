@@ -1,6 +1,7 @@
 package igknighters.commands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Ounces;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -14,8 +15,10 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import igknighters.subsystems.shooter.ShooterVisualizer;
 import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
+import igknighters.commands.RepulsorVisualizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -24,6 +27,7 @@ public class Repulsor {
         CIRCLE,
         SQUARE;
     }
+    static boolean beenPublished = false;
 
     /**
      * {@summary}Holds the data for an obstacle used in the repulsor field navigation system.
@@ -43,9 +47,10 @@ public class Repulsor {
     static double PUSHSCALE = 4.0;
     static double maxTime = 0.0;
 
-    public static double getXComponents(
-            Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles, Pose2d target) {
+    static RepulsorVisualizer visualizer = new RepulsorVisualizer();
 
+    public static double getXRepulse(
+            Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
         DogLog.log("Commands/repulsor/Time", currentTime);
         double xRepelForce = 0.0;
@@ -61,24 +66,26 @@ public class Repulsor {
             }
             DogLog.log("Commands/repulsor/xRepel", xRepelForce);
         }
-        double xGoalDist = target.getX() - currentPose.getX();
-        DogLog.log("Commands/repulsor/xGoalDist", target.getX() - currentPose.getX());
         DogLog.log(
                 "Commands/repulsor/FirstObsDistX",
                 obstacles.get(0).obstaclePose.getX() - currentPose.getX());
-        double xFinalForce = -xGoalDist * PUSHSCALE + xRepelForce * REPELSCALE;
-        DogLog.log("Commands/repulsor/xFinalForce", xFinalForce);
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
         DogLog.log("Commands/repulsor/DeltaTime", deltaTime);
         if (deltaTime > maxTime) {
             maxTime = deltaTime;
             DogLog.log("Commands/repulsor/MaxDeltaTime", maxTime);
         }
-        return xFinalForce;
+        return xRepelForce;
     }
 
-    public static double getYComponents(
-            Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles, Pose2d target) {
+    public static double getXGoal(Pose2d currentPose, Pose2d target) {
+        double xGoalDist = target.getX() - currentPose.getX();
+        DogLog.log("Commands/repulsor/xGoalDist", target.getX() - currentPose.getX());
+        return xGoalDist;
+    }
+
+    public static double getYRepulse(
+            Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
         double yRepelForce = 0.0;
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
         DogLog.log("Commands/repulsor/Time", currentTime);
@@ -94,20 +101,22 @@ public class Repulsor {
             }
             DogLog.log("Commands/repulsor/yRepel", yRepelForce);
         }
-        double yGoalDist = target.getY() - currentPose.getY();
-        DogLog.log("Commands/repulsor/yGoalDist", target.getY() - currentPose.getY());
         DogLog.log(
                 "Commands/repulsor/FirstObsDistY",
                 obstacles.get(0).obstaclePose.getY() - currentPose.getY());
-        double yFinalForce = -yGoalDist * PUSHSCALE + yRepelForce * REPELSCALE;
-        DogLog.log("Commands/repulsor/yFinalForce", yFinalForce);
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
         DogLog.log("Commands/repulsor/DeltaTime", deltaTime);
         if (deltaTime > maxTime) {
             maxTime = deltaTime;
             DogLog.log("Commands/repulsor/MaxDeltaTime", maxTime);
         }
-        return yFinalForce;
+        return yRepelForce;
+    }
+
+    public static double getYGoal(Pose2d currentPose, Pose2d target) {
+        double yGoalDist = target.getY() - currentPose.getY();
+        DogLog.log("Commands/repulsor/yGoalDist", target.getY() - currentPose.getY());
+        return yGoalDist;
     }
 
     public static Command moveWithRepulsor(
@@ -157,8 +166,8 @@ public class Repulsor {
         return swerve.run(
                 () -> {
                     Pose2d currentPose = swerve.getState().Pose;
-                    double xVelo = 10 * getXComponents(currentPose, obstacles, targetPose);
-                    double yVelo = 10 * getYComponents(currentPose, obstacles, targetPose);
+                    double xVelo = 10 * getXRepulse(currentPose, obstacles)-getXGoal(currentPose, targetPose);
+                    double yVelo = 10 * getYRepulse(currentPose, obstacles)-getYGoal(currentPose, targetPose);
                     double omega =
                             thetaController.calculate(
                                     currentPose.getRotation().getRadians(),

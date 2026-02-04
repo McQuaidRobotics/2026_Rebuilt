@@ -103,6 +103,7 @@ public class ShooterVisualizer {
         return new Color8Bit((int) r, (int) g, 0);
     }
 
+    
     public void update(ShooterState shooterState, double targetRPM) {
         double turretAngleDegrees = Math.toDegrees(shooterState.turretAngleRads);
         double hoodAngleDegrees = Math.toDegrees(shooterState.hoodAngleRads);
