@@ -4,8 +4,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import igknighters.commands.repulsor.obstacle;
-import igknighters.commands.repulsor.obstacleType;
+import igknighters.commands.Repulsor.obstacle;
+import igknighters.commands.Repulsor.obstacleType;
 import java.util.ArrayList;
 import java.util.Arrays;
 

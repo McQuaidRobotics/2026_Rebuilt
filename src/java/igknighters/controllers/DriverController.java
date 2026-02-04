@@ -8,9 +8,9 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.IndexerCommands;
+import igknighters.commands.Repulsor;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
-import igknighters.commands.repulsor;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
 import igknighters.constants.DrivingSharedState;
 import igknighters.subsystems.Subsystems;
@@ -104,7 +104,7 @@ public class DriverController {
         this.B.whileTrue(
                 new TeleopSwerveHeadingCmd(swerve, this, 180.0, state.kP, state.kI, state.kD));
         this.Y.whileTrue(
-                repulsor.moveWithRepulsor(
+                Repulsor.moveWithRepulsor(
                         swerve,
                         new Pose2d(
                                 Units.inchesToMeters(651.22 / 2),

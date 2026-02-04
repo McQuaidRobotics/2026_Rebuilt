@@ -19,7 +19,7 @@ import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class repulsor {
+public class Repulsor {
     public enum obstacleType {
         CIRCLE,
         SQUARE;
@@ -44,12 +44,12 @@ public class repulsor {
     static double maxTime = 0.0;
 
     public static double getXComponents(
-            Pose2d currentPose, ArrayList<repulsor.obstacle> obstacles, Pose2d target) {
+            Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles, Pose2d target) {
 
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
         DogLog.log("Commands/repulsor/Time", currentTime);
         double xRepelForce = 0.0;
-        for (repulsor.obstacle obs : obstacles) {
+        for (Repulsor.obstacle obs : obstacles) {
             double dist =
                     Math.hypot(
                             obs.obstaclePose.getX() - currentPose.getX(),
@@ -78,11 +78,11 @@ public class repulsor {
     }
 
     public static double getYComponents(
-            Pose2d currentPose, ArrayList<repulsor.obstacle> obstacles, Pose2d target) {
+            Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles, Pose2d target) {
         double yRepelForce = 0.0;
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
         DogLog.log("Commands/repulsor/Time", currentTime);
-        for (repulsor.obstacle obs : obstacles) {
+        for (Repulsor.obstacle obs : obstacles) {
             double dist =
                     Math.hypot(
                             obs.obstaclePose.getX() - currentPose.getX(),
