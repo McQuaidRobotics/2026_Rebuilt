@@ -23,6 +23,10 @@ public class Swerve extends SubsystemBase {
     boolean isSwerveDisabled = false;
     DummySwerve dummySwerve = new DummySwerve();
 
+    public Swerve() {
+        this(false);
+    }
+
     public Swerve(boolean isSwerveDisabled) {
         this.isSwerveDisabled = isSwerveDisabled;
         if (!isSwerveDisabled) {

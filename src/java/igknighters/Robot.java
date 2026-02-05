@@ -120,7 +120,7 @@ public class Robot extends TimedRobot {
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
-                        new Swerve(true),
+                        new Swerve(false),
                         new LimeLightVision(),
                         new Led(40, 1),
                         new Shooter(),
