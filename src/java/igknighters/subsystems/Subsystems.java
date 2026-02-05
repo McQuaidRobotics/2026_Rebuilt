@@ -1,7 +1,5 @@
 package igknighters.subsystems;
 
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.climber.Climber;
@@ -20,7 +18,6 @@ public class Subsystems {
     public final Intake intake;
     public final Climber climber;
     public final SubsystemBase[] lockedResources;
-    public final ExclusiveSubsystem[] notPublished;
 
     public Subsystems(
             Swerve swerve,
@@ -37,29 +34,11 @@ public class Subsystems {
         this.intake = intake;
         this.climber = climber;
         this.indexer = indexer;
-        this.lockedResources = new SubsystemBase[] {led, shooter, vision, indexer, intake, climber};
-        this.notPublished = new ExclusiveSubsystem[] {swerve};
+        this.lockedResources =
+                new SubsystemBase[] {swerve, led, shooter, vision, indexer, intake, climber};
 
-        CommandScheduler.getInstance().registerSubsystem(this.lockedResources);
-        // this.shooter.setDefaultCommand(ShooterCommands.idle(shooter));
-        // for (SharedSubsystem subsystem : this.locklessResources) {
-        //     CommandScheduler.getInstance()
-        //             .registerSubsystem(
-        //                     new Subsystem() {
-        //                         @Override
-        //                         public void periodic() {
-        //                             subsystem.periodic();
-        //                         }
-
-        //                         @Override
-        //                         public String getName() {
-        //                             return subsystem.getName();
-        //                         }
-        //                     });
-        // }
+        // SubsystemBase objects register themselves automatically in their constructor.
     }
-
-    public static interface ExclusiveSubsystem extends Subsystem {}
 
     // public static interface SharedSubsystem {
     //     default void periodic() {}

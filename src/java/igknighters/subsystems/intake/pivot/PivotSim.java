@@ -64,11 +64,8 @@ public class PivotSim extends Pivot {
     public void periodic() {
         double input = 0.0;
         if (stop == false) {
-            controller.reset(getAngleDegrees() * Conv.DEGREES_TO_RADIANS);
-
             input = controller.calculate(pivotSim.getAngleRads());
-
-            input = input / controller.getGoal().position * 12.0; // scale to volts
+            input = input / Math.PI * 12.0; // scale to volts
         }
         pivotSim.setInput(input);
         pivotSim.update(0.020);
@@ -78,7 +75,5 @@ public class PivotSim extends Pivot {
                 "Subsystems/Intake/Pivot/TargetDegrees",
                 controller.getGoal().position * Conv.RADIANS_TO_DEGREES);
         DogLog.log("Subsystems/Intake/Pivot/MotorVoltage", input);
-
-        input = 0;
     }
 }

@@ -11,13 +11,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import igknighters.subsystems.Subsystems.ExclusiveSubsystem;
 import igknighters.subsystems.swerve.swerveconstants.SwerveConsts;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class Swerve implements ExclusiveSubsystem {
+public class Swerve extends SubsystemBase {
     CommandSwerveDrivetrain drivetrain;
     SwerveConsts swerveConsts = new SwerveConsts();
     boolean isSwerveDisabled = false;
