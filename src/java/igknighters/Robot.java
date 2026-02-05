@@ -120,7 +120,27 @@ public class Robot extends TimedRobot {
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
-                        new Swerve(false),
+                        new Swerve(true),
+                        new LimeLightVision(),
+                        new Led(40, 1),
+                        new Shooter(),
+                        new Indexer(),
+                        new Intake(),
+                        new Climber());
+        setUpSwerve(subsytems);
+        publishCommandsAndSubystems(subsytems);
+        setUpAutos(subsytems);
+        setUpTest(subsytems);
+        bindDriverController();
+
+        subsystemTriggers.SetupTriggers(subsytems.led);
+    }
+
+    public Robot(boolean isSwerveDisabled) {
+        setUpCommandLogging();
+        subsytems =
+                new Subsystems(
+                        new Swerve(isSwerveDisabled),
                         new LimeLightVision(),
                         new Led(40, 1),
                         new Shooter(),

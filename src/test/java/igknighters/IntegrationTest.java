@@ -37,7 +37,7 @@ public class IntegrationTest {
         DriverStationSim.setAutonomous(true);
         DriverStationSim.notifyNewData();
 
-        robot = new Robot();
+        robot = new Robot(false);
         robot.robotInit();
     }
 
