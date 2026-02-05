@@ -23,7 +23,8 @@ public class Swerve extends SubsystemBase {
     boolean isSwerveDisabled = false;
     DummySwerve dummySwerve = new DummySwerve();
 
-    public Swerve() {
+    public Swerve(boolean isSwerveDisabled) {
+        this.isSwerveDisabled = isSwerveDisabled;
         if (!isSwerveDisabled) {
             drivetrain = swerveConsts.getSwerveConsts().createDrivetrain(this);
         }

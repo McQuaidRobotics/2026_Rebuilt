@@ -28,6 +28,7 @@ import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
+import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import java.util.Optional;
@@ -119,7 +120,7 @@ public class Robot extends TimedRobot {
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
-                        new igknighters.subsystems.swerve.Swerve(),
+                        new Swerve(true),
                         new LimeLightVision(),
                         new Led(40, 1),
                         new Shooter(),
