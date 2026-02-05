@@ -9,10 +9,10 @@ import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
-import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
+import igknighters.subsystems.swerve.Swerve;
 
 public class Subsystems {
-    public final CommandSwerveDrivetrain swerve;
+    public final Swerve swerve;
     public final LimeLightVision vision;
     public final Led led;
     public final Shooter shooter;
@@ -23,14 +23,14 @@ public class Subsystems {
     public final ExclusiveSubsystem[] notPublished;
 
     public Subsystems(
-            CommandSwerveDrivetrain drivetrain,
+            Swerve swerve,
             LimeLightVision vision,
             Led led,
             Shooter shooter,
             Indexer indexer,
             Intake intake,
             Climber climber) {
-        this.swerve = drivetrain;
+        this.swerve = swerve;
         this.vision = vision;
         this.led = led;
         this.shooter = shooter;
