@@ -37,42 +37,24 @@ public class LEDCommands {
                                 return;
                             }
                             for (int i = 0; i < patterns.size(); i++) {
+                                int stripIndex = index.get(i);
+                                int stripLength = led.pwm1.length / led.pwm1.numberOfStrips;
+                                int stripStart = stripIndex * stripLength;
+                                int stripEnd = stripStart + stripLength - 1;
+
                                 AddressableLEDBufferView controlledZone =
                                         slate.createView(
                                                 MathUtil.clamp(
-                                                        i
-                                                                        * (led.pwm1.length
-                                                                                / led.pwm1
-                                                                                        .numberOfStrips)
-                                                                + offsets.get(i),
-                                                        i
-                                                                * (led.pwm1.length
-                                                                        / led.pwm1.numberOfStrips),
-                                                        i
-                                                                        * (led.pwm1.length
-                                                                                / led.pwm1
-                                                                                        .numberOfStrips)
-                                                                + (led.pwm1.length
-                                                                        / led.pwm1.numberOfStrips)
-                                                                - 1),
+                                                        stripStart + offsets.get(i),
+                                                        stripStart,
+                                                        stripEnd),
                                                 MathUtil.clamp(
-                                                        i
-                                                                        * (led.pwm1.length
-                                                                                / led.pwm1
-                                                                                        .numberOfStrips)
+                                                        stripStart
                                                                 + offsets.get(i)
                                                                 + lengths.get(i)
                                                                 - 1,
-                                                        i
-                                                                * (led.pwm1.length
-                                                                        / led.pwm1.numberOfStrips),
-                                                        i
-                                                                        * (led.pwm1.length
-                                                                                / led.pwm1
-                                                                                        .numberOfStrips)
-                                                                + (led.pwm1.length
-                                                                        / led.pwm1.numberOfStrips)
-                                                                - 1));
+                                                        stripStart,
+                                                        stripEnd));
                                 patterns.get(i).applyTo(controlledZone);
                             }
                             led.animate(slate);
@@ -97,6 +79,7 @@ public class LEDCommands {
         List<Integer> lengths = new ArrayList<Integer>();
         List<Integer> indexes = new ArrayList<Integer>();
         List<String> names = new ArrayList<String>();
+
         for (int i = 0; i < ledSections.length; i++) {
             LEDSection ledSection = ledSections[i];
             offsets.add(ledSection.offset);
@@ -109,9 +92,11 @@ public class LEDCommands {
     }
 
     public static Command run(Led led, LEDPattern pattern) {
-        return run(
-                led,
-                new LEDSection(0, 0, pattern, 36, "full led strip 1"),
-                new LEDSection(1, 0, pattern, 37, "full led strip 2"));
+        List<LEDSection> sections = new ArrayList<>();
+        int stripLength = led.pwm1.length / led.pwm1.numberOfStrips;
+        for (int i = 0; i < led.pwm1.numberOfStrips; i++) {
+            sections.add(new LEDSection(i, 0, pattern, stripLength, "full led strip " + (i + 1)));
+        }
+        return run(led, sections.toArray(new LEDSection[0]));
     }
 }

@@ -139,7 +139,7 @@ public class Robot extends TimedRobot {
                 new Subsystems(
                         swerveConsts.createDrivetrain(),
                         new LimeLightVision(),
-                        new Led(40, 1),
+                        new Led(80, 2),
                         new Shooter(),
                         new Indexer(),
                         new Intake());

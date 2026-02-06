@@ -14,8 +14,6 @@ public class DrivingSharedState {
         return SingletonHelper.INSTANCE;
     }
 
-    
-
     public double detune = 0.8;
     public double kP = 0.07;
     public double kI = 0.00;
@@ -37,4 +35,3 @@ public class DrivingSharedState {
         this.detune = MathUtil.clamp(detune, 0, 1.0);
     }
 }
-

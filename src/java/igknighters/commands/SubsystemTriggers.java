@@ -1,17 +1,12 @@
 package igknighters.commands;
 
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.InstantCommand; // Import InstantCommand
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import igknighters.commands.LEDCommands.LEDSection;
-import igknighters.constants.AbleToShootSharedState; // Import AbleToShootSharedState
+import igknighters.constants.AbleToShootSharedState;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
-import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
-
 import java.util.function.BooleanSupplier;
 
 public class SubsystemTriggers {
@@ -19,7 +14,6 @@ public class SubsystemTriggers {
     private final Trigger autonomous = RobotModeTriggers.autonomous();
     private final Trigger teleop = RobotModeTriggers.teleop();
 
-   
     public static Trigger falseOnce() {
         return new Trigger(
                 new BooleanSupplier() {
@@ -37,26 +31,19 @@ public class SubsystemTriggers {
     }
 
     public void SetupTriggers(Led led) {
-        falseOnce()
-                .and(disabled)
-                .whileTrue(
-                        LEDCommands.run(
-                                led,
-                                new LEDSection(
-                                        0, 0, LEDPattern.solid(Color.kRed), 73, "DISABLED")));
-        autonomous.onTrue(
-                LEDCommands.run(
-                        led,
-                        new LEDSection(0, 0, LedUtil.makeRainbow(255, 256), 73, "AUTONOMOUS")));
-        teleop.onTrue(
-                LEDCommands.run(
-                        led, new LEDSection(0, 0, LEDPattern.solid(Color.kGreen), 73, "TELEOP")));
+        falseOnce().and(disabled).whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kRed)));
+        autonomous.onTrue(LEDCommands.run(led, LedUtil.makeRainbow(255, 256)));
+        teleop.onTrue(LEDCommands.run(led, LEDPattern.solid(Color.kGreen)));
 
         // Get the AbleToShootSharedState singleton
         AbleToShootSharedState ableToShootState = AbleToShootSharedState.getInstance();
 
         // Bind LED commands to the canShootTrigger
-        ableToShootState.canShootTrigger().onTrue(new InstantCommand(() -> LEDCommands.run(led, new LEDSection(0, 0, LEDPattern.solid(Color.kYellow), 0, "CAN SHOOT"))));
-        ableToShootState.canShootTrigger().onFalse(new InstantCommand(() -> LEDCommands.run(led, new LEDSection(0, 0, LEDPattern.solid(Color.kPurple), 0, "CANNOT SHOOT"))));
+        ableToShootState
+                .canShootTrigger()
+                .onTrue(LEDCommands.run(led, LEDPattern.solid(Color.kYellow)));
+        ableToShootState
+                .canShootTrigger()
+                .onFalse(LEDCommands.run(led, LEDPattern.solid(Color.kPurple)));
     }
 }
