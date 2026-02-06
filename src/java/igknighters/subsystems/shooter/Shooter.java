@@ -3,7 +3,7 @@ package igknighters.subsystems.shooter;
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
-import igknighters.constants.AbleToShootSharedState; // Import the shared state
+import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.Conv;
 import igknighters.subsystems.shooter.flywheel.Flywheel;
 import igknighters.subsystems.shooter.flywheel.FlywheelDisabled;
