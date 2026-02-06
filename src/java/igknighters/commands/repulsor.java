@@ -1,7 +1,6 @@
 package igknighters.commands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Ounces;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -15,10 +14,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import igknighters.subsystems.shooter.ShooterVisualizer;
 import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
-import igknighters.commands.RepulsorVisualizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -27,6 +24,7 @@ public class Repulsor {
         CIRCLE,
         SQUARE;
     }
+
     static boolean beenPublished = false;
 
     /**
@@ -49,23 +47,33 @@ public class Repulsor {
 
     static RepulsorVisualizer visualizer = new RepulsorVisualizer();
 
-    public static double getXRepulse(
-            Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
+    public static double getXRepulse(Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
         DogLog.log("Commands/repulsor/Time", currentTime);
         double xRepelForce = 0.0;
         for (Repulsor.obstacle obs : obstacles) {
-            double dist =
-                    Math.hypot(
-                            obs.obstaclePose.getX() - currentPose.getX(),
-                            obs.obstaclePose.getY() - currentPose.getY());
-            if (obs.obstaclePose.getX() - currentPose.getX() > 0) {
-                xRepelForce += Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist);
-            } else {
-                xRepelForce -= Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist);
+            if (obs.type == obstacleType.CIRCLE) {
+                double dist =
+                        Math.hypot(
+                                obs.obstaclePose.getX() - currentPose.getX(),
+                                obs.obstaclePose.getY() - currentPose.getY());
+                if (obs.obstaclePose.getX() - currentPose.getX() > 0) {
+                    xRepelForce += Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist);
+                } else {
+                    xRepelForce -= Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist);
+                }
+            } else if (obs.type == obstacleType.SQUARE
+                    && currentPose.getY() >= obs.obstaclePose.getY() - obs.height
+                    && currentPose.getY() <= obs.obstaclePose.getY() + obs.height) {
+                double dist = obs.obstaclePose.getX() - currentPose.getX();
+                if (obs.obstaclePose.getX() - currentPose.getX() > 0) {
+                    xRepelForce += Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist);
+                } else {
+                    xRepelForce -= Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 + dist);
+                }
             }
-            DogLog.log("Commands/repulsor/xRepel", xRepelForce);
         }
+        DogLog.log("Commands/repulsor/xRepel", xRepelForce);
         DogLog.log(
                 "Commands/repulsor/FirstObsDistX",
                 obstacles.get(0).obstaclePose.getX() - currentPose.getX());
@@ -84,22 +92,32 @@ public class Repulsor {
         return xGoalDist;
     }
 
-    public static double getYRepulse(
-            Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
+    public static double getYRepulse(Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
         double yRepelForce = 0.0;
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
         DogLog.log("Commands/repulsor/Time", currentTime);
         for (Repulsor.obstacle obs : obstacles) {
-            double dist =
-                    Math.hypot(
-                            obs.obstaclePose.getX() - currentPose.getX(),
-                            obs.obstaclePose.getY() - currentPose.getY());
-            if (obs.obstaclePose.getY() - currentPose.getY() > 0) {
-                yRepelForce += Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist);
-            } else {
-                yRepelForce -= Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist);
+            if (obs.type == obstacleType.CIRCLE) {
+                double dist =
+                        Math.hypot(
+                                obs.obstaclePose.getX() - currentPose.getX(),
+                                obs.obstaclePose.getY() - currentPose.getY());
+                if (obs.obstaclePose.getY() - currentPose.getY() > 0) {
+                    yRepelForce += Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist);
+                } else {
+                    yRepelForce -= Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 + dist);
+                }
+                DogLog.log("Commands/repulsor/yRepel", yRepelForce);
+            } else if (obs.type == obstacleType.SQUARE
+                    && currentPose.getX() >= obs.obstaclePose.getX() - obs.width
+                    && currentPose.getX() <= obs.obstaclePose.getX() + obs.width) {
+                double dist = obs.obstaclePose.getY() - currentPose.getY();
+                if (obs.obstaclePose.getY() - currentPose.getY() > 0) {
+                    yRepelForce += Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist);
+                } else {
+                    yRepelForce -= Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 + dist);
+                }
             }
-            DogLog.log("Commands/repulsor/yRepel", yRepelForce);
         }
         DogLog.log(
                 "Commands/repulsor/FirstObsDistY",
@@ -127,10 +145,10 @@ public class Repulsor {
                                 Units.inchesToMeters(182.11),
                                 Units.inchesToMeters(98.85),
                                 new Rotation2d()),
-                        2.0,
-                        2.0,
-                        2.0,
-                        obstacleType.CIRCLE);
+                        1.0,
+                        Units.inchesToMeters(22.2),
+                        Units.inchesToMeters(73 / 2),
+                        obstacleType.SQUARE);
         obstacle obs2 =
                 new obstacle(
                         new Pose2d(
@@ -138,16 +156,16 @@ public class Repulsor {
                                 Units.inchesToMeters(218.85),
                                 new Rotation2d()),
                         1.0,
-                        2.0,
-                        2.0,
-                        obstacleType.CIRCLE);
+                        Units.inchesToMeters(22.2),
+                        Units.inchesToMeters(73 / 2),
+                        obstacleType.SQUARE);
         obstacle obs3 =
                 new obstacle(
                         new Pose2d(
                                 Units.inchesToMeters(182.11),
                                 Units.inchesToMeters(158.85),
                                 new Rotation2d()),
-                        3.0,
+                        2,
                         4.0,
                         2.0,
                         obstacleType.CIRCLE);
@@ -166,12 +184,31 @@ public class Repulsor {
         return swerve.run(
                 () -> {
                     Pose2d currentPose = swerve.getState().Pose;
-                    double xVelo = 10 * getXRepulse(currentPose, obstacles)-getXGoal(currentPose, targetPose);
-                    double yVelo = 10 * getYRepulse(currentPose, obstacles)-getYGoal(currentPose, targetPose);
+                    double xVelo =
+                            10
+                                    * (getXRepulse(currentPose, obstacles)
+                                            - getXGoal(currentPose, targetPose));
+                    double yVelo =
+                            10
+                                    * (getYRepulse(currentPose, obstacles)
+                                            - getYGoal(currentPose, targetPose));
                     double omega =
                             thetaController.calculate(
                                     currentPose.getRotation().getRadians(),
                                     targetPose.getRotation().getRadians());
+                    RepulsorVisualizer.update(
+                            Math.atan2(
+                                    getYGoal(currentPose, targetPose),
+                                    getXGoal(currentPose, targetPose)),
+                            Math.atan2(
+                                    getYRepulse(currentPose, obstacles),
+                                    getXRepulse(currentPose, obstacles)),
+                            Math.hypot(
+                                    getYGoal(currentPose, targetPose),
+                                    getXGoal(currentPose, targetPose)),
+                            Math.hypot(
+                                    getYRepulse(currentPose, obstacles),
+                                    getXRepulse(currentPose, obstacles)));
 
                     omega *= 20.0;
                     DogLog.log("Commands/repulsor/Omega", omega);
