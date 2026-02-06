@@ -35,8 +35,8 @@ public class SubsystemTriggers {
         autonomous.onTrue(LEDCommands.run(led, LedUtil.makeRainbow(255, 256)));
         teleop.onTrue(LEDCommands.run(led, LEDPattern.solid(Color.kGreen)));
 
-        // Get the AbleToShootSharedState singleton
-        AbleToShootSharedState ableToShootState = AbleToShootSharedState.getInstance();
+        // // Get the AbleToShootSharedState singleton
+        // AbleToShootSharedState ableToShootState = AbleToShootSharedState.getInstance();
 
         // Bind LED commands to the canShootTrigger
         ableToShootState
