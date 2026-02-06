@@ -23,6 +23,7 @@ import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.climber.Climber;
 import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
@@ -114,23 +115,10 @@ public class Robot extends TimedRobot {
 
     public void setUpTest(Subsystems subsystems) {
         SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 120 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 120));
+                "Commands/Spindexer/Spindexer - STOP", IndexerCommands.stop(subsystems.indexer));
         SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 140 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 140));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 160 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 160));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 180 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 180));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 200 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 200));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - 220 RPM",
-                IndexerCommands.dispense(subsystems.indexer, 220));
+                "Commands/Spindexer/Spindexer - DISPENSE BALLS",
+                IndexerCommands.dispense(subsystems.indexer));
     }
 
     public Robot() {
@@ -142,12 +130,13 @@ public class Robot extends TimedRobot {
                         new Led(40, 1),
                         new Shooter(),
                         new Indexer(),
-                        new Intake());
+                        new Intake(),
+                        new Climber());
         setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
         setUpTest(subsytems);
-        driverController.bind(subsytems);
+        bindDriverController();
 
         subsystemTriggers.SetupTriggers(subsytems.led);
     }
@@ -169,6 +158,10 @@ public class Robot extends TimedRobot {
         }
     }
 
+    public void bindDriverController() {
+        driverController.bind(subsytems);
+    }
+
     @Override
     public void disabledInit() {
         scheduler.cancelAll();
@@ -181,7 +174,7 @@ public class Robot extends TimedRobot {
         DrivingSharedState.getInstance().setKI(targetingI.value());
         DrivingSharedState.getInstance().setKD(targetingD.value());
 
-        driverController.bind(subsytems);
+        bindDriverController();
     }
 
     @Override

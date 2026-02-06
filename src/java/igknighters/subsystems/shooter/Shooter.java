@@ -27,8 +27,8 @@ public class Shooter extends SubsystemBase {
     private LerpTable rpmTable =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, 3000.0),
-                        new LerpTableEntry(5.0, 4000.0),
+                        new LerpTableEntry(1.0, 4000.0),
+                        new LerpTableEntry(5.0, 4500.0),
                         new LerpTableEntry(10.0, 5000.0),
                         new LerpTableEntry(15.0, 5500.0),
                         new LerpTableEntry(20.0, 6000.0),
@@ -109,6 +109,6 @@ public class Shooter extends SubsystemBase {
         turret.periodic();
         hood.periodic();
 
-        visualizer.update(getCurrentState(), goalRPM);
+        visualizer.update(getCurrentState(), goalRPM, goalHoodAngleDegrees);
     }
 }
