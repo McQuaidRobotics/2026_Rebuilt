@@ -54,6 +54,7 @@ public class CameraReal extends Camera {
             noObjects = true;
         }
         DogLog.log("Subsystems/Vision/Physical RESULTS IN PERIODIC", potentialResults.size());
+        //WHY DOES THIS SIZE ONLY SHOW 1, this might be a problem?
         DogLog.log("Subsystems/Vision/RESULTS IN PERIODIC", results.size());
     }
 

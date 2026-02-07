@@ -157,6 +157,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+        //THE COORDINATES LOOK WEIRD WHEN THERE ARE MULTIPLE FUEL, needs tuning
         DogLog.log(
                 "Subsystems/Vision/ObjectDetection/Closest Game Piece",
                 subsytems.luma.getClosestGamePiece());
