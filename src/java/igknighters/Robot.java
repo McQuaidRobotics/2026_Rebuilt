@@ -160,7 +160,6 @@ public class Robot extends TimedRobot {
         DogLog.log(
                 "Subsystems/Vision/ObjectDetection/Closest Game Piece",
                 subsytems.luma.getClosestGamePiece());
-        DogLog.log("Subsystems/Vision/ObjectDetection/number one", "im 1ing it");
 
         if (kUseLimelight) {
             var driveState = subsytems.swerve.getState();
