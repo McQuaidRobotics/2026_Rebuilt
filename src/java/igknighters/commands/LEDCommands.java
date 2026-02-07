@@ -30,7 +30,7 @@ public class LEDCommands {
 
         return Commands.startRun(
                         () -> {
-                            System.out.println("Running Clear Led Command");
+                            //System.out.println("Running Clear Led Command");
                             eraser.applyTo(slate);
                         },
                         () -> {
@@ -42,7 +42,7 @@ public class LEDCommands {
                                         "incorect lengths on offsets and patterns LED COMMANDS ");
                                 return;
                             }
-                            System.out.println("Running SplitLed Command");
+                            //System.out.println("Running SplitLed Command");
 
                             for (int i = 0; i < patterns.size(); i++) {
                                 int stripIndex = index.get(i);
