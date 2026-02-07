@@ -1,8 +1,9 @@
 package igknighters.subsystems.Luma;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import igknighters.Robot;
 import igknighters.subsystems.Luma.Cameras.Camera;
 import igknighters.subsystems.Luma.Cameras.CameraReal;
 import igknighters.subsystems.Luma.Cameras.CameraSim;
@@ -15,7 +16,7 @@ public class Luma extends SubsystemBase {
 
     public Luma(String... cameraNames) {
         this.cameras = new ArrayList<>();
-        boolean isReal = RobotBase.isReal();
+        boolean isReal = Robot.isReal();
         for (String name : cameraNames) {
             if (isReal) {
                 this.cameras.add(new CameraReal(name));
@@ -46,6 +47,9 @@ public class Luma extends SubsystemBase {
     public Translation2d getClosestGamePiece() {
         Translation2d closest = null;
         double closestDist = Double.MAX_VALUE;
+        DogLog.log(
+                "Subsystems/Vision/ObjectDetection/whewre is we running",
+                "we are calling closest game piece");
 
         for (Camera camera : cameras) {
             Translation2d offset = camera.getGamePieceOffset();

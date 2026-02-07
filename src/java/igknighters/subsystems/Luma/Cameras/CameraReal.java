@@ -14,14 +14,21 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class CameraReal extends Camera {
     PhotonCamera camera;
+    String name;
     double cameraHeightMeters;
     double cameraPitchRadians;
     Translation2d robotToCameraTranslation;
     List<PhotonPipelineResult> results = new ArrayList<>();
+    boolean noObjects = false;
 
     public CameraReal(
             String cameraName, double cameraHeightMeters, Translation2d robotToCameraTranslation) {
         this.camera = new PhotonCamera(cameraName);
+        DogLog.log(cameraName, true);
+        this.name = cameraName;
+        DogLog.log("Subsystems/Vision/" + cameraName + "/Status", "ENABLED");
+
+        camera.setPipelineIndex(0);
         this.cameraHeightMeters = cameraHeightMeters;
         this.robotToCameraTranslation = robotToCameraTranslation;
     }
@@ -32,7 +39,22 @@ public class CameraReal extends Camera {
 
     @Override
     public void periodic() {
-        results = camera.getAllUnreadResults();
+
+        DogLog.log("Subsystems/Vision/" + name + "/Connected", camera.isConnected());
+        List<PhotonPipelineResult> potentialResults = new ArrayList<>();
+        potentialResults = camera.getAllUnreadResults();
+        //this stops the robot from using an empty list if it is the first cycle of empty
+        if (!potentialResults.isEmpty()) {
+            results = potentialResults;
+            noObjects = false;
+        } else if (potentialResults.isEmpty() && noObjects == true) {
+            results = potentialResults;
+            noObjects = true;
+        } else {
+            noObjects = true;
+        }
+        DogLog.log("Subsystems/Vision/Physical RESULTS IN PERIODIC", potentialResults.size());
+        DogLog.log("Subsystems/Vision/RESULTS IN PERIODIC", results.size());
     }
 
     @Override
@@ -60,6 +82,7 @@ public class CameraReal extends Camera {
 
     @Override
     public Translation2d getGamePieceOffset() {
+        DogLog.log("Subsystems/Vision/Getting Offset", true);
         if (results.isEmpty()) {
             DogLog.log("Subsystems/Vision/ObjectDetection/Camera Results", false);
             return new Translation2d();
