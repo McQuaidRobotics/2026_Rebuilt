@@ -99,14 +99,11 @@ public class FieldConstants {
                         WIDTH / 2,
                         obstacleType.SQUARE);
         public static final ArrayList<obstacle> ALL_OBSTACLES =
-                new ArrayList<>(
-                        Arrays.asList(
-                                BUMP_BLUE,
-                                BUMP_RED,
-                                WALL_DS_BLUE,
-                                WALL_BLUE_TO_RED_BOTTOM,
-                                WALL_BLUE_TO_RED_TOP,
-                                WALL_DS_RED));
+                new ArrayList<>(Arrays.asList(BUMP_BLUE, BUMP_RED));
+        // WALL_DS_BLUE,
+        // WALL_BLUE_TO_RED_BOTTOM,
+        // WALL_BLUE_TO_RED_TOP,
+        // WALL_DS_RED));
     }
 
     public static final double WIDTH = 316.64 * Conv.INCHES_TO_METERS; // meters

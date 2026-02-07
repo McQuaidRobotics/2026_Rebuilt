@@ -53,7 +53,7 @@ public class RepulsorVisualizer {
         DogLog.log("Commands/repulsor/repulse strength", repulseStrength);
         DogLog.log("Commands/repulsor/goal strength", goalStrength);
         goalLigament.setAngle(Math.toDegrees(goalTheta));
-        repulseLigament.setAngle(180 - Math.toDegrees(repulseTheta));
+        repulseLigament.setAngle(Math.toDegrees(180) + Math.toDegrees(repulseTheta));
         goalLigament.setColor(getStrengthColor(goalStrength));
         repulseLigament.setColor(getStrengthColor(repulseStrength));
     }
