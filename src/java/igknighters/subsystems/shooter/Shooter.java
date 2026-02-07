@@ -3,7 +3,6 @@ package igknighters.subsystems.shooter;
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
-import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.Conv;
 import igknighters.subsystems.shooter.flywheel.Flywheel;
 import igknighters.subsystems.shooter.flywheel.FlywheelDisabled;
@@ -28,8 +27,8 @@ public class Shooter extends SubsystemBase {
     private LerpTable rpmTable =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, 3000.0),
-                        new LerpTableEntry(5.0, 4000.0),
+                        new LerpTableEntry(1.0, 4000.0),
+                        new LerpTableEntry(5.0, 4500.0),
                         new LerpTableEntry(10.0, 5000.0),
                         new LerpTableEntry(15.0, 5500.0),
                         new LerpTableEntry(20.0, 6000.0),
@@ -110,14 +109,6 @@ public class Shooter extends SubsystemBase {
         turret.periodic();
         hood.periodic();
 
-        visualizer.update(getCurrentState(), goalRPM);
-
-        // Define a reasonable tolerance for the shooter to be considered "at target"
-        // This value might need to be tuned.
-        final double SHOOTER_TOLERANCE = 100.0; // Example tolerance for RPM and angles
-        boolean currentShooterAtTarget = atTarget(SHOOTER_TOLERANCE);
-
-        // Update the AbleToShootSharedState singleton
-        AbleToShootSharedState.getInstance().setCanShoot(currentShooterAtTarget);
+        visualizer.update(getCurrentState(), goalRPM, goalHoodAngleDegrees);
     }
 }
