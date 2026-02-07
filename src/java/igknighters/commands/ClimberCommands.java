@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.climber.Climber;
 import igknighters.subsystems.climber.ClimberState;
-
 import java.util.function.BooleanSupplier;
 
 public class ClimberCommands {
