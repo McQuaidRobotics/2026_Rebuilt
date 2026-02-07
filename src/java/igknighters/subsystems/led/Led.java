@@ -15,7 +15,7 @@ public class Led extends SubsystemBase {
     }
 
     public void animate(AddressableLEDBuffer buffer) {
-
+        DogLog.log("Subsystems/LED/Animate", true);
         pwm1.applyBuffer(buffer);
     }
 
@@ -23,6 +23,9 @@ public class Led extends SubsystemBase {
     public void periodic() {
         DogLog.log("Subsystems/LED/Periodic", true);
         Tracer.startTrace("LedPeriodic");
+        DogLog.log(
+                "Subsystems/LED/BeingUsed",
+                getCurrentCommand() != null ? getCurrentCommand().getName() : "None");
         pwm1.periodic();
         Tracer.endTrace();
     }

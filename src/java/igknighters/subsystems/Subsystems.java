@@ -36,7 +36,7 @@ public class Subsystems {
         this.lockedResources = new SubsystemBase[] {led, shooter, vision, indexer, intake};
         this.notPublished = new ExclusiveSubsystem[] {swerve};
 
-        CommandScheduler.getInstance().registerSubsystem(this.lockedResources);
+        CommandScheduler.getInstance().registerSubsystem(this.notPublished);
         // this.shooter.setDefaultCommand(ShooterCommands.idle(shooter));
         // for (SharedSubsystem subsystem : this.locklessResources) {
         //     CommandScheduler.getInstance()

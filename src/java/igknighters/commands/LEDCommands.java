@@ -1,5 +1,6 @@
 package igknighters.commands;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
@@ -7,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
 import java.util.ArrayList;
@@ -25,8 +27,10 @@ public class LEDCommands {
             List<String> names) {
         final AddressableLEDBuffer slate = new AddressableLEDBuffer(led.pwm1.length);
         final LEDPattern eraser = LEDPattern.solid(Color.kBlack);
-        return led.startRun(
+
+        return Commands.startRun(
                         () -> {
+                            System.out.println("Running Clear Led Command");
                             eraser.applyTo(slate);
                         },
                         () -> {
@@ -34,8 +38,12 @@ public class LEDCommands {
                                 DriverStation.reportError(
                                         "incorect lengths on offsets and patterns LED COMMANDS ",
                                         false);
+                                System.out.println(
+                                        "incorect lengths on offsets and patterns LED COMMANDS ");
                                 return;
                             }
+                            System.out.println("Running SplitLed Command");
+
                             for (int i = 0; i < patterns.size(); i++) {
                                 int stripIndex = index.get(i);
                                 int stripLength = led.pwm1.length / led.pwm1.numberOfStrips;
@@ -60,7 +68,6 @@ public class LEDCommands {
                             led.animate(slate);
                             LedUtil.logBuffer("fullPattern", led, slate);
                         })
-                .ignoringDisable(true)
                 .withName(
                         "SplitLed("
                                 + patterns.size()
@@ -88,6 +95,8 @@ public class LEDCommands {
             indexes.add(ledSection.index);
             names.add(ledSection.name);
         }
+        DogLog.log("Subsystems/LED/Run/Sections", ledSections.length);
+
         return run(led, offsets, patterns, lengths, indexes, names);
     }
 
@@ -95,6 +104,7 @@ public class LEDCommands {
         List<LEDSection> sections = new ArrayList<>();
         int stripLength = led.pwm1.length / led.pwm1.numberOfStrips;
         for (int i = 0; i < led.pwm1.numberOfStrips; i++) {
+            DogLog.log("Subsystems/LED/Run/AddingSection", "full led strip " + (i + 1));
             sections.add(new LEDSection(i, 0, pattern, stripLength, "full led strip " + (i + 1)));
         }
         return run(led, sections.toArray(new LEDSection[0]));

@@ -7,12 +7,14 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.IndexerCommands;
+import igknighters.commands.LEDCommands;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
 import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.led.LedUtil;
 import java.util.function.DoubleSupplier;
 
 public class DriverController {
@@ -98,8 +100,11 @@ public class DriverController {
         var swerve = subsystems.swerve;
 
         this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
-        this.A.whileTrue(
-                new TeleopSwerveHeadingCmd(swerve, this, 45.0, state.kP, state.kI, state.kD));
+        this.A.onTrue(
+                LEDCommands.run(
+                        subsystems.led,
+                        new LEDCommands.LEDSection(
+                                0, 0, LedUtil.makeRainbow(255, 100), 10, "full led strip 1")));
         this.B.whileTrue(
                 new TeleopSwerveHeadingCmd(swerve, this, 180.0, state.kP, state.kI, state.kD));
         this.Y.whileTrue(
