@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import igknighters.constants.AbleToShootSharedState;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
 import java.util.function.BooleanSupplier;
@@ -50,15 +51,15 @@ public class SubsystemTriggers {
                         .ignoringDisable(true)
                         .withName("TeleopGreen"));
 
-        // // Get the AbleToShootSharedState singleton
-        // AbleToShootSharedState ableToShootState = AbleToShootSharedState.getInstance();
+        // Get the AbleToShootSharedState singleton
+        AbleToShootSharedState ableToShootState = AbleToShootSharedState.getInstance();
 
         // Bind LED commands to the canShootTrigger
-        // ableToShootState
-        //         .canShootTrigger()
-        //         .onTrue(LEDCommands.run(led, LEDPattern.solid(Color.kYellow)));
-        // ableToShootState
-        //         .canShootTrigger()
-        //         .onFalse(LEDCommands.run(led, LEDPattern.solid(Color.kPurple)));
+        ableToShootState
+                .canShootTrigger()
+                .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kYellow)));
+        ableToShootState
+                .canShootTrigger()
+                .whileFalse(LEDCommands.run(led, LEDPattern.solid(Color.kPurple)));
     }
 }

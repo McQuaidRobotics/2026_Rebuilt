@@ -3,6 +3,7 @@ package igknighters.subsystems.shooter;
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
+import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.Conv;
 import igknighters.subsystems.shooter.flywheel.Flywheel;
 import igknighters.subsystems.shooter.flywheel.FlywheelDisabled;
@@ -21,6 +22,7 @@ public class Shooter extends SubsystemBase {
     private final Turret turret;
     private final Hood hood;
     private final ShooterVisualizer visualizer;
+    private AbleToShootSharedState ableToShootState = AbleToShootSharedState.getInstance();
     private double goalRPM = 100.0;
     private double goalTurretAngleDegrees = 10.0;
     private double goalHoodAngleDegrees = 10.0;
@@ -83,6 +85,19 @@ public class Shooter extends SubsystemBase {
         return atSpeed && atTurretAngle && atHoodAngle;
     }
 
+    public boolean atTarget(
+            double toleranceRPM, double toleranceDegrees, double toleranceHoodDegrees) {
+        boolean atSpeed = Math.abs(rollers.getSpeedRPM() - goalRPM) < toleranceRPM;
+        boolean atTurretAngle =
+                Math.abs(getTurretAngleDegrees() - goalTurretAngleDegrees) < toleranceDegrees;
+        boolean atHoodAngle =
+                Math.abs(hood.getAngleDegrees() - goalHoodAngleDegrees) < toleranceHoodDegrees;
+        DogLog.log("Subsystems/Shooter/AT TARGET/AT SPEED", atSpeed);
+        DogLog.log("Subsystems/Shooter/AT TARGET/AT TURRET ANGLE", atTurretAngle);
+        DogLog.log("Subsystems/Shooter/AT TARGET/AT HOOD ANGLE", atHoodAngle);
+        return atSpeed && atTurretAngle && atHoodAngle;
+    }
+
     public void setTurretPosition(double angleDegrees) {
         DogLog.log("Subsystems/Shooter/SETSTATE/ANGLE", angleDegrees);
         turret.setAngleDegrees(angleDegrees);
@@ -110,5 +125,6 @@ public class Shooter extends SubsystemBase {
         hood.periodic();
 
         visualizer.update(getCurrentState(), goalRPM, goalHoodAngleDegrees);
+        ableToShootState.setCanShoot(atTarget(600, 1, 5));
     }
 }
