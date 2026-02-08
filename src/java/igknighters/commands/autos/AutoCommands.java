@@ -20,12 +20,12 @@ import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
+import igknighters.subsystems.swerve.Swerve;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AutoCommands {
 
-    protected final CommandSwerveDrivetrain swerve;
+    protected final Swerve swerve;
     protected final Subsystems subsystems;
     protected final AutoFactory autoFactory;
 
@@ -65,7 +65,7 @@ public class AutoCommands {
         return Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
     }
 
-    protected Trigger movingSlowerThan(CommandSwerveDrivetrain swerve, double speed) {
+    protected Trigger movingSlowerThan(Swerve swerve, double speed) {
         return new Trigger(() -> findSpeed(swerve.getState().Speeds) < speed);
     }
 
@@ -122,10 +122,7 @@ public class AutoCommands {
             bodyCommand.addCommands(
                     loggedCmd(
                             Commands.sequence(
-                                            HigherOrderCommands.shootTillEmpty(
-                                                            subsystems,
-                                                            timeout,
-                                                            () -> getHubTarget())
+                                            HigherOrderCommands.shootTillEmpty(subsystems, timeout)
                                                     .withName("SHOOT_TILL_EMPTY"),
                                             traj.cmd(),
                                             SwerveCommands.stopDriving(swerve).withTimeout(.1))
@@ -146,9 +143,7 @@ public class AutoCommands {
                             Commands.sequence(
                                             Commands.parallel(
                                                             HigherOrderCommands.shootTillEmpty(
-                                                                            subsystems,
-                                                                            3.0,
-                                                                            () -> getHubTarget())
+                                                                            subsystems, 3.0)
                                                                     .withName("SHOOT_TILL_EMPTY"),
                                                             traj.cmd()
                                                                     .withName(

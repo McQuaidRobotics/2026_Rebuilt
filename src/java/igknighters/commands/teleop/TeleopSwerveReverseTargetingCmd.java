@@ -11,7 +11,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.controllers.DriverController;
-import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
+import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 
 public class TeleopSwerveReverseTargetingCmd extends TeleopSwerveBaseCmd {
@@ -26,7 +26,7 @@ public class TeleopSwerveReverseTargetingCmd extends TeleopSwerveBaseCmd {
     private final PIDController rotationController;
 
     public TeleopSwerveReverseTargetingCmd(
-            CommandSwerveDrivetrain swerve,
+            Swerve swerve,
             DriverController controller,
             Pose2d targetPose,
             double kP,

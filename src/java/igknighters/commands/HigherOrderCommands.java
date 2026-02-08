@@ -1,37 +1,37 @@
 package igknighters.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
-import java.util.function.Supplier;
 
 public class HigherOrderCommands {
-    public static Command shootTillEmpty(
-            Subsystems subsystems, double timeout, Supplier<Pose3d> targetPoseSupplier) {
+    public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
         return Commands.parallel(
-                        ShooterCommands.aimAt(
+                        ShooterCommands.shootIChoseTargetWithLookAhead(
                                         subsystems.shooter,
                                         () -> subsystems.swerve.getState().Pose,
-                                        targetPoseSupplier)
+                                        () -> subsystems.swerve.getState().Speeds)
                                 .withName("Aim At in Shoot till Empty"),
-                        IndexerCommands.dispense(subsystems.indexer))
-                .onlyIf(() -> subsystems.shooter.atTarget(.5))
+                        IndexerCommands.dispense(subsystems.indexer)
+                                .onlyIf(() -> subsystems.shooter.atTarget(300, 2, 2)))
                 .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
     }
 
     public static Command shootNoStop(Subsystems subsystems) {
         return Commands.parallel(
-                        ShooterCommands.shootIChoseTargetWithLookAhead(
+                ShooterCommands.shootIChoseTargetWithLookAhead(
                                 subsystems.shooter,
                                 () -> subsystems.swerve.getState().Pose,
-                                () -> subsystems.swerve.getState().Speeds),
-                        IndexerCommands.dispense(subsystems.indexer))
-                .onlyIf(() -> subsystems.shooter.atTarget(.5));
+                                () -> subsystems.swerve.getState().Speeds)
+                        .repeatedly()
+                        .withName("SHOOTING WHILE DOING OTHER STUFF"),
+                IndexerCommands.dispense(subsystems.indexer)
+                        .withName("ALLOWED TO SHOOT THEIRFORE DISPENSING TS")
+                        .onlyIf(() -> subsystems.shooter.atTarget(300, 2, 2)));
     }
 
     public static Pose2d getClimbStartPose() {
@@ -54,6 +54,13 @@ public class HigherOrderCommands {
         } else {
             return FieldConstants.CLIMB.POSITION_RED;
         }
+    }
+
+    public static Command hippoShoot(Subsystems subsystems) {
+        return Commands.parallel(
+                shootNoStop(subsystems),
+                Commands.print("IM HIPPPOING TILL I HIPPO").repeatedly(),
+                IntakeCommands.goToIntake(subsystems.intake));
     }
 
     public static Command prepToClimbFirstRung(Subsystems subsystems) {

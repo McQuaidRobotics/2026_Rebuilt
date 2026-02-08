@@ -28,8 +28,7 @@ import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
-import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
-import igknighters.subsystems.swerve.swerveconstants.SwerveConsts;
+import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import java.util.Optional;
@@ -47,10 +46,6 @@ public class Robot extends TimedRobot {
     public final Subsystems subsytems;
 
     private final boolean kUseLimelight = true;
-
-    private final SwerveConsts swerveConstGetter = new SwerveConsts();
-
-    private final CommonSwerveConsts swerveConsts = swerveConstGetter.getSwerveConsts();
 
     private Telemetry logger;
     TunableDouble detune = TunableValues.getDouble("Tunables/Detune", 0.6);
@@ -98,10 +93,11 @@ public class Robot extends TimedRobot {
     public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsytems.swerve.createAutoFactory();
         final var routines = new AutoRoutines(subsytems, autoFactory);
-        autoChooser.addCmd("shoot-then-move", routines.shootThenMove());
-        autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
-        autoChooser.addCmd(
-                "NEW METHOD IDK IF THIS WILL WORK HOPEFULLY IT WILL", routines.scoreThenPass());
+        autoChooser.addRoutine("LEFT NUETRAL HIPPO", routines::leftNuetralHippo);
+        autoChooser.addRoutine("RIGHT NUETRAL HIPPO", routines::rightNuetralHippo);
+        autoChooser.addRoutine("CENTER OUTPOST CLIMB", routines::centerOutpostClimb);
+        autoChooser.addRoutine("Center Depot climb", routines::centerDepotClimb);
+        autoChooser.addRoutine("Right Depo Climb", routines::rightDepoClimb);
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
     }
 
@@ -109,13 +105,14 @@ public class Robot extends TimedRobot {
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, 1.0));
 
-        logger = new Telemetry(swerveConsts.getMaxSpeedMetersPerSecond(), subsytems);
+        logger = new Telemetry(subsytems.swerve.getMaxSpeedMetersPerSecond(), subsytems);
         subsytems.swerve.registerTelemetry(logger::telemeterize);
     }
 
     public void setUpTest(Subsystems subsystems) {
         SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - STOP", IndexerCommands.stop(subsystems.indexer));
+                "Commands/Spindexer/Spindexer - STOP",
+                IndexerCommands.stopDispensing(subsystems.indexer));
         SmartDashboard.putData(
                 "Commands/Spindexer/Spindexer - DISPENSE BALLS",
                 IndexerCommands.dispense(subsystems.indexer));
@@ -125,7 +122,27 @@ public class Robot extends TimedRobot {
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
-                        swerveConsts.createDrivetrain(),
+                        new Swerve(true),
+                        new LimeLightVision(),
+                        new Led(40, 1),
+                        new Shooter(),
+                        new Indexer(),
+                        new Intake(),
+                        new Climber());
+        setUpSwerve(subsytems);
+        publishCommandsAndSubystems(subsytems);
+        setUpAutos(subsytems);
+        setUpTest(subsytems);
+        bindDriverController();
+
+        subsystemTriggers.SetupTriggers(subsytems.led);
+    }
+
+    public Robot(boolean isSwerveDisabled) {
+        setUpCommandLogging();
+        subsytems =
+                new Subsystems(
+                        new Swerve(isSwerveDisabled),
                         new LimeLightVision(),
                         new Led(40, 1),
                         new Shooter(),

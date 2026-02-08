@@ -61,6 +61,7 @@ public class RollersSim extends Rollers {
 
         double pidOutput = 0.0;
         double ffOutput = 0.0;
+
         if (isPidControlledThisCycle) {
 
             // Feedforward in volts
@@ -71,7 +72,7 @@ public class RollersSim extends Rollers {
 
             // PID output is in RPM, convert to volts with a small gain
             // Tune this value (start around 0.001)
-            double kRPM_to_volts = 0.002;
+            double kRPM_to_volts = 0.01;
 
             double pidRPM = profiledPIDController.calculate(currentRPM);
             pidOutput = pidRPM * kRPM_to_volts;

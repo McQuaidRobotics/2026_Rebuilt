@@ -13,13 +13,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
-import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
+import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import java.util.function.BooleanSupplier;
 
 public class SwerveCommands {
 
-    public static Command zeroGyro(CommandSwerveDrivetrain swerve) {
+    public static Command zeroGyro(Swerve swerve) {
         return Commands.either(
                 Commands.runOnce(
                         () ->
@@ -38,11 +38,11 @@ public class SwerveCommands {
                 () -> Robot.isBlue());
     }
 
-    public static Pose2d getPose(CommandSwerveDrivetrain swerve) {
+    public static Pose2d getPose(Swerve swerve) {
         return swerve.getState().Pose;
     }
 
-    public static Command stopDriving(CommandSwerveDrivetrain swerve) {
+    public static Command stopDriving(Swerve swerve) {
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
                         .withDeadband(knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond) * 1.0)
@@ -62,7 +62,7 @@ public class SwerveCommands {
     }
 
     public static BooleanSupplier isAt(
-            CommandSwerveDrivetrain swerve,
+            Swerve swerve,
             Pose2d targetPose,
             double positionToleranceMeters,
             double angleToleranceRadians) {
@@ -92,7 +92,7 @@ public class SwerveCommands {
         };
     }
 
-    public static Command moveToSimple(CommandSwerveDrivetrain swerve, Pose2d targetPose) {
+    public static Command moveToSimple(Swerve swerve, Pose2d targetPose) {
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
                         .withDeadband(0.0)
@@ -144,7 +144,7 @@ public class SwerveCommands {
     }
 
     public static Command moveToSimpleWithVelocityControl(
-            CommandSwerveDrivetrain swerve, Pose2d targetPose, Pose2d maxVelocities) {
+            Swerve swerve, Pose2d targetPose, Pose2d maxVelocities) {
         final PIDController xController =
                 new PIDController(.1, 0.0, 0.0); // Adjust gains as necessary
         final PIDController yController = new PIDController(.1, 0.0, 0.0);

@@ -49,10 +49,13 @@ public class PivotSim extends Pivot {
         controller.reset(angleDegrees * Conv.DEGREES_TO_RADIANS);
     }
 
+    private boolean isControlledThisCycle = false;
+
     @Override
     public void goToAngleDegrees(double angleDegrees) {
         DogLog.log("Subsystems/Intake/Pivot/Target", angleDegrees);
         controller.setGoal(angleDegrees * Conv.DEGREES_TO_RADIANS);
+        isControlledThisCycle = true;
     }
 
     @Override
@@ -63,12 +66,9 @@ public class PivotSim extends Pivot {
     @Override
     public void periodic() {
         double input = 0.0;
-        if (stop == false) {
-            controller.reset(getAngleDegrees() * Conv.DEGREES_TO_RADIANS);
-
+        if (!stop && isControlledThisCycle) {
             input = controller.calculate(pivotSim.getAngleRads());
-
-            input = input / controller.getGoal().position * 12.0; // scale to volts
+            input = input / Math.PI * 12.0; // scale to volts
         }
         pivotSim.setInput(input);
         pivotSim.update(0.020);
@@ -79,6 +79,6 @@ public class PivotSim extends Pivot {
                 controller.getGoal().position * Conv.RADIANS_TO_DEGREES);
         DogLog.log("Subsystems/Intake/Pivot/MotorVoltage", input);
 
-        input = 0;
+        isControlledThisCycle = false;
     }
 }
