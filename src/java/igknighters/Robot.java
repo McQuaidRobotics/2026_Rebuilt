@@ -93,10 +93,11 @@ public class Robot extends TimedRobot {
     public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsytems.swerve.createAutoFactory();
         final var routines = new AutoRoutines(subsytems, autoFactory);
-        autoChooser.addCmd("shoot-then-move", routines.shootThenMove());
-        autoChooser.addCmd("TRAJECTORY TEST", routines.trajTest("Straight"));
-        autoChooser.addCmd(
-                "NEW METHOD IDK IF THIS WILL WORK HOPEFULLY IT WILL", routines.scoreThenPass());
+        autoChooser.addRoutine("LEFT NUETRAL HIPPO", routines::leftNuetralHippo);
+        autoChooser.addRoutine("RIGHT NUETRAL HIPPO", routines::rightNuetralHippo);
+        autoChooser.addRoutine("CENTER OUTPOST CLIMB", routines::centerOutpostClimb);
+        autoChooser.addRoutine("Center Depot climb", routines::centerDepotClimb);
+        autoChooser.addRoutine("Right Depo Climb", routines::rightDepoClimb);
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
     }
 
@@ -110,7 +111,8 @@ public class Robot extends TimedRobot {
 
     public void setUpTest(Subsystems subsystems) {
         SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - STOP", IndexerCommands.stop(subsystems.indexer));
+                "Commands/Spindexer/Spindexer - STOP",
+                IndexerCommands.stopDispensing(subsystems.indexer));
         SmartDashboard.putData(
                 "Commands/Spindexer/Spindexer - DISPENSE BALLS",
                 IndexerCommands.dispense(subsystems.indexer));

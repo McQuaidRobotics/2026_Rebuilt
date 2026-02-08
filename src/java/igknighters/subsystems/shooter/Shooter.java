@@ -75,11 +75,13 @@ public class Shooter extends SubsystemBase {
         goalHoodAngleDegrees = hoodAngleDegrees;
     }
 
-    public boolean atTarget(double tolerance) {
-        boolean atSpeed = Math.abs(rollers.getSpeedRPM() - goalRPM) < tolerance;
+    public boolean atTarget(
+            double rpmTolerance, double angleToleranceDegrees, double hoodToleranceDegrees) {
+        boolean atSpeed = Math.abs(rollers.getSpeedRPM() - goalRPM) < rpmTolerance;
         boolean atTurretAngle =
-                Math.abs(getTurretAngleDegrees() - goalTurretAngleDegrees) < tolerance;
-        boolean atHoodAngle = Math.abs(hood.getAngleDegrees() - goalHoodAngleDegrees) < tolerance;
+                Math.abs(getTurretAngleDegrees() - goalTurretAngleDegrees) < angleToleranceDegrees;
+        boolean atHoodAngle =
+                Math.abs(hood.getAngleDegrees() - goalHoodAngleDegrees) < hoodToleranceDegrees;
         return atSpeed && atTurretAngle && atHoodAngle;
     }
 
