@@ -12,6 +12,7 @@ import igknighters.subsystems.intake.rollers.RollersSim;
 public class Intake extends SubsystemBase {
     private final Pivot pivot;
     private final Rollers rollers;
+    private final IntakeVisualizer visualizer = new IntakeVisualizer();
 
     public Intake() {
         if (Robot.isReal()) {
@@ -47,5 +48,6 @@ public class Intake extends SubsystemBase {
     public void periodic() {
         pivot.periodic();
         rollers.periodic();
+        visualizer.update(pivot.getAngleDegrees(), rollers.getSpeedRPM());
     }
 }
