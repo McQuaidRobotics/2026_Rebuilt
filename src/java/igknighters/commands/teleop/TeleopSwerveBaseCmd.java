@@ -8,7 +8,7 @@ import edu.wpi.first.util.struct.StructSerializable;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
 import igknighters.controllers.DriverController;
-import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
+import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.ControllerConstants;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
@@ -16,7 +16,7 @@ import java.util.function.DoubleSupplier;
 import monologue.ProceduralStructGenerator;
 
 public class TeleopSwerveBaseCmd extends Command {
-    protected final CommandSwerveDrivetrain swerve;
+    protected final Swerve swerve;
 
     private final DoubleSupplier rawTranslationXSup;
     private final DoubleSupplier rawTranslationYSup;
@@ -27,7 +27,7 @@ public class TeleopSwerveBaseCmd extends Command {
     private final TunableDouble rotationMod;
     private static final boolean demo = false;
 
-    public TeleopSwerveBaseCmd(CommandSwerveDrivetrain swerve, DriverController controller) {
+    public TeleopSwerveBaseCmd(Swerve swerve, DriverController controller) {
         this.swerve = swerve;
 
         this.rawTranslationXSup = controller.leftStickX();

@@ -3,10 +3,10 @@ package igknighters.subsystems.climber;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.subsystems.climber.chainsaw.Chainsaw;
-import igknighters.subsystems.climber.chainsaw.ChainsawReal;
+import igknighters.subsystems.climber.chainsaw.ChainsawDisabled;
 import igknighters.subsystems.climber.chainsaw.ChainsawSim;
 import igknighters.subsystems.climber.servos.Servos;
-import igknighters.subsystems.climber.servos.ServosReal;
+import igknighters.subsystems.climber.servos.ServosDisabled;
 import igknighters.subsystems.climber.servos.ServosSim;
 
 public class Climber extends SubsystemBase {
@@ -16,8 +16,8 @@ public class Climber extends SubsystemBase {
 
     public Climber() {
         if (Robot.isReal()) {
-            chainsaw = new ChainsawReal();
-            servos = new ServosReal();
+            chainsaw = new ChainsawDisabled();
+            servos = new ServosDisabled();
             usingRealSensor = true;
         } else {
             chainsaw = new ChainsawSim();

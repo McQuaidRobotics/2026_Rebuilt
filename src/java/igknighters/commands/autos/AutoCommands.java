@@ -20,12 +20,12 @@ import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
+import igknighters.subsystems.swerve.Swerve;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AutoCommands {
 
-    protected final CommandSwerveDrivetrain swerve;
+    protected final Swerve swerve;
     protected final Subsystems subsystems;
     protected final AutoFactory autoFactory;
 
@@ -65,7 +65,7 @@ public class AutoCommands {
         return Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
     }
 
-    protected Trigger movingSlowerThan(CommandSwerveDrivetrain swerve, double speed) {
+    protected Trigger movingSlowerThan(Swerve swerve, double speed) {
         return new Trigger(() -> findSpeed(swerve.getState().Speeds) < speed);
     }
 

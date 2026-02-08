@@ -10,7 +10,7 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.controllers.DriverController;
-import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
+import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 
 public class TeleopSwerveHeadingCmd extends TeleopSwerveBaseCmd {
@@ -24,7 +24,7 @@ public class TeleopSwerveHeadingCmd extends TeleopSwerveBaseCmd {
     private final PIDController rotationController;
 
     public TeleopSwerveHeadingCmd(
-            CommandSwerveDrivetrain swerve,
+            Swerve swerve,
             DriverController controller,
             double heading,
             double kP,
