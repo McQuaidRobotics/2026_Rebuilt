@@ -13,7 +13,5 @@ public class ServosDisabled extends Servos {
     }
 
     @Override
-    public void goToAngleDegrees(boolean deployed, ServoID servoID) {
-        
-    }
+    public void goToAngleDegrees(boolean deployed, ServoID servoID) {}
 }
