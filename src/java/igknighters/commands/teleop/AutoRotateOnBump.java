@@ -30,13 +30,25 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
         addRequirements(swerve);
     }
 
+    public double getBestAngleToTarget(double currentAngleDegrees) {
+        double multipleOf45 = Math.floor(currentAngleDegrees / 45);
+
+        if (multipleOf45 % 2 == 0) {
+            return (multipleOf45 + 1) * 45;
+        } else {
+            return (multipleOf45) * 45;
+        }
+    }
+
     @Override
     public void execute() {
         super.execute();
         detune = DrivingSharedState.getInstance().detune;
         Translation2d vt = translationStick();
 
-        double targetAngle = Math.toRadians(45);
+        double targetAngle =
+                Math.toRadians(
+                        getBestAngleToTarget(swerve.getState().Pose.getRotation().getDegrees()));
         double currentAngle = swerve.getState().Pose.getRotation().getRadians();
 
         double rotationRate = thetaController.calculate(currentAngle, targetAngle);

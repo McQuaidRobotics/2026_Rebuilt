@@ -62,11 +62,20 @@ public class FieldConstants {
     public static final double ALIANCE_ZONE_RED = LENGTH - ALIANCE_ZONE_BLUE;
 
     public static class BUMP {
-        public static final double WIDTH_METERS = 20.0 * Conv.INCHES_TO_METERS;
-        public static final double HEIGHT_METERS = WIDTH; // Span entire field width
 
-        public static final double BUMP_1_X_METERS = 60.0 * Conv.INCHES_TO_METERS;
-        public static final double BUMP_2_X_METERS = 120.0 * Conv.INCHES_TO_METERS;
+        public static final double HALF_WIDTH_METERS = 23.5 * Conv.INCHES_TO_METERS;
+        public static final double HALF_HEIGHT_METERS = 109 * Conv.INCHES_TO_METERS;
+
+        public static final double BUMP_1_X_METERS = 182.11 * Conv.INCHES_TO_METERS;
+        public static final double BUMP_2_X_METERS = LENGTH - (182.11) * Conv.INCHES_TO_METERS;
+
+        public static final double BUMP_1_Y_METERS = 158.32 * Conv.INCHES_TO_METERS;
+        public static final double BUMP_2_Y_METERS = 158.32 * Conv.INCHES_TO_METERS;
+
+        public static enum PROTECTION_MOVEMENT {
+            GO_LEFT,
+            GO_RIGHT
+        }
 
         public static boolean isInside(Pose2d pose) {
             double x = pose.getX();
@@ -75,16 +84,20 @@ public class FieldConstants {
             DogLog.log("Commands/BumpProtection: y;", y);
 
             // Bump 1
-            if (x >= BUMP_1_X_METERS && x <= BUMP_1_X_METERS + WIDTH_METERS) {
-                if (y >= 0 && y <= HEIGHT_METERS) {
+            if (x >= BUMP_1_X_METERS - HALF_WIDTH_METERS
+                    && x <= BUMP_1_X_METERS + HALF_WIDTH_METERS) {
+                if (y >= BUMP_1_Y_METERS - HALF_HEIGHT_METERS
+                        && y <= BUMP_1_Y_METERS + HALF_HEIGHT_METERS) {
                     DogLog.log("Commands/BumpProtection: inside bump 1", true);
                     return true;
                 }
             }
 
             // Bump 2
-            if (x >= BUMP_2_X_METERS && x <= BUMP_2_X_METERS + WIDTH_METERS) {
-                if (y >= 0 && y <= HEIGHT_METERS) {
+            if (x >= BUMP_2_X_METERS - HALF_WIDTH_METERS
+                    && x <= BUMP_2_X_METERS + HALF_WIDTH_METERS) {
+                if (y >= BUMP_2_Y_METERS - HALF_HEIGHT_METERS
+                        && y <= BUMP_2_Y_METERS + HALF_HEIGHT_METERS) {
                     DogLog.log("Commands/BumpProtection: inside bump 2", true);
                     return true;
                 }
@@ -93,6 +106,42 @@ public class FieldConstants {
             DogLog.log("Commands/BumpProtection: inside bump 1", false);
 
             return false;
+        }
+
+        public static boolean isAboutToFallOff(Pose2d pose, double acceptable_closeness) {
+            if (!isInside(pose)) {
+                return false;
+            }
+            double x = pose.getX();
+            double y = pose.getY();
+
+            if (Math.abs(y - BUMP_1_Y_METERS - HALF_HEIGHT_METERS) < acceptable_closeness) {
+                return true;
+            }
+            if (Math.abs(y - BUMP_1_Y_METERS + HALF_HEIGHT_METERS) < acceptable_closeness) {
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * Assumes the robot is inside the bump, returns which direction to go to get out of the
+         * bump. The direction is relative to the blue aliance so left is +y and right is -y
+         *
+         * @param pose
+         * @return
+         */
+        public static PROTECTION_MOVEMENT getProtectionMovement(Pose2d pose) {
+            if (!isInside(pose)) {
+                return null;
+            }
+            double y = pose.getY();
+
+            if (y - BUMP_1_Y_METERS > 0) {
+                return PROTECTION_MOVEMENT.GO_RIGHT;
+            } else {
+                return PROTECTION_MOVEMENT.GO_LEFT;
+            }
         }
     }
 }
