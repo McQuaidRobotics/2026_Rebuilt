@@ -59,4 +59,33 @@ public class FieldConstants {
     public static final double LENGTH = 650.12 * Conv.INCHES_TO_METERS; // meters
     public static final double ALIANCE_ZONE_BLUE = 181.56 * Conv.INCHES_TO_METERS; // meters
     public static final double ALIANCE_ZONE_RED = LENGTH - ALIANCE_ZONE_BLUE;
+
+    public static class BUMP {
+        public static final double WIDTH_METERS = 20.0 * Conv.INCHES_TO_METERS;
+        public static final double HEIGHT_METERS = 100.0 * Conv.INCHES_TO_METERS;
+
+        public static final double BUMP_1_X_METERS = 60.0 * Conv.INCHES_TO_METERS;
+        public static final double BUMP_2_X_METERS = 120.0 * Conv.INCHES_TO_METERS;
+
+        public static boolean isInside(Pose2d pose) {
+            double x = pose.getX();
+            double y = pose.getY();
+
+            // Bump 1
+            if (x >= BUMP_1_X_METERS && x <= BUMP_1_X_METERS + WIDTH_METERS) {
+                if (y >= 0 && y <= HEIGHT_METERS) {
+                    return true;
+                }
+            }
+
+            // Bump 2
+            if (x >= BUMP_2_X_METERS && x <= BUMP_2_X_METERS + WIDTH_METERS) {
+                if (y >= 0 && y <= HEIGHT_METERS) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
 }

@@ -135,7 +135,7 @@ public class Robot extends TimedRobot {
         setUpTest(subsytems);
         bindDriverController();
 
-        subsystemTriggers.SetupTriggers(subsytems.led);
+        subsystemTriggers.SetupTriggers(subsytems, driverController);
     }
 
     public Robot(boolean isSwerveDisabled) {
@@ -155,7 +155,7 @@ public class Robot extends TimedRobot {
         setUpTest(subsytems);
         bindDriverController();
 
-        subsystemTriggers.SetupTriggers(subsytems.led);
+        subsystemTriggers.SetupTriggers(subsytems, driverController);
     }
 
     @Override

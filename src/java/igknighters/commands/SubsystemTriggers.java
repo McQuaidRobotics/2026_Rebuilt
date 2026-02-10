@@ -5,6 +5,10 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.LEDCommands.LEDSection;
+import igknighters.commands.teleop.AutoRotateOnBump;
+import igknighters.constants.FieldConstants;
+import igknighters.controllers.DriverController;
+import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
 import java.util.function.BooleanSupplier;
@@ -30,7 +34,14 @@ public class SubsystemTriggers {
                 });
     }
 
-    public void SetupTriggers(Led led) {
+    public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
+        Led led = subsystems.led;
+
+        Trigger onBump =
+                new Trigger(() -> FieldConstants.BUMP.isInside(subsystems.swerve.getState().Pose));
+
+        onBump.whileTrue(new AutoRotateOnBump(subsystems.swerve, driverController));
+
         falseOnce()
                 .and(disabled)
                 .whileTrue(
