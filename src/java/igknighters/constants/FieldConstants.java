@@ -73,8 +73,9 @@ public class FieldConstants {
         public static final double BUMP_2_Y_METERS = 158.32 * Conv.INCHES_TO_METERS;
 
         public static enum PROTECTION_MOVEMENT {
-            GO_LEFT,
-            GO_RIGHT
+            GO_UP,
+            GO_DOWN,
+            YOU_CHILLIN_IN_THE_MIDDLE
         }
 
         public static boolean isInside(Pose2d pose) {
@@ -131,16 +132,28 @@ public class FieldConstants {
          * @param pose
          * @return
          */
-        public static PROTECTION_MOVEMENT getProtectionMovement(Pose2d pose) {
+        public static PROTECTION_MOVEMENT getProtectionMovement(
+                Pose2d pose, double acceptable_closeness) {
             if (!isInside(pose)) {
                 return null;
             }
             double y = pose.getY();
+            DogLog.log(
+                    "Commands/Bump Protection/get protection movement/dTop",
+                    Math.abs(y - (BUMP_1_Y_METERS + HALF_HEIGHT_METERS)));
+            DogLog.log(
+                    "Commands/Bump Protection/get protection movement/dBottom",
+                    Math.abs(y - (BUMP_1_Y_METERS - HALF_HEIGHT_METERS)));
 
-            if (y - BUMP_1_Y_METERS > 0) {
-                return PROTECTION_MOVEMENT.GO_RIGHT;
+            if (Math.abs(y - (BUMP_1_Y_METERS + HALF_HEIGHT_METERS)) < acceptable_closeness) {
+                return PROTECTION_MOVEMENT.GO_DOWN;
+            } else if (Math.abs(y - (BUMP_1_Y_METERS - HALF_HEIGHT_METERS))
+                    < acceptable_closeness) {
+                return PROTECTION_MOVEMENT.GO_UP;
             } else {
-                return PROTECTION_MOVEMENT.GO_LEFT;
+                return PROTECTION_MOVEMENT
+                        .YOU_CHILLIN_IN_THE_MIDDLE; // the robot is in the middle of the bump so it
+                // can go either way
             }
         }
     }
