@@ -33,22 +33,29 @@ public class HoodSim extends Hood {
                             SubsystemConstants.kShooter.kHood.MAX_ACCELERATION_RPM
                                     * 360.0)); // in degrees per minute
 
+    private boolean isControlledThisCycle = false;
+
     @Override
     public void periodic() {
-        double input = pidController.calculate(getAngleDegrees());
-        input =
-                input
-                        / (SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES
-                                - SubsystemConstants.kShooter
-                                        .kHood
-                                        .MIN_ANGLE_DEGREES); // normalize to -1 to 1
-        input = input * 12.0; // scale to voltage
+        double input = 0.0;
+        if (isControlledThisCycle) {
+            input = pidController.calculate(getAngleDegrees());
+            input =
+                    input
+                            / (SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES
+                                    - SubsystemConstants.kShooter
+                                            .kHood
+                                            .MIN_ANGLE_DEGREES); // normalize to -1 to 1
+            input = input * 12.0; // scale to voltage
+        }
         flapSim.setInput(input);
         flapSim.update(0.02); // Update the simulation with a 20ms timestep
 
         DogLog.log("Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());
         DogLog.log("Subsystems/Shooter/Hood/TargetDegrees", super.targetDegrees);
         DogLog.log("Subsystems/Shooter/Hood/Voltage", input);
+
+        isControlledThisCycle = false;
     }
 
     @Override
@@ -61,6 +68,7 @@ public class HoodSim extends Hood {
     public void goToAngleDegrees(double angleDegrees) {
         DogLog.log("Subsystems/Shooter/Hood/GoalDegrees", angleDegrees);
         pidController.setGoal(angleDegrees);
+        isControlledThisCycle = true;
     }
 
     @Override

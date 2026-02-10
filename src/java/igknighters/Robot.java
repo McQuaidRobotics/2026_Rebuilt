@@ -28,8 +28,7 @@ import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
-import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
-import igknighters.subsystems.swerve.swerveconstants.SwerveConsts;
+import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import java.util.Optional;
@@ -47,10 +46,6 @@ public class Robot extends TimedRobot {
     public final Subsystems subsytems;
 
     private final boolean kUseLimelight = true;
-
-    private final SwerveConsts swerveConstGetter = new SwerveConsts();
-
-    private final CommonSwerveConsts swerveConsts = swerveConstGetter.getSwerveConsts();
 
     private Telemetry logger;
     TunableDouble detune = TunableValues.getDouble("Tunables/Detune", 0.6);
@@ -110,7 +105,7 @@ public class Robot extends TimedRobot {
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, 1.0));
 
-        logger = new Telemetry(swerveConsts.getMaxSpeedMetersPerSecond(), subsytems);
+        logger = new Telemetry(subsytems.swerve.getMaxSpeedMetersPerSecond(), subsytems);
         subsytems.swerve.registerTelemetry(logger::telemeterize);
     }
 
@@ -127,7 +122,27 @@ public class Robot extends TimedRobot {
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
-                        swerveConsts.createDrivetrain(),
+                        new Swerve(true),
+                        new LimeLightVision(),
+                        new Led(40, 1),
+                        new Shooter(),
+                        new Indexer(),
+                        new Intake(),
+                        new Climber());
+        setUpSwerve(subsytems);
+        publishCommandsAndSubystems(subsytems);
+        setUpAutos(subsytems);
+        setUpTest(subsytems);
+        bindDriverController();
+
+        subsystemTriggers.SetupTriggers(subsytems.led);
+    }
+
+    public Robot(boolean isSwerveDisabled) {
+        setUpCommandLogging();
+        subsytems =
+                new Subsystems(
+                        new Swerve(isSwerveDisabled),
                         new LimeLightVision(),
                         new Led(80, 2),
                         new Shooter(),

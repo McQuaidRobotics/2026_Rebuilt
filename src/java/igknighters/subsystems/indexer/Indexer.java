@@ -3,10 +3,10 @@ package igknighters.subsystems.indexer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.subsystems.indexer.launcherRollers.ExitRollers;
-import igknighters.subsystems.indexer.launcherRollers.ExitRollersReal;
+import igknighters.subsystems.indexer.launcherRollers.ExitRollersDisabled;
 import igknighters.subsystems.indexer.launcherRollers.ExitRollersSim;
 import igknighters.subsystems.indexer.spindexer.Spindexer;
-import igknighters.subsystems.indexer.spindexer.SpindexerReal;
+import igknighters.subsystems.indexer.spindexer.SpindexerDisabled;
 import igknighters.subsystems.indexer.spindexer.SpindexerSim;
 
 public class Indexer extends SubsystemBase {
@@ -16,8 +16,8 @@ public class Indexer extends SubsystemBase {
 
     public Indexer() {
         if (Robot.isReal()) {
-            spindexer = new SpindexerReal();
-            exitRollers = new ExitRollersReal();
+            spindexer = new SpindexerDisabled();
+            exitRollers = new ExitRollersDisabled();
 
         } else {
             spindexer = new SpindexerSim();

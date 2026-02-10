@@ -1,0 +1,139 @@
+package igknighters.subsystems.swerve;
+
+import choreo.Choreo.TrajectoryLogger;
+import choreo.auto.AutoFactory;
+import choreo.trajectory.SwerveSample;
+import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import igknighters.subsystems.swerve.swerveconstants.SwerveConsts;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+public class Swerve extends SubsystemBase {
+    CommandSwerveDrivetrain drivetrain;
+    SwerveConsts swerveConsts = new SwerveConsts();
+    boolean isSwerveDisabled = false;
+    DummySwerve dummySwerve = new DummySwerve();
+
+    public Swerve() {
+        this(false);
+    }
+
+    public Swerve(boolean isSwerveDisabled) {
+        this.isSwerveDisabled = isSwerveDisabled;
+        if (!isSwerveDisabled) {
+            drivetrain = swerveConsts.getSwerveConsts().createDrivetrain(this);
+        }
+    }
+
+    @Override
+    public void periodic() {
+        if (!isSwerveDisabled) {
+            drivetrain.periodic();
+        }
+    }
+
+    public void followPath(SwerveSample sample) {
+        if (!isSwerveDisabled) {
+            drivetrain.followPath(sample);
+        }
+    }
+
+    public void resetPose(Pose2d pose) {
+        if (!isSwerveDisabled) {
+            drivetrain.resetPose(pose);
+        }
+    }
+
+    public AutoFactory createAutoFactory() {
+        if (!isSwerveDisabled) {
+            return drivetrain.createAutoFactory();
+        } else {
+            return new AutoFactory(
+                    () -> new Pose2d(), this::resetPose, this::followPath, true, this);
+        }
+    }
+
+    public AutoFactory createAutoFactory(TrajectoryLogger<SwerveSample> logger) {
+        if (!isSwerveDisabled) {
+            return drivetrain.createAutoFactory(logger);
+        } else {
+            return new AutoFactory(
+                    () -> new Pose2d(), this::resetPose, this::followPath, true, this, logger);
+        }
+    }
+
+    public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
+        if (!isSwerveDisabled) {
+            return drivetrain.applyRequest(requestSupplier);
+        } else {
+            return dummySwerve.doNothing();
+        }
+    }
+
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        if (!isSwerveDisabled) {
+            return drivetrain.sysIdQuasistatic(direction);
+        } else {
+            return dummySwerve.doNothing();
+        }
+    }
+
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        if (!isSwerveDisabled) {
+            return drivetrain.sysIdDynamic(direction);
+        } else {
+            return dummySwerve.doNothing();
+        }
+    }
+
+    public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
+        if (!isSwerveDisabled) {
+            drivetrain.addVisionMeasurement(visionPose, timestamp);
+        }
+    }
+
+    public void addVisionMeasurement(
+            Pose2d visionRobotPoseMeters,
+            double timestampSeconds,
+            Matrix<N3, N1> visionMeasurementStdDevs) {
+        if (!isSwerveDisabled) {
+            drivetrain.addVisionMeasurement(
+                    visionRobotPoseMeters,
+                    Utils.fpgaToCurrentTime(timestampSeconds),
+                    visionMeasurementStdDevs);
+        }
+    }
+
+    public SwerveDriveState getState() {
+        if (!isSwerveDisabled) {
+            return drivetrain.getState();
+        } else {
+            return new SwerveDriveState();
+        }
+    }
+
+    public void registerTelemetry(Consumer<SwerveDriveState> telemetryFunction) {
+        if (!isSwerveDisabled) {
+            drivetrain.registerTelemetry(telemetryFunction);
+        }
+    }
+
+    public void setControl(SwerveRequest request) {
+        if (!isSwerveDisabled) {
+            drivetrain.setControl(request);
+        }
+    }
+
+    public double getMaxSpeedMetersPerSecond() {
+        return swerveConsts.getSwerveConsts().getMaxSpeedMetersPerSecond();
+    }
+}

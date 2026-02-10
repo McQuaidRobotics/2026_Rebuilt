@@ -38,6 +38,8 @@ public class TurretSim extends Turret {
                         0.0);
     }
 
+    private boolean isControlledThisCycle = false;
+
     @Override
     public void setAngleDegrees(double angleDegrees) {
         super.degrees = angleDegrees;
@@ -47,8 +49,8 @@ public class TurretSim extends Turret {
 
     @Override
     public void goToAngleDegrees(double angleDegrees) {
-
         controller.setGoal(angleDegrees * Conv.DEGREES_TO_RADIANS);
+        isControlledThisCycle = true;
     }
 
     @Override
@@ -58,10 +60,11 @@ public class TurretSim extends Turret {
 
     @Override
     public void periodic() {
-
-        double input = controller.calculate(turretSim.getAngleRads());
-
-        input = input / Math.PI * 12.0; // scale to volts
+        double input = 0.0;
+        if (isControlledThisCycle) {
+            input = controller.calculate(turretSim.getAngleRads());
+            input = input / Math.PI * 12.0; // scale to volts
+        }
 
         turretSim.setInput(input);
         turretSim.update(0.020);
@@ -70,6 +73,6 @@ public class TurretSim extends Turret {
         DogLog.log("Subsystems/Shooter/Turret/TargetDegrees", super.targetDegrees);
         DogLog.log("Subsystems/Shooter/Turret/MotorVoltage", input);
 
-        input = 0;
+        isControlledThisCycle = false;
     }
 }
