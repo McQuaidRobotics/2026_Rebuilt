@@ -122,7 +122,7 @@ public class Robot extends TimedRobot {
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
-                        new Swerve(true),
+                        new Swerve(false),
                         new LimeLightVision(),
                         new Led(40, 1),
                         new Shooter(),
@@ -182,7 +182,7 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         scheduler.cancelAll();
-        scheduler.getActiveButtonLoop().clear();
+        // scheduler.getActiveButtonLoop().clear();
         // CommandScheduler.getInstance().clearComposedCommands();
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, detune.value()));

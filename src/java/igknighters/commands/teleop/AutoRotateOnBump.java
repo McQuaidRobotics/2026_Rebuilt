@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import dev.doglog.DogLog;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.constants.DrivingSharedState;
@@ -40,6 +41,11 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
 
         double rotationRate = thetaController.calculate(currentAngle, targetAngle);
 
+        DogLog.log("Commands/AutoRotateOnBump/Active", true);
+        DogLog.log("Commands/AutoRotateOnBump/CurrentAngle", currentAngle);
+        DogLog.log("Commands/AutoRotateOnBump/TargetAngle", targetAngle);
+        DogLog.log("Commands/AutoRotateOnBump/RotationRate", rotationRate);
+
         // Force a smaller speed on the bump as requested
         double bumpSpeedMultiplier = 0.5;
 
@@ -56,5 +62,11 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
                                         * detune
                                         * bumpSpeedMultiplier)
                         .withRotationalRate(rotationRate));
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        super.end(interrupted);
+        DogLog.log("Commands/AutoRotateOnBump/Active", false);
     }
 }

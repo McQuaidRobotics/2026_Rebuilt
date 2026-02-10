@@ -1,5 +1,6 @@
 package igknighters.constants;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -62,7 +63,7 @@ public class FieldConstants {
 
     public static class BUMP {
         public static final double WIDTH_METERS = 20.0 * Conv.INCHES_TO_METERS;
-        public static final double HEIGHT_METERS = 100.0 * Conv.INCHES_TO_METERS;
+        public static final double HEIGHT_METERS = WIDTH; // Span entire field width
 
         public static final double BUMP_1_X_METERS = 60.0 * Conv.INCHES_TO_METERS;
         public static final double BUMP_2_X_METERS = 120.0 * Conv.INCHES_TO_METERS;
@@ -70,10 +71,13 @@ public class FieldConstants {
         public static boolean isInside(Pose2d pose) {
             double x = pose.getX();
             double y = pose.getY();
+            DogLog.log("Commands/BumpProtection: x;", x);
+            DogLog.log("Commands/BumpProtection: y;", y);
 
             // Bump 1
             if (x >= BUMP_1_X_METERS && x <= BUMP_1_X_METERS + WIDTH_METERS) {
                 if (y >= 0 && y <= HEIGHT_METERS) {
+                    DogLog.log("Commands/BumpProtection: inside bump 1", true);
                     return true;
                 }
             }
@@ -81,9 +85,12 @@ public class FieldConstants {
             // Bump 2
             if (x >= BUMP_2_X_METERS && x <= BUMP_2_X_METERS + WIDTH_METERS) {
                 if (y >= 0 && y <= HEIGHT_METERS) {
+                    DogLog.log("Commands/BumpProtection: inside bump 2", true);
                     return true;
                 }
             }
+            DogLog.log("Commands/BumpProtection: inside bump 2", false);
+            DogLog.log("Commands/BumpProtection: inside bump 1", false);
 
             return false;
         }

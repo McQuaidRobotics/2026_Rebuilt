@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.LEDCommands.LEDSection;
 import igknighters.commands.teleop.AutoRotateOnBump;
+import igknighters.commands.teleop.TeleopSwerveWithDetune;
+import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
@@ -41,6 +43,12 @@ public class SubsystemTriggers {
                 new Trigger(() -> FieldConstants.BUMP.isInside(subsystems.swerve.getState().Pose));
 
         onBump.whileTrue(new AutoRotateOnBump(subsystems.swerve, driverController));
+
+        onBump.onFalse(
+                new TeleopSwerveWithDetune(
+                        subsystems.swerve,
+                        driverController,
+                        DrivingSharedState.getInstance().detune));
 
         falseOnce()
                 .and(disabled)
