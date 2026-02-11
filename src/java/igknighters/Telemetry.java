@@ -86,7 +86,7 @@ public class Telemetry {
     private final DoubleArrayPublisher drivingTargetPub =
             table.getDoubleArrayTopic("drivingTargetPose").publish();
 
-    private final DoubleArrayPublisher detectedObjectsPub = 
+    private final DoubleArrayPublisher detectedObjectsPub =
             table.getDoubleArrayTopic("detectedObjects").publish();
 
     /* Mechanisms to represent the swerve module states */
@@ -217,7 +217,7 @@ public class Telemetry {
         }
     }
 
-    public void addShootingTargetPose(Pose2d targetPose){
+    public void addShootingTargetPose(Pose2d targetPose) {
         double[] targetPoseArray = new double[3];
         targetPoseArray[0] = targetPose.getX();
         targetPoseArray[1] = targetPose.getY();
@@ -225,7 +225,7 @@ public class Telemetry {
         shootingTargetPosesPub.set(targetPoseArray);
     }
 
-    public void addDrivingTargetPose(Pose2d targetPose){
+    public void addDrivingTargetPose(Pose2d targetPose) {
         double[] targetPoseArray = new double[3];
         targetPoseArray[0] = targetPose.getX();
         targetPoseArray[1] = targetPose.getY();
@@ -243,6 +243,4 @@ public class Telemetry {
         }
         detectedObjectsPub.set(objectPosesArray);
     }
-
-
 }

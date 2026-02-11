@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public class ShooterVisualizer {
+
     private final Mechanism2d shooter = new Mechanism2d(1, 1);
 
     private final MechanismRoot2d hood = shooter.getRoot("Shooter", 0.5, 0.0);
@@ -94,7 +95,7 @@ public class ShooterVisualizer {
     public ShooterVisualizer() {
         shooter.setBackgroundColor(new Color8Bit(Color.kBlack));
 
-        SmartDashboard.putData("Shooter Visualizer", shooter);
+        SmartDashboard.putData("Visualizers/Shooter/Shooter Visualizer", shooter);
     }
 
     public Color8Bit getRPMColor(double rpm, double targetRPM) {

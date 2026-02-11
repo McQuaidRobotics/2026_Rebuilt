@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import igknighters.FieldVisualizer;
 import igknighters.constants.SubsystemConstants;
 
 public class AimSolver {
@@ -43,7 +44,8 @@ public class AimSolver {
          */
         public static ShooterState solve_simple_no_AR_or_FutureTiming(
                 Pose3d targetPose, Pose3d shooterPose, double currentRPM) {
-
+            // Update Targeting Visualizer
+            FieldVisualizer.getInstance().updateShootingTarget(targetPose.toPose2d());
             // --- Extract positions ---
             double sx = shooterPose.getX();
             double sy = shooterPose.getY();
@@ -119,6 +121,9 @@ public class AimSolver {
                 double currentRPM,
                 ChassisSpeeds shooterVel, // vx, vy, omega
                 double delaySeconds) {
+
+            // update Targeting Visualizer
+            FieldVisualizer.getInstance().updateShootingTarget(targetPose.toPose2d());
 
             // -----------------------------
             // 1. Predict shooter future pose
