@@ -175,7 +175,7 @@ public class Robot extends TimedRobot {
                     
             if (currentPose != null) {
                 subsytems.swerve.addVisionMeasurement(
-                        currentPose, subsytems.vision.getLastTimeStamp(), VecBuilder.fill(1, 1, 0.1)); // trusts vision rotation less. Needs tuning
+                        currentPose, subsytems.vision.getLastTimeStamp(), VecBuilder.fill(0.05, 0.05, 0.1)); // trusts vision rotation less. Needs tuning
             }
         }
     }
