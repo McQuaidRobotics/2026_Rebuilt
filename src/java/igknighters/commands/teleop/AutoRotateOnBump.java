@@ -10,7 +10,6 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.constants.DrivingSharedState;
-import igknighters.constants.FieldConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
@@ -65,9 +64,6 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
                 knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond)
                         * detune
                         * bumpSpeedMultiplier;
-
-        
-
 
         swerve.setControl(
                 m_driveRequest
