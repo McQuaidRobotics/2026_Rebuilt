@@ -20,6 +20,11 @@ public class ShooterCommands {
         return shooter.run(() -> shooter.targetState(RPM, 0, 0)).withName("shoot at speed: " + RPM);
     }
 
+    public static Command targetState(Shooter shooter, ShooterState state) {
+        return shooter.run(
+                () -> shooter.targetState(state.rpm, state.turretAngleRads, state.hoodAngleRads));
+    }
+
     public static Command stopShooting(Shooter shooter) {
         return shooter.runOnce(() -> shooter.setRollerVoltage(0)).withName("stop shooting");
     }

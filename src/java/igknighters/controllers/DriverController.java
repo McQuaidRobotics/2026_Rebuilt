@@ -15,9 +15,9 @@ import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
 import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
-import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.ClimberState;
+import igknighters.subsystems.shooter.ShooterState;
 import java.util.function.DoubleSupplier;
 
 public class DriverController {
@@ -129,25 +129,31 @@ public class DriverController {
                             state.kI,
                             (state.kD)));
         } else if (debugType == DebugType.SHOOTER) {
-            this.A.whileTrue(
-                    ShooterCommands.shootIChoseTargetWithLookAhead(
-                            shooter, () -> swerve.getState().Pose, () -> swerve.getState().Speeds));
-            this.LT.whileTrue(
-                    ShooterCommands.aimAt(
-                            shooter,
-                            () -> swerve.getState().Pose,
-                            () -> FieldConstants.HUB.POSE3D_RED));
+            // this.A.whileTrue(
+            //         ShooterCommands.shootIChoseTargetWithLookAhead(
+            //                 shooter, () -> swerve.getState().Pose, () ->
+            // swerve.getState().Speeds));
+            // this.LT.whileTrue(
+            //         ShooterCommands.aimAt(
+            //                 shooter,
+            //                 () -> swerve.getState().Pose,
+            //                 () -> FieldConstants.HUB.POSE3D_RED));
+            // this.X.whileTrue(
+            //         ShooterCommands.aimAt(
+            //                 shooter,
+            //                 () -> swerve.getState().Pose,
+            //                 () -> FieldConstants.PASS.POSITION_LEFT_BLUE));
+            // this.Y.whileTrue(
+            //         ShooterCommands.aimAt(
+            //                 shooter,
+            //                 () -> swerve.getState().Pose,
+            //                 () -> FieldConstants.PASS.POSITION_RIGHT_BLUE));
+            // this.LT.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
+            this.A.whileTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 4500));
+            this.B.whileTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 5000));
+            this.Y.whileTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 5500));
             this.X.whileTrue(
-                    ShooterCommands.aimAt(
-                            shooter,
-                            () -> swerve.getState().Pose,
-                            () -> FieldConstants.PASS.POSITION_LEFT_BLUE));
-            this.Y.whileTrue(
-                    ShooterCommands.aimAt(
-                            shooter,
-                            () -> swerve.getState().Pose,
-                            () -> FieldConstants.PASS.POSITION_RIGHT_BLUE));
-            this.LT.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
+                    ShooterCommands.targetState(subsystems.shooter, new ShooterState(100, 0, 0.0)));
 
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));

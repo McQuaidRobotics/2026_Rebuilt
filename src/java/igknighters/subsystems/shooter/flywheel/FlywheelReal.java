@@ -66,7 +66,7 @@ public class FlywheelReal extends Flywheel {
 
         mainShooter.getConfigurator().apply(getLeaderConfig());
         followerShooter.setControl(
-                new Follower(mainShooter.getDeviceID(), MotorAlignmentValue.Aligned));
+                new Follower(mainShooter.getDeviceID(), MotorAlignmentValue.Opposed));
 
         velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(0);
 

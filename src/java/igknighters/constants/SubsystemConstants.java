@@ -153,7 +153,7 @@ public class SubsystemConstants {
             public static final double kP = 0.3; // .5 max
             public static final double kI = 0.1;
             public static final double kD = 0.0;
-            public static final double kS = 0.3;
+            public static final double kS = 0.17;
             public static final double kV = 0.1;
             public static final double kA = 0.02;
             public static final double ShooterHeightMeters =
@@ -184,7 +184,6 @@ public class SubsystemConstants {
 
         public static class kHood {
             public static final int MOTOR_ID = 28;
-            public static final int CANCODER_ID = 29;
             public static final double GEAR_RATIO = 10.0;
             public static final double MAX_ANGLE_DEGREES = 60.0;
             public static final double MIN_ANGLE_DEGREES = 0.0;
