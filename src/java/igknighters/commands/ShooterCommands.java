@@ -221,7 +221,6 @@ public class ShooterCommands {
             Shooter shooter, Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotVelocity) {
         return shooter.run(
                         () -> {
-                            System.out.println("IM AIMING UHHHHHHHHHH");
                             Pose2d robotPose2d = robotPose.get();
                             Pose3d targetPose = getTargetPose(robotPose);
                             double RPM = getRPM(robotPose, () -> targetPose, shooter);

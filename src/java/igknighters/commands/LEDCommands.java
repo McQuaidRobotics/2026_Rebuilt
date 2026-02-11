@@ -30,7 +30,6 @@ public class LEDCommands {
 
         return Commands.startRun(
                         () -> {
-                            // System.out.println("Running Clear Led Command");
                             eraser.applyTo(slate);
                         },
                         () -> {
