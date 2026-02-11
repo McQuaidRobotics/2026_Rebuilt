@@ -10,12 +10,13 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import dev.doglog.DogLog;
 import igknighters.constants.SubsystemConstants;
+import igknighters.constants.SubsystemConstants.kShooter;
 
 public class FlywheelReal extends Flywheel {
     private final TalonFX mainShooter =
-            new TalonFX(SubsystemConstants.kShooter.kRollers.LEADER_MOTOR_ID);
+            new TalonFX(SubsystemConstants.kShooter.kRollers.LEADER_MOTOR_ID, kShooter.CANBUS);
     private final TalonFX followerShooter =
-            new TalonFX(SubsystemConstants.kShooter.kRollers.FOLLOWER_MOTOR_ID);
+            new TalonFX(SubsystemConstants.kShooter.kRollers.FOLLOWER_MOTOR_ID, kShooter.CANBUS);
 
     // private final MotionMagicVelocityVoltage velocityControl = new
     // MotionMagicVelocityVoltage(0.0);

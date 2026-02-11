@@ -13,15 +13,16 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
+import igknighters.constants.SubsystemConstants.kShooter;
 
 public class TurretReal extends Turret {
 
     private final MotionMagicVoltage positionControl = new MotionMagicVoltage(0.0).withSlot(0);
     private final DutyCycleOut voltageControl = new DutyCycleOut(0.0);
 
-    private final TalonFX motor = new TalonFX(SubsystemConstants.kShooter.kTurret.MOTOR_ID);
+    private final TalonFX motor = new TalonFX(SubsystemConstants.kShooter.kTurret.MOTOR_ID, kShooter.CANBUS);
     private final CANcoder turretCaNcoder =
-            new CANcoder(SubsystemConstants.kShooter.kTurret.CANCODER_ID);
+            new CANcoder(SubsystemConstants.kShooter.kTurret.CANCODER_ID, kShooter.CANBUS);
 
     private final BaseStatusSignal turretAngle = motor.getPosition();
     private final BaseStatusSignal turretCurrent = motor.getStatorCurrent();

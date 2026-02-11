@@ -8,9 +8,10 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
+import igknighters.constants.SubsystemConstants.kShooter;
 
 public class HoodReal extends Hood {
-    private final TalonFX motor = new TalonFX(SubsystemConstants.kShooter.kHood.MOTOR_ID);
+    private final TalonFX motor = new TalonFX(SubsystemConstants.kShooter.kHood.MOTOR_ID, kShooter.CANBUS);
 
     private final BaseStatusSignal flapAngleRots = motor.getPosition();
 

@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.ReverseLimitValue;
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj.DigitalInput;
 import igknighters.constants.SubsystemConstants;
+import igknighters.constants.SubsystemConstants.kClimber;
 
 public class ChainsawReal extends Chainsaw {
     private final MotionMagicExpoVoltage positionControl =
@@ -34,7 +35,7 @@ public class ChainsawReal extends Chainsaw {
     // private final TalonFX rightMotor;
 
     public ChainsawReal() {
-        leftMotor = new TalonFX(SubsystemConstants.kClimber.kChainsaw.LEFT_MOTOR_ID);
+        leftMotor = new TalonFX(SubsystemConstants.kClimber.kChainsaw.LEFT_MOTOR_ID, kClimber.CANBUS);
 
         armPosition = leftMotor.getPosition();
         armCurrent = leftMotor.getStatorCurrent();
