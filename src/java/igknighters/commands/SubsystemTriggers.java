@@ -35,11 +35,10 @@ public class SubsystemTriggers {
         falseOnce()
                 .and(disabled)
                 .whileTrue(
-                        Commands.parallel(
-                                Commands.print("DISABLED"),
+                        
                                 LEDCommands.run(led, LEDPattern.solid(Color.kRed))
                                         .ignoringDisable(true)
-                                        .withName("DisabledRed")));
+                                        .withName("DisabledRed"));
 
         autonomous.whileTrue(
                 LEDCommands.run(led, LedUtil.makeRainbow(255, 256))
