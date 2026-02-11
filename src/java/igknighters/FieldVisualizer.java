@@ -4,6 +4,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringPublisher;
+import igknighters.util.TunableValues;
+import igknighters.util.TunableValues.TunableBoolean;
 import java.util.List;
 
 /**
@@ -13,7 +16,9 @@ import java.util.List;
  */
 public class FieldVisualizer {
 
-    private FieldVisualizer() {}
+    private FieldVisualizer() {
+        fieldTypePub.set("Field2d");
+    }
 
     private static class SingletonHelper {
         private static final FieldVisualizer INSTANCE = new FieldVisualizer();
@@ -23,8 +28,16 @@ public class FieldVisualizer {
         return SingletonHelper.INSTANCE;
     }
 
+    private final TunableBoolean shouldShowBalls =
+            TunableValues.getBoolean("FieldVisualizer/ShowBalls", true);
+    private final TunableBoolean shouldShowShootingTarget =
+            TunableValues.getBoolean("FieldVisualizer/ShowShootingTarget", true);
+    private final TunableBoolean shouldShowDrivingTarget =
+            TunableValues.getBoolean("FieldVisualizer/ShowDrivingTarget", true);
+
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
     private final NetworkTable table = inst.getTable("Pose");
+    private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
 
     private final DoubleArrayPublisher shootingTargetPub =
             table.getDoubleArrayTopic("shootingTargetPose").publish();
@@ -41,7 +54,7 @@ public class FieldVisualizer {
      * @param target The pose of the shooting target, or null to clear.
      */
     public void updateShootingTarget(Pose2d target) {
-        if (target == null) {
+        if (target == null || !shouldShowShootingTarget.value()) {
             shootingTargetPub.set(new double[0]);
             return;
         }
@@ -55,7 +68,7 @@ public class FieldVisualizer {
      * @param target The pose of the driving target, or null to clear.
      */
     public void updateDrivingTarget(Pose2d target) {
-        if (target == null) {
+        if (target == null || !shouldShowDrivingTarget.value()) {
             drivingTargetPub.set(new double[0]);
             return;
         }
@@ -69,16 +82,16 @@ public class FieldVisualizer {
      * @param objects A list of poses for detected objects, or null/empty to clear.
      */
     public void updateDetectedObjects(List<Pose2d> objects) {
-        if (objects == null || objects.isEmpty()) {
+        if (objects == null || objects.isEmpty() || !shouldShowBalls.value()) {
             detectedObjectsPub.set(new double[0]);
             return;
         }
+        int i = 0;
         double[] array = new double[objects.size() * 3];
-        for (int i = 0; i < objects.size(); i++) {
-            Pose2d pose = objects.get(i);
-            array[i * 3] = pose.getX();
-            array[i * 3 + 1] = pose.getY();
-            array[i * 3 + 2] = pose.getRotation().getDegrees();
+        for (Pose2d obj : objects) {
+            array[i++] = obj.getX();
+            array[i++] = obj.getY();
+            array[i++] = obj.getRotation().getDegrees();
         }
         detectedObjectsPub.set(array);
     }
