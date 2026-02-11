@@ -31,14 +31,14 @@ public class HoodReal extends Hood {
         config.MotionMagic.MotionMagicCruiseVelocity =
                 SubsystemConstants.kShooter.kHood.MAX_SPEED_RPM;
 
-        config.Feedback.SensorToMechanismRatio = SubsystemConstants.kShooter.kHood.GEAR_RATIO;
-        config.HardwareLimitSwitch.ReverseLimitEnable = true;
-        config.HardwareLimitSwitch.ReverseLimitRemoteSensorID =
-                SubsystemConstants.kShooter.kHood.REVERSE_LIMIT_SWITCH_ID;
+        // config.Feedback.SensorToMechanismRatio = SubsystemConstants.kShooter.kHood.GEAR_RATIO;
+        // config.HardwareLimitSwitch.ReverseLimitEnable = true;
+        // config.HardwareLimitSwitch.ReverseLimitRemoteSensorID =
+        //         SubsystemConstants.kShooter.kHood.REVERSE_LIMIT_SWITCH_ID;
 
-        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-                SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES;
+        // config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        // config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+        //         SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES;
 
         return config;
     }

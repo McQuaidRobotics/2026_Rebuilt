@@ -153,7 +153,8 @@ public class DriverController {
             this.B.whileTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 5000));
             this.Y.whileTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 5500));
             this.X.whileTrue(
-                    ShooterCommands.targetState(subsystems.shooter, new ShooterState(100, 0, 0.0)));
+                    ShooterCommands.targetState(
+                            subsystems.shooter, new ShooterState(100, 0, Math.PI)));
 
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));
