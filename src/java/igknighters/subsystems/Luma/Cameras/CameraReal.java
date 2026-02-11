@@ -43,7 +43,7 @@ public class CameraReal extends Camera {
         DogLog.log("Subsystems/Vision/" + name + "/Connected", camera.isConnected());
         List<PhotonPipelineResult> potentialResults = new ArrayList<>();
         potentialResults = camera.getAllUnreadResults();
-        //this stops the robot from using an empty list if it is the first cycle of empty
+        // this stops the robot from using an empty list if it is the first cycle of empty
         if (!potentialResults.isEmpty()) {
             results = potentialResults;
             noObjects = false;
@@ -54,8 +54,21 @@ public class CameraReal extends Camera {
             noObjects = true;
         }
         DogLog.log("Subsystems/Vision/Physical RESULTS IN PERIODIC", potentialResults.size());
-        //WHY DOES THIS SIZE ONLY SHOW 1, this might be a problem?
+        // WHY DOES THIS SIZE ONLY SHOW 1, this might be a problem?
         DogLog.log("Subsystems/Vision/RESULTS IN PERIODIC", results.size());
+        // THIS FOR LOOP DOES NOT WORK AND I DONT KNOW WHY (IT GIVES TOO MANY)
+        for (int i = 0; i < results.size(); i++) {
+            PhotonPipelineResult gamePieces = results.get(i);
+            for (int j = 0; j < gamePieces.getTargets().size(); j++) {
+                PhotonTrackedTarget gamePiece = gamePieces.getTargets().get(j);
+                DogLog.log(
+                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/" + i + "/pitch",
+                        gamePiece.pitch);
+                DogLog.log(
+                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/" + i + "/yaw",
+                        gamePiece.yaw);
+            }
+        }
     }
 
     @Override
