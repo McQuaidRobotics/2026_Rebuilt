@@ -59,9 +59,6 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
         DogLog.log("Commands/AutoRotateOnBump/TargetAngle", targetAngle);
         DogLog.log("Commands/AutoRotateOnBump/RotationRate", rotationRate);
 
-        FieldConstants.BUMP.PROTECTION_MOVEMENT directionToMove =
-                FieldConstants.BUMP.getProtectionMovement(swerve.getState().Pose, 0.5);
-
         // Force a smaller speed on the bump as requested
         double bumpSpeedMultiplier = 0.5;
         double maxSpeed =
@@ -69,23 +66,13 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
                         * detune
                         * bumpSpeedMultiplier;
 
-        // Logic for Y velocity based on bump protection
-        double vy = vt.getY() * maxSpeed;
+        
 
-        // Adjust vy based on directionToMove if necessary
-        if (directionToMove == FieldConstants.BUMP.PROTECTION_MOVEMENT.GO_UP) {
-            // For example, force a positive Y velocity or keep current stick if already moving left
-            vy = Math.min(vy, -0.5 * maxSpeed);
-        } else if (directionToMove == FieldConstants.BUMP.PROTECTION_MOVEMENT.GO_DOWN) {
-            vy = Math.max(vy, +0.5 * maxSpeed);
-        }
-
-        DogLog.log("Commands/AutoRotateOnBump/DirectionToMove", directionToMove);
 
         swerve.setControl(
                 m_driveRequest
                         .withVelocityX(vt.getX() * maxSpeed)
-                        .withVelocityY(vy)
+                        .withVelocityY(vt.getY() * maxSpeed)
                         .withRotationalRate(rotationRate));
     }
 

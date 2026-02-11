@@ -72,12 +72,6 @@ public class FieldConstants {
         public static final double BUMP_1_Y_METERS = 158.32 * Conv.INCHES_TO_METERS;
         public static final double BUMP_2_Y_METERS = 158.32 * Conv.INCHES_TO_METERS;
 
-        public static enum PROTECTION_MOVEMENT {
-            GO_UP,
-            GO_DOWN,
-            YOU_CHILLIN_IN_THE_MIDDLE
-        }
-
         public static boolean isInside(Pose2d pose) {
             double x = pose.getX();
             double y = pose.getY();
@@ -107,54 +101,6 @@ public class FieldConstants {
             DogLog.log("Commands/BumpProtection: inside bump 1", false);
 
             return false;
-        }
-
-        public static boolean isAboutToFallOff(Pose2d pose, double acceptable_closeness) {
-            if (!isInside(pose)) {
-                return false;
-            }
-            double x = pose.getX();
-            double y = pose.getY();
-
-            if (Math.abs(y - BUMP_1_Y_METERS - HALF_HEIGHT_METERS) < acceptable_closeness) {
-                return true;
-            }
-            if (Math.abs(y - BUMP_1_Y_METERS + HALF_HEIGHT_METERS) < acceptable_closeness) {
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * Assumes the robot is inside the bump, returns which direction to go to get out of the
-         * bump. The direction is relative to the blue aliance so left is +y and right is -y
-         *
-         * @param pose
-         * @return
-         */
-        public static PROTECTION_MOVEMENT getProtectionMovement(
-                Pose2d pose, double acceptable_closeness) {
-            if (!isInside(pose)) {
-                return null;
-            }
-            double y = pose.getY();
-            DogLog.log(
-                    "Commands/Bump Protection/get protection movement/dTop",
-                    Math.abs(y - (BUMP_1_Y_METERS + HALF_HEIGHT_METERS)));
-            DogLog.log(
-                    "Commands/Bump Protection/get protection movement/dBottom",
-                    Math.abs(y - (BUMP_1_Y_METERS - HALF_HEIGHT_METERS)));
-
-            if (Math.abs(y - (BUMP_1_Y_METERS + HALF_HEIGHT_METERS)) < acceptable_closeness) {
-                return PROTECTION_MOVEMENT.GO_DOWN;
-            } else if (Math.abs(y - (BUMP_1_Y_METERS - HALF_HEIGHT_METERS))
-                    < acceptable_closeness) {
-                return PROTECTION_MOVEMENT.GO_UP;
-            } else {
-                return PROTECTION_MOVEMENT
-                        .YOU_CHILLIN_IN_THE_MIDDLE; // the robot is in the middle of the bump so it
-                // can go either way
-            }
         }
     }
 }
