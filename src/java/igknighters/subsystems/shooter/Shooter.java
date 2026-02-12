@@ -57,7 +57,7 @@ public class Shooter extends SubsystemBase {
         turret.setAngleDegrees(angleDegrees);
     }
 
-    private double getTurretAngleDegrees() {
+    public double getTurretAngleDegrees() {
         return turret.getAngleDegrees();
     }
 

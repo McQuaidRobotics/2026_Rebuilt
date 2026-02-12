@@ -1,6 +1,7 @@
 package igknighters;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -42,6 +43,9 @@ public class FieldVisualizer {
     private final DoubleArrayPublisher shootingTargetPub =
             table.getDoubleArrayTopic("shootingTargetPose").publish();
 
+    private final DoubleArrayPublisher turretAnglePub =
+            table.getDoubleArrayTopic("turretAngle").publish();
+
     private final DoubleArrayPublisher drivingTargetPub =
             table.getDoubleArrayTopic("drivingTargetPose").publish();
 
@@ -74,6 +78,18 @@ public class FieldVisualizer {
         }
         drivingTargetPub.set(
                 new double[] {target.getX(), target.getY(), target.getRotation().getDegrees()});
+    }
+
+    public void updateTurret(double turretAngleDegrees, Pose2d robotPose) {
+        Pose2d newPose =
+                new Pose2d(
+                        robotPose.getX(),
+                        robotPose.getY(),
+                        robotPose
+                                .getRotation()
+                                .plus(new Rotation2d(Math.toRadians(turretAngleDegrees))));
+        turretAnglePub.set(
+                new double[] {newPose.getX(), newPose.getY(), newPose.getRotation().getDegrees()});
     }
 
     /**

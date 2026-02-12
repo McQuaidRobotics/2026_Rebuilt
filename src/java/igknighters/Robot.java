@@ -122,7 +122,7 @@ public class Robot extends TimedRobot {
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
-                        new Swerve(true),
+                        new Swerve(false),
                         new LimeLightVision(),
                         new Led(40, 1),
                         new Shooter(),
@@ -161,6 +161,10 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+        FieldVisualizer.getInstance()
+                .updateTurret(
+                        subsytems.shooter.getTurretAngleDegrees(),
+                        subsytems.swerve.getState().Pose);
         if (kUseLimelight) {
             var driveState = subsytems.swerve.getState();
             double headingDeg = driveState.Pose.getRotation().getDegrees();
