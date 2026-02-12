@@ -53,6 +53,10 @@ public class Shooter extends SubsystemBase {
         rollers.setSpeed(speedRPM);
     }
 
+    public double getHoodAngleDegrees() {
+        return hood.getAngleDegrees();
+    }
+
     private void setTurretAngleDegrees(double angleDegrees) {
         turret.setAngleDegrees(angleDegrees);
     }

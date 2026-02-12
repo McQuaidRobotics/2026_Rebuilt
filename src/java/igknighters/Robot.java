@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -211,6 +210,27 @@ public class Robot extends LoggedRobot {
         subsystemTriggers.SetupTriggers(subsytems.led);
     }
 
+    public Pose3d getTurretPose(double turretAngleDegrees) {
+        // Assuming the turret is mounted at the center of the robot and has a fixed height
+        return new Pose3d(0, 0, 0, new Rotation3d(0, 0, turretAngleDegrees * Math.PI / 180));
+    }
+
+    public Pose3d getHoodPose(double hoodAngleDegrees) {
+        Pose3d turretPose = getTurretPose(subsytems.shooter.getTurretAngleDegrees());
+
+        Pose3d hoodPose =
+                new Pose3d(
+                        turretPose.getX(),
+                        turretPose.getY(),
+                        turretPose.getZ(),
+                        new Rotation3d(
+                                0,
+                                hoodAngleDegrees * Math.PI / 180,
+                                turretPose.getRotation().getZ()));
+
+        return hoodPose;
+    }
+
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
@@ -219,13 +239,10 @@ public class Robot extends LoggedRobot {
                 .updateTurret(
                         subsytems.shooter.getTurretAngleDegrees(),
                         subsytems.swerve.getState().Pose);
-        Logger.recordOutput("componentPoses", new Pose3d[] {new Pose3d(), new Pose3d()});
-
         Logger.recordOutput(
-                "COMPONENT/SpinnyTurret",
+                "componentPoses",
                 new Pose3d[] {
-                    new Pose3d(),
-                    new Pose3d(0, 0, 0, new Rotation3d(0.0, 0, RobotController.getTime()))
+                    new Pose3d(), getTurretPose(subsytems.shooter.getTurretAngleDegrees())
                 });
 
         if (kUseLimelight) {
