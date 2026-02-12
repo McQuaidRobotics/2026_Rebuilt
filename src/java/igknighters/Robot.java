@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -32,8 +31,9 @@ import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import java.util.Optional;
+import org.littletonrobotics.junction.LoggedRobot;
 
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
     private AutoFactory autoFactory;
     public final AutoChooser autoChooser = new AutoChooser();
@@ -161,10 +161,12 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+        FieldVisualizer.getInstance().testZeroedComponents();
         FieldVisualizer.getInstance()
                 .updateTurret(
                         subsytems.shooter.getTurretAngleDegrees(),
                         subsytems.swerve.getState().Pose);
+
         if (kUseLimelight) {
             var driveState = subsytems.swerve.getState();
             double headingDeg = driveState.Pose.getRotation().getDegrees();

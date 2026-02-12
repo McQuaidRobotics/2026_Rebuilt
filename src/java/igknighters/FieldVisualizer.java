@@ -1,7 +1,9 @@
 package igknighters;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -43,8 +45,14 @@ public class FieldVisualizer {
     private final DoubleArrayPublisher shootingTargetPub =
             table.getDoubleArrayTopic("shootingTargetPose").publish();
 
+    private final DoubleArrayPublisher shooterPosePublisher =
+            table.getDoubleArrayTopic("shooterPose").publish();
+
     private final DoubleArrayPublisher turretAnglePub =
             table.getDoubleArrayTopic("turretAngle").publish();
+
+    private final DoubleArrayPublisher turretPositionPub =
+            table.getDoubleArrayTopic("turretPosition").publish();
 
     private final DoubleArrayPublisher drivingTargetPub =
             table.getDoubleArrayTopic("drivingTargetPose").publish();
@@ -64,6 +72,13 @@ public class FieldVisualizer {
         }
         shootingTargetPub.set(
                 new double[] {target.getX(), target.getY(), target.getRotation().getDegrees()});
+    }
+
+    public void testZeroedComponents() {
+        // Example test data for zeroed components
+        Pose3d shooterPose = new Pose3d(0.0, 0.0, 0.0, new Rotation3d(0, 0, 0));
+
+        shooterPosePublisher.set(new double[] {0, 0, 0});
     }
 
     /**
@@ -90,6 +105,11 @@ public class FieldVisualizer {
                                 .plus(new Rotation2d(Math.toRadians(turretAngleDegrees))));
         turretAnglePub.set(
                 new double[] {newPose.getX(), newPose.getY(), newPose.getRotation().getDegrees()});
+    }
+
+    public void updateZeroedComponents(Pose3d intakePose, Pose3d shooterPose, Pose2d robotPose) {
+        // Currently not implemented
+
     }
 
     /**
