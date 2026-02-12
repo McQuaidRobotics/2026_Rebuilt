@@ -8,9 +8,12 @@ import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -30,8 +33,13 @@ import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Optional;
 import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
@@ -118,7 +126,51 @@ public class Robot extends LoggedRobot {
                 IndexerCommands.dispense(subsystems.indexer));
     }
 
+    public void setUpAdvantageScope() {
+
+        // Record metadata
+        Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+        Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+        Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+        Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+        Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+        Logger.recordMetadata(
+                "GitDirty",
+                switch (BuildConstants.DIRTY) {
+                    case 0 -> "All changes committed";
+                    case 1 -> "Uncommitted changes";
+                    default -> "Unknown";
+                });
+        try {
+            Logger.recordMetadata(
+                    "Hostname",
+                    InetAddress.getLocalHost().getHostName().replaceAll("\\.local$", ""));
+        } catch (UnknownHostException e) {
+            Logger.recordMetadata("Hostname", "Unknown");
+        }
+        Logger.recordMetadata(
+                "Platform",
+                "%s %s (%s)"
+                        .formatted(
+                                System.getProperty("os.name").replace(" ", ""),
+                                System.getProperty("os.version"),
+                                System.getProperty("os.arch")));
+        if (Robot.isReal()) {
+            Logger.addDataReceiver(new WPILOGWriter());
+            Logger.addDataReceiver(new NT4Publisher());
+        } else {
+            Logger.addDataReceiver(new NT4Publisher());
+        }
+
+        // Set timing mode
+        setUseTiming(true);
+
+        // Start AdvantageKit logger
+        Logger.start();
+    }
+
     public Robot() {
+        setUpAdvantageScope();
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
@@ -139,6 +191,7 @@ public class Robot extends LoggedRobot {
     }
 
     public Robot(boolean isSwerveDisabled) {
+        setUpAdvantageScope();
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
@@ -166,6 +219,14 @@ public class Robot extends LoggedRobot {
                 .updateTurret(
                         subsytems.shooter.getTurretAngleDegrees(),
                         subsytems.swerve.getState().Pose);
+        Logger.recordOutput("componentPoses", new Pose3d[] {new Pose3d(), new Pose3d()});
+
+        Logger.recordOutput(
+                "COMPONENT/SpinnyTurret",
+                new Pose3d[] {
+                    new Pose3d(),
+                    new Pose3d(0, 0, 0, new Rotation3d(0.0, 0, RobotController.getTime()))
+                });
 
         if (kUseLimelight) {
             var driveState = subsytems.swerve.getState();
