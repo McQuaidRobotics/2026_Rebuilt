@@ -1,6 +1,7 @@
 package igknighters.subsystems.shooter.hood;
 
 import dev.doglog.DogLog;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -29,9 +30,8 @@ public class HoodSim extends Hood {
                     SubsystemConstants.kShooter.kHood.kI,
                     SubsystemConstants.kShooter.kHood.kD,
                     new TrapezoidProfile.Constraints(
-                            SubsystemConstants.kShooter.kHood.MAX_SPEED_RPM * 360.0,
-                            SubsystemConstants.kShooter.kHood.MAX_ACCELERATION_RPM
-                                    * 360.0)); // in degrees per minute
+                            SubsystemConstants.kShooter.kHood.MAX_SPEED_RPM * 6.0,
+                            SubsystemConstants.kShooter.kHood.MAX_ACCELERATION_RPM * 6.0));
 
     private boolean isControlledThisCycle = false;
 
@@ -47,6 +47,7 @@ public class HoodSim extends Hood {
                                             .kHood
                                             .MIN_ANGLE_DEGREES); // normalize to -1 to 1
             input = input * 12.0; // scale to voltage
+            input = MathUtil.clamp(input, -12.0, 12.0);
         }
         flapSim.setInput(input);
         flapSim.update(0.02); // Update the simulation with a 20ms timestep
