@@ -4,9 +4,14 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import igknighters.commands.teleop.AutoRotateOnBump;
 import igknighters.constants.AbleToShootSharedState;
+import igknighters.constants.FieldConstants;
+import igknighters.controllers.DriverController;
+import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
+import igknighters.subsystems.swerve.Swerve;
 import java.util.function.BooleanSupplier;
 
 public class SubsystemTriggers {
@@ -30,7 +35,13 @@ public class SubsystemTriggers {
                 });
     }
 
-    public void SetupTriggers(Led led) {
+    public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
+        Led led = subsystems.led;
+        Swerve swerve = subsystems.swerve;
+        Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
+
+        onBump.whileTrue(new AutoRotateOnBump(swerve, driverController));
+
         falseOnce()
                 .and(disabled)
                 .whileTrue(
@@ -52,6 +63,7 @@ public class SubsystemTriggers {
         AbleToShootSharedState ableToShootState = AbleToShootSharedState.getInstance();
 
         // Bind LED commands to the canShootTrigger
+
         ableToShootState
                 .canShootTrigger()
                 .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kYellow)));
