@@ -1,5 +1,6 @@
 package igknighters.commands;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -18,6 +19,8 @@ public class SubsystemTriggers {
     private final Trigger disabled = RobotModeTriggers.disabled();
     private final Trigger autonomous = RobotModeTriggers.autonomous();
     private final Trigger teleop = RobotModeTriggers.teleop();
+    private final NetworkTableInstance nt = NetworkTableInstance.getDefault().getTable("dashboard");
+    private final var hippo = nt.getT
 
     public static Trigger falseOnce() {
         return new Trigger(
