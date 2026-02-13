@@ -184,9 +184,11 @@ public class SubsystemConstants {
 
         public static class kHood {
             public static final int MOTOR_ID = 28;
-            public static final double GEAR_RATIO = 10.0;
-            public static final double MAX_ANGLE_DEGREES = 60.0;
-            public static final double MIN_ANGLE_DEGREES = 0.0;
+            public static final double GEAR_RATIO =
+                    15 * Conv.DEGREES_TO_ROTATIONS; // 1 rot of motor is .04167 rot of flap
+            // or 14.5 degrees
+            public static final double MAX_ANGLE_DEGREES = 48.3;
+            public static final double MIN_ANGLE_DEGREES = 18.6;
             public static final double MAX_SPEED_RPM = 60.0;
             public static final double MAX_ACCELERATION_RPM = 6.0;
             public static final double MAX_JERK = 1.0;

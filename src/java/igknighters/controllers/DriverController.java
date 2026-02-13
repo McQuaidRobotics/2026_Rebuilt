@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.ClimberCommands;
@@ -154,7 +155,13 @@ public class DriverController {
             this.Y.whileTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 5500));
             this.X.whileTrue(
                     ShooterCommands.targetState(
-                            subsystems.shooter, new ShooterState(100, 0, Math.PI)));
+                            subsystems.shooter, new ShooterState(0.0, 0, Math.PI)));
+            this.LT.whileTrue(
+                    ShooterCommands.targetState(
+                            subsystems.shooter, new ShooterState(0, 0, Math.PI / 2)));
+            this.DPD.onTrue(
+                    Commands.runOnce(
+                            () -> subsystems.shooter.setHoodAngleDegrees(0.0), subsystems.shooter));
 
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));

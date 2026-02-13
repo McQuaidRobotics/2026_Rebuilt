@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.constants.Conv;
 import igknighters.subsystems.shooter.flywheel.Flywheel;
-import igknighters.subsystems.shooter.flywheel.FlywheelReal;
+import igknighters.subsystems.shooter.flywheel.FlywheelDisabled;
 import igknighters.subsystems.shooter.flywheel.FlywheelSimulator;
 import igknighters.subsystems.shooter.hood.Hood;
 import igknighters.subsystems.shooter.hood.HoodReal;
@@ -36,7 +36,7 @@ public class Shooter extends SubsystemBase {
 
     public Shooter() {
         if (Robot.isReal()) {
-            rollers = new FlywheelReal();
+            rollers = new FlywheelDisabled();
             turret = new TurretDisabled();
             hood = new HoodReal();
         } else {
@@ -103,6 +103,11 @@ public class Shooter extends SubsystemBase {
 
     public double getEstimatedRPM(double distanceMeters) {
         return rpmTable.lerp(distanceMeters);
+    }
+
+    public void setHoodAngleDegrees(double angleDegrees) {
+        DogLog.log("Subsystems/Shooter/SETSTATE/HoodAngle", angleDegrees);
+        hood.setAngleDegrees(angleDegrees);
     }
 
     @Override
