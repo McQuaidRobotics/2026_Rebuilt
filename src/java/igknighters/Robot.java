@@ -10,6 +10,7 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -20,6 +21,7 @@ import igknighters.commands.IndexerCommands;
 import igknighters.commands.SubsystemTriggers;
 import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
+import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
@@ -212,24 +214,32 @@ public class Robot extends LoggedRobot {
 
     public Pose3d getTurretPose(double turretAngleDegrees) {
         // Assuming the turret is mounted at the center of the robot and has a fixed height
-        return new Pose3d(0, 0, 0, new Rotation3d(0, 0, turretAngleDegrees * Math.PI / 180));
+        double xMeterOffset = -0.1; // X offset from robot center to turret
+        double yMeterOffset = -0.12; // Y offset from robot center to turret
+        double zMeterOffset = 0.3; // Height of the turret from the ground
+        return new Pose3d(
+                xMeterOffset,
+                yMeterOffset,
+                zMeterOffset,
+                new Rotation3d(0, 0, turretAngleDegrees * Math.PI / 180));
     }
 
     public Pose3d getHoodPose(double hoodAngleDegrees) {
+        double dx = 0.09; // X offset from turret center to hood
+        double dy = 0.0; // Y offset from turret center to hood
+        double dz = 0.12; // z offset from turret pivot to hood pivot
+
         Pose3d turretPose = getTurretPose(subsytems.shooter.getTurretAngleDegrees());
 
-        Pose3d hoodPose =
-                new Pose3d(
-                        turretPose.getX(),
-                        turretPose.getY(), // should have some offset bc rotation axis is farther in
-                        // front then turret
-                        turretPose.getZ(),
-                        new Rotation3d(
-                                0,
-                                hoodAngleDegrees * Math.PI / 180,
-                                turretPose.getRotation().getZ()));
-
-        return hoodPose;
+        Pose3d hoodPosition =
+                turretPose.transformBy(
+                        new Transform3d(
+                                dx,
+                                dy,
+                                dz,
+                                new Rotation3d(
+                                        0.0, hoodAngleDegrees * Conv.DEGREES_TO_RADIANS, 0.0)));
+        return hoodPosition;
     }
 
     @Override
@@ -240,7 +250,17 @@ public class Robot extends LoggedRobot {
                 .updateTurret(
                         subsytems.shooter.getTurretAngleDegrees(),
                         subsytems.swerve.getState().Pose);
-        Logger.recordOutput("componentPoses", new Pose3d[] {new Pose3d(), new Pose3d()});
+        Logger.recordOutput(
+                "componentPoses",
+                new Pose3d[] {
+                    getTurretPose(subsytems.shooter.getTurretAngleDegrees()), getHoodPose(45.0)
+                });
+        Logger.recordOutput(
+                "zeroedPoses",
+                new Pose3d[] {
+                    new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0)),
+                    new Pose3d(0, 0, 0, new Rotation3d(0, 0.0, 0))
+                });
 
         if (kUseLimelight) {
             var driveState = subsytems.swerve.getState();
