@@ -1,6 +1,7 @@
 package igknighters.subsystems.shooter;
 
 import dev.doglog.DogLog;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import igknighters.FieldVisualizer;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
+import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import org.littletonrobotics.junction.Logger;
 
 public class AimSolver {
@@ -284,7 +286,7 @@ public class AimSolver {
                             - robotVel.vxMetersPerSecond * Math.sin(angleToTarget);
 
             // Use a realistic horizontal velocity estimate for the turret lead
-            double vFlywheelHorizGuess = vFlywheel * Math.cos(Math.toRadians(45));
+            double vFlywheelHorizGuess = vFlywheel * Math.cos(Math.toRadians(30));
             double turretOffset =
                     Math.asin(
                             Math.max(
@@ -308,7 +310,7 @@ public class AimSolver {
                             + robotVel.vyMetersPerSecond * Math.sin(compensatedAbsoluteAngle);
 
             // 5. Iterative Solver
-            double currentGuessTheta = Math.toRadians(45.0);
+            double currentGuessTheta = Math.toRadians(30.0);
             double finalTheta = currentGuessTheta;
             boolean possible = false;
             double v_eff = 0.0;
@@ -321,7 +323,7 @@ public class AimSolver {
             DogLog.log("Subsystems/Shooter/Aiming/Robot Velocity Radial", vRobotRadial);
             DogLog.log("Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
 
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 8; i++) {
                 double v_h = vFlywheel * Math.cos(currentGuessTheta) + vRobotRadial;
                 double v_z = vFlywheel * Math.sin(currentGuessTheta);
                 v_eff = Math.sqrt(v_h * v_h + v_z * v_z);
@@ -342,14 +344,35 @@ public class AimSolver {
 
             if (!possible) {
                 canShoot(false);
-                return new ShooterState(0.0, turretAngle, 0.0);
+                return new ShooterState(
+                        0.0,
+                        turretAngle,
+                        SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES
+                                * Conv.DEGREES_TO_RADIANS);
+            }
+
+            double hoodSetpoint = Math.PI / 2 - finalTheta;
+
+            if (hoodSetpoint < kHood.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS
+                    || hoodSetpoint > kHood.MAX_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS) {
+                DogLog.log(
+                        "Subsystems/Shooter/Aiming/Calculated hood angle out of bounds",
+                        Math.toDegrees(hoodSetpoint));
+                return new ShooterState(
+                        0.0,
+                        turretAngle,
+                        SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES
+                                * Conv.DEGREES_TO_RADIANS);
             }
 
             canShoot(true);
-            double hoodSetpoint = Math.PI / 2 - finalTheta;
-
-            // Mechanical Clamping (20 to 50 off vertical)
-            hoodSetpoint = Math.max(Math.toRadians(18), Math.min(Math.toRadians(42), hoodSetpoint));
+            hoodSetpoint =
+                    MathUtil.clamp(
+                            hoodSetpoint,
+                            SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES
+                                    * Conv.DEGREES_TO_RADIANS,
+                            SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES
+                                    * Conv.DEGREES_TO_RADIANS);
 
             publishShotTrajectory(
                     v_eff, Math.PI / 2 - hoodSetpoint, turretAngle, shooterPose, targetPose);
