@@ -221,7 +221,8 @@ public class Robot extends LoggedRobot {
         Pose3d hoodPose =
                 new Pose3d(
                         turretPose.getX(),
-                        turretPose.getY(),
+                        turretPose.getY(), // should have some offset bc rotation axis is farther in
+                        // front then turret
                         turretPose.getZ(),
                         new Rotation3d(
                                 0,
@@ -239,11 +240,7 @@ public class Robot extends LoggedRobot {
                 .updateTurret(
                         subsytems.shooter.getTurretAngleDegrees(),
                         subsytems.swerve.getState().Pose);
-        Logger.recordOutput(
-                "componentPoses",
-                new Pose3d[] {
-                    new Pose3d(), getTurretPose(subsytems.shooter.getTurretAngleDegrees())
-                });
+        Logger.recordOutput("componentPoses", new Pose3d[] {new Pose3d(), new Pose3d()});
 
         if (kUseLimelight) {
             var driveState = subsytems.swerve.getState();
