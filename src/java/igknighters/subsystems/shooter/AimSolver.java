@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import igknighters.FieldVisualizer;
+import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import org.littletonrobotics.junction.Logger;
 
@@ -88,6 +89,9 @@ public class AimSolver {
                 DogLog.log(
                         "Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM", currentRPM);
                 canShoot(false);
+                Logger.recordOutput(
+                        "Shooter/ShotTrajectory",
+                        new Pose3d[] {}); // Clear trajectory visualization
                 return new ShooterState(0.0, turretAngle, 0.0);
             }
             canShoot(true);
@@ -208,7 +212,9 @@ public class AimSolver {
                 DogLog.log(
                         "Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM", currentRPM);
                 canShoot(false);
-
+                Logger.recordOutput(
+                        "Shooter/ShotTrajectory",
+                        new Pose3d[] {}); // Clear trajectory visualization
                 return new ShooterState(0.0, turretAngle, 0.0);
             }
             canShoot(true);
@@ -237,6 +243,117 @@ public class AimSolver {
                     turretAngle,
                     new Pose3d(sx, sy, sz, new Rotation3d(0, 0, robotYawFuture)),
                     targetPose);
+            return new ShooterState(currentRPM, turretAngle, hoodSetpoint);
+        }
+
+        /**
+         * Solves for shooter state using vector addition with field-relative robot velocity.
+         * * @param robotVel Expected to be field-relative (vx, vy).
+         */
+        public static ShooterState solve_moving_vector_perfect(
+                Pose3d targetPose,
+                Pose3d shooterPose,
+                double currentRPM,
+                ChassisSpeeds robotVel,
+                double delaySeconds) {
+
+            // 1. Position Prediction
+            double sx = shooterPose.getX() + (robotVel.vxMetersPerSecond * delaySeconds);
+            double sy = shooterPose.getY() + (robotVel.vyMetersPerSecond * delaySeconds);
+            double sz = shooterPose.getZ();
+
+            double dx = targetPose.getX() - sx;
+            double dy = targetPose.getY() - sy;
+            double dz = targetPose.getZ() - sz;
+            double d = Math.sqrt(dx * dx + dy * dy);
+            double h = dz;
+
+            // 2. Launch Velocity Calculation
+            double omega = currentRPM * 2.0 * Math.PI / 60.0;
+
+            // ADJUST THIS CONSTANT:
+            // 1.0 if you have top and bottom wheels.
+            // 0.5 if you have a hooded shooter (one wheel).
+            double velocityMultiplier = 0.5;
+            double vFlywheel = omega * FLYWHEEL_RADIUS * velocityMultiplier;
+
+            // 3. Lateral Compensation
+            double angleToTarget = Math.atan2(dy, dx);
+            double vRobotLateral =
+                    robotVel.vyMetersPerSecond * Math.cos(angleToTarget)
+                            - robotVel.vxMetersPerSecond * Math.sin(angleToTarget);
+
+            // Use a realistic horizontal velocity estimate for the turret lead
+            double vFlywheelHorizGuess = vFlywheel * Math.cos(Math.toRadians(45));
+            double turretOffset =
+                    Math.asin(
+                            Math.max(
+                                    -1,
+                                    Math.min(
+                                            1,
+                                            -vRobotLateral / Math.max(vFlywheelHorizGuess, 0.1))));
+            double compensatedAbsoluteAngle = angleToTarget + turretOffset;
+
+            double robotYawFuture =
+                    shooterPose.getRotation().getZ()
+                            + (robotVel.omegaRadiansPerSecond * delaySeconds);
+            double turretAngle =
+                    Math.atan2(
+                            Math.sin(compensatedAbsoluteAngle - robotYawFuture),
+                            Math.cos(compensatedAbsoluteAngle - robotYawFuture));
+
+            // 4. Radial Robot Velocity
+            double vRobotRadial =
+                    robotVel.vxMetersPerSecond * Math.cos(compensatedAbsoluteAngle)
+                            + robotVel.vyMetersPerSecond * Math.sin(compensatedAbsoluteAngle);
+
+            // 5. Iterative Solver
+            double currentGuessTheta = Math.toRadians(45.0);
+            double finalTheta = currentGuessTheta;
+            boolean possible = false;
+            double v_eff = 0.0;
+
+            DogLog.log("Subsystems/Shooter/Aiming/Distance", d);
+            DogLog.log("Subsystems/Shooter/Aiming/Height", h);
+            DogLog.log(
+                    "Subsystems/Shooter/Aiming/TurretAngle", turretAngle * Conv.RADIANS_TO_DEGREES);
+            DogLog.log("Subsystems/Shooter/Aiming/Robot Velocity Lateral", vRobotLateral);
+            DogLog.log("Subsystems/Shooter/Aiming/Robot Velocity Radial", vRobotRadial);
+            DogLog.log("Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
+
+            for (int i = 0; i < 4; i++) {
+                double v_h = vFlywheel * Math.cos(currentGuessTheta) + vRobotRadial;
+                double v_z = vFlywheel * Math.sin(currentGuessTheta);
+                v_eff = Math.sqrt(v_h * v_h + v_z * v_z);
+
+                // Ballistic trajectory formula discriminant
+                double inside = Math.pow(v_eff, 4) - 9.81 * (9.81 * d * d + 2 * h * v_eff * v_eff);
+
+                if (inside >= 0) {
+                    double root = Math.sqrt(inside);
+                    currentGuessTheta = Math.atan((v_eff * v_eff + root) / (9.81 * d));
+                    finalTheta = currentGuessTheta;
+                    possible = true;
+                } else {
+                    // If the loop finds it's impossible, it stops updating finalTheta
+                    break;
+                }
+            }
+
+            if (!possible) {
+                canShoot(false);
+                return new ShooterState(0.0, turretAngle, 0.0);
+            }
+
+            canShoot(true);
+            double hoodSetpoint = Math.PI / 2 - finalTheta;
+
+            // Mechanical Clamping (20 to 50 off vertical)
+            hoodSetpoint = Math.max(Math.toRadians(18), Math.min(Math.toRadians(42), hoodSetpoint));
+
+            publishShotTrajectory(
+                    v_eff, Math.PI / 2 - hoodSetpoint, turretAngle, shooterPose, targetPose);
+
             return new ShooterState(currentRPM, turretAngle, hoodSetpoint);
         }
 
@@ -301,7 +418,7 @@ public class AimSolver {
                                         * Math.sin(fieldShotAngle)
                                         * t;
                 double z =
-                        sz + ballLaunchVelocity * Math.sin(launchAngleRads) * t - 0.5 * G * t * t;
+                        sz + ballLaunchVelocity * Math.sin(launchAngleRads) * t - (0.5 * G * t * t);
 
                 trajectoryPoints[i] = new Pose3d(x, y, Math.max(0, z), new Rotation3d());
             }

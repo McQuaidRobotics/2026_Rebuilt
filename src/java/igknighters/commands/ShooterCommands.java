@@ -226,7 +226,7 @@ public class ShooterCommands {
                             double RPM = getRPM(robotPose, () -> targetPose, shooter);
 
                             ShooterState targetingData =
-                                    AimSolver.Solvers.solve_moving(
+                                    AimSolver.Solvers.solve_moving_vector_perfect(
                                             targetPose,
                                             new Pose3d(
                                                     robotPose2d.getX(),
