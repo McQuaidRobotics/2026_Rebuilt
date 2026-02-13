@@ -253,7 +253,8 @@ public class Robot extends LoggedRobot {
         Logger.recordOutput(
                 "componentPoses",
                 new Pose3d[] {
-                    getTurretPose(subsytems.shooter.getTurretAngleDegrees()), getHoodPose(45.0)
+                    getTurretPose(subsytems.shooter.getTurretAngleDegrees()),
+                    getHoodPose(subsytems.shooter.getHoodAngleDegrees())
                 });
         Logger.recordOutput(
                 "zeroedPoses",

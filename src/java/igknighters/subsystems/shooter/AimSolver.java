@@ -2,6 +2,7 @@ package igknighters.subsystems.shooter;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -9,6 +10,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import igknighters.FieldVisualizer;
 import igknighters.constants.SubsystemConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class AimSolver {
 
@@ -107,8 +109,11 @@ public class AimSolver {
 
             // You want the HIGH arc
             double hoodAngle = Math.max(thetaLow, thetaHigh);
+            double hoodSetpoint = Math.PI / 2 - hoodAngle;
 
-            return new ShooterState(currentRPM, turretAngle, Math.PI / 2 - hoodAngle);
+            publishShotTrajectory(v, hoodAngle, turretAngle, shooterPose, targetPose);
+
+            return new ShooterState(currentRPM, turretAngle, hoodSetpoint);
         }
 
         public static double getSwerveVelocityProjection(double vx, double vy, double turretAngle) {
@@ -225,7 +230,83 @@ public class AimSolver {
             double hoodSetpoint = Math.PI / 2 - hoodAngle;
             DogLog.log("Subsystems/Shooter/Aiming/Predicted Hood Angle", hoodSetpoint);
 
+            // Pass the predicted pose so the trajectory starts from where the robot WILL be
+            publishShotTrajectory(
+                    v,
+                    hoodAngle,
+                    turretAngle,
+                    new Pose3d(sx, sy, sz, new Rotation3d(0, 0, robotYawFuture)),
+                    targetPose);
             return new ShooterState(currentRPM, turretAngle, hoodSetpoint);
+        }
+
+        public static double getShotTime(
+                double ballLaunchVelocity,
+                double hoodAngleRadians,
+                double shooterHeight,
+                double targetHeight) {
+            // Vertical component of the velocity
+            double vY = ballLaunchVelocity * Math.sin(hoodAngleRadians);
+
+            // Time to reach the target height using the formula: h = vY * t - 0.5 * g * t^2
+            // Rearranging gives: 0.5 * g * t^2 - vY * t + (targetHeight - shooterHeight) = 0
+            double a = 0.5 * G;
+            double b = -vY;
+            double c = targetHeight - shooterHeight;
+
+            double discriminant = b * b - 4 * a * c;
+
+            if (discriminant < 0) {
+                // No real solution, the shot cannot reach the target height
+                return Double.POSITIVE_INFINITY;
+            }
+
+            // We take the positive root since time cannot be negative
+            double time = (-b + Math.sqrt(discriminant)) / (2 * a);
+            return time;
+        }
+
+        public static void publishShotTrajectory(
+                double ballLaunchVelocity,
+                double launchAngleRads,
+                double turretAngleRads,
+                Pose3d shooterPose3d,
+                Pose3d targetPose3d) {
+            double sx = shooterPose3d.getX();
+            double sy = shooterPose3d.getY();
+            double sz = shooterPose3d.getZ();
+
+            // The turret angle is relative to the robot's yaw.
+            // We need the absolute field angle for the trajectory visualization.
+            double fieldShotAngle = shooterPose3d.getRotation().getZ() + turretAngleRads;
+
+            double time = getShotTime(ballLaunchVelocity, launchAngleRads, sz, targetPose3d.getZ());
+            if (Double.isInfinite(time) || time <= 0) time = 1.5; // Fallback for visualization
+
+            int nPoints = 20;
+            Pose3d[] trajectoryPoints = new Pose3d[nPoints];
+
+            for (int i = 0; i < nPoints; i++) {
+                double t = (time / (nPoints - 1)) * i;
+                double x =
+                        sx
+                                + ballLaunchVelocity
+                                        * Math.cos(launchAngleRads)
+                                        * Math.cos(fieldShotAngle)
+                                        * t;
+                double y =
+                        sy
+                                + ballLaunchVelocity
+                                        * Math.cos(launchAngleRads)
+                                        * Math.sin(fieldShotAngle)
+                                        * t;
+                double z =
+                        sz + ballLaunchVelocity * Math.sin(launchAngleRads) * t - 0.5 * G * t * t;
+
+                trajectoryPoints[i] = new Pose3d(x, y, Math.max(0, z), new Rotation3d());
+            }
+
+            Logger.recordOutput("Shooter/ShotTrajectory", trajectoryPoints);
         }
     }
 }
