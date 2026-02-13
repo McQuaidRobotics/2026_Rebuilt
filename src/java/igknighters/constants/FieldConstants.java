@@ -50,60 +50,107 @@ public class FieldConstants {
     }
 
     public static class OBSTACLES {
-        public static final obstacle BUMP_BLUE =
+        public static final obstacle HUB_BLUE =
                 new obstacle(
                         new Pose2d(
                                 182.11 * Conv.INCHES_TO_METERS,
                                 158.32 * Conv.INCHES_TO_METERS,
                                 new Rotation2d()),
-                        1,
-                        23.5 * Conv.INCHES_TO_METERS,
-                        109 * Conv.INCHES_TO_METERS,
-                        obstacleType.SQUARE);
-        public static final obstacle BUMP_RED =
+                        1.8,
+                        0,
+                        0,
+                        obstacleType.CIRCLE);
+        public static final obstacle HUB_RED =
                 new obstacle(
                         new Pose2d(
                                 LENGTH - 182.11 * Conv.INCHES_TO_METERS,
                                 158.32 * Conv.INCHES_TO_METERS,
                                 new Rotation2d()),
-                        1,
-                        23.5 * Conv.INCHES_TO_METERS,
-                        109 * Conv.INCHES_TO_METERS,
-                        obstacleType.SQUARE);
-        public static final obstacle WALL_DS_BLUE =
+                        1.8,
+                        0,
+                        0,
+                        obstacleType.CIRCLE);
+        public static final obstacle BOTTOM_BUMP_BLUE =
                 new obstacle(
-                        new Pose2d(0, 158.32 * Conv.INCHES_TO_METERS, new Rotation2d()),
+                        new Pose2d(
+                                182.11 * Conv.INCHES_TO_METERS,
+                                92.85 * Conv.INCHES_TO_METERS,
+                                new Rotation2d()),
+                        1.4,
+                        0,
+                        0,
+                        obstacleType.CIRCLE);
+        public static final obstacle BOTTOM_BUMP_RED =
+                new obstacle(
+                        new Pose2d(
+                                LENGTH - 182.11 * Conv.INCHES_TO_METERS,
+                                92.85 * Conv.INCHES_TO_METERS,
+                                new Rotation2d()),
+                        1.4,
+                        0,
+                        0,
+                        obstacleType.CIRCLE);
+        public static final obstacle TOP_BUMP_BLUE =
+                new obstacle(
+                        new Pose2d(
+                                182.11 * Conv.INCHES_TO_METERS,
+                                218.85 * Conv.INCHES_TO_METERS,
+                                new Rotation2d()),
+                        1.4,
+                        0,
+                        0,
+                        obstacleType.CIRCLE);
+        public static final obstacle TOP_BUMP_RED =
+                new obstacle(
+                        new Pose2d(
+                                LENGTH - 182.11 * Conv.INCHES_TO_METERS,
+                                218.85 * Conv.INCHES_TO_METERS,
+                                new Rotation2d()),
+                        1.4,
+                        0,
+                        0,
+                        obstacleType.CIRCLE);
+        public static final obstacle BELOW_BLUE_BUMP =
+                new obstacle(
+                        new Pose2d(182.11 * Conv.INCHES_TO_METERS, 25.175, new Rotation2d()),
                         1,
-                        1,
-                        WIDTH / 2,
-                        obstacleType.SQUARE);
-        public static final obstacle WALL_BLUE_TO_RED_BOTTOM =
+                        22.2 * Conv.INCHES_TO_METERS,
+                        25.175 * Conv.INCHES_TO_METERS,
+                        obstacleType.SAFE_ZONE);
+        public static final obstacle ABOVE_BLUE_BUMP =
                 new obstacle(
                         new Pose2d(LENGTH / 2, 0, new Rotation2d()),
                         1,
-                        WIDTH / 2,
-                        1,
-                        obstacleType.SQUARE);
-        public static final obstacle WALL_BLUE_TO_RED_TOP =
+                        22.2 * Conv.INCHES_TO_METERS,
+                        15.295 * Conv.INCHES_TO_METERS,
+                        obstacleType.SAFE_ZONE);
+        public static final obstacle BELOW_RED_BUMP =
                 new obstacle(
                         new Pose2d(LENGTH / 2, WIDTH, new Rotation2d()),
                         1,
-                        WIDTH / 2,
-                        1,
-                        obstacleType.SQUARE);
-        public static final obstacle WALL_DS_RED =
+                        22.2 * Conv.INCHES_TO_METERS,
+                        25.175 * Conv.INCHES_TO_METERS,
+                        obstacleType.SAFE_ZONE);
+        public static final obstacle ABOVE_RED_BUMP =
                 new obstacle(
                         new Pose2d(LENGTH, 158.32 * Conv.INCHES_TO_METERS, new Rotation2d()),
                         1,
-                        1,
-                        WIDTH / 2,
-                        obstacleType.SQUARE);
+                        22.2 * Conv.INCHES_TO_METERS,
+                        15.295 * Conv.INCHES_TO_METERS,
+                        obstacleType.SAFE_ZONE);
         public static final ArrayList<obstacle> ALL_OBSTACLES =
-                new ArrayList<>(Arrays.asList(BUMP_BLUE, BUMP_RED));
-        // WALL_DS_BLUE,
-        // WALL_BLUE_TO_RED_BOTTOM,
-        // WALL_BLUE_TO_RED_TOP,
-        // WALL_DS_RED));
+                new ArrayList<>(
+                        Arrays.asList(
+                                HUB_BLUE,
+                                HUB_RED,
+                                TOP_BUMP_BLUE,
+                                TOP_BUMP_RED,
+                                BOTTOM_BUMP_BLUE,
+                                BOTTOM_BUMP_RED,
+                                BELOW_BLUE_BUMP,
+                                ABOVE_BLUE_BUMP,
+                                BELOW_RED_BUMP,
+                                ABOVE_RED_BUMP));
     }
 
     public static final double WIDTH = 316.64 * Conv.INCHES_TO_METERS; // meters
