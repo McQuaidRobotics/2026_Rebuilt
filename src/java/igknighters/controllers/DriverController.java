@@ -156,10 +156,10 @@ public class DriverController {
             this.Y.whileTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 5500));
             this.X.whileTrue(
                     ShooterCommands.targetState(
-                            subsystems.shooter, new ShooterState(0.0, 0, Math.PI)));
+                            subsystems.shooter, new ShooterState(0.0, 0, Math.PI / 4)));
             this.LT.whileTrue(
                     ShooterCommands.targetState(
-                            subsystems.shooter, new ShooterState(0, 0, Math.PI / 2)));
+                            subsystems.shooter, new ShooterState(0, 0, Math.PI / 6)));
             this.DPD.onTrue(
                     Commands.runOnce(
                             () -> subsystems.shooter.setHoodAngleDegrees(kHood.MIN_ANGLE_DEGREES),

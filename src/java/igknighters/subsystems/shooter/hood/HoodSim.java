@@ -15,9 +15,9 @@ public class HoodSim extends Hood {
                     LinearSystemId.createSingleJointedArmSystem(
                             DCMotor.getKrakenX60(1),
                             SubsystemConstants.kShooter.kHood.JKG_M2,
-                            SubsystemConstants.kShooter.kHood.GEAR_RATIO),
+                            SubsystemConstants.kShooter.kHood.MOTOR_ROTS_TO_HOOD_DEGREES),
                     DCMotor.getKrakenX60(1),
-                    SubsystemConstants.kShooter.kHood.GEAR_RATIO,
+                    SubsystemConstants.kShooter.kHood.MOTOR_ROTS_TO_HOOD_DEGREES,
                     SubsystemConstants.kShooter.kHood.LENGTH_METERS,
                     Math.toRadians(SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES),
                     Math.toRadians(SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES),
@@ -30,10 +30,8 @@ public class HoodSim extends Hood {
                     SubsystemConstants.kShooter.kHood.kI,
                     SubsystemConstants.kShooter.kHood.kD,
                     new TrapezoidProfile.Constraints(
-                            SubsystemConstants.kShooter.kHood.MAX_SPEED_DEGREES_PER_SECOND,
-                            SubsystemConstants.kShooter
-                                    .kHood
-                                    .MAX_ACCELERATION_DEGREES_PER_SECOND_SQUARED));
+                            SubsystemConstants.kShooter.kHood.MAX_SPEED_R_P_S,
+                            SubsystemConstants.kShooter.kHood.MAX_ACCEL_R_P_S_S));
 
     private boolean isControlledThisCycle = false;
 
