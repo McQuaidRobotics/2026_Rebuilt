@@ -189,8 +189,8 @@ public class SubsystemConstants {
             // or 14.5 degrees
             public static final double MAX_ANGLE_DEGREES = 48.3;
             public static final double MIN_ANGLE_DEGREES = 18.6;
-            public static final double MAX_SPEED_RPM = 60.0;
-            public static final double MAX_ACCELERATION_RPM = 6.0;
+            public static final double MAX_SPEED_DEGREES_PER_SECOND = 360.0;
+            public static final double MAX_ACCELERATION_DEGREES_PER_SECOND_SQUARED = 720.0;
             public static final double MAX_JERK = 1.0;
             public static final int STATOR_CURRENT_LIMIT = 30;
             public static final int SUPPLY_CURRENT_LIMIT = 20;
