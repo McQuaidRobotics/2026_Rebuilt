@@ -176,7 +176,11 @@ public class DriverController {
         this.A.whileTrue(IntakeCommands.goToIntake(subsystems.intake));
         this.A.onFalse(IntakeCommands.goToStow(subsystems.intake));
 
-        this.LT.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
+        this.LT.whileTrue(
+                ShooterCommands.shootIChoseTargetWithLookAhead(
+                        subsystems.shooter,
+                        () -> swerve.getState().Pose,
+                        () -> swerve.getState().Speeds));
         this.RT.whileTrue(IndexerCommands.dispense(subsystems.indexer));
     }
 

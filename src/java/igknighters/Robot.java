@@ -303,6 +303,12 @@ public class Robot extends LoggedRobot {
     public void disabledInit() {
         CommandScheduler.getInstance().cancelAll();
         // CommandScheduler.getInstance().getActiveButtonLoop().clear();
+        if (fuelSim != null) {
+
+            fuelSim.clearFuel();
+            fuelSim.spawnStartingFuel();
+            fuelSim.stop();
+        }
         CommandScheduler.getInstance().clearComposedCommands();
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, detune.value()));
@@ -323,6 +329,9 @@ public class Robot extends LoggedRobot {
     @Override
     public void autonomousInit() {
         Command autoCommand = autoChooser.selectedCommand();
+        if (fuelSim != null) {
+            fuelSim.start();
+        }
         scheduler.schedule(autoCommand);
     }
 
@@ -336,6 +345,9 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopInit() {
+        if (fuelSim != null) {
+            fuelSim.start();
+        }
         scheduler.cancelAll();
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
@@ -368,7 +380,7 @@ public class Robot extends LoggedRobot {
             double currentTime = RobotController.getFPGATime() / 1.0e6;
             if (subsytems.indexer.getExitRollerRPM() > 50.0
                     && subsytems.shooter.getCurrentState().rpm > 500.0
-                    && (currentTime - lastShotTime) > 0.5) { // 0.5s cooldown
+                    && (currentTime - lastShotTime) > 0.1) { // 0.1s cooldown
 
                 var shooterState = subsytems.shooter.getCurrentState();
 
@@ -404,6 +416,7 @@ public class Robot extends LoggedRobot {
                                 })
                         .withName("Reset Fuel")
                         .ignoringDisable(true));
+        fuelSim.enableAirResistance();
 
         configureFuelSimRobot();
     }
