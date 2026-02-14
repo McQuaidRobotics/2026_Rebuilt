@@ -154,36 +154,16 @@ public class Repulsor {
                                 obs.obstaclePose.getY() - currentPose.getY());
                 // determine if obstacle X is above or below robot position to add or subtract force
                 if (obs.obstaclePose.getY() - currentPose.getY() > 0) {
-                    //         if (currentPose.getY() < (30 * Conv.INCHES_TO_METERS)) {
-                    //             yRepelForce +=
-                    //                     ((Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 -
-                    //     dist))
-                    //                                     * (obs.obstaclePose.getY() -
-                    //     currentPose.getY())
-                    //                                     / 3)
-                    //                             / 5;
-                    //         }
-                    // else {
                     yRepelForce +=
                             (Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist))
                                     * (obs.obstaclePose.getY() - currentPose.getY())
                                     / 3;
                     // }
                 } else {
-                    // if (currentPose.getY() > (FieldConstants.WIDTH - (30 *
-                    // Conv.INCHES_TO_METERS))) {
-                    //         yRepelForce += ((Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2
-                    // - dist))
-                    //                                 * (obs.obstaclePose.getY() -
-                    // currentPose.getY())
-                    //                                 / 3)/5;
-                    // }
-                    // else {
                     yRepelForce -=
                             (Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist))
                                     * (currentPose.getY() - obs.obstaclePose.getY())
                                     / 3;
-                    // }
                 }
             }
             // if robot is in the safezones (above/below bump), don't effect y repulsion
