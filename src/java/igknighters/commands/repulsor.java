@@ -47,6 +47,7 @@ public class Repulsor {
 
     static RepulsorVisualizer visualizer = new RepulsorVisualizer();
 
+    // finds X repulsive force by summing all the forces of the obstacles
     public static double getXRepulse(Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
         DogLog.log("Commands/repulsor/Time", currentTime);
@@ -57,7 +58,9 @@ public class Repulsor {
                         Math.hypot(
                                 obs.obstaclePose.getX() - currentPose.getX(),
                                 obs.obstaclePose.getY() - currentPose.getY());
+                // determine if obstacle X is above or below robot position to add or subtract force
                 if (obs.obstaclePose.getX() - currentPose.getX() > 0) {
+                    // uses the function R=(e^OBSTACLE_STRENGTH*e^(2-TANGENT_DISTANCE)*X_DISTANCE)/3
                     xRepelForce +=
                             (Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist))
                                     * (obs.obstaclePose.getX() - currentPose.getX())
@@ -65,15 +68,16 @@ public class Repulsor {
                 } else {
                     xRepelForce -=
                             (Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist))
-                                    * (currentPose.getX() - obs.obstaclePose.getX())/ 3;
+                                    * (currentPose.getX() - obs.obstaclePose.getX())
+                                    / 3;
                 }
             }
-            if (currentPose.getX() < 0+30*Conv.INCHES_TO_METERS || currentPose.getX() > FieldConstants.LENGTH-30*Conv.INCHES_TO_METERS) {
+            // if robot is too close to walls set repel to 0
+            if (currentPose.getX() < 0 + 30 * Conv.INCHES_TO_METERS
+                    || currentPose.getX() > FieldConstants.LENGTH - 30 * Conv.INCHES_TO_METERS) {
                 xRepelForce = 0;
             }
-            //     if (Math.abs(currentPose.getY() - obs.obstaclePose.getY()) < .3) {
-            //         xRepelForce = 0;
-            //     }
+            // square logic
             //     else if (obs.type == obstacleType.SQUARE
             //             && currentPose.getY() >= obs.obstaclePose.getY() - obs.height
             //             && currentPose.getY() <= obs.obstaclePose.getY() + obs.height) {
@@ -129,13 +133,16 @@ public class Repulsor {
         return -xRepelForce;
     }
 
+    // find attractive force to goal in the x
     public static double getXGoal(Pose2d currentPose, Pose2d target) {
         double xGoalDist = target.getX() - currentPose.getX();
         DogLog.log("Commands/repulsor/xGoalDist", target.getX() - currentPose.getX());
         return xGoalDist;
     }
 
-    public static double getYRepulse(Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
+    // finds X repulsive force by summing all the forces of the obstacles
+    public static double getYRepulse(
+            Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles, Pose2d target) {
         double yRepelForce = 0.0;
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
         DogLog.log("Commands/repulsor/Time", currentTime);
@@ -145,50 +152,67 @@ public class Repulsor {
                         Math.hypot(
                                 obs.obstaclePose.getX() - currentPose.getX(),
                                 obs.obstaclePose.getY() - currentPose.getY());
-                // if (dist >= 3) {
-                //     continue;
-                // }
+                // determine if obstacle X is above or below robot position to add or subtract force
                 if (obs.obstaclePose.getY() - currentPose.getY() > 0) {
+                    //         if (currentPose.getY() < (30 * Conv.INCHES_TO_METERS)) {
+                    //             yRepelForce +=
+                    //                     ((Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 -
+                    //     dist))
+                    //                                     * (obs.obstaclePose.getY() -
+                    //     currentPose.getY())
+                    //                                     / 3)
+                    //                             / 5;
+                    //         }
+                    // else {
                     yRepelForce +=
                             (Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist))
                                     * (obs.obstaclePose.getY() - currentPose.getY())
                                     / 3;
+                    // }
                 } else {
+                    // if (currentPose.getY() > (FieldConstants.WIDTH - (30 *
+                    // Conv.INCHES_TO_METERS))) {
+                    //         yRepelForce += ((Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2
+                    // - dist))
+                    //                                 * (obs.obstaclePose.getY() -
+                    // currentPose.getY())
+                    //                                 / 3)/5;
+                    // }
+                    // else {
                     yRepelForce -=
                             (Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist))
                                     * (currentPose.getY() - obs.obstaclePose.getY())
                                     / 3;
+                    // }
                 }
             }
-            if (currentPose.getX() < 0+30*Conv.INCHES_TO_METERS || currentPose.getY() > FieldConstants.WIDTH-30*Conv.INCHES_TO_METERS) {
-                yRepelForce = 0;
-            }
+            // if robot is in the safezones (above/below bump), don't effect y repulsion
             for (Repulsor.obstacle safezones : obstacles) {
                 if (safezones.type == obstacleType.SAFE_ZONE
                         && currentPose.getX() >= obs.obstaclePose.getX() - obs.width
                         && currentPose.getX() <= obs.obstaclePose.getX() + obs.width
                         && currentPose.getY() >= obs.obstaclePose.getY() - obs.height
                         && currentPose.getY() <= obs.obstaclePose.getY() + obs.height) {
-                    yRepelForce = 0;
+                    yRepelForce = getYGoal(currentPose, target);
                 }
             }
-            if (Math.abs(currentPose.getY() - obs.obstaclePose.getY()) < .3) {
+            // if directly aligned in the y with a obstacle, it will push up/down to avoid getting
+            // stuck
+            if (obs.type != obstacleType.SAFE_ZONE
+                    && Math.abs(currentPose.getY() - obs.obstaclePose.getY()) < .3) {
                 yRepelForce = 0;
                 if ((currentPose.getX() < 182.11 * Conv.INCHES_TO_METERS
                                 || currentPose.getX()
                                         > FieldConstants.LENGTH - 182.11 * Conv.INCHES_TO_METERS)
                         && Math.abs(currentPose.getX() - obs.obstaclePose.getX()) > 1) {
-                                if (currentPose.getY() < FieldConstants.WIDTH/2) {
-                                        yRepelForce += Math.abs(currentPose.getX() - obs.obstaclePose.getX()) * 2;
-                                }
-                                else if (currentPose.getY() > FieldConstants.WIDTH/2) {
-                                        yRepelForce -= Math.abs(currentPose.getX() - obs.obstaclePose.getX()) * 2;
-                                }
+                    if (currentPose.getY() < FieldConstants.WIDTH / 2) {
+                        yRepelForce += Math.abs(currentPose.getX() - obs.obstaclePose.getX()) * 2;
+                    } else if (currentPose.getY() > FieldConstants.WIDTH / 2) {
+                        yRepelForce -= Math.abs(currentPose.getX() - obs.obstaclePose.getX()) * 2;
+                    }
                 }
             }
-            //     if (currentPose.getY() < 15.175) {
-            //         yRepelForce = getYGoal();
-            //     }
+            // square logic
             //     else if (obs.type == obstacleType.SQUARE
             //             && currentPose.getX() >= obs.obstaclePose.getX() - obs.width
             //             && currentPose.getX() <= obs.obstaclePose.getX() + obs.width) {
@@ -250,6 +274,14 @@ public class Repulsor {
             maxTime = deltaTime;
             DogLog.log("Commands/repulsor/MaxDeltaTime", maxTime);
         }
+        // if in front of the hubs, there will be a up/down force to get robot to move towards one
+        // side
+        if (currentPose.getY() < FieldConstants.WIDTH / 2 && currentPose.getY() > 50.35) {
+            yRepelForce += .5;
+        } else if (currentPose.getY() > FieldConstants.WIDTH / 2
+                && currentPose.getY() < FieldConstants.WIDTH - 50.59 * Conv.INCHES_TO_METERS) {
+            yRepelForce -= .5;
+        }
         return -yRepelForce;
     }
 
@@ -283,8 +315,10 @@ public class Repulsor {
                     double yVelo =
                             10
                                     * -(getYGoal(currentPose, targetPose)
-                                            + getYRepulse(currentPose, obstacles));
-                    DogLog.log("Commands/repulsor/yRepel", getYRepulse(currentPose, obstacles));
+                                            + getYRepulse(currentPose, obstacles, targetPose));
+                    DogLog.log(
+                            "Commands/repulsor/yRepel",
+                            getYRepulse(currentPose, obstacles, targetPose));
                     double omega =
                             thetaController.calculate(
                                     currentPose.getRotation().getRadians(),
@@ -294,13 +328,13 @@ public class Repulsor {
                                     getYGoal(currentPose, targetPose),
                                     getXGoal(currentPose, targetPose)),
                             Math.atan2(
-                                    getYRepulse(currentPose, obstacles),
+                                    getYRepulse(currentPose, obstacles, targetPose),
                                     getXRepulse(currentPose, obstacles)),
                             Math.hypot(
                                     getYGoal(currentPose, targetPose),
                                     getXGoal(currentPose, targetPose)),
                             Math.hypot(
-                                    getYRepulse(currentPose, obstacles),
+                                    getYRepulse(currentPose, obstacles, targetPose),
                                     getXRepulse(currentPose, obstacles)));
 
                     omega *= 20.0;

@@ -54,7 +54,7 @@ public class FieldConstants {
                 new obstacle(
                         new Pose2d(
                                 182.11 * Conv.INCHES_TO_METERS,
-                                158.32 * Conv.INCHES_TO_METERS,
+                                158.84 * Conv.INCHES_TO_METERS,
                                 new Rotation2d()),
                         1.8,
                         0,
@@ -64,7 +64,7 @@ public class FieldConstants {
                 new obstacle(
                         new Pose2d(
                                 LENGTH - 182.11 * Conv.INCHES_TO_METERS,
-                                158.32 * Conv.INCHES_TO_METERS,
+                                158.84 * Conv.INCHES_TO_METERS,
                                 new Rotation2d()),
                         1.8,
                         0,
@@ -76,7 +76,7 @@ public class FieldConstants {
                                 182.11 * Conv.INCHES_TO_METERS,
                                 92.85 * Conv.INCHES_TO_METERS,
                                 new Rotation2d()),
-                        1.4,
+                        1.45,
                         0,
                         0,
                         obstacleType.CIRCLE);
@@ -86,7 +86,7 @@ public class FieldConstants {
                                 LENGTH - 182.11 * Conv.INCHES_TO_METERS,
                                 92.85 * Conv.INCHES_TO_METERS,
                                 new Rotation2d()),
-                        1.4,
+                        1.45,
                         0,
                         0,
                         obstacleType.CIRCLE);
@@ -94,9 +94,9 @@ public class FieldConstants {
                 new obstacle(
                         new Pose2d(
                                 182.11 * Conv.INCHES_TO_METERS,
-                                218.85 * Conv.INCHES_TO_METERS,
+                                WIDTH - 92.85 * Conv.INCHES_TO_METERS,
                                 new Rotation2d()),
-                        1.4,
+                        1.45,
                         0,
                         0,
                         obstacleType.CIRCLE);
@@ -104,39 +104,51 @@ public class FieldConstants {
                 new obstacle(
                         new Pose2d(
                                 LENGTH - 182.11 * Conv.INCHES_TO_METERS,
-                                218.85 * Conv.INCHES_TO_METERS,
+                                WIDTH - 92.85 * Conv.INCHES_TO_METERS,
                                 new Rotation2d()),
-                        1.4,
+                        1.45,
                         0,
                         0,
                         obstacleType.CIRCLE);
         public static final obstacle BELOW_BLUE_BUMP =
                 new obstacle(
-                        new Pose2d(182.11 * Conv.INCHES_TO_METERS, 25.175, new Rotation2d()),
+                        new Pose2d(
+                                182.11 * Conv.INCHES_TO_METERS,
+                                25.175 * Conv.INCHES_TO_METERS,
+                                new Rotation2d()),
                         1,
                         22.2 * Conv.INCHES_TO_METERS,
                         25.175 * Conv.INCHES_TO_METERS,
-                        obstacleType.SAFE_ZONE);
-        public static final obstacle ABOVE_BLUE_BUMP =
-                new obstacle(
-                        new Pose2d(LENGTH / 2, 0, new Rotation2d()),
-                        1,
-                        22.2 * Conv.INCHES_TO_METERS,
-                        15.295 * Conv.INCHES_TO_METERS,
                         obstacleType.SAFE_ZONE);
         public static final obstacle BELOW_RED_BUMP =
                 new obstacle(
-                        new Pose2d(LENGTH / 2, WIDTH, new Rotation2d()),
+                        new Pose2d(
+                                LENGTH - 182.11 * Conv.INCHES_TO_METERS,
+                                25.175 * Conv.INCHES_TO_METERS,
+                                new Rotation2d()),
                         1,
-                        22.2 * Conv.INCHES_TO_METERS,
-                        25.175 * Conv.INCHES_TO_METERS,
+                        (22.2 + 10) * Conv.INCHES_TO_METERS,
+                        25.175 / 4 * Conv.INCHES_TO_METERS,
+                        obstacleType.SAFE_ZONE);
+        public static final obstacle ABOVE_BLUE_BUMP =
+                new obstacle(
+                        new Pose2d(
+                                182.11 * Conv.INCHES_TO_METERS,
+                                WIDTH - 25.295 * Conv.INCHES_TO_METERS,
+                                new Rotation2d()),
+                        1,
+                        (22.2 + 10) * Conv.INCHES_TO_METERS,
+                        25.295 / 4 * Conv.INCHES_TO_METERS,
                         obstacleType.SAFE_ZONE);
         public static final obstacle ABOVE_RED_BUMP =
                 new obstacle(
-                        new Pose2d(LENGTH, 158.32 * Conv.INCHES_TO_METERS, new Rotation2d()),
+                        new Pose2d(
+                                LENGTH - 182.11 * Conv.INCHES_TO_METERS,
+                                WIDTH - 25.295 * Conv.INCHES_TO_METERS,
+                                new Rotation2d()),
                         1,
                         22.2 * Conv.INCHES_TO_METERS,
-                        15.295 * Conv.INCHES_TO_METERS,
+                        25.295 * Conv.INCHES_TO_METERS,
                         obstacleType.SAFE_ZONE);
         public static final ArrayList<obstacle> ALL_OBSTACLES =
                 new ArrayList<>(
