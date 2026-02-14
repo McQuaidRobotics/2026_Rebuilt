@@ -32,16 +32,17 @@ public class HoodReal extends Hood {
 
         config.MotionMagic.MotionMagicJerk = SubsystemConstants.kShooter.kHood.MAX_JERK;
         config.MotionMagic.MotionMagicAcceleration =
-                SubsystemConstants.kShooter.kHood.MAX_ACCELERATION_DEGREES_PER_SECOND_SQUARED;
+                SubsystemConstants.kShooter.kHood.MAX_ACCELERATION_DEGREES_PER_SECOND_SQUARED
+                        / 360.0;
         config.MotionMagic.MotionMagicCruiseVelocity =
-                SubsystemConstants.kShooter.kHood.MAX_SPEED_DEGREES_PER_SECOND;
+                SubsystemConstants.kShooter.kHood.MAX_SPEED_DEGREES_PER_SECOND / 360.0;
 
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         config.Feedback.SensorToMechanismRatio = SubsystemConstants.kShooter.kHood.GEAR_RATIO;
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-                SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES;
+                SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES / 360.0;
 
         return config;
     }
@@ -58,14 +59,14 @@ public class HoodReal extends Hood {
 
     @Override
     public void goToAngleDegrees(double angleDegrees) {
-        if (!reverseLimitSwitch.get()) {
-            DogLog.log("Subsystems/Shooter/Hood/IS LIMIT TRIPPED", true);
+        super.targetDegrees = angleDegrees;
+        if (!reverseLimitSwitch.get() && angleDegrees < kShooter.kHood.MIN_ANGLE_DEGREES) {
+            DogLog.log("Subsystems/Shooter/Hood/MOTION PREVENTED BECAUSE LIMIT SWITCH: ", true);
             motor.setVoltage(0.0);
             setAngleDegrees(kShooter.kHood.MIN_ANGLE_DEGREES);
         } else {
-            DogLog.log("Subsystems/Shooter/Hood/IS LIMIT TRIPPED", false);
-            motor.setControl(
-                    positionControl.withPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS));
+            DogLog.log("Subsystems/Shooter/Hood/MOTION PREVENTED BECAUSE LIMIT SWITCH: ", false);
+            motor.setControl(positionControl.withPosition(angleDegrees / 360.0));
         }
     }
 
@@ -79,6 +80,6 @@ public class HoodReal extends Hood {
 
     @Override
     public void setAngleDegrees(double angleDegrees) {
-        motor.setPosition(Rotation.of(angleDegrees * Conv.DEGREES_TO_ROTATIONS));
+        motor.setPosition(Rotation.of(angleDegrees / 360.0));
     }
 }

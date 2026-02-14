@@ -64,15 +64,16 @@ public class Shooter extends SubsystemBase {
         turret.goToAngleDegrees(angleDegrees);
     }
 
-    public void targetState(double rpm, double turretAngleDegrees, double hoodAngleDegrees) {
+    public void targetState(double rpm, double turretAngleDegrees, double hoodAngleRads) {
         DogLog.log("Subsystems/Shooter/TARGETING/RPM", rpm);
         DogLog.log("Subsystems/Shooter/TARGETING/ANGLE", turretAngleDegrees);
+        DogLog.log("Subsystems/Shooter/TARGETING/HoodAngle", hoodAngleRads);
         targetSpeed(rpm);
         goToTurretAngleDegrees(turretAngleDegrees);
-        hood.goToAngleDegrees(hoodAngleDegrees);
+        hood.goToAngleDegrees(hoodAngleRads * Conv.RADIANS_TO_DEGREES);
         goalRPM = rpm;
         goalTurretAngleDegrees = turretAngleDegrees;
-        goalHoodAngleDegrees = hoodAngleDegrees;
+        goalHoodAngleDegrees = hoodAngleRads;
     }
 
     public boolean atTarget(
