@@ -57,15 +57,15 @@ public class CameraReal extends Camera {
         // WHY DOES THIS SIZE ONLY SHOW 1, this might be a problem?
         DogLog.log("Subsystems/Vision/RESULTS IN PERIODIC", results.size());
         // THIS FOR LOOP DOES NOT WORK AND I DONT KNOW WHY (IT GIVES TOO MANY)
-        for (int i = 0; i < results.size(); i++) {
-            PhotonPipelineResult gamePieces = results.get(i);
-            for (int j = 0; j < gamePieces.getTargets().size(); j++) {
-                PhotonTrackedTarget gamePiece = gamePieces.getTargets().get(j);
+        for (int resultNumber = 0; resultNumber < results.size(); resultNumber++) {
+            PhotonPipelineResult gamePieces = results.get(resultNumber);
+            for (int gamePieceNumber = 0; gamePieceNumber < gamePieces.getTargets().size(); gamePieceNumber++) {
+                PhotonTrackedTarget gamePiece = gamePieces.getTargets().get(gamePieceNumber);
                 DogLog.log(
-                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/" + i + "/pitch",
+                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/" + gamePieceNumber + "/pitch",
                         gamePiece.pitch);
                 DogLog.log(
-                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/" + i + "/yaw",
+                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/" + gamePieceNumber + "/yaw",
                         gamePiece.yaw);
             }
         }
