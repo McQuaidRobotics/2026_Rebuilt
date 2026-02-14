@@ -22,7 +22,7 @@ public class FieldConstants {
                         new Rotation3d());
 
         public static final Pose2d POSITION_RED =
-                new Pose2d(LENGTH - POSITION_BLUE.getX(), POSITION_BLUE.getY(), new Rotation2d());
+                new Pose2d(X_FIELD - POSITION_BLUE.getX(), POSITION_BLUE.getY(), new Rotation2d());
         public static final Pose3d POSE3D_RED =
                 new Pose3d(
                         POSITION_RED.getX(), POSITION_RED.getY(), HEIGHT_METERS, new Rotation3d());
@@ -35,7 +35,7 @@ public class FieldConstants {
                         158.32 * Conv.INCHES_TO_METERS,
                         new Rotation2d(Math.PI)); // made up value
         public static final Pose2d POSITION_RED =
-                new Pose2d(LENGTH - POSITION_BLUE.getX(), POSITION_BLUE.getY(), new Rotation2d());
+                new Pose2d(X_FIELD - POSITION_BLUE.getX(), POSITION_BLUE.getY(), new Rotation2d());
     }
 
     public static class PASS {
@@ -47,19 +47,19 @@ public class FieldConstants {
                         new Rotation3d());
 
         public static final Pose3d POSITION_LEFT_BLUE =
-                new Pose3d(0.0, FieldConstants.WIDTH, 0.0, new Rotation3d());
+                new Pose3d(0.0, FieldConstants.Y_FIELD, 0.0, new Rotation3d());
 
         public static final Pose3d POSITION_RIGHT_RED =
-                new Pose3d(FieldConstants.LENGTH - 0.0, 0.0, 0.0, new Rotation3d());
+                new Pose3d(FieldConstants.X_FIELD - 0.0, 0.0, 0.0, new Rotation3d());
 
         public static final Pose3d POSITION_LEFT_RED =
-                new Pose3d(FieldConstants.LENGTH, FieldConstants.WIDTH, 0.0, new Rotation3d());
+                new Pose3d(FieldConstants.X_FIELD, FieldConstants.Y_FIELD, 0.0, new Rotation3d());
     }
 
-    public static final double WIDTH = 316.64 * Conv.INCHES_TO_METERS; // meters
-    public static final double LENGTH = 650.12 * Conv.INCHES_TO_METERS; // meters
+    public static final double Y_FIELD = 316.64 * Conv.INCHES_TO_METERS; // meters
+    public static final double X_FIELD = 650.12 * Conv.INCHES_TO_METERS; // meters
     public static final double ALIANCE_ZONE_BLUE = 181.56 * Conv.INCHES_TO_METERS; // meters
-    public static final double ALIANCE_ZONE_RED = LENGTH - ALIANCE_ZONE_BLUE;
+    public static final double ALIANCE_ZONE_RED = X_FIELD - ALIANCE_ZONE_BLUE;
 
     public static class BUMP {
 
@@ -67,7 +67,7 @@ public class FieldConstants {
         public static final double HALF_HEIGHT_METERS = 109 * Conv.INCHES_TO_METERS;
 
         public static final double BUMP_1_X_METERS = 182.11 * Conv.INCHES_TO_METERS;
-        public static final double BUMP_2_X_METERS = LENGTH - (182.11) * Conv.INCHES_TO_METERS;
+        public static final double BUMP_2_X_METERS = X_FIELD - (182.11) * Conv.INCHES_TO_METERS;
 
         public static final double BUMP_1_Y_METERS = 158.32 * Conv.INCHES_TO_METERS;
         public static final double BUMP_2_Y_METERS = 158.32 * Conv.INCHES_TO_METERS;

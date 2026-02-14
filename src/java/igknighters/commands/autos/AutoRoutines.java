@@ -79,12 +79,12 @@ public class AutoRoutines extends AutoCommands {
     public Pose3d getPassTarget() {
         if (Robot.isBlue()) {
             Pose2d robotPose2d = subsystems.swerve.getState().Pose;
-            return robotPose2d.getY() > FieldConstants.WIDTH / 2
+            return robotPose2d.getY() > FieldConstants.Y_FIELD / 2
                     ? FieldConstants.PASS.POSITION_LEFT_BLUE
                     : FieldConstants.PASS.POSITION_RIGHT_BLUE;
         } else {
             Pose2d robotPose2d = subsystems.swerve.getState().Pose;
-            return robotPose2d.getY() > FieldConstants.WIDTH / 2
+            return robotPose2d.getY() > FieldConstants.Y_FIELD / 2
                     ? FieldConstants.PASS.POSITION_LEFT_RED
                     : FieldConstants.PASS.POSITION_RIGHT_RED;
         }

@@ -1,5 +1,6 @@
 package igknighters.commands;
 
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
@@ -19,8 +20,8 @@ public class SubsystemTriggers {
     private final Trigger disabled = RobotModeTriggers.disabled();
     private final Trigger autonomous = RobotModeTriggers.autonomous();
     private final Trigger teleop = RobotModeTriggers.teleop();
-    private final NetworkTableInstance nt = NetworkTableInstance.getDefault().getTable("dashboard");
-    private final var hippo = nt.getT
+    private final NetworkTable dashboardTable =
+            NetworkTableInstance.getDefault().getTable("dashboard");
 
     public static Trigger falseOnce() {
         return new Trigger(
@@ -42,8 +43,14 @@ public class SubsystemTriggers {
         Led led = subsystems.led;
         Swerve swerve = subsystems.swerve;
         Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
+        Trigger hippoTrigger =
+                new Trigger(() -> dashboardTable.getEntry("hippo").getBoolean(false));
+        Trigger climbTrigger =
+                new Trigger(() -> dashboardTable.getEntry("climb").getBoolean(false));
 
         onBump.whileTrue(new AutoRotateOnBump(swerve, driverController));
+        hippoTrigger.whileTrue(new AutoRotateOnBump(swerve, driverController));
+        climbTrigger.whileTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
 
         falseOnce()
                 .and(disabled)
