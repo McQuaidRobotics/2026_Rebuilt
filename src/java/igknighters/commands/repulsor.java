@@ -77,52 +77,6 @@ public class Repulsor {
                     || currentPose.getX() > FieldConstants.LENGTH - 30 * Conv.INCHES_TO_METERS) {
                 xRepelForce = 0;
             }
-            // square logic
-            //     else if (obs.type == obstacleType.SQUARE
-            //             && currentPose.getY() >= obs.obstaclePose.getY() - obs.height
-            //             && currentPose.getY() <= obs.obstaclePose.getY() + obs.height) {
-            //         double dist = obs.obstaclePose.getX() - currentPose.getX();
-            //         if (obs.obstaclePose.getX() - currentPose.getX() > 0) {
-            //             xRepelForce += Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 -
-            // dist);
-            //         } else {
-            //             xRepelForce -= Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 +
-            // dist);
-            //         }
-            //     }
-            //     if (currentPose.getX() >= obs.obstaclePose.getX() - obs.width
-            //             && currentPose.getX() <= obs.obstaclePose.getX()
-            //             && obs.type == obstacleType.SQUARE) {
-            //         xRepelForce += 2;
-            // obs.obstaclePose.getY()
-            //         - currentPose.getY()
-            //                 / 10
-            //                 * Math.pow(Math.E, .01)
-            //                 * Math.pow(
-            //                         Math.E,
-            //                         2 - 3 * (obs.obstaclePose.getX()
-            //                                                 - currentPose
-            //                                                         .getX())); //
-            // 4-10*(obs.obstaclePose.getX()-currentPose.getX());
-            // DogLog.log("Commands/repulsor/up", "up");
-            //     } if (currentPose.getX() <= obs.obstaclePose.getX() + obs.width
-            //             && currentPose.getX() >= obs.obstaclePose.getX()
-            //             && obs.type == obstacleType.SQUARE) {
-            //         xRepelForce -= 2;
-            //                 // obs.obstaclePose.getX()
-            //                 //         - currentPose.getX()
-            //                 //                 / 10
-            //                 //                 * Math.pow(Math.E, .01)
-            //                 //                 * Math.pow(
-            //                 //                         Math.E,
-            //                 //                         2
-            //                 //                                 - 3
-            //                 //                                         *
-            // (obs.obstaclePose.getX()
-            //                 //                                                 -
-            // currentPose.getX()));
-            //         DogLog.log("Comands/repulsor/up", "down");
-            //     }
         }
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
         DogLog.log("Commands/repulsor/DeltaTime", deltaTime);
@@ -192,61 +146,6 @@ public class Repulsor {
                     }
                 }
             }
-            // square logic
-            //     else if (obs.type == obstacleType.SQUARE
-            //             && currentPose.getX() >= obs.obstaclePose.getX() - obs.width
-            //             && currentPose.getX() <= obs.obstaclePose.getX() + obs.width) {
-            //         double dist = obs.obstaclePose.getY() - currentPose.getY();
-            //         if (obs.obstaclePose.getY() - currentPose.getY() > 0) {
-            //             yRepelForce -=
-            //                     Math.pow(Math.E, 1.2)
-            //                             * Math.pow(
-            //                                     Math.E,
-            //                                     2 - 4 * (currentPose.getX() -
-            // obs.obstaclePose.getX()));
-            //         } else {
-            //             yRepelForce +=
-            //                     Math.pow(Math.E, 1.2)
-            //                             * Math.pow(
-            //                                     Math.E,
-            //                                     2 - 4 * (currentPose.getX() -
-            // obs.obstaclePose.getX()));
-            //         }
-            //     }
-            //     if (currentPose.getY() >= (obs.obstaclePose.getY() - obs.height)
-            //             && currentPose.getY() <= obs.obstaclePose.getY()
-            //             && obs.type == obstacleType.SQUARE) {
-            //         yRepelForce += .5;
-            // obs.obstaclePose.getY()
-            //         - currentPose.getY()
-            //                 / 10
-            //                 * Math.pow(Math.E, 1)
-            //                 * Math.pow(
-            //                         Math.E,
-            //                         2
-            //                                 - 3
-            //                                         * (obs.obstaclePose.getY()
-            //                                                 - currentPose
-            //                                                         .getY())); // Math.E
-            // *
-            //         // Math.pow(Math.E, 2 - currentPose.getY()-obs.obstaclePose.getY());
-            //     } else if (currentPose.getY() <= obs.obstaclePose.getY() + obs.height
-            //             && currentPose.getY() >= obs.obstaclePose.getY()
-            //             && obs.type == obstacleType.SQUARE) {
-            //         yRepelForce -= .5;
-            // obs.obstaclePose.getY()
-            //         - currentPose.getY()
-            //                 / 10
-            //                 * (Math.pow(Math.E, 1)
-            //                         * Math.pow(
-            //                                 Math.E,
-            //                                 2
-            //                                         - 3
-            //                                                 * (obs.obstaclePose.getY()
-            //                                                         - currentPose
-            //                                                                 .getY()))); //
-            // Math.E * Math.pow(Math.E, 2 - currentPose.getY()-obs.obstaclePose.getY());
-            //     }
         }
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
         DogLog.log("Commands/repulsor/DeltaTime", deltaTime);
