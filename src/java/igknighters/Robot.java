@@ -11,6 +11,9 @@ import choreo.auto.AutoFactory;
 import dev.doglog.DogLog;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -25,6 +28,7 @@ import igknighters.commands.IndexerCommands;
 import igknighters.commands.SubsystemTriggers;
 import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
+import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
@@ -38,13 +42,19 @@ import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.FuelSim;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Optional;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
     private AutoFactory autoFactory;
     public final AutoChooser autoChooser = new AutoChooser();
-
+    double i = 0;
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
 
@@ -96,7 +106,7 @@ public class Robot extends TimedRobot {
     public void publishCommandsAndSubystems(Subsystems subsystems) {
         SmartDashboard.putData(CommandScheduler.getInstance());
         for (var subsystem : subsystems.lockedResources) {
-            SmartDashboard.putData(subsystem);
+            SmartDashboard.putData("SubsystemCommands/" + subsystem.getName(), subsystem);
         }
     }
 
@@ -128,7 +138,51 @@ public class Robot extends TimedRobot {
                 IndexerCommands.dispense(subsystems.indexer));
     }
 
+    public void setUpAdvantageScope() {
+
+        // Record metadata
+        Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+        Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+        Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+        Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+        Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+        Logger.recordMetadata(
+                "GitDirty",
+                switch (BuildConstants.DIRTY) {
+                    case 0 -> "All changes committed";
+                    case 1 -> "Uncommitted changes";
+                    default -> "Unknown";
+                });
+        try {
+            Logger.recordMetadata(
+                    "Hostname",
+                    InetAddress.getLocalHost().getHostName().replaceAll("\\.local$", ""));
+        } catch (UnknownHostException e) {
+            Logger.recordMetadata("Hostname", "Unknown");
+        }
+        Logger.recordMetadata(
+                "Platform",
+                "%s %s (%s)"
+                        .formatted(
+                                System.getProperty("os.name").replace(" ", ""),
+                                System.getProperty("os.version"),
+                                System.getProperty("os.arch")));
+        if (Robot.isReal()) {
+            Logger.addDataReceiver(new WPILOGWriter());
+            Logger.addDataReceiver(new NT4Publisher());
+        } else {
+            Logger.addDataReceiver(new NT4Publisher());
+        }
+
+        // Set timing mode
+        setUseTiming(true);
+
+        // Start AdvantageKit logger
+        Logger.start();
+    }
+
     public Robot() {
+        setUpAdvantageScope();
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
@@ -153,6 +207,7 @@ public class Robot extends TimedRobot {
     }
 
     public Robot(boolean isSwerveDisabled) {
+        setUpAdvantageScope();
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
@@ -170,15 +225,58 @@ public class Robot extends TimedRobot {
         bindDriverController();
 
         subsystemTriggers.SetupTriggers(subsytems, driverController);
+    }
 
-        if (isSimulation()) {
-            configureFuelSim();
-        }
+    public Pose3d getTurretPose(double turretAngleDegrees) {
+        // Assuming the turret is mounted at the center of the robot and has a fixed height
+        double xMeterOffset = -0.1; // X offset from robot center to turret
+        double yMeterOffset = -0.12; // Y offset from robot center to turret
+        double zMeterOffset = 0.3; // Height of the turret from the ground
+        return new Pose3d(
+                xMeterOffset,
+                yMeterOffset,
+                zMeterOffset,
+                new Rotation3d(0, 0, turretAngleDegrees * Math.PI / 180));
+    }
+
+    public Pose3d getHoodPose(double hoodAngleDegrees) {
+        double dx = 0.09; // X offset from turret center to hood
+        double dy = 0.0; // Y offset from turret center to hood
+        double dz = 0.12; // z offset from turret pivot to hood pivot
+
+        Pose3d turretPose = getTurretPose(subsytems.shooter.getTurretAngleDegrees());
+
+        Pose3d hoodPosition =
+                turretPose.transformBy(
+                        new Transform3d(
+                                dx,
+                                dy,
+                                dz,
+                                new Rotation3d(
+                                        0.0, hoodAngleDegrees * Conv.DEGREES_TO_RADIANS, 0.0)));
+        return hoodPosition;
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+        FieldVisualizer.getInstance().testZeroedComponents();
+        FieldVisualizer.getInstance()
+                .updateTurret(
+                        subsytems.shooter.getTurretAngleDegrees(),
+                        subsytems.swerve.getState().Pose);
+        Logger.recordOutput(
+                "componentPoses",
+                new Pose3d[] {
+                    getTurretPose(subsytems.shooter.getTurretAngleDegrees()),
+                    getHoodPose(subsytems.shooter.getHoodAngleDegrees())
+                });
+        Logger.recordOutput(
+                "zeroedPoses",
+                new Pose3d[] {
+                    new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0)),
+                    new Pose3d(0, 0, 0, new Rotation3d(0, 0.0, 0))
+                });
 
         if (kUseLimelight) {
             var driveState = subsytems.swerve.getState();
