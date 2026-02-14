@@ -4,21 +4,23 @@
 
 package igknighters;
 
+import static edu.wpi.first.units.Units.*;
+
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import dev.doglog.DogLog;
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.SubsystemTriggers;
 import igknighters.commands.autos.AutoRoutines;
@@ -33,6 +35,7 @@ import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
+import igknighters.util.FuelSim;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import java.util.Optional;
@@ -48,6 +51,9 @@ public class Robot extends TimedRobot {
     private final DriverController driverController = new DriverController(0);
 
     public final Subsystems subsytems;
+
+    private FuelSim fuelSim;
+    private double lastShotTime = 0.0;
 
     private final boolean kUseLimelight = true;
 
@@ -140,6 +146,10 @@ public class Robot extends TimedRobot {
         bindDriverController();
 
         subsystemTriggers.SetupTriggers(subsytems, driverController);
+
+        if (isSimulation()) {
+            configureFuelSim();
+        }
     }
 
     public Robot(boolean isSwerveDisabled) {
@@ -160,6 +170,10 @@ public class Robot extends TimedRobot {
         bindDriverController();
 
         subsystemTriggers.SetupTriggers(subsytems, driverController);
+
+        if (isSimulation()) {
+            configureFuelSim();
+        }
     }
 
     @Override
@@ -172,11 +186,14 @@ public class Robot extends TimedRobot {
             double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
             Pose2d currentPose =
                     subsytems.vision.getRobotPoseFromVision(headingDeg, omegaRps, 0, 0, 0, 0);
-                    
+
             if (currentPose != null) {
                 subsytems.swerve.addVisionMeasurement(
-                        currentPose, subsytems.vision.getLastTimeStamp(), VecBuilder.fill(0.05, 0.05, 0.1)); // trusts vision rotation less. Needs tuning
-                        // increase the std devs to trust vision less
+                        currentPose,
+                        subsytems.vision.getLastTimeStamp(),
+                        VecBuilder.fill(
+                                0.05, 0.05, 0.1)); // trusts vision rotation less. Needs tuning
+                // increase the std devs to trust vision less
             }
         }
     }
@@ -247,9 +264,74 @@ public class Robot extends TimedRobot {
 
     @Override
     public void simulationPeriodic() {
-        // for (var subsystem : subsytems.locklessResources) {
-        //     subsystem.simulationPeriodic();
-        // }
+        if (fuelSim != null) {
+            fuelSim.updateSim();
+
+            // Logic to launch fuel when dispensing and shooter is ready
+            double currentTime = RobotController.getFPGATime() / 1.0e6;
+            if (subsytems.indexer.getExitRollerRPM() > 50.0
+                    && subsytems.shooter.getCurrentState().rpm > 500.0
+                    && (currentTime - lastShotTime) > 0.5) { // 0.5s cooldown
+
+                var shooterState = subsytems.shooter.getCurrentState();
+
+                // Launch parameters
+                // Velocity is approx (RPM * radius / 2) because only one side is driven (per
+                // AimSolver)
+                double flywheelRadius = 0.0508; // 2 inches
+                double launchVelocity =
+                        (shooterState.rpm * 2.0 * Math.PI / 60.0 * flywheelRadius) / 2.0;
+
+                fuelSim.launchFuel(
+                        MetersPerSecond.of(launchVelocity),
+                        Radians.of(Math.PI / 2 - shooterState.hoodAngleRads),
+                        Radians.of(shooterState.turretAngleRads),
+                        Meters.of(0.4) // height of shooter exit
+                        );
+
+                lastShotTime = currentTime;
+                DogLog.log("Simulation/FuelLaunched", true);
+            }
+        }
+    }
+
+    private void configureFuelSim() {
+        fuelSim = new FuelSim();
+        fuelSim.spawnStartingFuel();
+        fuelSim.start();
+        SmartDashboard.putData(
+                Commands.runOnce(
+                                () -> {
+                                    fuelSim.clearFuel();
+                                    fuelSim.spawnStartingFuel();
+                                })
+                        .withName("Reset Fuel")
+                        .ignoringDisable(true));
+
+        configureFuelSimRobot();
+    }
+
+    private void configureFuelSimRobot() {
+        // Chassis is approx 21x21 inches (0.53m). With bumpers, approx 28x28 (0.71m).
+        double width = 0.71;
+        double length = 0.71;
+        double bumperHeight = 0.2;
+
+        fuelSim.registerRobot(
+                width,
+                length,
+                bumperHeight,
+                () -> subsytems.swerve.getState().Pose,
+                () -> subsytems.swerve.getState().Speeds);
+
+        // Register a front intake zone (0.1m deep, 0.4m wide, centered in front of bumper)
+        fuelSim.registerIntake(
+                length / 2,
+                length / 2 + 0.1,
+                -0.2,
+                0.2,
+                () -> true,
+                () -> DogLog.log("Simulation/FuelIntaked", true));
     }
 
     public static boolean isBlue() {
