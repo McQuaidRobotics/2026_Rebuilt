@@ -391,8 +391,14 @@ public class AimSolver {
             double vx = robotVel.vxMetersPerSecond;
             double vy = robotVel.vyMetersPerSecond;
 
-            double projectedX = targetPose.getX() - vx;
-            double projectedY = targetPose.getY() - vy;
+            double projectedX = targetPose.getX() - (vx * distance / 2.0); // This is a very rough
+            // estimate
+            // of where the
+            // target will be
+            double projectedY = targetPose.getY() - (vy * distance / 2.0); // This is a very rough
+            // estimate
+            // of where the
+            // target will be
 
             Pose3d projectedTargetPose =
                     new Pose3d(projectedX, projectedY, targetPose.getZ(), targetPose.getRotation());
