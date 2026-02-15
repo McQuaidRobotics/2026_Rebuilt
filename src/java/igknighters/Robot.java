@@ -432,7 +432,7 @@ public class Robot extends LoggedRobot {
                 length,
                 bumperHeight,
                 () -> subsytems.swerve.getState().Pose,
-                () -> subsytems.swerve.getState().Speeds);
+                subsytems.swerve::getFieldRelativeSpeeds);
 
         // Register a front intake zone (0.1m deep, 0.4m wide, centered in front of bumper)
         fuelSim.registerIntake(

@@ -14,7 +14,7 @@ public class HigherOrderCommands {
                         ShooterCommands.shootIChoseTargetWithLookAhead(
                                         subsystems.shooter,
                                         () -> subsystems.swerve.getState().Pose,
-                                        () -> subsystems.swerve.getState().Speeds)
+                                        subsystems.swerve::getFieldRelativeSpeeds)
                                 .withName("Aim At in Shoot till Empty"),
                         IndexerCommands.dispense(subsystems.indexer)
                                 .onlyIf(() -> subsystems.shooter.atTarget(300, 2, 2)))
@@ -26,7 +26,7 @@ public class HigherOrderCommands {
                 ShooterCommands.shootIChoseTargetWithLookAhead(
                                 subsystems.shooter,
                                 () -> subsystems.swerve.getState().Pose,
-                                () -> subsystems.swerve.getState().Speeds)
+                                subsystems.swerve::getFieldRelativeSpeeds)
                         .repeatedly()
                         .withName("SHOOTING WHILE DOING OTHER STUFF"),
                 IndexerCommands.dispense(subsystems.indexer)

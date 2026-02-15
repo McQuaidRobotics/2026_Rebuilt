@@ -380,6 +380,26 @@ public class AimSolver {
             return new ShooterState(currentRPM, turretAngle, hoodSetpoint);
         }
 
+        public static ShooterState solve_with_project(
+                Pose3d targetPose,
+                Pose3d shooterPose,
+                double currentRPM,
+                ChassisSpeeds robotVel,
+                double delaySeconds) {
+
+            double distance = shooterPose.getTranslation().getDistance(targetPose.getTranslation());
+            double vx = robotVel.vxMetersPerSecond;
+            double vy = robotVel.vyMetersPerSecond;
+
+            double projectedX = targetPose.getX() - vx;
+            double projectedY = targetPose.getY() - vy;
+
+            Pose3d projectedTargetPose =
+                    new Pose3d(projectedX, projectedY, targetPose.getZ(), targetPose.getRotation());
+
+            return solve_simple_no_AR_or_FutureTiming(projectedTargetPose, shooterPose, currentRPM);
+        }
+
         public static double getShotTime(
                 double ballLaunchVelocity,
                 double hoodAngleRadians,
