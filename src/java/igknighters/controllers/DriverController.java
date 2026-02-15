@@ -16,7 +16,6 @@ import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
 import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
-import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.ClimberState;
 import igknighters.subsystems.shooter.ShooterState;
@@ -162,8 +161,7 @@ public class DriverController {
                             subsystems.shooter, new ShooterState(0, 0, Math.PI / 6)));
             this.DPD.onTrue(
                     Commands.runOnce(
-                            () -> subsystems.shooter.setHoodAngleDegrees(kHood.MIN_ANGLE_DEGREES),
-                            subsystems.shooter));
+                            () -> subsystems.shooter.setHoodAngleDegrees(0.0), subsystems.shooter));
 
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));

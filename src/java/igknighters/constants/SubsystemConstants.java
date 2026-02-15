@@ -196,7 +196,7 @@ public class SubsystemConstants {
             public static final double kI = 0.0;
             public static final double kD = 0.05;
             public static final double kS = 0.23;
-            public static final double kV = 0.02;
+            public static final double kV = 0.1365;
             public static final double kA = 0.005;
             public static final double JKG_M2 = 0.01;
             public static final double LENGTH_METERS =
