@@ -149,8 +149,11 @@ public class DriverController {
             //                 () -> FieldConstants.PASS.POSITION_RIGHT_BLUE));
             // this.LT.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
 
-            this.A.whileTrue(ShooterCommands.targetState(shooter, 0, Math.PI, 0));
-            thie.
+            this.A.whileTrue(ShooterCommands.targetState(shooter, 0, 90, 0));
+            this.B.whileTrue(ShooterCommands.targetState(shooter, 0, 180, 0));
+            this.X.whileTrue(ShooterCommands.targetState(shooter, 0, 270, 0));
+            this.Y.whileTrue(ShooterCommands.targetState(shooter, 0, 360, 0));
+
 
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));
