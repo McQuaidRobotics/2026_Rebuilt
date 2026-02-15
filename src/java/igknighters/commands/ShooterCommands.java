@@ -34,6 +34,11 @@ public class ShooterCommands {
         return shooter.run(() -> shooter.targetState(3000, 0, 0)).withName("Idle Shooter");
     }
 
+    public static Command targetState(Shooter shooter, double RPM, double turretAngleDegrees, double hoodAngleDegrees) {
+        return shooter.run(() -> shooter.targetState(RPM, turretAngleDegrees, hoodAngleDegrees))
+                .withName("Target Shooter State");
+    }
+
     public static Command aimAt(
             Shooter shooter,
             Supplier<Pose2d> robotPoseSupplier,
@@ -216,6 +221,8 @@ public class ShooterCommands {
                         })
                 .withName("Aiming at auto chosen target");
     }
+
+
 
     public static Command shootIChoseTargetWithLookAhead(
             Shooter shooter, Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotVelocity) {

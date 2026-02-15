@@ -129,25 +129,28 @@ public class DriverController {
                             state.kI,
                             (state.kD)));
         } else if (debugType == DebugType.SHOOTER) {
-            this.A.whileTrue(
-                    ShooterCommands.shootIChoseTargetWithLookAhead(
-                            shooter, () -> swerve.getState().Pose, () -> swerve.getState().Speeds));
-            this.LT.whileTrue(
-                    ShooterCommands.aimAt(
-                            shooter,
-                            () -> swerve.getState().Pose,
-                            () -> FieldConstants.HUB.POSE3D_RED));
-            this.X.whileTrue(
-                    ShooterCommands.aimAt(
-                            shooter,
-                            () -> swerve.getState().Pose,
-                            () -> FieldConstants.PASS.POSITION_LEFT_BLUE));
-            this.Y.whileTrue(
-                    ShooterCommands.aimAt(
-                            shooter,
-                            () -> swerve.getState().Pose,
-                            () -> FieldConstants.PASS.POSITION_RIGHT_BLUE));
-            this.LT.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
+            // this.A.whileTrue(
+            //         ShooterCommands.shootIChoseTargetWithLookAhead(
+            //                 shooter, () -> swerve.getState().Pose, () -> swerve.getState().Speeds));
+            // this.LT.whileTrue(
+            //         ShooterCommands.aimAt(
+            //                 shooter,
+            //                 () -> swerve.getState().Pose,
+            //                 () -> FieldConstants.HUB.POSE3D_RED));
+            // this.X.whileTrue(
+            //         ShooterCommands.aimAt(
+            //                 shooter,
+            //                 () -> swerve.getState().Pose,
+            //                 () -> FieldConstants.PASS.POSITION_LEFT_BLUE));
+            // this.Y.whileTrue(
+            //         ShooterCommands.aimAt(
+            //                 shooter,
+            //                 () -> swerve.getState().Pose,
+            //                 () -> FieldConstants.PASS.POSITION_RIGHT_BLUE));
+            // this.LT.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
+
+            this.A.whileTrue(ShooterCommands.targetState(shooter, 0, Math.PI, 0));
+            thie.
 
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));
