@@ -113,7 +113,7 @@ public class DriverController {
                                 Units.inchesToMeters(317.69 / 2),
                                 new Rotation2d()),
                         2));
-        this.X.whileTrue(IntakeCommands.goTo(intake, 90, 100));
+        this.X.whileTrue(IntakeCommands.goTo(intake, 90, 300));
 
         this.LT.onTrue(IndexerCommands.dispense(subsystems.indexer, 120));
         this.RT.onTrue(IndexerCommands.dispense(subsystems.indexer, 180));
