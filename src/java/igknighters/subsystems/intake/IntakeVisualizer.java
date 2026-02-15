@@ -88,11 +88,9 @@ public class IntakeVisualizer {
     //     return new Color8Bit((int) r, (int) g, 0);
     // }
 
-    public void update(IntakeState intakeState) {
-        double hoodAngleDegrees = Math.toDegrees(intakeState.pivotDegrees);
-        double rpm = intakeState.rollerSpeedRPM;
+    public void update(double pivotAngleDegrees, double RPM) {
 
-        pivotLigament.setAngle(intakeState.pivotDegrees);
-        // pivotLigament.setColor(getRPMColor(intakeState.rollerSpeedRPM));
+        pivotLigament.setAngle(pivotAngleDegrees);
+        // pivotLigament.setColor(getRPMColor(rpm));
     }
 }

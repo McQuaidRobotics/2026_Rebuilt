@@ -2,16 +2,19 @@ package igknighters.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
+import igknighters.constants.Conv;
 import igknighters.subsystems.intake.pivot.Pivot;
 import igknighters.subsystems.intake.pivot.PivotDisabled;
 import igknighters.subsystems.intake.pivot.PivotSim;
 import igknighters.subsystems.intake.rollers.Rollers;
 import igknighters.subsystems.intake.rollers.RollersDisabled;
 import igknighters.subsystems.intake.rollers.RollersSim;
+import igknighters.subsystems.intake.IntakeState;
 
 public class Intake extends SubsystemBase {
     private final Pivot pivot;
     private final Rollers rollers;
+    private final IntakeVisualizer visualizer;
 
     public Intake() {
         if (Robot.isReal()) {
@@ -21,6 +24,7 @@ public class Intake extends SubsystemBase {
             pivot = new PivotSim();
             rollers = new RollersSim();
         }
+        visualizer = new IntakeVisualizer();
     }
 
     public void goTo(double angleDegrees, double speedRPM) {
@@ -43,5 +47,6 @@ public class Intake extends SubsystemBase {
     public void periodic() {
         pivot.periodic();
         rollers.periodic();
+        visualizer.update(pivot.getAngleDegrees(), rollers.getSpeedRPM());
     }
 }
