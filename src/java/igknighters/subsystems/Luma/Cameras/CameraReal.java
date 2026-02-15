@@ -16,7 +16,7 @@ public class CameraReal extends Camera {
     PhotonCamera camera;
     String name;
     double cameraHeightMeters;
-    double cameraPitchRadians;
+    double cameraPitchRadians = 0.0;
     Translation2d robotToCameraTranslation;
     List<PhotonPipelineResult> results = new ArrayList<>();
     boolean noObjects = false;
@@ -34,7 +34,7 @@ public class CameraReal extends Camera {
     }
 
     public CameraReal(String cameraName) {
-        this(cameraName, 0.5, new Translation2d()); // Default placeholder values
+        this(cameraName, 0.05, new Translation2d()); // placeholder values, the camera itself is 5cm tall
     }
 
     @Override
@@ -59,10 +59,14 @@ public class CameraReal extends Camera {
         // THIS FOR LOOP DOES NOT WORK AND I DONT KNOW WHY (IT GIVES TOO MANY)
         for (int resultNumber = 0; resultNumber < results.size(); resultNumber++) {
             PhotonPipelineResult gamePieces = results.get(resultNumber);
-            for (int gamePieceNumber = 0; gamePieceNumber < gamePieces.getTargets().size(); gamePieceNumber++) {
+            for (int gamePieceNumber = 0;
+                    gamePieceNumber < gamePieces.getTargets().size();
+                    gamePieceNumber++) {
                 PhotonTrackedTarget gamePiece = gamePieces.getTargets().get(gamePieceNumber);
                 DogLog.log(
-                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/" + gamePieceNumber + "/pitch",
+                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/"
+                                + gamePieceNumber
+                                + "/pitch",
                         gamePiece.pitch);
                 DogLog.log(
                         "Subsystems/Vision/ObjectDetection/GAMEPIECES/" + gamePieceNumber + "/yaw",
