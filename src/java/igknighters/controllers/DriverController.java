@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.IndexerCommands;
+import igknighters.commands.IntakeCommands;
 import igknighters.commands.Repulsor;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
@@ -97,6 +98,7 @@ public class DriverController {
     public void bind(final Subsystems subsystems) {
         DrivingSharedState state = DrivingSharedState.getInstance();
         var swerve = subsystems.swerve;
+        var intake = subsystems.intake;
 
         this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
         this.A.whileTrue(
@@ -111,6 +113,7 @@ public class DriverController {
                                 Units.inchesToMeters(317.69 / 2),
                                 new Rotation2d()),
                         2));
+        this.X.whileTrue(IntakeCommands.goTo(intake, 90, 100));
 
         this.LT.onTrue(IndexerCommands.dispense(subsystems.indexer, 120));
         this.RT.onTrue(IndexerCommands.dispense(subsystems.indexer, 180));
