@@ -303,12 +303,6 @@ public class Robot extends LoggedRobot {
     public void disabledInit() {
         CommandScheduler.getInstance().cancelAll();
         // CommandScheduler.getInstance().getActiveButtonLoop().clear();
-        if (fuelSim != null) {
-
-            fuelSim.clearFuel();
-            fuelSim.spawnStartingFuel();
-            fuelSim.stop();
-        }
         CommandScheduler.getInstance().clearComposedCommands();
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, detune.value()));
@@ -406,15 +400,14 @@ public class Robot extends LoggedRobot {
 
     private void configureFuelSim() {
         fuelSim = new FuelSim();
-        fuelSim.spawnStartingFuel();
+        // fuelSim.spawnStartingFuel();
         fuelSim.start();
         SmartDashboard.putData(
                 Commands.runOnce(
                                 () -> {
                                     fuelSim.clearFuel();
-                                    fuelSim.spawnStartingFuel();
                                 })
-                        .withName("Reset Fuel")
+                        .withName("Clear Fuel")
                         .ignoringDisable(true));
         fuelSim.enableAirResistance();
 

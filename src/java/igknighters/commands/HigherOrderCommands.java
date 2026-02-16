@@ -23,10 +23,11 @@ public class HigherOrderCommands {
 
     public static Command shootNoStop(Subsystems subsystems) {
         return Commands.parallel(
-                ShooterCommands.shootIChoseTargetWithLookAhead(
+                ShooterCommands.shootWithMaxHeight(
                                 subsystems.shooter,
                                 () -> subsystems.swerve.getState().Pose,
-                                subsystems.swerve::getFieldRelativeSpeeds)
+                                subsystems.swerve::getFieldRelativeSpeeds,
+                                4.0)
                         .repeatedly()
                         .withName("SHOOTING WHILE DOING OTHER STUFF"),
                 IndexerCommands.dispense(subsystems.indexer)

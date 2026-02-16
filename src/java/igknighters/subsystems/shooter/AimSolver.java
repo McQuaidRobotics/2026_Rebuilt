@@ -457,40 +457,44 @@ public class AimSolver {
                 double delaySeconds,
                 double maxHeightMeters) {
 
-            // --- 1. Position Prediction (Moving Target) ---
+            // --- 1. Position Prediction (Predict where robot will be when it shoots) ---
             double vx = robotVel.vxMetersPerSecond;
             double vy = robotVel.vyMetersPerSecond;
+            double omega = robotVel.omegaRadiansPerSecond;
 
-            // --- 2. Initial Geometry ---
-            double dx = targetPose.getX() - shooterPose.getX();
-            double dy = targetPose.getY() - shooterPose.getY();
-            double dz = targetPose.getZ() - shooterPose.getZ();
-            double d_horizontal = Math.sqrt(dx * dx + dy * dy);
+            double sx = shooterPose.getX() + vx * delaySeconds;
+            double sy = shooterPose.getY() + vy * delaySeconds;
             double sz = shooterPose.getZ();
 
+            double tx = targetPose.getX();
+            double ty = targetPose.getY();
+            double tz = targetPose.getZ();
+
+            // --- 2. Geometry relative to predicted launch point ---
+            double dx = tx - sx;
+            double dy = ty - sy;
+            double dz = tz - sz;
+            double d_horizontal = Math.sqrt(dx * dx + dy * dy);
+
             // --- 3. Air Resistance (Arc Distance) ---
-            // We estimate the launch angle (~45 deg) to guess the arc length for drag
-            // Path length of a parabola is approx: s = d_horiz * (1 + 2/3 * (h_peak/d_horiz)^2)
             double peakHeight = maxHeightMeters - sz;
-            double arcLengthFactor = 1.0 + (2.0 / 3.0) * Math.pow(peakHeight / d_horizontal, 2);
+            double arcLengthFactor =
+                    1.0 + (2.0 / 3.0) * Math.pow(peakHeight / Math.max(d_horizontal, 0.1), 2);
             double estimatedArcDistance = d_horizontal * arcLengthFactor;
 
             // Drag compensation adds "virtual distance" to the target
-            // Adjust the 0.02 constant based on how much your ball slows down
             double dragAdjustment = Math.pow(estimatedArcDistance, 2) * 0.012;
             double angleToTarget = Math.atan2(dy, dx);
 
-            double compensated_dx = dx + Math.cos(angleToTarget) * dragAdjustment;
-            double compensated_dy = dy + Math.sin(angleToTarget) * dragAdjustment;
-            double d_comp =
-                    Math.sqrt(compensated_dx * compensated_dx + compensated_dy * compensated_dy);
+            // Required horizontal distance including drag compensation
+            double d_comp = d_horizontal + dragAdjustment;
 
             // --- 4. Vertical Velocity (Vz) for Max Height ---
             // Ensure relativeMaxHeight is at least slightly above the target
             double relativeMaxHeight = Math.max(maxHeightMeters - sz, dz + 0.1);
             double vz = Math.sqrt(2 * G * relativeMaxHeight);
 
-            // --- 5. Solve for Time and Horizontal Velocity ---
+            // --- 5. Solve for Time and Required Horizontal Velocity (Field Frame) ---
             double a = 0.5 * G;
             double b = -vz;
             double c = dz;
@@ -502,10 +506,23 @@ public class AimSolver {
             }
 
             double t = (-b + Math.sqrt(discriminant)) / (2 * a);
-            double vh = d_comp / t;
+            double vh_required = d_comp / t;
 
-            // --- 6. Hardware Constraint Validation ---
-            double launchAngle = Math.atan2(vz, vh);
+            // --- 6. Vector Compensation for Robot Velocity ---
+            // Desired ball velocity in field horizontal plane:
+            double v_ball_x = vh_required * Math.cos(angleToTarget);
+            double v_ball_y = vh_required * Math.sin(angleToTarget);
+
+            // Required velocity from flywheel (relative to robot):
+            double v_flywheel_x = v_ball_x - vx;
+            double v_flywheel_y = v_ball_y - vy;
+
+            double vh_flywheel =
+                    Math.sqrt(v_flywheel_x * v_flywheel_x + v_flywheel_y * v_flywheel_y);
+            double fieldShotAngle = Math.atan2(v_flywheel_y, v_flywheel_x);
+
+            // --- 7. Hardware Constraint Validation ---
+            double launchAngle = Math.atan2(vz, vh_flywheel);
             double hoodSetpointRads = Math.PI / 2 - launchAngle;
 
             // Retrieve constants from your SubsystemConstants
@@ -518,13 +535,18 @@ public class AimSolver {
             // Clamp the setpoint so we don't break the hood if anglePossible is false
             double clampedHoodSetpoint = MathUtil.clamp(hoodSetpointRads, minHood, maxHood);
 
-            // --- 7. Calculate Required RPM ---
-            double vRequired = Math.sqrt(vh * vh + vz * vz);
+            // --- 8. Calculate Required RPM ---
+            double vRequiredTotal = Math.sqrt(vh_flywheel * vh_flywheel + vz * vz);
             double velocityMultiplier = 0.5; // Typical for a tangential shooter
             double requiredRPM =
-                    (vRequired / (FLYWHEEL_RADIUS * velocityMultiplier)) * 60.0 / (2.0 * Math.PI);
+                    (vRequiredTotal / (FLYWHEEL_RADIUS * velocityMultiplier))
+                            * 60.0
+                            / (2.0 * Math.PI);
 
-            // --- 8. Final "Can Shoot" Status ---
+            // --- 9. Final Status and Results ---
+            double robotYawFuture = shooterPose.getRotation().getZ() + omega * delaySeconds;
+            double turretAngle = MathUtil.angleModulus(fieldShotAngle - robotYawFuture);
+
             double rpmError = Math.abs(currentRPM - requiredRPM);
             boolean rpmPossible = requiredRPM < SubsystemConstants.kShooter.kRollers.MAX_SPEED_RPM;
             boolean rpmReady = rpmError < 150.0;
@@ -532,15 +554,24 @@ public class AimSolver {
             // The shot is only "Green" if physics work, hardware can reach it, and RPM is spun up
             canShoot(anglePossible && rpmPossible && rpmReady);
 
-            // --- 9. Return Results ---
-            double robotYaw = shooterPose.getRotation().getZ();
-            double turretAngle =
-                    MathUtil.angleModulus(Math.atan2(compensated_dy, compensated_dx) - robotYaw);
-
             // If the angle wasn't possible, we return 0 RPM to prevent shooting a "bad" ball
             if (!anglePossible || !rpmPossible) {
                 return new ShooterState(0, turretAngle, clampedHoodSetpoint);
             }
+
+            // For visualization, use the predicted future pose and field-relative results
+            double v_field_h = vh_required;
+            double v_field_total = Math.sqrt(v_field_h * v_field_h + vz * vz);
+            double launchAngleField = Math.atan2(vz, v_field_h);
+            double turretAngleForVis = angleToTarget - robotYawFuture;
+
+            Pose3d futureShooterPose = new Pose3d(sx, sy, sz, new Rotation3d(0, 0, robotYawFuture));
+            publishShotTrajectory(
+                    v_field_total,
+                    launchAngleField,
+                    turretAngleForVis,
+                    futureShooterPose,
+                    targetPose);
 
             return new ShooterState(requiredRPM, turretAngle, clampedHoodSetpoint);
         }

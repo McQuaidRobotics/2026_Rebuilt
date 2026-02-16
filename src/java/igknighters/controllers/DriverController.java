@@ -188,6 +188,8 @@ public class DriverController {
                         swerve::getFieldRelativeSpeeds,
                         4.0));
         this.RT.whileTrue(IndexerCommands.dispense(subsystems.indexer));
+
+        this.X.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {
