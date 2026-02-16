@@ -4,6 +4,7 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -380,6 +381,50 @@ public class AimSolver {
             return new ShooterState(currentRPM, turretAngle, hoodSetpoint);
         }
 
+        public static Translation2d addDToTargetWithAirResistance(
+                Pose3d targetPose, Pose3d shooterPose, double launchAngleRads) {
+
+            double d = shooterPose.getTranslation().getDistance(targetPose.getTranslation());
+
+            // Approximate Arc Length: If the shot is flat, length = d.
+            // If it's a high arc, the path is significantly longer.
+            // A simple trig approximation for path length: L = d / cos(launchAngle)
+            double cosAngle = Math.cos(launchAngleRads);
+            double arcLengthApproximation = d / Math.max(cosAngle, 0.5);
+
+            double angleToTarget =
+                    Math.atan2(
+                            targetPose.getY() - shooterPose.getY(),
+                            targetPose.getX() - shooterPose.getX());
+
+            // Drag Constant: Adjust this '0.015' based on testing.
+            // It adds extra distance to the 'target' to make the robot over-shoot
+            // and compensate for drag.
+            double dragComp = arcLengthApproximation * arcLengthApproximation * 0.015;
+
+            double px = Math.cos(angleToTarget) * dragComp;
+            double py = Math.sin(angleToTarget) * dragComp;
+
+            return new Translation2d(px, py);
+        }
+
+        public static Translation2d addDToTargetWithAirResistance(
+                Pose3d targetPose, Pose3d shooterPose) {
+            double d = shooterPose.getTranslation().getDistance(targetPose.getTranslation());
+
+            // this is complete bs
+            double angleToTarget =
+                    Math.atan2(
+                            targetPose.getY() - shooterPose.getY(),
+                            targetPose.getX() - shooterPose.getX());
+            double p = d / 10.0;
+
+            double px = Math.cos(angleToTarget) * p;
+            double py = Math.sin(angleToTarget) * p;
+
+            return new Translation2d(px, py);
+        }
+
         public static ShooterState solve_with_project(
                 Pose3d targetPose,
                 Pose3d shooterPose,
@@ -391,88 +436,182 @@ public class AimSolver {
             double vx = robotVel.vxMetersPerSecond;
             double vy = robotVel.vyMetersPerSecond;
 
-            double projectedX = targetPose.getX() - (vx * distance / 2.0); // This is a very rough
-            // estimate
-            // of where the
-            // target will be
-            double projectedY = targetPose.getY() - (vy * distance / 2.0); // This is a very rough
-            // estimate
-            // of where the
-            // target will be
+            Translation2d AIR_RESISTANCE_ADDER =
+                    addDToTargetWithAirResistance(targetPose, shooterPose);
 
             Pose3d projectedTargetPose =
-                    new Pose3d(projectedX, projectedY, targetPose.getZ(), targetPose.getRotation());
+                    new Pose3d(
+                            targetPose.getX() + AIR_RESISTANCE_ADDER.getX() - vx,
+                            targetPose.getY() + AIR_RESISTANCE_ADDER.getY() - vy,
+                            targetPose.getZ(),
+                            targetPose.getRotation());
 
             return solve_simple_no_AR_or_FutureTiming(projectedTargetPose, shooterPose, currentRPM);
         }
 
-        public static double getShotTime(
-                double ballLaunchVelocity,
-                double hoodAngleRadians,
-                double shooterHeight,
-                double targetHeight) {
-            // Vertical component of the velocity
-            double vY = ballLaunchVelocity * Math.sin(hoodAngleRadians);
+        public static ShooterState solve_with_max_height(
+                Pose3d targetPose,
+                Pose3d shooterPose,
+                double currentRPM, // Now used for the "Ready" check
+                ChassisSpeeds robotVel,
+                double delaySeconds,
+                double maxHeightMeters) {
 
-            // Time to reach the target height using the formula: h = vY * t - 0.5 * g * t^2
-            // Rearranging gives: 0.5 * g * t^2 - vY * t + (targetHeight - shooterHeight) = 0
+            // --- 1. Position Prediction (Moving Target) ---
+            double vx = robotVel.vxMetersPerSecond;
+            double vy = robotVel.vyMetersPerSecond;
+
+            // --- 2. Initial Geometry ---
+            double dx = targetPose.getX() - shooterPose.getX();
+            double dy = targetPose.getY() - shooterPose.getY();
+            double dz = targetPose.getZ() - shooterPose.getZ();
+            double d_horizontal = Math.sqrt(dx * dx + dy * dy);
+            double sz = shooterPose.getZ();
+
+            // --- 3. Air Resistance (Arc Distance) ---
+            // We estimate the launch angle (~45 deg) to guess the arc length for drag
+            // Path length of a parabola is approx: s = d_horiz * (1 + 2/3 * (h_peak/d_horiz)^2)
+            double peakHeight = maxHeightMeters - sz;
+            double arcLengthFactor = 1.0 + (2.0 / 3.0) * Math.pow(peakHeight / d_horizontal, 2);
+            double estimatedArcDistance = d_horizontal * arcLengthFactor;
+
+            // Drag compensation adds "virtual distance" to the target
+            // Adjust the 0.02 constant based on how much your ball slows down
+            double dragAdjustment = Math.pow(estimatedArcDistance, 2) * 0.012;
+            double angleToTarget = Math.atan2(dy, dx);
+
+            double compensated_dx = dx + Math.cos(angleToTarget) * dragAdjustment;
+            double compensated_dy = dy + Math.sin(angleToTarget) * dragAdjustment;
+            double d_comp =
+                    Math.sqrt(compensated_dx * compensated_dx + compensated_dy * compensated_dy);
+
+            // --- 4. Vertical Velocity (Vz) for Max Height ---
+            // Ensure relativeMaxHeight is at least slightly above the target
+            double relativeMaxHeight = Math.max(maxHeightMeters - sz, dz + 0.1);
+            double vz = Math.sqrt(2 * G * relativeMaxHeight);
+
+            // --- 5. Solve for Time and Horizontal Velocity ---
             double a = 0.5 * G;
-            double b = -vY;
-            double c = targetHeight - shooterHeight;
-
+            double b = -vz;
+            double c = dz;
             double discriminant = b * b - 4 * a * c;
 
             if (discriminant < 0) {
-                // No real solution, the shot cannot reach the target height
-                return Double.POSITIVE_INFINITY;
+                canShoot(false);
+                return new ShooterState(0, 0, 0);
             }
 
-            // We take the positive root since time cannot be negative
-            double time = (-b + Math.sqrt(discriminant)) / (2 * a);
-            return time;
-        }
+            double t = (-b + Math.sqrt(discriminant)) / (2 * a);
+            double vh = d_comp / t;
 
-        public static void publishShotTrajectory(
-                double ballLaunchVelocity,
-                double launchAngleRads,
-                double turretAngleRads,
-                Pose3d shooterPose3d,
-                Pose3d targetPose3d) {
-            double sx = shooterPose3d.getX();
-            double sy = shooterPose3d.getY();
-            double sz = shooterPose3d.getZ();
+            // --- 6. Hardware Constraint Validation ---
+            double launchAngle = Math.atan2(vz, vh);
+            double hoodSetpointRads = Math.PI / 2 - launchAngle;
 
-            // The turret angle is relative to the robot's yaw.
-            // We need the absolute field angle for the trajectory visualization.
-            double fieldShotAngle = shooterPose3d.getRotation().getZ() + turretAngleRads;
+            // Retrieve constants from your SubsystemConstants
+            double minHood = Math.toRadians(SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES);
+            double maxHood = Math.toRadians(SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES);
 
-            double time = getShotTime(ballLaunchVelocity, launchAngleRads, sz, targetPose3d.getZ());
-            if (Double.isInfinite(time) || time <= 0) time = 1.5; // Fallback for visualization
+            // Check if the angle is physically possible
+            boolean anglePossible = (hoodSetpointRads >= minHood && hoodSetpointRads <= maxHood);
 
-            int nPoints = 20;
-            Pose3d[] trajectoryPoints = new Pose3d[nPoints];
+            // Clamp the setpoint so we don't break the hood if anglePossible is false
+            double clampedHoodSetpoint = MathUtil.clamp(hoodSetpointRads, minHood, maxHood);
 
-            for (int i = 0; i < nPoints; i++) {
-                double t = (time / (nPoints - 1)) * i;
-                double x =
-                        sx
-                                + ballLaunchVelocity
-                                        * Math.cos(launchAngleRads)
-                                        * Math.cos(fieldShotAngle)
-                                        * t;
-                double y =
-                        sy
-                                + ballLaunchVelocity
-                                        * Math.cos(launchAngleRads)
-                                        * Math.sin(fieldShotAngle)
-                                        * t;
-                double z =
-                        sz + ballLaunchVelocity * Math.sin(launchAngleRads) * t - (0.5 * G * t * t);
+            // --- 7. Calculate Required RPM ---
+            double vRequired = Math.sqrt(vh * vh + vz * vz);
+            double velocityMultiplier = 0.5; // Typical for a tangential shooter
+            double requiredRPM =
+                    (vRequired / (FLYWHEEL_RADIUS * velocityMultiplier)) * 60.0 / (2.0 * Math.PI);
 
-                trajectoryPoints[i] = new Pose3d(x, y, Math.max(0, z), new Rotation3d());
+            // --- 8. Final "Can Shoot" Status ---
+            double rpmError = Math.abs(currentRPM - requiredRPM);
+            boolean rpmPossible = requiredRPM < SubsystemConstants.kShooter.kRollers.MAX_SPEED_RPM;
+            boolean rpmReady = rpmError < 150.0;
+
+            // The shot is only "Green" if physics work, hardware can reach it, and RPM is spun up
+            canShoot(anglePossible && rpmPossible && rpmReady);
+
+            // --- 9. Return Results ---
+            double robotYaw = shooterPose.getRotation().getZ();
+            double turretAngle =
+                    MathUtil.angleModulus(Math.atan2(compensated_dy, compensated_dx) - robotYaw);
+
+            // If the angle wasn't possible, we return 0 RPM to prevent shooting a "bad" ball
+            if (!anglePossible || !rpmPossible) {
+                return new ShooterState(0, turretAngle, clampedHoodSetpoint);
             }
 
-            Logger.recordOutput("Shooter/ShotTrajectory", trajectoryPoints);
+            return new ShooterState(requiredRPM, turretAngle, clampedHoodSetpoint);
         }
+    }
+
+    public static double getShotTime(
+            double ballLaunchVelocity,
+            double hoodAngleRadians,
+            double shooterHeight,
+            double targetHeight) {
+        // Vertical component of the velocity
+        double vY = ballLaunchVelocity * Math.sin(hoodAngleRadians);
+
+        // Time to reach the target height using the formula: h = vY * t - 0.5 * g * t^2
+        // Rearranging gives: 0.5 * g * t^2 - vY * t + (targetHeight - shooterHeight) = 0
+        double a = 0.5 * 9.81;
+        double b = -vY;
+        double c = targetHeight - shooterHeight;
+
+        double discriminant = b * b - 4 * a * c;
+
+        if (discriminant < 0) {
+            // No real solution, the shot cannot reach the target height
+            return Double.POSITIVE_INFINITY;
+        }
+
+        // We take the positive root since time cannot be negative
+        double time = (-b + Math.sqrt(discriminant)) / (2 * a);
+        return time;
+    }
+
+    public static void publishShotTrajectory(
+            double ballLaunchVelocity,
+            double launchAngleRads,
+            double turretAngleRads,
+            Pose3d shooterPose3d,
+            Pose3d targetPose3d) {
+        double sx = shooterPose3d.getX();
+        double sy = shooterPose3d.getY();
+        double sz = shooterPose3d.getZ();
+
+        // The turret angle is relative to the robot's yaw.
+        // We need the absolute field angle for the trajectory visualization.
+        double fieldShotAngle = shooterPose3d.getRotation().getZ() + turretAngleRads;
+
+        double time = getShotTime(ballLaunchVelocity, launchAngleRads, sz, targetPose3d.getZ());
+        if (Double.isInfinite(time) || time <= 0) time = 1.5; // Fallback for visualization
+
+        int nPoints = 20;
+        Pose3d[] trajectoryPoints = new Pose3d[nPoints];
+
+        for (int i = 0; i < nPoints; i++) {
+            double t = (time / (nPoints - 1)) * i;
+            double x =
+                    sx
+                            + ballLaunchVelocity
+                                    * Math.cos(launchAngleRads)
+                                    * Math.cos(fieldShotAngle)
+                                    * t;
+            double y =
+                    sy
+                            + ballLaunchVelocity
+                                    * Math.cos(launchAngleRads)
+                                    * Math.sin(fieldShotAngle)
+                                    * t;
+            double z =
+                    sz + ballLaunchVelocity * Math.sin(launchAngleRads) * t - (0.5 * 9.81 * t * t);
+
+            trajectoryPoints[i] = new Pose3d(x, y, Math.max(0, z), new Rotation3d());
+        }
+
+        Logger.recordOutput("Shooter/ShotTrajectory", trajectoryPoints);
     }
 }

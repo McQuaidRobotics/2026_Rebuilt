@@ -147,7 +147,12 @@ public class DriverController {
                             shooter,
                             () -> swerve.getState().Pose,
                             () -> FieldConstants.PASS.POSITION_RIGHT_BLUE));
-            this.LT.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
+            this.LT.whileTrue(
+                    ShooterCommands.shootWithMaxHeight(
+                            subsystems.shooter,
+                            () -> swerve.getState().Pose,
+                            swerve::getFieldRelativeSpeeds,
+                            3.0));
 
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));
@@ -177,10 +182,11 @@ public class DriverController {
         this.A.onFalse(IntakeCommands.goToStow(subsystems.intake));
 
         this.LT.whileTrue(
-                ShooterCommands.shootIChoseTargetWithLookAhead(
+                ShooterCommands.shootWithMaxHeight(
                         subsystems.shooter,
                         () -> swerve.getState().Pose,
-                        swerve::getFieldRelativeSpeeds));
+                        swerve::getFieldRelativeSpeeds,
+                        4.0));
         this.RT.whileTrue(IndexerCommands.dispense(subsystems.indexer));
     }
 

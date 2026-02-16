@@ -267,4 +267,59 @@ public class ShooterCommands {
                         })
                 .withName("Aiming at auto chosen target with look ahead");
     }
+
+    public static Command shootWithMaxHeight(
+            Shooter shooter,
+            Supplier<Pose2d> robotPoseSupplier,
+            Supplier<ChassisSpeeds> robotVelocitySupplier,
+            double maxHeightMeters) {
+        return shooter.run(
+                        () -> {
+                            Pose2d robotPose = robotPoseSupplier.get();
+                            Pose3d targetPose = getTargetPose(robotPoseSupplier);
+                            ChassisSpeeds robotVel = robotVelocitySupplier.get();
+
+                            // Define where the shooter is physically located on the robot
+                            Pose3d shooterPose =
+                                    new Pose3d(
+                                            robotPose.getX(),
+                                            robotPose.getY(),
+                                            SubsystemConstants.kShooter
+                                                    .kRollers
+                                                    .ShooterHeightMeters,
+                                            new Rotation3d(
+                                                    0.0,
+                                                    0.0,
+                                                    robotPose.getRotation().getRadians()));
+
+                            // Solve for the state.
+                            // Note: currentRPM is passed but effectively overridden by the solver
+                            // logic
+                            ShooterState targetingData =
+                                    AimSolver.Solvers.solve_with_max_height(
+                                            targetPose,
+                                            shooterPose,
+                                            shooter.getCurrentState().rpm,
+                                            robotVel,
+                                            0.02, // 20ms lookahead for robot movement
+                                            maxHeightMeters);
+
+                            // if targetingData.rpm is 0, the solver couldn't find a solution
+                            // (physically impossible)
+                            if (targetingData.rpm > 0.1) {
+                                shooter.targetState(
+                                        targetingData.rpm,
+                                        Math.toDegrees(targetingData.turretAngleRads),
+                                        Math.toDegrees(targetingData.hoodAngleRads));
+                            } else {
+                                // Fallback: Spin up to a safe mid-range RPM and keep turret pointed
+                                // at target
+                                shooter.targetState(
+                                        3000.0,
+                                        Math.toDegrees(targetingData.turretAngleRads),
+                                        SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES);
+                            }
+                        })
+                .withName("Shoot With Max Height: " + maxHeightMeters + "m");
+    }
 }
