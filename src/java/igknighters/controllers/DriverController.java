@@ -154,10 +154,10 @@ public class DriverController {
             this.B.onTrue(IndexerCommands.stopDispensing(indexer));
 
         } else if (debugType == DebugType.CLIMBER) {
-            this.A.onTrue(ClimberCommands.goToState(climber, ClimberState.CLIMB_PREP));
-            this.B.onTrue(ClimberCommands.goToState(climber, ClimberState.PULL_UP));
-            this.X.onTrue(ClimberCommands.goToState(climber, ClimberState.STOW));
-            this.Y.onTrue(ClimberCommands.stop(climber));
+            this.A.whileTrue(ClimberCommands.goToState(climber, ClimberState.CLIMB_PREP));
+            this.B.whileTrue(ClimberCommands.goToState(climber, ClimberState.PULL_UP));
+            this.X.whileTrue(ClimberCommands.goToState(climber, ClimberState.STOW));
+            this.Y.whileTrue(ClimberCommands.stop(climber));
             this.LT.whileTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
         } else if (debugType == DebugType.INTAKE) {
 

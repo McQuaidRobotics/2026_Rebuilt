@@ -42,6 +42,7 @@ public class ChainsawSim extends Chainsaw {
 
     @Override
     public void goUp() {
+        
         state = ChainsawState.GOING_UP;
     }
 
@@ -78,7 +79,7 @@ public class ChainsawSim extends Chainsaw {
         } else if (state == ChainsawState.GOING_DOWN) {
             if (isDown()) {
                 state = ChainsawState.STOPPED;
-                voltage = -6.0; // Simulated -6V down
+                voltage = 0.0; // Simulated -6V down
             } else {
                 voltage = -6.0;
             }
