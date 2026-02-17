@@ -1,10 +1,35 @@
 package igknighters.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.subsystems.climber.Climber;
 import igknighters.subsystems.climber.ClimberState;
 
 public class ClimberCommands {
+    public static Command holdAtStateUntil(
+            Climber climber, ClimberState state, double timeSeconds) {
+        // ensures it gets to the state first, then holds it there for the specified time, then
+        // stops the chainsaw
+        return Commands.sequence(
+                        goToState(climber, state),
+                        holdAtState(climber, state).withTimeout(timeSeconds),
+                        climber.runOnce(() -> climber.stopChainsaw()))
+                .withName("HOLDING STATE: " + state.name() + " FOR " + timeSeconds + " SECONDS");
+    }
+
+    
+    public static Command climbSequence(Climber climber) {
+        return holdAtStateUntil(climber, ClimberState.CLIMB_PREP, 2.0)
+                .andThen(holdAtStateUntil(climber, ClimberState.LATCH_ON, 1.0))
+                .andThen(goToState(climber, ClimberState.PULL_UP))
+                .withName("CLIMB SEQUENCE");
+    }
+
+    public static Command unClimb(Climber climber) {
+        return goToState(climber, ClimberState.LATCH_ON)
+                .andThen(goToState(climber, ClimberState.CLIMB_PREP));
+    }
+
     public static Command goUp(Climber climber) {
         return climber.run(climber::goUp)
                 .until(climber::isUp)

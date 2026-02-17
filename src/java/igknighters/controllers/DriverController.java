@@ -157,7 +157,7 @@ public class DriverController {
             this.A.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.CLIMB_PREP));
             this.B.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.PULL_UP));
             this.X.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.STOW));
-            this.Y.whileTrue(ClimberCommands.stop(climber));
+            this.Y.whileTrue(ClimberCommands.climbSequence(climber));
             this.LT.whileTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
         } else if (debugType == DebugType.INTAKE) {
 
