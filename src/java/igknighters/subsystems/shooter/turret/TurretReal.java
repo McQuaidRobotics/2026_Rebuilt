@@ -12,6 +12,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import dev.doglog.DogLog;
+import edu.wpi.first.wpilibj.DriverStation;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 
@@ -60,7 +61,7 @@ public class TurretReal extends Turret {
         cfg.CurrentLimits.SupplyCurrentLimit =
                 SubsystemConstants.kShooter.kTurret.SUPPLY_CURRENT_LIMIT;
 
-        cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         return cfg;
@@ -88,10 +89,42 @@ public class TurretReal extends Turret {
         motor.setPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS);
     }
 
+    public double getWrappedAngleDegrees(double angleDegrees) {
+        double angle = angleDegrees;
+        // Wrap to [-180, 180]
+        if (angle > 180.0) {
+            angle -= 360.0;
+        } else if (angle < -180.0) {
+            angle += 360.0;
+        }
+        return angle;
+    }
+
+    public boolean isLegalPosition(double angleDegrees) {
+        return angleDegrees >= SubsystemConstants.kShooter.kTurret.MIN_ANGLE_DEGREES
+                && angleDegrees <= SubsystemConstants.kShooter.kTurret.MAX_ANGLE_DEGREES;
+    }
+
+    public boolean isLegalPositionWrapped(double angleDegrees) {
+        double wrappedAngleDegrees = getWrappedAngleDegrees(angleDegrees);
+        return isLegalPosition(wrappedAngleDegrees);
+    }
+
     @Override
     public void goToAngleDegrees(double angleDegrees) {
         super.targetDegrees = angleDegrees;
-        motor.setControl(positionControl.withPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS));
+        double wrappedAngleDegrees = getWrappedAngleDegrees(angleDegrees);
+        if (!isLegalPositionWrapped(angleDegrees)) {
+            DriverStation.reportError(
+                    "Turret angle out of bounds: "
+                            + wrappedAngleDegrees
+                            + " degrees. Commanded: "
+                            + angleDegrees,
+                    false);
+            return;
+        }
+        motor.setControl(
+                positionControl.withPosition(wrappedAngleDegrees * Conv.DEGREES_TO_ROTATIONS));
     }
 
     @Override
