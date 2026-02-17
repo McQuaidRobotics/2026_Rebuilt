@@ -15,7 +15,6 @@ import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
 import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
-import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.ClimberState;
 import java.util.function.DoubleSupplier;
@@ -131,7 +130,8 @@ public class DriverController {
         } else if (debugType == DebugType.SHOOTER) {
             // this.A.whileTrue(
             //         ShooterCommands.shootIChoseTargetWithLookAhead(
-            //                 shooter, () -> swerve.getState().Pose, () -> swerve.getState().Speeds));
+            //                 shooter, () -> swerve.getState().Pose, () ->
+            // swerve.getState().Speeds));
             // this.LT.whileTrue(
             //         ShooterCommands.aimAt(
             //                 shooter,
@@ -153,7 +153,6 @@ public class DriverController {
             this.B.whileTrue(ShooterCommands.targetState(shooter, 0, 180, 0));
             this.X.whileTrue(ShooterCommands.targetState(shooter, 0, 270, 0));
             this.Y.whileTrue(ShooterCommands.targetState(shooter, 0, 360, 0));
-
 
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));

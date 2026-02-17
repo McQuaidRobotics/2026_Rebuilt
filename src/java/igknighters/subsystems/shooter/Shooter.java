@@ -12,7 +12,6 @@ import igknighters.subsystems.shooter.hood.Hood;
 import igknighters.subsystems.shooter.hood.HoodDisabled;
 import igknighters.subsystems.shooter.hood.HoodSim;
 import igknighters.subsystems.shooter.turret.Turret;
-import igknighters.subsystems.shooter.turret.TurretDisabled;
 import igknighters.subsystems.shooter.turret.TurretReal;
 import igknighters.subsystems.shooter.turret.TurretSim;
 import igknighters.util.LerpTable;
