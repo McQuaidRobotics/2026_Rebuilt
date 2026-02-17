@@ -22,9 +22,7 @@ public class ChainsawDisabled extends Chainsaw {
     }
 
     @Override
-    public void goToState(ChainsawState state) {
-        
-    }
+    public void goToState(ChainsawState state) {}
 
     @Override
     public boolean isDown() {

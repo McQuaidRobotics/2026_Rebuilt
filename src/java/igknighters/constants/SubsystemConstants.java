@@ -7,7 +7,6 @@ public class SubsystemConstants {
     public static class kClimber {
         public static class kChainsaw {
             public static final int LEFT_MOTOR_ID = 15;
-            public static final int RIGHT_MOTOR_ID = 16;
             public static final int BUMPER_SENSOR_ID = 0;
             public static final int MAX_HEIGHT_SENSOR_ID = 1;
             public static final int MIN_HEIGHT_SENSOR_ID = 2;

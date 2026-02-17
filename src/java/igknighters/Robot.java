@@ -7,11 +7,8 @@ package igknighters;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import dev.doglog.DogLog;
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -126,7 +123,7 @@ public class Robot extends TimedRobot {
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
-                        new Swerve(false),
+                        new Swerve(true),
                         new LimeLightVision(),
                         new Led(40, 1),
                         new Shooter(),
@@ -172,11 +169,14 @@ public class Robot extends TimedRobot {
             double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
             Pose2d currentPose =
                     subsytems.vision.getRobotPoseFromVision(headingDeg, omegaRps, 0, 0, 0, 0);
-                    
+
             if (currentPose != null) {
                 subsytems.swerve.addVisionMeasurement(
-                        currentPose, subsytems.vision.getLastTimeStamp(), VecBuilder.fill(0.05, 0.05, 0.1)); // trusts vision rotation less. Needs tuning
-                        // increase the std devs to trust vision less
+                        currentPose,
+                        subsytems.vision.getLastTimeStamp(),
+                        VecBuilder.fill(
+                                0.05, 0.05, 0.1)); // trusts vision rotation less. Needs tuning
+                // increase the std devs to trust vision less
             }
         }
     }

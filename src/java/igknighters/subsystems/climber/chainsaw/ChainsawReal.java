@@ -4,12 +4,9 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.ForwardLimitValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.ReverseLimitValue;
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj.DigitalInput;
 import igknighters.constants.SubsystemConstants;
@@ -32,6 +29,7 @@ public class ChainsawReal extends Chainsaw {
     private final BaseStatusSignal armPosition, armCurrent;
 
     private final TalonFX leftMotor;
+
     @Override
     public boolean isDown() {
         return !lowerLimitSwitch.get();

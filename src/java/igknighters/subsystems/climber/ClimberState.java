@@ -1,22 +1,17 @@
 package igknighters.subsystems.climber;
 
-import igknighters.constants.SubsystemConstants;
-import igknighters.subsystems.climber.chainsaw.Chainsaw;
 import igknighters.subsystems.climber.chainsaw.Chainsaw.ChainsawState;
 
 public enum ClimberState {
     STOW(ChainsawState.GOING_DOWN, false),
     CLIMB_PREP(ChainsawState.GOING_UP, true),
-    PULL_UP(ChainsawState.GOING_UP, true);
-    
+    PULL_UP(ChainsawState.GOING_DOWN, true); // Pulling up means chainsaw goes down
 
     public final ChainsawState chainsawState;
-    public final boolean stationaryClimberServosDeployed;
+    public final boolean servoDeployed;
 
-    private ClimberState(
-            Chainsaw.ChainsawState chainsawState,
-            boolean stationaryClimberServosDeployed) {
+    private ClimberState(ChainsawState chainsawState, boolean servoDeployed) {
         this.chainsawState = chainsawState;
-        this.stationaryClimberServosDeployed = stationaryClimberServosDeployed;
+        this.servoDeployed = servoDeployed;
     }
 }
