@@ -32,6 +32,19 @@ public class ClimberCommands {
                 .withName("GOING TO STATE: " + state.name());
     }
 
+    public static Command holdAtState(Climber climber, ClimberState state) {
+        return climber.run(() -> climber.goToState(state))
+                .withName("HOLDING STATE: " + state.name());
+    }
+
+    public static Command holdDown(Climber climber) {
+        return climber.run(climber::goDown).withName("HOLDING DOWN");
+    }
+
+    public static Command holdUp(Climber climber) {
+        return climber.run(climber::goUp).withName("HOLDING UP");
+    }
+
     public static Command stop(Climber climber) {
         return climber.runOnce(climber::stopChainsaw).withName("STOP CLIMBER");
     }

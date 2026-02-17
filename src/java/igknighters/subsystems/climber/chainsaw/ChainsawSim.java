@@ -42,7 +42,7 @@ public class ChainsawSim extends Chainsaw {
 
     @Override
     public void goUp() {
-        
+
         state = ChainsawState.GOING_UP;
     }
 
