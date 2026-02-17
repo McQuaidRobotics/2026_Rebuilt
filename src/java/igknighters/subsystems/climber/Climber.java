@@ -26,26 +26,24 @@ public class Climber extends SubsystemBase {
         }
     }
 
-    public double getPositionInches() {
-        return chainsaw.getPositionInches();
+    public boolean isUp() {
+        return chainsaw.isUp();
     }
 
-    public void setPositionInches(double position) {
-        chainsaw.setPositionInches(position);
+    public boolean isDown() {
+        return chainsaw.isDown();
     }
 
-    public void goToInches(double inches) {
-        chainsaw.goToInches(inches);
+    public void goUp() {
+        chainsaw.goUp();
     }
 
-    public void goToState(ClimberState state) {
-        chainsaw.goToInches(state.targetHeightInches);
-        servos.goToAngleDegrees(state.movingClimberServosDeployed, Servos.ServoID.MOVING_SERVOS);
-        servos.goToAngleDegrees(state.stationaryClimberServosDeployed, Servos.ServoID.FIXED_SERVOS);
+    public void goDown() {
+        chainsaw.goDown();
     }
 
-    public boolean isAt(double targetInches, double toleranceInches) {
-        return Math.abs(getPositionInches() - targetInches) <= toleranceInches;
+    public void goToState(ClimberState state){
+        chainsaw.goToState(state.chainsawState);
     }
 
     public boolean isSensorHit() {

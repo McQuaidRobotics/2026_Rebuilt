@@ -32,62 +32,35 @@ public class ChainsawSim extends Chainsaw {
                     true,
                     0.0);
 
-    private final ProfiledPIDController profiledPIDController =
-            new ProfiledPIDController(
-                    SubsystemConstants.kClimber.kChainsaw.kP,
-                    SubsystemConstants.kClimber.kChainsaw.kI,
-                    SubsystemConstants.kClimber.kChainsaw.kD,
-                    new Constraints(
-                            SubsystemConstants.kClimber.kChainsaw.MAX_VELOCITY_METERS_PER_SECOND,
-                            SubsystemConstants.kClimber
-                                    .kChainsaw
-                                    .MAX_ACCELERATION_METERS_PER_SECOND_SQUARED));
+    @Override
+    public void goToState(igknighters.subsystems.climber.chainsaw.Chainsaw.ChainsawState state) {
+        this.state = ChainsawState.valueOf(state.name());
+    }
 
-    private final ElevatorFeedforward feedforward =
-            new ElevatorFeedforward(
-                    SubsystemConstants.kClimber.kChainsaw.kS,
-                    SubsystemConstants.kClimber.kChainsaw.kG,
-                    SubsystemConstants.kClimber.kChainsaw.kV,
-                    SubsystemConstants.kClimber.kChainsaw.kA);
-
-    private boolean isPidControlledThisCycle = false;
-    private boolean isVoltageControlledThisCycle = false;
+    private ChainsawState state = ChainsawState.STOPPED;
 
     @Override
-    public void coast() {
-        inputVoltage = 0.0;
-        isVoltageControlledThisCycle = true;
+    public void goDown() {
+        state = ChainsawState.GOING_DOWN;
     }
 
     @Override
-    public void goToInches(double inches) {
-        double goalRot =
-                inches
-                        * SubsystemConstants.kClimber
-                                .kChainsaw
-                                .INCHES_TO_ROTATIONS; // inches → rotations
-        profiledPIDController.setGoal(goalRot);
-        isPidControlledThisCycle = true;
+    public void goUp() {
+        state = ChainsawState.GOING_UP;
     }
 
     @Override
-    public void setPositionInches(double position) {
-        double rot =
-                position
-                        * SubsystemConstants.kClimber
-                                .kChainsaw
-                                .INCHES_TO_ROTATIONS; // inches → rotations
-        chainsawSim.setState(
-                rot
-                        * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES
-                        * Conv.INCHES_TO_METERS,
-                0.0); // rotations → meters
+    public boolean isDown() {
+        return chainsawSim.getPositionMeters()
+                <= SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_INCHES * Conv.INCHES_TO_METERS
+                        + 0.01;
     }
 
     @Override
-    public void stop() {
-        inputVoltage = 0.0;
-        isVoltageControlledThisCycle = true;
+    public boolean isUp() {
+        return chainsawSim.getPositionMeters()
+                >= SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_INCHES * Conv.INCHES_TO_METERS
+                        - 0.01;
     }
 
     @Override
@@ -96,60 +69,38 @@ public class ChainsawSim extends Chainsaw {
     }
 
     @Override
-    public double getPositionInches() {
-        double meters = chainsawSim.getPositionMeters();
-        return (meters * METERS_TO_ROT)
-                * SubsystemConstants.kClimber
-                        .kChainsaw
-                        .ROTATIONS_TO_INCHES; // meters → rotations → inches
-    }
-
-    @Override
     public void periodic() {
+
+        double voltage = 0.0;
+        if (state == ChainsawState.GOING_UP) {
+            if (isUp()) {
+                state = ChainsawState.STOPPED;
+                voltage = 0.0;
+            } else {
+                voltage = 6.0; // Simulated 6V up
+            }
+        } else if (state == ChainsawState.GOING_DOWN) {
+            if (isDown()) {
+                state = ChainsawState.STOPPED;
+                voltage = -6.0; // Simulated -6V down
+            } else {
+                voltage = -6.0;
+            }
+        }
 
         // Convert sim meters → rotations
         double currentRot = chainsawSim.getPositionMeters() * METERS_TO_ROT;
 
-        double goalRot = profiledPIDController.getGoal().position;
-
-        double pidVolts = 0.0;
-        double ffVolts = 0.0;
-        double voltage = 0.0;
-
-        if (isPidControlledThisCycle) {
-
-            // PID in rotations
-            pidVolts = profiledPIDController.calculate(currentRot);
-
-            // Feedforward expects velocity in rotations/sec
-            double velRotPerSec = profiledPIDController.getSetpoint().velocity;
-
-            ffVolts = feedforward.calculate(velRotPerSec);
-
-            voltage = pidVolts + ffVolts;
-        }
-
-        if (isVoltageControlledThisCycle) {
-            voltage = inputVoltage;
-        }
-
-        voltage = MathUtil.clamp(voltage, -12.0, 12.0);
-
         // Logging
         DogLog.log("Subsystems/Climber/Chainsaw/SimVoltage", voltage);
         DogLog.log("Subsystems/Climber/Chainsaw/SimPositionRot", currentRot);
-        DogLog.log("Subsystems/Climber/Chainsaw/GoalRot", goalRot);
-        DogLog.log(
-                "Subsystems/Climber/Chainsaw/PIDErrorRot",
-                profiledPIDController.getPositionError());
-        DogLog.log("Subsystems/Climber/Chainsaw/PIDVolts", pidVolts);
-        DogLog.log("Subsystems/Climber/Chainsaw/FFVolts", ffVolts);
+        DogLog.log("Subsystems/Climber/Inches", currentRot * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES);
+        DogLog.log("Subsystems/Climber/Is Up", isUp());
+        DogLog.log("Subsystems/Climber/Is Down", isDown());
+        DogLog.log("Subsystems/Climber/State", state.toString());
 
-        // Convert rotations → meters for sim
+        // Update sim
         chainsawSim.setInputVoltage(voltage);
         chainsawSim.update(0.02);
-
-        isPidControlledThisCycle = false;
-        isVoltageControlledThisCycle = false;
     }
 }

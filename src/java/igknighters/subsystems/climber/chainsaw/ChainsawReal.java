@@ -7,31 +7,60 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ForwardLimitValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.ReverseLimitValue;
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj.DigitalInput;
 import igknighters.constants.SubsystemConstants;
 
 public class ChainsawReal extends Chainsaw {
-    private final MotionMagicExpoVoltage positionControl =
-            new MotionMagicExpoVoltage(0.0).withSlot(0);
-    private final DutyCycleOut stop = new DutyCycleOut(0.0);
+
+    private final DutyCycleOut dutyCycleControl = new DutyCycleOut(0.0);
     private final CoastOut coastControl = new CoastOut();
 
-    private double currentPosition = 0.0;
-    private double previousPosition = 0.0;
+    private ChainsawState state = ChainsawState.STOPPED;
 
     private final DigitalInput bumperSensor =
             new DigitalInput(SubsystemConstants.kClimber.kChainsaw.BUMPER_SENSOR_ID);
 
+    private final DigitalInput upperLimitSwitch =
+            new DigitalInput(SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_SENSOR_ID);
+    private final DigitalInput lowerLimitSwitch =
+            new DigitalInput(SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_SENSOR_ID);
+
     private final BaseStatusSignal armPosition, armCurrent;
 
     private final TalonFX leftMotor;
+    @Override
+    public boolean isDown() {
+        return !lowerLimitSwitch.get();
+    }
 
-    //     private final CANcoder positionCanCoder =
-    //             new CANcoder(SubsystemConstants.kClimber.kChainsaw.CANCODER_ID);
+    @Override
+    public void goToState(ChainsawState state) {
+        this.state = state;
+    }
 
-    // private final TalonFX rightMotor;
+    @Override
+    public boolean isUp() {
+        return !upperLimitSwitch.get();
+    }
+
+    @Override
+    public void goDown() {
+        state = ChainsawState.GOING_DOWN;
+    }
+
+    @Override
+    public void goUp() {
+        state = ChainsawState.GOING_UP;
+    }
+
+    @Override
+    public boolean isSensorHit() {
+        return !bumperSensor.get();
+    }
 
     public ChainsawReal() {
         leftMotor = new TalonFX(SubsystemConstants.kClimber.kChainsaw.LEFT_MOTOR_ID);
@@ -45,105 +74,50 @@ public class ChainsawReal extends Chainsaw {
     public TalonFXConfiguration arm1Config() {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
-        config.Slot0.kP = SubsystemConstants.kClimber.kChainsaw.kP;
-        config.Slot0.kI = SubsystemConstants.kClimber.kChainsaw.kI;
-        config.Slot0.kD = SubsystemConstants.kClimber.kChainsaw.kD;
-        config.Slot0.kS = SubsystemConstants.kClimber.kChainsaw.kS;
-        config.Slot0.kV = SubsystemConstants.kClimber.kChainsaw.kV;
-        config.Slot0.kA = SubsystemConstants.kClimber.kChainsaw.kA;
+        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         config.CurrentLimits.StatorCurrentLimit =
                 SubsystemConstants.kClimber.kChainsaw.STATOR_CURRENT_LIMIT;
         config.CurrentLimits.SupplyCurrentLimit =
                 SubsystemConstants.kClimber.kChainsaw.SUPPLY_CURRENT_LIMIT;
 
-        config.MotionMagic.MotionMagicCruiseVelocity =
-                SubsystemConstants.kClimber.kChainsaw.MAX_VELOCITY_METERS_PER_SECOND;
-        config.MotionMagic.MotionMagicAcceleration =
-                SubsystemConstants.kClimber.kChainsaw.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED;
-        config.MotionMagic.MotionMagicJerk = SubsystemConstants.kClimber.kChainsaw.MAX_JERK;
-
-        // config.Feedback.RotorToSensorRatio =
-        //         SubsystemConstants.kClimber
-        //                 .kChainsaw
-        //                 .GEAR_RATIO; // ratio from motor output to gears = 25
-
-        config.Feedback.SensorToMechanismRatio = SubsystemConstants.kClimber.kChainsaw.GEAR_RATIO;
-
-        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-                SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_INCHES;
-        config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-                SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_INCHES;
-
-        config.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = true;
-        config.HardwareLimitSwitch.ForwardLimitAutosetPositionValue =
-                SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_INCHES;
-
-        config.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
-        config.HardwareLimitSwitch.ReverseLimitAutosetPositionValue =
-                SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_INCHES;
-        config.HardwareLimitSwitch.ForwardLimitEnable = true;
-        config.HardwareLimitSwitch.ReverseLimitEnable = true;
-
-        config.HardwareLimitSwitch.ForwardLimitRemoteSensorID =
-                SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_SENSOR_ID;
-        config.HardwareLimitSwitch.ReverseLimitRemoteSensorID =
-                SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_SENSOR_ID;
-
         return config;
     }
 
     @Override
-    public void setPositionInches(double positionInches) {
-        leftMotor.setPosition(
-                positionInches * SubsystemConstants.kClimber.kChainsaw.INCHES_TO_ROTATIONS);
-    }
-
-    @Override
-    public void coast() {
-        leftMotor.setControl(coastControl);
-    }
-
-    @Override
-    public double getPositionInches() {
-        return armPosition.getValueAsDouble()
-                * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES;
-    }
-
-    @Override
-    public void stop() {
-        leftMotor.setControl(stop);
-    }
-
-    @Override
-    public void goToInches(double inches) {
-        DogLog.log("Subsystems/Climber/Target", inches);
-        leftMotor.setControl(
-                positionControl.withPosition(
-                        inches * SubsystemConstants.kClimber.kChainsaw.INCHES_TO_ROTATIONS));
-    }
-
-    @Override
-    public boolean isSensorHit() {
-        return !bumperSensor.get(); // assuming that when pushed the current flows
-    }
-
-    @Override
     public void periodic() {
-
         BaseStatusSignal.refreshAll(armPosition, armCurrent);
+
+        double output = 0.0;
+        if (state == ChainsawState.GOING_UP) {
+            if (isUp()) {
+                state = ChainsawState.STOPPED;
+                output = 0.0;
+            } else {
+                output = 0.1; // 10% power up, adjust as needed
+            }
+        } else if (state == ChainsawState.GOING_DOWN) {
+            if (isDown()) {
+                state = ChainsawState.STOPPED;
+                output = 0.0;
+            } else {
+                output = -0.2; // 20% power down, adjust as needed
+            }
+        } else {
+            output = 0.0;
+        }
+
+        leftMotor.setControl(dutyCycleControl.withOutput(output));
+
         DogLog.log(
                 "Subsystems/Climber/Inches",
                 armPosition.getValueAsDouble()
                         * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES);
-        DogLog.log(
-                "Subsystems/Climber/IS REVERSE LIMIT HIT",
-                leftMotor.getReverseLimit().refresh().getValue().equals(ReverseLimitValue.Open));
-        DogLog.log(
-                "Subsystems/Climber/IS FORWARD LIMIT HIT",
-                leftMotor.getForwardLimit().refresh().getValue().equals(ForwardLimitValue.Open));
+        DogLog.log("Subsystems/Climber/Is Up", isUp());
+        DogLog.log("Subsystems/Climber/Is Down", isDown());
+        DogLog.log("Subsystems/Climber/Sensor Hit", isSensorHit());
+        DogLog.log("Subsystems/Climber/State", state.toString());
         DogLog.log("Subsystems/Climber/Current", armCurrent.getValueAsDouble());
     }
 }

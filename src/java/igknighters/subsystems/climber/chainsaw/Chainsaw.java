@@ -1,18 +1,20 @@
 package igknighters.subsystems.climber.chainsaw;
 
 public abstract class Chainsaw {
-
-    public abstract void setPositionInches(double position);
-
-    public abstract void goToInches(double inches);
-
-    public abstract void periodic();
-
-    public abstract double getPositionInches();
-
-    public abstract void stop();
-
-    public abstract void coast();
+    public enum ChainsawState {
+        BETWEEN,
+        GOING_UP,
+        GOING_DOWN,
+        STOPPED
+    }
+    public abstract void goUp();
+    public abstract void goDown();
 
     public abstract boolean isSensorHit();
+    public abstract boolean isUp();
+    public abstract boolean isDown();
+
+    public abstract void goToState(ChainsawState state);
+
+    public abstract void periodic();
 }
