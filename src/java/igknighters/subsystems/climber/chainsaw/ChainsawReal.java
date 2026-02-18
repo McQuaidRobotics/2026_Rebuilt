@@ -73,7 +73,7 @@ public class ChainsawReal extends Chainsaw {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         config.CurrentLimits.StatorCurrentLimit =
                 SubsystemConstants.kClimber.kChainsaw.STATOR_CURRENT_LIMIT;
@@ -93,14 +93,14 @@ public class ChainsawReal extends Chainsaw {
                 state = ChainsawState.STOPPED;
                 output = 0.0;
             } else {
-                output = 0.1; // 10% power up, adjust as needed
+                output = 0.3; // 30% power up, adjust as needed
             }
         } else if (state == ChainsawState.GOING_DOWN) {
             if (isDown()) {
                 state = ChainsawState.STOPPED;
                 output = 0.0;
             } else {
-                output = -0.2; // 20% power down, adjust as needed
+                output = -0.5; // 50% power down, adjust as needed
             }
         } else {
             output = 0.0;
