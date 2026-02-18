@@ -184,8 +184,8 @@ public class DriverController {
         this.LT.whileTrue(
                 ShooterCommands.shootIChoseTargetWithLookAhead(
                         subsystems.shooter,
-                        () -> subsystems.swerve.getState().Pose,
-                        () -> subsystems.swerve.getState().Speeds));
+                        () -> swerve.getState().Pose,
+                        () -> swerve.getState().Speeds));
         this.RT.whileTrue(IndexerCommands.dispense(subsystems.indexer));
     }
 

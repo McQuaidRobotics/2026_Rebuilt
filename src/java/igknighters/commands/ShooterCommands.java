@@ -248,7 +248,7 @@ public class ShooterCommands {
                                                                     .getRadians())),
                                             shooter.getCurrentState().rpm,
                                             robotVelocity.get(),
-                                            0.1);
+                                            0.02);
 
                             if (targetingData.rpm != 0.0) {
                                 shooter.targetState(
