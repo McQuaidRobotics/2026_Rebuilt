@@ -36,12 +36,10 @@ public class ClimberCommands {
      *     Latch On is held for 1 second.
      */
     public static Command climbSequence(Climber climber) {
-        return holdAtStateUntil(climber, ClimberState.CLIMB_PREP, 2.0)
-                .andThen(holdAtStateUntil(climber, ClimberState.LATCH_ON, 1.0))
+        return holdAtStateUntil(climber, ClimberState.LATCH_ON, 2.0)
                 .andThen(holdAtState(climber, ClimberState.PULL_UP))
                 .withName("CLIMB SEQUENCE");
     }
-
     /**
      * Goes through the unclimb sequence: Pull Up -> Latch On -> Climb Prep -> Stow. Ends when
      * climber reaches state of climb prep
