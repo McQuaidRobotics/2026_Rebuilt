@@ -12,6 +12,8 @@ public class PivotReal extends Pivot {
     private TalonFX pivotMotor;
     private MotionMagicVoltage motionMagicControl;
     private BaseStatusSignal rps, angleRotations;
+    private double targetDegrees = 0.0;
+    private boolean beingCommanded = false;
 
     public PivotReal() {
         pivotMotor = new TalonFX(SubsystemConstants.kIntake.kPivot.MOTOR_ID);
@@ -62,7 +64,8 @@ public class PivotReal extends Pivot {
 
     @Override
     public void goToAngleDegrees(double angleDegrees) {
-        DogLog.log("Subsystems/Intake/Pivot/Target", angleDegrees);
+        targetDegrees = angleDegrees;
+        beingCommanded = true;
         DogLog.log("Subsystems/Intake/Pivot/Stopped", false);
         pivotMotor.setControl(
                 motionMagicControl.withPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS));
@@ -70,6 +73,7 @@ public class PivotReal extends Pivot {
 
     @Override
     public void stop() {
+        beingCommanded = true;
         DogLog.log("Subsystems/Intake/Pivot/Stopped", true);
         pivotMotor.setVoltage(0.0);
     }
@@ -84,8 +88,9 @@ public class PivotReal extends Pivot {
         BaseStatusSignal.refreshAll(rps, angleRotations);
         double angleDegrees = angleRotations.getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
         double angleRPM = rps.getValueAsDouble() * 60.0;
-
+        DogLog.log("Subsystems/Intake/Pivot/Being Commanded Currently", beingCommanded);
         DogLog.log("Subsystems/Intake/Pivot/AngleDegrees", angleDegrees);
         DogLog.log("Subsystems/Intake/Pivot/AngleRPM", angleRPM);
+        DogLog.log("Subsystems/Intake/Pivot/Target", targetDegrees);
     }
 }

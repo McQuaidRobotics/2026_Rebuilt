@@ -71,9 +71,19 @@ public class LimelightHelpersTest {
                 .getTable(cam1)
                 .getEntry("botpose_orb_wpiblue")
                 .setDoubleArray(fakeBotpose1);
+
+        NetworkTableInstance.getDefault()
+                .getTable(cam1)
+                .getEntry("botpose_wpiblue")
+                .setDoubleArray(fakeBotpose1);
         NetworkTableInstance.getDefault()
                 .getTable(cam2)
                 .getEntry("botpose_orb_wpiblue")
+                .setDoubleArray(fakeBotpose2);
+
+        NetworkTableInstance.getDefault()
+                .getTable(cam2)
+                .getEntry("botpose_wpiblue")
                 .setDoubleArray(fakeBotpose2);
 
         // Give NetworkTables some time to process the update

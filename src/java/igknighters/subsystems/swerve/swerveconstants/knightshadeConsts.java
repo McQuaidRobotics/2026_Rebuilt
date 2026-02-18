@@ -235,9 +235,10 @@ public class knightshadeConsts extends CommonSwerveConsts {
      * program,.
      */
     @Override
-    public CommandSwerveDrivetrain createDrivetrain() {
+    public CommandSwerveDrivetrain createDrivetrain(
+            edu.wpi.first.wpilibj2.command.Subsystem requirement) {
         return new CommandSwerveDrivetrain(
-                DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
+                requirement, DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
     }
 
     @Override

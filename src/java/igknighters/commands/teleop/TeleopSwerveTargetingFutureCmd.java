@@ -12,7 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.controllers.DriverController;
-import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
+import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 
 public class TeleopSwerveTargetingFutureCmd extends TeleopSwerveBaseCmd {
@@ -30,7 +30,7 @@ public class TeleopSwerveTargetingFutureCmd extends TeleopSwerveBaseCmd {
     // Make the PID controller handle wraparound automatically
 
     public TeleopSwerveTargetingFutureCmd(
-            CommandSwerveDrivetrain swerve,
+            Swerve swerve,
             DriverController controller,
             Pose2d targetPose,
             double lookaheadTimeSeconds,

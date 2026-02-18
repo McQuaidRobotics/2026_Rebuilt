@@ -6,7 +6,8 @@ public enum Waypoints {
     BALLS_RIGHT,
     BALLS_MIDDLE,
     RIGHT,
-    LEFT;
+    LEFT,
+    CLIMB_LEFT;
 
     public String to(Waypoints wp) {
         return this.name() + "_TO_" + wp.name();

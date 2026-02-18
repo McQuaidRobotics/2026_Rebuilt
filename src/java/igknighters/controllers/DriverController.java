@@ -6,13 +6,18 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import igknighters.commands.ClimberCommands;
+import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
+import igknighters.commands.IntakeCommands;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
 import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
+import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.climber.ClimberState;
 import java.util.function.DoubleSupplier;
 
 public class DriverController {
@@ -93,31 +98,90 @@ public class DriverController {
         DPU = controller.povUp();
     }
 
+    public static enum DebugType {
+        SHOOTER,
+        SWERVE,
+        INTAKE,
+        INDEXER,
+        CLIMBER;
+    }
+
+    public void bind(final Subsystems subsystems, DebugType debugType) {
+        DrivingSharedState state = DrivingSharedState.getInstance();
+        var swerve = subsystems.swerve;
+        var shooter = subsystems.shooter;
+        var indexer = subsystems.indexer;
+        var climber = subsystems.climber;
+
+        if (debugType == DebugType.SWERVE) {
+            this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
+            this.A.whileTrue(
+                    new TeleopSwerveHeadingCmd(swerve, this, 45.0, state.kP, state.kI, state.kD));
+            this.B.whileTrue(
+                    new TeleopSwerveHeadingCmd(swerve, this, 180.0, state.kP, state.kI, state.kD));
+            this.Y.whileTrue(
+                    new TeleopSwerveTargetingFutureCmd(
+                            swerve,
+                            this,
+                            new Pose2d(13, 4, new Rotation2d(0)),
+                            .5,
+                            state.kP,
+                            state.kI,
+                            (state.kD)));
+        } else if (debugType == DebugType.SHOOTER) {
+            this.A.whileTrue(
+                    ShooterCommands.shootIChoseTargetWithLookAhead(
+                            shooter, () -> swerve.getState().Pose, () -> swerve.getState().Speeds));
+            this.LT.whileTrue(
+                    ShooterCommands.aimAt(
+                            shooter,
+                            () -> swerve.getState().Pose,
+                            () -> FieldConstants.HUB.POSE3D_RED));
+            this.X.whileTrue(
+                    ShooterCommands.aimAt(
+                            shooter,
+                            () -> swerve.getState().Pose,
+                            () -> FieldConstants.PASS.POSITION_LEFT_BLUE));
+            this.Y.whileTrue(
+                    ShooterCommands.aimAt(
+                            shooter,
+                            () -> swerve.getState().Pose,
+                            () -> FieldConstants.PASS.POSITION_RIGHT_BLUE));
+            this.LT.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
+
+        } else if (debugType == DebugType.INDEXER) {
+            this.A.onTrue(IndexerCommands.dispense(indexer));
+            this.B.onTrue(IndexerCommands.stopDispensing(indexer));
+
+        } else if (debugType == DebugType.CLIMBER) {
+            this.A.onTrue(ClimberCommands.goToState(climber, ClimberState.EXTENDED_WITH_CLINGING));
+            this.B.onTrue(ClimberCommands.goToMin(climber));
+            this.X.onTrue(ClimberCommands.goTo(climber, 10.0));
+            this.Y.onTrue(ClimberCommands.home(climber));
+            this.LT.whileTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
+        } else if (debugType == DebugType.INTAKE) {
+
+        } else {
+            System.out.println("UNKNOWN DEBUG TYPE: " + debugType);
+            throw new IllegalArgumentException("UNKNOWN DEBUG TYPE: " + debugType);
+        }
+    }
+
     public void bind(final Subsystems subsystems) {
         DrivingSharedState state = DrivingSharedState.getInstance();
         var swerve = subsystems.swerve;
 
         this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
-        this.A.whileTrue(
-                new TeleopSwerveHeadingCmd(swerve, this, 45.0, state.kP, state.kI, state.kD));
-        this.B.whileTrue(
-                new TeleopSwerveHeadingCmd(swerve, this, 180.0, state.kP, state.kI, state.kD));
-        this.Y.whileTrue(
-                new TeleopSwerveTargetingFutureCmd(
-                        swerve,
-                        this,
-                        new Pose2d(13, 4, new Rotation2d(0)),
-                        .5,
-                        state.kP,
-                        state.kI,
-                        state.kD));
 
-        this.LT.onTrue(IndexerCommands.dispense(subsystems.indexer, 120));
-        this.RT.onTrue(IndexerCommands.dispense(subsystems.indexer, 180));
-        this.DPD.onTrue(ShooterCommands.stopShooting(subsystems.shooter));
-        this.DPL.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 4000));
-        this.DPR.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 3500));
-        this.DPU.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 4500));
+        this.A.whileTrue(IntakeCommands.goToIntake(subsystems.intake));
+        this.A.onFalse(IntakeCommands.goToStow(subsystems.intake));
+
+        this.LT.whileTrue(
+                ShooterCommands.shootIChoseTargetWithLookAhead(
+                        subsystems.shooter,
+                        () -> subsystems.swerve.getState().Pose,
+                        () -> subsystems.swerve.getState().Speeds));
+        this.RT.whileTrue(IndexerCommands.dispense(subsystems.indexer));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {
