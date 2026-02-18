@@ -47,9 +47,6 @@ public class Luma extends SubsystemBase {
     public Translation2d getClosestGamePiece() {
         Translation2d closest = null;
         double closestDist = Double.MAX_VALUE;
-        DogLog.log(
-                "Subsystems/Vision/ObjectDetection/whewre is we running",
-                "we are calling closest game piece");
 
         for (Camera camera : cameras) {
             Translation2d offset = camera.getGamePieceOffset();

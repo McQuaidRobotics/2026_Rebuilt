@@ -57,10 +57,6 @@ public class CameraReal extends Camera {
         } else {
             noObjects = true;
         }
-        DogLog.log("Subsystems/Vision/Physical RESULTS IN PERIODIC", potentialResults.size());
-        // WHY DOES THIS SIZE ONLY SHOW 1, this might be a problem?
-        // it's because it lists the numebr of results, not the number of targets
-        DogLog.log("Subsystems/Vision/RESULTS IN PERIODIC", results.size());
         getTargetTranslations();
     }
 
@@ -78,7 +74,7 @@ public class CameraReal extends Camera {
         double distance =
                 PhotonUtils.calculateDistanceToTargetMeters(
                         cameraHeightMeters,
-                        0.0, // Target height is 0 (ground)
+                        0.075, // Target height is the radius of the fuel in meters
                         cameraPitchRadians,
                         Units.degreesToRadians(bestTarget.getPitch()));
 
@@ -170,7 +166,7 @@ public class CameraReal extends Camera {
                 double distance =
                         PhotonUtils.calculateDistanceToTargetMeters(
                                 cameraHeightMeters,
-                                0.0, // Target height is 0 (ground)
+                                0.075, // Target height is the radius of the fuel in meters
                                 cameraPitchRadians,
                                 Units.degreesToRadians(gamePiece.getPitch()));
 
