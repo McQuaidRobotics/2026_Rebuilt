@@ -7,7 +7,11 @@ package igknighters;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import dev.doglog.DogLog;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -21,7 +25,6 @@ import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
 import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
-import igknighters.controllers.DriverController.DebugType;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.Climber;
@@ -123,7 +126,7 @@ public class Robot extends TimedRobot {
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
-                        new Swerve(true),
+                        new Swerve(false),
                         new LimeLightVision(),
                         new Led(40, 1),
                         new Shooter(),
@@ -136,7 +139,7 @@ public class Robot extends TimedRobot {
         setUpTest(subsytems);
         bindDriverController();
 
-        subsystemTriggers.SetupTriggers(subsytems.led);
+        subsystemTriggers.SetupTriggers(subsytems, driverController);
     }
 
     public Robot(boolean isSwerveDisabled) {
@@ -145,7 +148,7 @@ public class Robot extends TimedRobot {
                 new Subsystems(
                         new Swerve(isSwerveDisabled),
                         new LimeLightVision(),
-                        new Led(40, 1),
+                        new Led(80, 2),
                         new Shooter(),
                         new Indexer(),
                         new Intake(),
@@ -156,7 +159,7 @@ public class Robot extends TimedRobot {
         setUpTest(subsytems);
         bindDriverController();
 
-        subsystemTriggers.SetupTriggers(subsytems.led);
+        subsystemTriggers.SetupTriggers(subsytems, driverController);
     }
 
     @Override
@@ -169,21 +172,23 @@ public class Robot extends TimedRobot {
             double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
             Pose2d currentPose =
                     subsytems.vision.getRobotPoseFromVision(headingDeg, omegaRps, 0, 0, 0, 0);
+                    
             if (currentPose != null) {
                 subsytems.swerve.addVisionMeasurement(
-                        currentPose, subsytems.vision.getLastTimeStamp());
+                        currentPose, subsytems.vision.getLastTimeStamp(), VecBuilder.fill(0.05, 0.05, 0.1)); // trusts vision rotation less. Needs tuning
+                        // increase the std devs to trust vision less
             }
         }
     }
 
     public void bindDriverController() {
-        driverController.bind(subsytems, DebugType.SHOOTER);
+        driverController.bind(subsytems);
     }
 
     @Override
     public void disabledInit() {
-        scheduler.cancelAll();
-        // scheduler.getActiveButtonLoop().clear();
+        CommandScheduler.getInstance().cancelAll();
+        // CommandScheduler.getInstance().getActiveButtonLoop().clear();
         CommandScheduler.getInstance().clearComposedCommands();
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, detune.value()));
