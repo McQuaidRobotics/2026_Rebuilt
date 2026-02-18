@@ -10,6 +10,7 @@ public class SubsystemConstants {
             public static final int BUMPER_SENSOR_ID = 3;
             public static final int MAX_HEIGHT_SENSOR_ID = 1;
             public static final int MIN_HEIGHT_SENSOR_ID = 2;
+            public static final int MIDDLE_HEIGHT_SENSOR_ID = 4;
 
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.05; // this is made up
             public static final double kP = 0.8;
@@ -29,6 +30,7 @@ public class SubsystemConstants {
             public static final double ROTATIONS_TO_INCHES = 4.5;
             public static final double MAX_HEIGHT_INCHES = 20.0;
             public static final double MIN_HEIGHT_INCHES = 0.0;
+            public static final double MIDDLE_HEIGHT_INCHES = 10.0;
             public static final double LENGTH_METERS = 0.5;
             public static final double MASS = 4.0;
             public static final double PEAK_FORWARD_CURRENT_LIMIT = 40;

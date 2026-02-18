@@ -17,6 +17,7 @@ public class ChainsawReal extends Chainsaw {
     private final CoastOut coastControl = new CoastOut();
 
     private ChainsawState state = ChainsawState.STOPPED;
+    private boolean goUpToMiddle = false;
 
     private final DigitalInput bumperSensor =
             new DigitalInput(SubsystemConstants.kClimber.kChainsaw.BUMPER_SENSOR_ID);
@@ -25,6 +26,8 @@ public class ChainsawReal extends Chainsaw {
             new DigitalInput(SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_SENSOR_ID);
     private final DigitalInput lowerLimitSwitch =
             new DigitalInput(SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_SENSOR_ID);
+    private final DigitalInput middleLimitSwitch =
+            new DigitalInput(SubsystemConstants.kClimber.kChainsaw.MIDDLE_HEIGHT_SENSOR_ID);
 
     private final BaseStatusSignal armPosition, armCurrent;
 
@@ -36,7 +39,15 @@ public class ChainsawReal extends Chainsaw {
     }
 
     @Override
+    public boolean isMiddle() {
+        return !middleLimitSwitch.get();
+    }
+
+    @Override
     public void goToState(ChainsawState state) {
+        if (state == ChainsawState.GOING_TO_MIDDLE) {
+            goUpToMiddle = isDown();
+        }
         this.state = state;
     }
 
@@ -102,6 +113,18 @@ public class ChainsawReal extends Chainsaw {
             } else {
                 output = -0.5; // 50% power down, adjust as needed
             }
+        } else if (state == ChainsawState.GOING_TO_MIDDLE) {
+            if (isMiddle()) {
+                state = ChainsawState.STOPPED;
+                output = 0.0;
+            } else {
+                if (isDown()) {
+                    goUpToMiddle = true;
+                } else if (isUp()) {
+                    goUpToMiddle = false;
+                }
+                output = goUpToMiddle ? 0.3 : -0.5;
+            }
         } else {
             output = 0.0;
         }
@@ -113,6 +136,7 @@ public class ChainsawReal extends Chainsaw {
                 armPosition.getValueAsDouble()
                         * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES);
         DogLog.log("Subsystems/Climber/Is Up", isUp());
+        DogLog.log("Subsystems/Climber/Is Middle", isMiddle());
         DogLog.log("Subsystems/Climber/Is Down", isDown());
         DogLog.log("Subsystems/Climber/Sensor Hit", isSensorHit());
         DogLog.log("Subsystems/Climber/State", state.toString());

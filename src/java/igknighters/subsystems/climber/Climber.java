@@ -31,6 +31,10 @@ public class Climber extends SubsystemBase {
         return chainsaw.isDown();
     }
 
+    public boolean isMiddle() {
+        return chainsaw.isMiddle();
+    }
+
     public void goUp() {
         chainsaw.goUp();
     }

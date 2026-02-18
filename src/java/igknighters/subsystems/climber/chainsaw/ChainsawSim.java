@@ -61,6 +61,15 @@ public class ChainsawSim extends Chainsaw {
     }
 
     @Override
+    public boolean isMiddle() {
+        double currentHeightInches = chainsawSim.getPositionMeters() * Conv.METERS_TO_INCHES;
+        return Math.abs(
+                        currentHeightInches
+                                - SubsystemConstants.kClimber.kChainsaw.MIDDLE_HEIGHT_INCHES)
+                <= 0.5;
+    }
+
+    @Override
     public boolean isSensorHit() {
         return false;
     }
@@ -83,6 +92,18 @@ public class ChainsawSim extends Chainsaw {
             } else {
                 voltage = -6.0;
             }
+        } else if (state == ChainsawState.GOING_TO_MIDDLE) {
+            if (isMiddle()) {
+                state = ChainsawState.STOPPED;
+                voltage = 0.0;
+            } else {
+                double currentHeightInches = chainsawSim.getPositionMeters() * Conv.METERS_TO_INCHES;
+                if (currentHeightInches < SubsystemConstants.kClimber.kChainsaw.MIDDLE_HEIGHT_INCHES) {
+                    voltage = 6.0; // go up
+                } else {
+                    voltage = -6.0; // go down
+                }
+            }
         }
 
         // Convert sim meters → rotations
@@ -95,6 +116,7 @@ public class ChainsawSim extends Chainsaw {
                 "Subsystems/Climber/Inches",
                 currentRot * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES);
         DogLog.log("Subsystems/Climber/Is Up", isUp());
+        DogLog.log("Subsystems/Climber/Is Middle", isMiddle());
         DogLog.log("Subsystems/Climber/Is Down", isDown());
         DogLog.log("Subsystems/Climber/State", state.toString());
 

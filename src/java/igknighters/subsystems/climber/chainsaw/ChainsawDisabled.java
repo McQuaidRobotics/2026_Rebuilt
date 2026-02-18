@@ -30,6 +30,11 @@ public class ChainsawDisabled extends Chainsaw {
     }
 
     @Override
+    public boolean isMiddle() {
+        return false;
+    }
+
+    @Override
     public void periodic() {
         // Do nothing
     }

@@ -8,7 +8,7 @@ public enum ClimberState {
     LATCH_ON(
             ChainsawState.GOING_UP,
             true), // Latching on means chainsaw goes up and servo is deployed
-    PULL_UP(ChainsawState.GOING_DOWN, true); // Pulling up means chainsaw goes down
+    PULL_UP(ChainsawState.GOING_TO_MIDDLE, true); // Pulling up means chainsaw goes down to middle
 
     public final ChainsawState chainsawState;
     public final boolean servoDeployed;
