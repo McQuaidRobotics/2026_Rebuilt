@@ -12,7 +12,7 @@ public class ClimberCommands {
      *
      * @param climber
      * @param state
-     * @param timeSeconds
+    * @param timeSeconds
      * @return A command that goes to the specified state, holds it for the specified time, and then
      *     stops the climber
      */
@@ -40,6 +40,7 @@ public class ClimberCommands {
                 .andThen(holdAtState(climber, ClimberState.PULL_UP))
                 .withName("CLIMB SEQUENCE");
     }
+
     /**
      * Goes through the unclimb sequence: Pull Up -> Latch On -> Climb Prep -> Stow. Ends when
      * climber reaches state of climb prep
