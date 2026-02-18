@@ -163,7 +163,7 @@ public class AutoRoutines extends AutoCommands {
 
     public AutoRoutine leftDepoClimb() {
         AutoRoutine routine = autoFactory.newRoutine("Left Depo Climb");
-        AutoTrajectory depoTraj = routine.trajectory("LEFT_DEPO_CLIMB.traj");
+        AutoTrajectory depoTraj = routine.trajectory("LEFT_DEPO_CLIMB.traj"); //test
         routine.active()
                 .onTrue(
                         Commands.sequence(

@@ -80,6 +80,15 @@ public class Telemetry {
     private final DoubleArrayPublisher unseenTagsPub =
             table.getDoubleArrayTopic("unseenTags").publish();
 
+    private final DoubleArrayPublisher shootingTargetPosesPub =
+            table.getDoubleArrayTopic("shootingTargetPose").publish();
+
+    private final DoubleArrayPublisher drivingTargetPub =
+            table.getDoubleArrayTopic("drivingTargetPose").publish();
+
+    private final DoubleArrayPublisher detectedObjectsPub =
+            table.getDoubleArrayTopic("detectedObjects").publish();
+
     /* Mechanisms to represent the swerve module states */
     private final Mechanism2d[] m_moduleMechanisms =
             new Mechanism2d[] {
@@ -204,7 +213,34 @@ public class Telemetry {
             m_moduleSpeeds[i].setLength(
                     state.ModuleStates[i].speedMetersPerSecond / (2 * MaxSpeed));
 
-            SmartDashboard.putData("Module " + i, m_moduleMechanisms[i]);
+            SmartDashboard.putData("Visualizers/Swerve/Module " + i, m_moduleMechanisms[i]);
         }
+    }
+
+    public void addShootingTargetPose(Pose2d targetPose) {
+        double[] targetPoseArray = new double[3];
+        targetPoseArray[0] = targetPose.getX();
+        targetPoseArray[1] = targetPose.getY();
+        targetPoseArray[2] = targetPose.getRotation().getDegrees();
+        shootingTargetPosesPub.set(targetPoseArray);
+    }
+
+    public void addDrivingTargetPose(Pose2d targetPose) {
+        double[] targetPoseArray = new double[3];
+        targetPoseArray[0] = targetPose.getX();
+        targetPoseArray[1] = targetPose.getY();
+        targetPoseArray[2] = targetPose.getRotation().getDegrees();
+        drivingTargetPub.set(targetPoseArray);
+    }
+
+    public void publishDetectedObjects(List<Pose2d> objectPoses) {
+        double[] objectPosesArray = new double[objectPoses.size() * 3];
+        int i = 0;
+        for (Pose2d pose : objectPoses) {
+            objectPosesArray[i++] = pose.getX();
+            objectPosesArray[i++] = pose.getY();
+            objectPosesArray[i++] = pose.getRotation().getDegrees();
+        }
+        detectedObjectsPub.set(objectPosesArray);
     }
 }
