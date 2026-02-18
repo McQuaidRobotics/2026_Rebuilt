@@ -41,7 +41,7 @@ public class TurretReal extends Turret {
         cfg.Feedback.RotorToSensorRatio = SubsystemConstants.kShooter.kTurret.GEAR_RATIO;
         cfg.Feedback.SensorToMechanismRatio = 1.0;
         cfg.Feedback.FeedbackSensorSource =
-                FeedbackSensorSourceValue.FusedCANcoder; // should be fused but rio bomb not pro
+                FeedbackSensorSourceValue.RemoteCANcoder; // should be fused but rio bomb not pro
         cfg.Feedback.FeedbackRemoteSensorID = SubsystemConstants.kShooter.kTurret.CANCODER_ID;
 
         cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;

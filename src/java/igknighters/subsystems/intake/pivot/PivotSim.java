@@ -26,7 +26,7 @@ public class PivotSim extends Pivot {
                 new SingleJointedArmSim(
                         LinearSystemId.createSingleJointedArmSystem(
                                 DCMotor.getKrakenX60(1),
-                                SubsystemConstants.kShooter.kRollers.MOMENT_OF_INERTIA_KG_M2,
+                                SubsystemConstants.kShooter.kFlywheels.MOMENT_OF_INERTIA_KG_M2,
                                 SubsystemConstants.kShooter.kTurret.GEAR_RATIO),
                         DCMotor.getKrakenX60(1),
                         SubsystemConstants.kShooter.kTurret.GEAR_RATIO,

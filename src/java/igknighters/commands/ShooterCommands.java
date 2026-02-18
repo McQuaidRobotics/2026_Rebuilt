@@ -62,7 +62,7 @@ public class ShooterCommands {
                                             robotPose.getX(),
                                             robotPose.getY(),
                                             SubsystemConstants.kShooter
-                                                    .kRollers
+                                                    .kFlywheels
                                                     .ShooterHeightMeters,
                                             new Rotation3d(
                                                     0.0,
@@ -149,7 +149,7 @@ public class ShooterCommands {
                                                     robotPose.getX(),
                                                     robotPose.getY(),
                                                     SubsystemConstants.kShooter
-                                                            .kRollers
+                                                            .kFlywheels
                                                             .ShooterHeightMeters,
                                                     new Rotation3d(
                                                             0.0,
@@ -190,7 +190,7 @@ public class ShooterCommands {
                                                     robotPose2d.getX(),
                                                     robotPose2d.getY(),
                                                     SubsystemConstants.kShooter
-                                                            .kRollers
+                                                            .kFlywheels
                                                             .ShooterHeightMeters,
                                                     new Rotation3d(
                                                             0.0,
@@ -238,7 +238,7 @@ public class ShooterCommands {
                                                     robotPose2d.getX(),
                                                     robotPose2d.getY(),
                                                     SubsystemConstants.kShooter
-                                                            .kRollers
+                                                            .kFlywheels
                                                             .ShooterHeightMeters,
                                                     new Rotation3d(
                                                             0.0,
