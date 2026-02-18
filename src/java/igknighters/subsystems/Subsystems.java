@@ -35,6 +35,7 @@ public class Subsystems {
         this.vision = vision;
         this.led = led;
         this.shooter = shooter;
+        this.luma = luma;
         this.intake = intake;
         this.climber = climber;
         this.indexer = indexer;

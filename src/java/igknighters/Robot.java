@@ -133,8 +133,8 @@ public class Robot extends TimedRobot {
                         new Shooter(),
                         new Indexer(),
                         new Intake(),
-                        new Luma("object-detection"),
-                        new Climber());
+                        new Climber(),
+                        new Luma("object-detection"));
         setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
@@ -154,7 +154,8 @@ public class Robot extends TimedRobot {
                         new Shooter(),
                         new Indexer(),
                         new Intake(),
-                        new Climber());
+                        new Climber(),
+                        new Luma("object-detection"));
         setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
