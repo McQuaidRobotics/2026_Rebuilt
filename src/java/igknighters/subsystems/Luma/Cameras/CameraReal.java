@@ -19,6 +19,7 @@ public class CameraReal extends Camera {
     double cameraPitchRadians = 0.0;
     Translation2d robotToCameraTranslation;
     List<PhotonPipelineResult> results = new ArrayList<>();
+    List<Translation2d> gamePieceTranslations = new ArrayList<>();
     boolean noObjects = false;
 
     public CameraReal(
@@ -34,7 +35,10 @@ public class CameraReal extends Camera {
     }
 
     public CameraReal(String cameraName) {
-        this(cameraName, 0.05, new Translation2d()); // placeholder values, the camera itself is 5cm tall
+        this(
+                cameraName,
+                0.05,
+                new Translation2d()); // placeholder values, the camera itself is 5cm tall
     }
 
     @Override
@@ -55,24 +59,9 @@ public class CameraReal extends Camera {
         }
         DogLog.log("Subsystems/Vision/Physical RESULTS IN PERIODIC", potentialResults.size());
         // WHY DOES THIS SIZE ONLY SHOW 1, this might be a problem?
+        // it's because it lists the numebr of results, not the number of targets
         DogLog.log("Subsystems/Vision/RESULTS IN PERIODIC", results.size());
-        // THIS FOR LOOP DOES NOT WORK AND I DONT KNOW WHY (IT GIVES TOO MANY)
-        for (int resultNumber = 0; resultNumber < results.size(); resultNumber++) {
-            PhotonPipelineResult gamePieces = results.get(resultNumber);
-            for (int gamePieceNumber = 0;
-                    gamePieceNumber < gamePieces.getTargets().size();
-                    gamePieceNumber++) {
-                PhotonTrackedTarget gamePiece = gamePieces.getTargets().get(gamePieceNumber);
-                DogLog.log(
-                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/"
-                                + gamePieceNumber
-                                + "/pitch",
-                        gamePiece.pitch);
-                DogLog.log(
-                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/" + gamePieceNumber + "/yaw",
-                        gamePiece.yaw);
-            }
-        }
+        getTargetTranslations();
     }
 
     @Override
@@ -159,5 +148,47 @@ public class CameraReal extends Camera {
     @Override
     public String getName() {
         return "CameraReal-" + camera.getName();
+    }
+
+    @Override
+    public List<Translation2d> getTargetTranslations() {
+        for (int resultNumber = 0; resultNumber < results.size(); resultNumber++) {
+            PhotonPipelineResult gamePieces = results.get(resultNumber);
+            for (int gamePieceNumber = 0;
+                    gamePieceNumber < gamePieces.getTargets().size();
+                    gamePieceNumber++) {
+                PhotonTrackedTarget gamePiece = gamePieces.getTargets().get(gamePieceNumber);
+                DogLog.log(
+                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/"
+                                + gamePieceNumber
+                                + "/pitch",
+                        gamePiece.pitch);
+                DogLog.log(
+                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/" + gamePieceNumber + "/yaw",
+                        gamePiece.yaw);
+
+                double distance =
+                        PhotonUtils.calculateDistanceToTargetMeters(
+                                cameraHeightMeters,
+                                0.0, // Target height is 0 (ground)
+                                cameraPitchRadians,
+                                Units.degreesToRadians(gamePiece.getPitch()));
+
+                double yaw = Units.degreesToRadians(gamePiece.getYaw());
+
+                Translation2d gamePieceTranslation =
+                        new Translation2d(distance * Math.cos(yaw), distance * Math.sin(yaw))
+                                .plus(robotToCameraTranslation);
+
+                DogLog.log(
+                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/"
+                                + gamePieceNumber
+                                + "/translation",
+                        gamePieceTranslation);
+
+                gamePieceTranslations.add(gamePieceTranslation);
+            }
+        }
+        return gamePieceTranslations;
     }
 }
