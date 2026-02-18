@@ -97,8 +97,10 @@ public class ChainsawSim extends Chainsaw {
                 state = ChainsawState.STOPPED;
                 voltage = 0.0;
             } else {
-                double currentHeightInches = chainsawSim.getPositionMeters() * Conv.METERS_TO_INCHES;
-                if (currentHeightInches < SubsystemConstants.kClimber.kChainsaw.MIDDLE_HEIGHT_INCHES) {
+                double currentHeightInches =
+                        chainsawSim.getPositionMeters() * Conv.METERS_TO_INCHES;
+                if (currentHeightInches
+                        < SubsystemConstants.kClimber.kChainsaw.MIDDLE_HEIGHT_INCHES) {
                     voltage = 6.0; // go up
                 } else {
                     voltage = -6.0; // go down
