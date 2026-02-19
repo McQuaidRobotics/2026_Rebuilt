@@ -1,11 +1,9 @@
 package igknighters.subsystems.LimeLightVision.Cameras;
 
 import dev.doglog.DogLog;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import igknighters.subsystems.LimeLightVision.Helpers.LimelightHelpers;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +21,8 @@ public class LimeLightVisionReal extends LimeLights {
     }
 
     /**
-     * Returns a vision-based pose where translation comes from MT2 (reliable)
-     * and rotation comes from MT1 (vision), ignoring MT1 translation entirely.
+     * Returns a vision-based pose where translation comes from MT2 (reliable) and rotation comes
+     * from MT1 (vision), ignoring MT1 translation entirely.
      */
     public Pose2d getRobotPoseFromVision(
             double yaw,
@@ -59,9 +57,8 @@ public class LimeLightVisionReal extends LimeLights {
                 }
 
                 // MT2 translation + selected rotation
-                Pose2d rotationOnlyPose = new Pose2d(
-                        mt2Estimate.pose.getTranslation(), rotationToUse
-                );
+                Pose2d rotationOnlyPose =
+                        new Pose2d(mt2Estimate.pose.getTranslation(), rotationToUse);
 
                 poses.add(rotationOnlyPose);
 
@@ -76,8 +73,7 @@ public class LimeLightVisionReal extends LimeLights {
                 // Optional: log rotation source
                 DogLog.log(
                         "Subsystems/Vision/LimeLightVision/Source_" + cameraName,
-                        (mt1Estimate.tagCount >= 2) ? "VISION_CORRECTION" : "ROBOT_GYRO_ONLY"
-                );
+                        (mt1Estimate.tagCount >= 2) ? "VISION_CORRECTION" : "ROBOT_GYRO_ONLY");
             }
         }
 
@@ -90,23 +86,17 @@ public class LimeLightVisionReal extends LimeLights {
         return averagePose2ds(poses);
     }
 
-    /**
-     * Returns a list of visible tag IDs in the current frame.
-     */
+    /** Returns a list of visible tag IDs in the current frame. */
     public List<Integer> getVisibleTagIds() {
         return visibleTagIds;
     }
 
-    /**
-     * Returns the last timestamp from vision measurements.
-     */
+    /** Returns the last timestamp from vision measurements. */
     public double getLastTimeStamp() {
         return lastTimeStamp;
     }
 
-    /**
-     * Averages a list of Pose2d objects (translation + rotation).
-     */
+    /** Averages a list of Pose2d objects (translation + rotation). */
     public Pose2d averagePose2ds(List<Pose2d> poses) {
         if (poses.isEmpty()) {
             DogLog.log("Subsystems/Vision/LimeLightVision/TagsSeen", "NO TAGS SEEN");
