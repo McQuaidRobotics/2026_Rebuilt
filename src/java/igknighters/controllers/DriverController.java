@@ -150,18 +150,11 @@ public class DriverController {
             //                 () -> swerve.getState().Pose,
             //                 () -> FieldConstants.PASS.POSITION_RIGHT_BLUE));
             // this.LT.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
-            this.A.whileTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 4500));
-            this.B.whileTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 5000));
-            this.Y.whileTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 5500));
-            this.X.whileTrue(
-                    ShooterCommands.targetState(
-                            subsystems.shooter, new ShooterState(0.0, 0, Math.PI / 4)));
-            this.LT.whileTrue(
-                    ShooterCommands.targetState(
-                            subsystems.shooter, new ShooterState(0, 0, Math.PI / 6)));
-            this.DPD.onTrue(
-                    Commands.runOnce(
-                            () -> subsystems.shooter.setHoodAngleDegrees(0.0), subsystems.shooter));
+
+            this.A.whileTrue(ShooterCommands.targetState(shooter, 0, 90, 0));
+            this.B.whileTrue(ShooterCommands.targetState(shooter, 0, 180, 0));
+            this.X.whileTrue(ShooterCommands.targetState(shooter, 0, 270, 0));
+            this.Y.whileTrue(ShooterCommands.targetState(shooter, 0, 360, 0));
 
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));
