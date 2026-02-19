@@ -144,20 +144,20 @@ public class SubsystemConstants {
 
     public static class kShooter {
         public static final String CANBUS = "rio";
-        public static class kRollers {
+        public static class kFlywheels {
             public static final int LEADER_MOTOR_ID = 24;
             public static final int FOLLOWER_MOTOR_ID = 25;
             public static final double WHEEL_RADIUS_METERS = 0.0508; // 2 inch radius
             public static final double GEAR_RATIO = 1.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
             public static final double MAX_SPEED_RPM = 5000.0;
-            public static final double MAX_ACCELERATION_RPM = 70.0;
+            public static final double MAX_ACCELERATION_RPM = 120.0;
             public static final double MOTION_MAGIC_JERK = 17.0;
             public static final int BEAM_BREAK_SENSOR_CHANNEL = 0;
             public static final double kP = 0.3; // .5 max
             public static final double kI = 0.1;
             public static final double kD = 0.0;
-            public static final double kS = 0.3;
+            public static final double kS = 0.17;
             public static final double kV = 0.1;
             public static final double kA = 0.02;
             public static final double ShooterHeightMeters =
@@ -169,39 +169,38 @@ public class SubsystemConstants {
         public static class kTurret {
             public static final int MOTOR_ID = 26;
             public static final int CANCODER_ID = 27;
-            public static final double CANCODER_OFFSET_ROTATIONS = 0.0;
-            public static final double GEAR_RATIO = 12.0;
+            public static final double CANCODER_OFFSET_ROTATIONS = -0.306641;
+            public static final double GEAR_RATIO = 16.2;
             public static final double MAX_ANGLE_DEGREES = 180.0;
             public static final double MIN_ANGLE_DEGREES = -180.0;
-            public static final double MAX_SPEED_RPM = 90.0;
-            public static final double MAX_ACCELERATION_RPM = 90.0;
+            public static final double MAX_SPEED_RPM = 300.0;
+            public static final double MAX_ACCELERATION_RPM = 450.0;
             public static final double MAX_JERK = 10;
             public static final int STATOR_CURRENT_LIMIT = 40;
             public static final int SUPPLY_CURRENT_LIMIT = 30;
-            public static final double kP = 1.0;
+            public static final double kP = 45.0; // tuned
             public static final double kI = 0.0;
-            public static final double kD = 0.1;
-            public static final double kS = 0.2;
-            public static final double kV = 0.05;
-            public static final double kA = 0.01;
+            public static final double kD = 0.0;
+            public static final double kS = 0.0;
+            public static final double kV = 0.0;
+            public static final double kA = 0.0;
         }
 
         public static class kHood {
             public static final int MOTOR_ID = 28;
-            public static final int CANCODER_ID = 29;
-            public static final double GEAR_RATIO = 10.0;
-            public static final double MAX_ANGLE_DEGREES = 60.0;
-            public static final double MIN_ANGLE_DEGREES = 0.0;
-            public static final double MAX_SPEED_RPM = 60.0;
-            public static final double MAX_ACCELERATION_RPM = 6.0;
+            public static final double MOTOR_ROTS_TO_HOOD_DEGREES = 15.0;
+            public static final double MAX_ANGLE_DEGREES = 52.855225;
+            public static final double MIN_ANGLE_DEGREES = 18.6;
+            public static final double MAX_SPEED_R_P_S = 6.0;
+            public static final double MAX_ACCEL_R_P_S_S = 12.0;
             public static final double MAX_JERK = 1.0;
             public static final int STATOR_CURRENT_LIMIT = 30;
             public static final int SUPPLY_CURRENT_LIMIT = 20;
-            public static final double kP = 0.1;
+            public static final double kP = 0.01;
             public static final double kI = 0.0;
             public static final double kD = 0.05;
-            public static final double kS = 0.1;
-            public static final double kV = 0.02;
+            public static final double kS = 0.23;
+            public static final double kV = 0.1365;
             public static final double kA = 0.005;
             public static final double JKG_M2 = 0.01;
             public static final double LENGTH_METERS =

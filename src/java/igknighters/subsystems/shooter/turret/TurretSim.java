@@ -14,9 +14,9 @@ public class TurretSim extends Turret {
     private SingleJointedArmSim turretSim;
     private final ProfiledPIDController controller =
             new ProfiledPIDController(
-                    SubsystemConstants.kShooter.kTurret.kP,
-                    SubsystemConstants.kShooter.kTurret.kI,
-                    SubsystemConstants.kShooter.kTurret.kD,
+                    2.0,
+                    0.0,
+                    0.0,
                     new TrapezoidProfile.Constraints(
                             SubsystemConstants.kShooter.kTurret.MAX_SPEED_RPM,
                             SubsystemConstants.kShooter.kTurret.MAX_ACCELERATION_RPM));
@@ -26,7 +26,7 @@ public class TurretSim extends Turret {
                 new SingleJointedArmSim(
                         LinearSystemId.createSingleJointedArmSystem(
                                 DCMotor.getKrakenX60(1),
-                                SubsystemConstants.kShooter.kRollers.MOMENT_OF_INERTIA_KG_M2,
+                                SubsystemConstants.kShooter.kFlywheels.MOMENT_OF_INERTIA_KG_M2,
                                 SubsystemConstants.kShooter.kTurret.GEAR_RATIO),
                         DCMotor.getKrakenX60(1),
                         SubsystemConstants.kShooter.kTurret.GEAR_RATIO,

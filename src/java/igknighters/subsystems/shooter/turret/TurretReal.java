@@ -11,6 +11,8 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import dev.doglog.DogLog;
+import edu.wpi.first.wpilibj.DriverStation;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
@@ -26,6 +28,7 @@ public class TurretReal extends Turret {
 
     private final BaseStatusSignal turretAngle = motor.getPosition();
     private final BaseStatusSignal turretCurrent = motor.getStatorCurrent();
+    private final BaseStatusSignal canCoderAngle = turretCaNcoder.getAbsolutePosition();
 
     private final TalonFXConfiguration turretConfiguration() {
         var cfg = new TalonFXConfiguration();
@@ -37,15 +40,17 @@ public class TurretReal extends Turret {
         cfg.Slot0.kA = SubsystemConstants.kShooter.kTurret.kA;
 
         cfg.Feedback.RotorToSensorRatio = SubsystemConstants.kShooter.kTurret.GEAR_RATIO;
-        cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        cfg.Feedback.SensorToMechanismRatio = 1.0;
+        cfg.Feedback.FeedbackSensorSource =
+                FeedbackSensorSourceValue.RemoteCANcoder; // should be fused but rio bomb not pro
         cfg.Feedback.FeedbackRemoteSensorID = SubsystemConstants.kShooter.kTurret.CANCODER_ID;
 
         cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-                SubsystemConstants.kShooter.kTurret.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_ROTATIONS;
+                SubsystemConstants.kShooter.kTurret.MAX_ANGLE_DEGREES * Conv.DEGREES_TO_ROTATIONS;
         cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-                SubsystemConstants.kShooter.kTurret.MAX_ANGLE_DEGREES * Conv.DEGREES_TO_ROTATIONS;
+                SubsystemConstants.kShooter.kTurret.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_ROTATIONS;
 
         cfg.MotionMagic.MotionMagicCruiseVelocity =
                 SubsystemConstants.kShooter.kTurret.MAX_SPEED_RPM * Conv.RPM_TO_RPS;
@@ -57,8 +62,8 @@ public class TurretReal extends Turret {
         cfg.CurrentLimits.SupplyCurrentLimit =
                 SubsystemConstants.kShooter.kTurret.SUPPLY_CURRENT_LIMIT;
 
-        cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         return cfg;
     }
@@ -85,10 +90,42 @@ public class TurretReal extends Turret {
         motor.setPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS);
     }
 
+    public double getWrappedAngleDegrees(double angleDegrees) {
+        double angle = angleDegrees;
+        // Wrap to [-180, 180]
+        if (angle > 180.0) {
+            angle -= 360.0;
+        } else if (angle < -180.0) {
+            angle += 360.0;
+        }
+        return angle;
+    }
+
+    public boolean isLegalPosition(double angleDegrees) {
+        return angleDegrees >= SubsystemConstants.kShooter.kTurret.MIN_ANGLE_DEGREES
+                && angleDegrees <= SubsystemConstants.kShooter.kTurret.MAX_ANGLE_DEGREES;
+    }
+
+    public boolean isLegalPositionWrapped(double angleDegrees) {
+        double wrappedAngleDegrees = getWrappedAngleDegrees(angleDegrees);
+        return isLegalPosition(wrappedAngleDegrees);
+    }
+
     @Override
     public void goToAngleDegrees(double angleDegrees) {
         super.targetDegrees = angleDegrees;
-        motor.setControl(positionControl.withPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS));
+        double wrappedAngleDegrees = getWrappedAngleDegrees(angleDegrees);
+        if (!isLegalPositionWrapped(angleDegrees)) {
+            DriverStation.reportError(
+                    "Turret angle out of bounds: "
+                            + wrappedAngleDegrees
+                            + " degrees. Commanded: "
+                            + angleDegrees,
+                    false);
+            return;
+        }
+        motor.setControl(
+                positionControl.withPosition(wrappedAngleDegrees * Conv.DEGREES_TO_ROTATIONS));
     }
 
     @Override
@@ -98,7 +135,15 @@ public class TurretReal extends Turret {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(turretAngle, turretCurrent);
+        BaseStatusSignal.refreshAll(turretAngle, turretCurrent, canCoderAngle);
+
+        DogLog.log(
+                "Subsystems/Shooter/Turret/Position (deg)", turretAngle.getValueAsDouble() * 360.0);
+        DogLog.log("Subsystems/Shooter/Turret/Current (A)", turretCurrent.getValueAsDouble());
+        DogLog.log("Subsystems/Shooter/Turret/Target Degrees", super.targetDegrees);
+        DogLog.log(
+                "Subsystems/Shooter/Turret/CANcoder Angle (deg)",
+                canCoderAngle.getValueAsDouble() * 360.0);
 
         super.degrees = turretAngle.getValueAsDouble() * 360.0;
     }
