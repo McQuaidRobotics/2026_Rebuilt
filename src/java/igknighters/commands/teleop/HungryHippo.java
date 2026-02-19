@@ -1,26 +1,33 @@
 package igknighters.commands.teleop;
 
-import static edu.wpi.first.units.Units.Radians;
-
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import dev.doglog.DogLog;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.subsystems.swerve.Swerve;
 import java.util.function.Supplier;
 
-/** This class will try to drive and face balls */
 public class HungryHippo {
 
-    public static PIDController thetaController;
-    public static SwerveRequest.ApplyRobotSpeeds applyRobotSpeeds =
+    private static final PIDController thetaController = new PIDController(4.0, 0.0, 0.0);
+    private static final SwerveRequest.ApplyRobotSpeeds applyRobotSpeeds =
             new SwerveRequest.ApplyRobotSpeeds();
 
-    public HungryHippo() {
-        thetaController = new PIDController(4.0, 0.0, 0.0);
+    // Tuning constants
+    public static final double ACCEL_SCALER = 0.5;
+    public static final double FRICTION = 0.85;
+    public static final double FIELD_MIDLINE_X = 8.25; // Standard FRC Midline
+
+    // Velocity state
+    private static double currentVx = 0.0;
+    private static double currentVy = 0.0;
+
+    static {
+        // Essential for rotation! Prevents the robot from spinning the "long way"
+        thetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     public static Command hippoCommand(
@@ -29,64 +36,22 @@ public class HungryHippo {
             Supplier<Translation2d[]> gamePieces,
             Supplier<Pose2d> robotPose,
             boolean allowedToCrossMidline) {
+
         return swerve.run(
-                () -> {
-                    hippo(swerve, maxSpeeds, gamePieces, robotPose, allowedToCrossMidline);
-                });
+                        () ->
+                                hippo(
+                                        swerve,
+                                        maxSpeeds,
+                                        gamePieces,
+                                        robotPose,
+                                        allowedToCrossMidline))
+                .beforeStarting(
+                        () -> {
+                            // Reset velocity when the command starts so it doesn't "jump"
+                            currentVx = 0;
+                            currentVy = 0;
+                        });
     }
-
-    public static Translation2d getAtractiveForce(double tx, double ty) {
-        // 1. If the target is behind the robot (negative Y in robot-relative terms),
-        // or very far away, we apply no force.
-        if (ty <= 0) {
-            return new Translation2d(0, 0);
-        }
-
-        // 2. Calculate Euclidean distance: sqrt(tx^2 + ty^2)
-        double distance = Math.hypot(tx, ty);
-
-        // 3. Sensitivity constant (k).
-        // Adjust this: 0.5 means force drops to near-zero at ~10 meters.
-        // 1.0 means force drops to near-zero at ~5 meters.
-        double k = 0.5;
-
-        // 4. Calculate magnitude using exponential decay
-        // Result is 1.0 when distance is 0, approaching 0.0 as distance grows.
-        double magnitude = Math.exp(-k * distance);
-
-        // 5. Normalize the (tx, ty) vector and scale it by our magnitude score.
-        // This creates a vector pointing at the piece with a length of 'magnitude'.
-        if (distance == 0) return new Translation2d(0, 0);
-
-        double forceX = (tx / distance) * magnitude;
-        double forceY = (ty / distance) * magnitude;
-
-        return new Translation2d(forceX, forceY);
-    }
-
-    public static Translation2d getTotalAtractiveForce(Translation2d[] gamePieces) {
-        double totalX = 0.0;
-        double totalY = 0.0;
-        for (Translation2d piece : gamePieces) {
-            Translation2d forces = getAtractiveForce(piece.getX(), piece.getY());
-            totalX += forces.getX();
-            totalY += forces.getY();
-        }
-        return new Translation2d(totalX, totalY);
-    }
-
-    public static Angle getAngleFromForce(Translation2d force) {
-        return Radians.of(Math.atan2(force.getY(), force.getX()));
-    }
-
-    // Track velocity across loops
-    public static double currentVx = 0.0;
-    public static double currentVy = 0.0;
-
-    // Tuning constants
-    public static final double ACCEL_SCALER = 0.5; // How "punchy" the acceleration is
-    public static final double FRICTION =
-            0.85; // 1.0 = ice, 0.0 = instant stop. 0.8-0.9 is usually sweet.
 
     public static void hippo(
             Swerve swerve,
@@ -94,26 +59,35 @@ public class HungryHippo {
             Supplier<Translation2d[]> gamePieces,
             Supplier<Pose2d> robotPose,
             boolean allowedToCrossMidline) {
-        // 1. Get the net attractive force (our "Acceleration")
+
         Translation2d accelVector = getTotalAtractiveForce(gamePieces.get());
 
-        // 2. Physics Step: Velocity = (Current Velocity * Friction) + Acceleration
-        // We multiply by ACCEL_SCALER to turn our 0-1 force into m/s units
+        // Physics Step
         currentVx = (currentVx * FRICTION) + (accelVector.getX() * ACCEL_SCALER);
         currentVy = (currentVy * FRICTION) + (accelVector.getY() * ACCEL_SCALER);
 
-        // 3. Rotation (using your existing PID logic)
-        // We only rotate if there is actually a force pulling us
+        // Rotation Logic
         double thetaOutput = 0;
-        if (accelVector.getNorm() > 0.1) {
-            Angle targetAngle = getAngleFromForce(accelVector);
+        if (accelVector.getNorm() > 0.05) {
+            // Note: Use Math.atan2(y, x) for the heading of the vector
+            double targetRad = Math.atan2(accelVector.getY(), accelVector.getX());
             thetaOutput =
                     thetaController.calculate(
-                            robotPose.get().getRotation().getRadians(), targetAngle.in(Radians));
+                            robotPose.get().getRotation().getRadians(), targetRad);
         }
 
-        // 4. Create and Clamp Speeds
-        // Ensure we don't try to go faster than the drivetrain allows
+        // Midline Enforcement
+        // If not allowed to cross and robot is at midline moving toward it, kill the X velocity
+        double robotX = robotPose.get().getX();
+        if (!allowedToCrossMidline) {
+            if ((robotX > FIELD_MIDLINE_X && currentVx > 0)
+                    || (robotX < FIELD_MIDLINE_X && currentVx < 0)) {
+                // Simplified: if you're on the far side or trying to cross, stop X
+                currentVx = 0;
+            }
+        }
+
+        // Clamp to Max Speeds
         double finalVx =
                 Math.max(
                         -maxSpeeds.vxMetersPerSecond,
@@ -123,9 +97,38 @@ public class HungryHippo {
                         -maxSpeeds.vyMetersPerSecond,
                         Math.min(maxSpeeds.vyMetersPerSecond, currentVy));
 
-        ChassisSpeeds targetSpeeds = new ChassisSpeeds(finalVx, finalVy, thetaOutput);
+        // Logging
+        DogLog.log("Commands/Hippo/Accel X", accelVector.getX());
+        DogLog.log("Commands/Hippo/Accel Y", accelVector.getY());
+        DogLog.log("Commands/Hippo/x", robotX);
+        DogLog.log("Commands/Hippo/y", robotPose.get().getY());
+        DogLog.log("Commands/Hippo/VX", finalVx);
+        DogLog.log("Commands/Hippo/VY", finalVy);
 
-        // 5. Drive!
-        swerve.setControl(applyRobotSpeeds.withSpeeds(targetSpeeds));
+        swerve.setControl(
+                applyRobotSpeeds.withSpeeds(new ChassisSpeeds(finalVx, finalVy, thetaOutput)));
+    }
+
+    public static Translation2d getAtractiveForce(double tx, double ty) {
+        if (ty <= 0) return new Translation2d(0, 0); // Ignore behind
+
+        double distance = Math.hypot(tx, ty);
+        double k = 0.5;
+        double magnitude = Math.exp(-k * distance);
+
+        if (distance < 1e-6) return new Translation2d(0, 0);
+
+        return new Translation2d((tx / distance) * magnitude, (ty / distance) * magnitude);
+    }
+
+    public static Translation2d getTotalAtractiveForce(Translation2d[] gamePieces) {
+        double totalX = 0, totalY = 0;
+        if (gamePieces == null) return new Translation2d(0, 0);
+        for (Translation2d piece : gamePieces) {
+            Translation2d force = getAtractiveForce(piece.getX(), piece.getY());
+            totalX += force.getX();
+            totalY += force.getY();
+        }
+        return new Translation2d(totalX, totalY);
     }
 }
