@@ -3,8 +3,8 @@ package igknighters.subsystems;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
-import igknighters.subsystems.climber.Climber;
 import igknighters.subsystems.Luma.Luma;
+import igknighters.subsystems.climber.Climber;
 import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
@@ -39,7 +39,8 @@ public class Subsystems {
         this.intake = intake;
         this.climber = climber;
         this.indexer = indexer;
-        this.lockedResources = new SubsystemBase[] {luma, swerve, led, shooter, vision, indexer, intake};
+        this.lockedResources =
+                new SubsystemBase[] {luma, swerve, led, shooter, vision, indexer, intake};
 
         CommandScheduler.getInstance().registerSubsystem(this.lockedResources);
         // this.shooter.setDefaultCommand(ShooterCommands.idle(shooter));

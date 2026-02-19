@@ -1,6 +1,5 @@
 package igknighters.subsystems.Luma;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
