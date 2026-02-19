@@ -13,10 +13,10 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
-import igknighters.constants.SubsystemConstants.kShooter;
 
 public class HoodReal extends Hood {
-    private final TalonFX motor = new TalonFX(SubsystemConstants.kShooter.kHood.MOTOR_ID, kShooter.CANBUS);
+    private final TalonFX motor =
+            new TalonFX(SubsystemConstants.kShooter.kHood.MOTOR_ID, kShooter.CANBUS);
 
     private final BaseStatusSignal flapAngleRots = motor.getPosition();
     private final DigitalInput reverseLimitSwitch =

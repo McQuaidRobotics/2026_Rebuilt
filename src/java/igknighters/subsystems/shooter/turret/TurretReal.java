@@ -22,7 +22,8 @@ public class TurretReal extends Turret {
     private final MotionMagicVoltage positionControl = new MotionMagicVoltage(0.0).withSlot(0);
     private final DutyCycleOut voltageControl = new DutyCycleOut(0.0);
 
-    private final TalonFX motor = new TalonFX(SubsystemConstants.kShooter.kTurret.MOTOR_ID, kShooter.CANBUS);
+    private final TalonFX motor =
+            new TalonFX(SubsystemConstants.kShooter.kTurret.MOTOR_ID, kShooter.CANBUS);
     private final CANcoder turretCaNcoder =
             new CANcoder(SubsystemConstants.kShooter.kTurret.CANCODER_ID, kShooter.CANBUS);
 

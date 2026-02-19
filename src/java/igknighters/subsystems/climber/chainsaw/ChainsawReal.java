@@ -35,7 +35,8 @@ public class ChainsawReal extends Chainsaw {
     // private final TalonFX rightMotor;
 
     public ChainsawReal() {
-        leftMotor = new TalonFX(SubsystemConstants.kClimber.kChainsaw.LEFT_MOTOR_ID, kClimber.CANBUS);
+        leftMotor =
+                new TalonFX(SubsystemConstants.kClimber.kChainsaw.LEFT_MOTOR_ID, kClimber.CANBUS);
 
         armPosition = leftMotor.getPosition();
         armCurrent = leftMotor.getStatorCurrent();
