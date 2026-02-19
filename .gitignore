@@ -11,6 +11,9 @@
 *.o
 *.obj
 
+##GEMINI
+GEMINI.md
+
 # Precompiled Headers
 *.gch
 *.pch
