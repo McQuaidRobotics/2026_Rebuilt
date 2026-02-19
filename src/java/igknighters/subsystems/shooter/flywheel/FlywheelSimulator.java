@@ -19,23 +19,23 @@ public class FlywheelSimulator extends Flywheel {
             new FlywheelSim(
                     LinearSystemId.createFlywheelSystem(
                             DCMotor.getKrakenX60(1),
-                            SubsystemConstants.kShooter.kRollers.MOMENT_OF_INERTIA_KG_M2,
-                            SubsystemConstants.kShooter.kRollers.GEAR_RATIO),
+                            SubsystemConstants.kShooter.kFlywheels.MOMENT_OF_INERTIA_KG_M2,
+                            SubsystemConstants.kShooter.kFlywheels.GEAR_RATIO),
                     DCMotor.getKrakenX60(1));
     private final ProfiledPIDController profiledPIDController =
             new ProfiledPIDController(
                     .8,
-                    SubsystemConstants.kShooter.kRollers.kI,
-                    SubsystemConstants.kShooter.kRollers.kD,
+                    SubsystemConstants.kShooter.kFlywheels.kI,
+                    SubsystemConstants.kShooter.kFlywheels.kD,
                     new Constraints(
-                            SubsystemConstants.kShooter.kRollers.MAX_SPEED_RPM,
-                            SubsystemConstants.kShooter.kRollers.MAX_ACCELERATION_RPM));
+                            SubsystemConstants.kShooter.kFlywheels.MAX_SPEED_RPM,
+                            SubsystemConstants.kShooter.kFlywheels.MAX_ACCELERATION_RPM));
     // Create a new SimpleMotorFeedforward with gains kS, kV, and kA
     private final SimpleMotorFeedforward feedforward =
             new SimpleMotorFeedforward(
-                    SubsystemConstants.kShooter.kRollers.kS,
-                    SubsystemConstants.kShooter.kRollers.kV,
-                    SubsystemConstants.kShooter.kRollers.kA);
+                    SubsystemConstants.kShooter.kFlywheels.kS,
+                    SubsystemConstants.kShooter.kFlywheels.kV,
+                    SubsystemConstants.kShooter.kFlywheels.kA);
 
     private boolean isPidControlledThisCycle = false;
 
@@ -82,7 +82,7 @@ public class FlywheelSimulator extends Flywheel {
 
             double goalRPS = goalRPM / 60.0;
 
-            ffOutput = kShooter.kRollers.kS + kShooter.kRollers.kV * goalRPS;
+            ffOutput = kShooter.kFlywheels.kS + kShooter.kFlywheels.kV * goalRPS;
 
             // PID output is in RPM, convert to volts with a small gain
 
