@@ -7,13 +7,18 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import igknighters.commands.ClimberCommands;
+import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.Repulsor;
+import igknighters.commands.IntakeCommands;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
 import igknighters.constants.DrivingSharedState;
+import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.climber.ClimberState;
 import java.util.function.DoubleSupplier;
 
 public class DriverController {
@@ -94,9 +99,20 @@ public class DriverController {
         DPU = controller.povUp();
     }
 
-    public void bind(final Subsystems subsystems) {
+    public static enum DebugType {
+        SHOOTER,
+        SWERVE,
+        INTAKE,
+        INDEXER,
+        CLIMBER;
+    }
+
+    public void bind(final Subsystems subsystems, DebugType debugType) {
         DrivingSharedState state = DrivingSharedState.getInstance();
         var swerve = subsystems.swerve;
+        var shooter = subsystems.shooter;
+        var indexer = subsystems.indexer;
+        var climber = subsystems.climber;
 
         this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
         this.A.whileTrue(

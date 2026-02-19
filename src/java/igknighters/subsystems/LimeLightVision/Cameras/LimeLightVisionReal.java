@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LimeLightVisionReal extends LimeLights {
+
     private final List<String> cameraNames;
     private double lastTimeStamp = 0.0;
+    private final List<Integer> visibleTagIds = new ArrayList<>();
 
     public LimeLightVisionReal(String... cameraNames) {
         this.cameraNames = new ArrayList<>();
@@ -18,8 +20,10 @@ public class LimeLightVisionReal extends LimeLights {
         }
     }
 
-    private List<Integer> visibleTagIds = new ArrayList<>();
-
+    /**
+     * Returns a vision-based pose where translation comes from MT2 (reliable) and rotation comes
+     * from MT1 (vision), ignoring MT1 translation entirely.
+     */
     public Pose2d getRobotPoseFromVision(
             double yaw,
             double yawRate,
@@ -27,45 +31,76 @@ public class LimeLightVisionReal extends LimeLights {
             double pitchRate,
             double roll,
             double rollRate) {
+
         List<Pose2d> poses = new ArrayList<>();
-        double timestamp = 0.0;
+        double timestampSum = 0.0;
         visibleTagIds.clear();
+
         for (String cameraName : cameraNames) {
+
+            // Feed gyro to Limelight (for MT2)
             LimelightHelpers.SetRobotOrientation(
                     cameraName, yaw, yawRate, pitch, pitchRate, roll, rollRate);
-            var llMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
 
-            if (llMeasurement != null && llMeasurement.tagCount > 0) {
-                DogLog.log(
-                        "Robot/Subsystems/LimeLightVision/RawPose_" + cameraName,
-                        llMeasurement.pose);
-                poses.add(llMeasurement.pose);
-                timestamp += llMeasurement.timestampSeconds;
-                for (var fiducial : llMeasurement.rawFiducials) {
+            // Get both MT2 and MT1 estimates
+            var mt2Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
+            var mt1Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
+
+            if (mt2Estimate != null && mt1Estimate != null && mt1Estimate.tagCount > 0) {
+
+                // --- ROTATION SELECTION LOGIC ---
+                Rotation2d rotationToUse;
+                if (mt1Estimate.tagCount >= 2) {
+                    rotationToUse = mt1Estimate.pose.getRotation(); // vision rotation
+                } else {
+                    rotationToUse = mt2Estimate.pose.getRotation(); // fallback gyro-based
+                }
+
+                // MT2 translation + selected rotation
+                Pose2d rotationOnlyPose =
+                        new Pose2d(mt2Estimate.pose.getTranslation(), rotationToUse);
+
+                poses.add(rotationOnlyPose);
+
+                // accumulate timestamp
+                timestampSum += mt2Estimate.timestampSeconds;
+
+                // collect visible tags
+                for (var fiducial : mt2Estimate.rawFiducials) {
                     visibleTagIds.add(fiducial.id);
                 }
+
+                // Optional: log rotation source
+                DogLog.log(
+                        "Subsystems/Vision/LimeLightVision/Source_" + cameraName,
+                        (mt1Estimate.tagCount >= 2) ? "VISION_CORRECTION" : "ROBOT_GYRO_ONLY");
             }
         }
-        if (!cameraNames.isEmpty()) {
-            timestamp /= poses.size();
-        }
+
+        double timestamp = !poses.isEmpty() ? timestampSum / poses.size() : 0.0;
         lastTimeStamp = timestamp;
-        DogLog.log("Robot/Subsystems/LimeLightVision/TimeStampOfMeasurments", timestamp);
-        DogLog.log("Robot/Subsystems/LimeLightVision/NumberOfTagsSeen", poses.size());
+
+        DogLog.log("Subsystems/Vision/LimeLightVision/TimeStampOfMeasurements", timestamp);
+        DogLog.log("Subsystems/Vision/LimeLightVision/NumberOfTagsSeen", poses.size());
 
         return averagePose2ds(poses);
     }
 
+    /** Returns a list of visible tag IDs in the current frame. */
     public List<Integer> getVisibleTagIds() {
         return visibleTagIds;
     }
 
+    /** Returns the last timestamp from vision measurements. */
+    public double getLastTimeStamp() {
+        return lastTimeStamp;
+    }
+
+    /** Averages a list of Pose2d objects (translation + rotation). */
     public Pose2d averagePose2ds(List<Pose2d> poses) {
         if (poses.isEmpty()) {
-            DogLog.log("Robot/Subsystems/LimeLightVision/TagsSeen", "NO TAGS SEEN");
-            return null; // safer than returning (0,0,0)
-        } else {
-            DogLog.log("Robot/Subsystems/LimeLightVision/TagsSeen", "Tag is seen we have a pose");
+            DogLog.log("Subsystems/Vision/LimeLightVision/TagsSeen", "NO TAGS SEEN");
+            return null;
         }
 
         double xSum = 0.0, ySum = 0.0;
@@ -83,15 +118,14 @@ public class LimeLightVisionReal extends LimeLights {
         int count = poses.size();
         double avgX = xSum / count;
         double avgY = ySum / count;
-        DogLog.log("Robot/Subsystems/LimeLightVision/RotationList", rotations.toString());
         Rotation2d avgRot = new Rotation2d(Math.atan2(sinSum / count, cosSum / count));
-        DogLog.log("Robot/Subsystems/LimeLightVision/Rotation", avgRot.getDegrees());
-        Pose2d averaged = new Pose2d(avgX, avgY, avgRot);
-        DogLog.log("Robot/Subsystems/LimeLightVision/TagsSeen", averaged);
-        return averaged;
-    }
 
-    public double getLastTimeStamp() {
-        return lastTimeStamp;
+        DogLog.log("Subsystems/Vision/LimeLightVision/RotationList", rotations.toString());
+        DogLog.log("Subsystems/Vision/LimeLightVision/Rotation", avgRot.getDegrees());
+
+        Pose2d averaged = new Pose2d(avgX, avgY, avgRot);
+        DogLog.log("Subsystems/Vision/LimeLightVision/TagsSeen", averaged);
+
+        return averaged;
     }
 }
