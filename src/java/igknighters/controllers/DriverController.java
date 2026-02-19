@@ -7,18 +7,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import igknighters.commands.ClimberCommands;
-import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.Repulsor;
-import igknighters.commands.IntakeCommands;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
 import igknighters.constants.DrivingSharedState;
-import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.climber.ClimberState;
 import java.util.function.DoubleSupplier;
 
 public class DriverController {
@@ -126,10 +121,10 @@ public class DriverController {
                                 Units.inchesToMeters(651.22 / 2),
                                 Units.inchesToMeters(317.69 / 2),
                                 new Rotation2d()),
-                        2));
+                        2.0));
 
-        this.LT.onTrue(IndexerCommands.dispense(subsystems.indexer, 120));
-        this.RT.onTrue(IndexerCommands.dispense(subsystems.indexer, 180));
+        this.LT.onTrue(IndexerCommands.dispense(subsystems.indexer));
+        this.RT.onTrue(IndexerCommands.stopDispensing(subsystems.indexer));
         this.DPD.onTrue(ShooterCommands.stopShooting(subsystems.shooter));
         this.DPL.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 4000));
         this.DPR.onTrue(ShooterCommands.shootAtSpeed(subsystems.shooter, 3500));
