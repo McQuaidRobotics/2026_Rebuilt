@@ -31,7 +31,7 @@ public class HigherOrderCommands {
                         .withName("SHOOTING WHILE DOING OTHER STUFF"),
                 IndexerCommands.dispense(subsystems.indexer)
                         .withName("ALLOWED TO SHOOT THEIRFORE DISPENSING TS")
-                        .onlyIf(() -> subsystems.shooter.atTarget(300, 2, 2)));
+                        .onlyIf(() -> subsystems.shooter.atTarget(500, 5, 5)));
     }
 
     public static Pose2d getClimbStartPose() {

@@ -27,9 +27,9 @@ public class HoodReal extends Hood {
 
         config.MotionMagic.MotionMagicJerk = SubsystemConstants.kShooter.kHood.MAX_JERK;
         config.MotionMagic.MotionMagicAcceleration =
-                SubsystemConstants.kShooter.kHood.MAX_ACCELERATION_RPM;
+                SubsystemConstants.kShooter.kHood.MAX_ACCELERATION_DEGREES_PER_SECOND_SQUARED;
         config.MotionMagic.MotionMagicCruiseVelocity =
-                SubsystemConstants.kShooter.kHood.MAX_SPEED_RPM;
+                SubsystemConstants.kShooter.kHood.MAX_SPEED_DEGREES_PER_SECOND;
 
         config.Feedback.SensorToMechanismRatio = SubsystemConstants.kShooter.kHood.GEAR_RATIO;
         config.HardwareLimitSwitch.ReverseLimitEnable = true;

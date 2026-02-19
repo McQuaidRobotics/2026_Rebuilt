@@ -13,9 +13,9 @@ import igknighters.constants.SubsystemConstants;
 
 public class FlywheelReal extends Flywheel {
     private final TalonFX mainShooter =
-            new TalonFX(SubsystemConstants.kShooter.kRollers.LEADER_MOTOR_ID);
+            new TalonFX(SubsystemConstants.kShooter.kFlywheels.LEADER_MOTOR_ID);
     private final TalonFX followerShooter =
-            new TalonFX(SubsystemConstants.kShooter.kRollers.FOLLOWER_MOTOR_ID);
+            new TalonFX(SubsystemConstants.kShooter.kFlywheels.FOLLOWER_MOTOR_ID);
 
     // private final MotionMagicVelocityVoltage velocityControl = new
     // MotionMagicVelocityVoltage(0.0);
@@ -37,27 +37,28 @@ public class FlywheelReal extends Flywheel {
 
     public TalonFXConfiguration getLeaderConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = SubsystemConstants.kShooter.kRollers.kP;
-        config.Slot0.kI = SubsystemConstants.kShooter.kRollers.kI;
-        config.Slot0.kD = SubsystemConstants.kShooter.kRollers.kD;
-        config.Slot0.kS = SubsystemConstants.kShooter.kRollers.kS;
-        config.Slot0.kV = SubsystemConstants.kShooter.kRollers.kV;
+        config.Slot0.kP = SubsystemConstants.kShooter.kFlywheels.kP;
+        config.Slot0.kI = SubsystemConstants.kShooter.kFlywheels.kI;
+        config.Slot0.kD = SubsystemConstants.kShooter.kFlywheels.kD;
+        config.Slot0.kS = SubsystemConstants.kShooter.kFlywheels.kS;
+        config.Slot0.kV = SubsystemConstants.kShooter.kFlywheels.kV;
 
-        config.Feedback.SensorToMechanismRatio = SubsystemConstants.kShooter.kRollers.GEAR_RATIO;
+        config.Feedback.SensorToMechanismRatio = SubsystemConstants.kShooter.kFlywheels.GEAR_RATIO;
 
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
-        config.MotionMagic.MotionMagicJerk = SubsystemConstants.kShooter.kRollers.MOTION_MAGIC_JERK;
+        config.MotionMagic.MotionMagicJerk =
+                SubsystemConstants.kShooter.kFlywheels.MOTION_MAGIC_JERK;
         config.MotionMagic.MotionMagicAcceleration =
-                SubsystemConstants.kShooter.kRollers.MAX_ACCELERATION_RPM;
+                SubsystemConstants.kShooter.kFlywheels.MAX_ACCELERATION_RPM;
         config.MotionMagic.MotionMagicCruiseVelocity =
-                SubsystemConstants.kShooter.kRollers.MAX_SPEED_RPM;
+                SubsystemConstants.kShooter.kFlywheels.MAX_SPEED_RPM;
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
         config.CurrentLimits.SupplyCurrentLimit =
-                SubsystemConstants.kShooter.kRollers.SUPPLY_CURRENT_LIMIT;
+                SubsystemConstants.kShooter.kFlywheels.SUPPLY_CURRENT_LIMIT;
         config.MotorOutput.PeakReverseDutyCycle = 0.0; // do not allow the motor to run in reverse
         config.TorqueCurrent.PeakForwardTorqueCurrent =
-                SubsystemConstants.kShooter.kRollers.PEAK_CURRENT_LIMIT;
+                SubsystemConstants.kShooter.kFlywheels.PEAK_CURRENT_LIMIT;
 
         return config;
     }
