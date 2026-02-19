@@ -1,70 +1,77 @@
 package igknighters.subsystems.shooter.hood;
 
 import dev.doglog.DogLog;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 
 public class HoodSim extends Hood {
-    private SingleJointedArmSim flapSim =
+    private final SingleJointedArmSim flapSim =
             new SingleJointedArmSim(
                     LinearSystemId.createSingleJointedArmSystem(
-                            DCMotor.getKrakenX60(1),
-                            SubsystemConstants.kShooter.kHood.JKG_M2,
-                            SubsystemConstants.kShooter.kHood.GEAR_RATIO),
+                            DCMotor.getKrakenX60(1), SubsystemConstants.kShooter.kHood.JKG_M2, 1.0),
                     DCMotor.getKrakenX60(1),
-                    SubsystemConstants.kShooter.kHood.GEAR_RATIO,
+                    1.0,
                     SubsystemConstants.kShooter.kHood.LENGTH_METERS,
-                    SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS,
-                    SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS,
-                    true,
-                    SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS);
-    private ProfiledPIDController pidController =
+                    Math.toRadians(SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES),
+                    Math.toRadians(SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES),
+                    false, // Assuming horizontal/no gravity effect for now
+                    Math.toRadians(SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES));
+
+    private final ProfiledPIDController pidController =
             new ProfiledPIDController(
                     SubsystemConstants.kShooter.kHood.kP,
                     SubsystemConstants.kShooter.kHood.kI,
                     SubsystemConstants.kShooter.kHood.kD,
                     new TrapezoidProfile.Constraints(
-                            SubsystemConstants.kShooter.kHood.MAX_SPEED_RPM * 360.0,
-                            SubsystemConstants.kShooter.kHood.MAX_ACCELERATION_RPM
-                                    * 360.0)); // in degrees per minute
+                            SubsystemConstants.kShooter.kHood.MAX_SPEED_R_P_S,
+                            SubsystemConstants.kShooter.kHood.MAX_ACCEL_R_P_S_S));
+
+    private boolean isControlledThisCycle = false;
 
     @Override
     public void periodic() {
-        double input = pidController.calculate(getAngleDegrees());
-        input =
-                input
-                        / (SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES
-                                - SubsystemConstants.kShooter
-                                        .kHood
-                                        .MIN_ANGLE_DEGREES); // normalize to -1 to 1
-        input = input * 12.0; // scale to voltage
-        flapSim.setInput(input);
-        flapSim.update(0.02); // Update the simulation with a 20ms timestep
+        double voltageInput = 0.0;
+
+        if (isControlledThisCycle) {
+            // PID calculation is performed in DEGREES
+            voltageInput = pidController.calculate(getAngleDegrees());
+
+            // Standard motor voltage clamp
+            voltageInput = MathUtil.clamp(voltageInput, -12.0, 12.0);
+        }
+
+        flapSim.setInput(voltageInput);
+        flapSim.update(0.02); // Standard 20ms simulation step
 
         DogLog.log("Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());
         DogLog.log("Subsystems/Shooter/Hood/TargetDegrees", super.targetDegrees);
-        DogLog.log("Subsystems/Shooter/Hood/Voltage", input);
+        DogLog.log("Subsystems/Shooter/Hood/Voltage", voltageInput);
+
+        isControlledThisCycle = false;
     }
 
     @Override
     public void setAngleDegrees(double angleDegrees) {
-        flapSim.setState(angleDegrees * Conv.DEGREES_TO_RADIANS, 0.0);
+        // State must be stored in RADIANS for the WPILib Sim
+        flapSim.setState(Math.toRadians(angleDegrees), 0.0);
     }
 
-    // pid controllers gains are in degrees
     @Override
     public void goToAngleDegrees(double angleDegrees) {
-        DogLog.log("Subsystems/Shooter/Hood/GoalDegrees", angleDegrees);
+        super.targetDegrees = angleDegrees;
+        // Goal is DEGREES to match your kP (Volts per Degree)
         pidController.setGoal(angleDegrees);
+        isControlledThisCycle = true;
     }
 
     @Override
     public double getAngleDegrees() {
-        return flapSim.getAngleRads() * Conv.RADIANS_TO_DEGREES;
+        // Convert RADIANS from sim back to DEGREES for your robot logic
+        return Math.toDegrees(flapSim.getAngleRads());
     }
 }

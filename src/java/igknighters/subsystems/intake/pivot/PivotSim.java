@@ -48,10 +48,13 @@ public class PivotSim extends Pivot {
         controller.reset(angleDegrees * Conv.DEGREES_TO_RADIANS);
     }
 
+    private boolean isControlledThisCycle = false;
+
     @Override
     public void goToAngleDegrees(double angleDegrees) {
         super.targetDegrees = angleDegrees;
         controller.setGoal(angleDegrees * Conv.DEGREES_TO_RADIANS);
+        isControlledThisCycle = true;
     }
 
     @Override

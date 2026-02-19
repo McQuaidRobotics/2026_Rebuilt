@@ -30,6 +30,22 @@ public class Intake extends SubsystemBase {
         rollers.goToSpeedRPM(speedRPM);
     }
 
+    public void goTo(IntakeState state) {
+        goTo(state.pivotDegrees, state.rollerSpeedRPM);
+    }
+
+    public double getPivotAngleDegrees() {
+        return pivot.getAngleDegrees();
+    }
+
+    public double getRollerSpeedRPM() {
+        return rollers.getSpeedRPM();
+    }
+
+    public void setPivotDegrees(double degrees) {
+        pivot.setAngleDegrees(degrees);
+    }
+
     public void stop() {
         pivot.stop();
         rollers.stop();

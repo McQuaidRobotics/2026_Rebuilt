@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
+import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import java.util.ArrayList;
 
@@ -171,7 +172,7 @@ public class Repulsor {
     }
 
     public static Command moveWithRepulsor(
-            CommandSwerveDrivetrain swerve, Pose2d targetPose, double strength) {
+            Swerve swerve, Pose2d targetPose, double strength) {
         ArrayList<obstacle> obstacles = FieldConstants.OBSTACLES.ALL_OBSTACLES;
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()

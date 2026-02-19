@@ -7,12 +7,13 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Translation2d;
+import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
-import igknighters.subsystems.swerve.CommandSwerveDrivetrain;
+import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 
 public class TeleopSwerveWithDetune extends TeleopSwerveBaseCmd {
-    private final double detune;
+    private double detune;
     private final SwerveRequest.FieldCentric m_driveRequest =
             new SwerveRequest.FieldCentric()
                     .withDeadband(knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.1)
@@ -20,8 +21,7 @@ public class TeleopSwerveWithDetune extends TeleopSwerveBaseCmd {
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
 
-    public TeleopSwerveWithDetune(
-            CommandSwerveDrivetrain swerve, DriverController controller, double detune) {
+    public TeleopSwerveWithDetune(Swerve swerve, DriverController controller, double detune) {
         super(swerve, controller);
         this.detune = detune;
         addRequirements(swerve);
@@ -30,6 +30,7 @@ public class TeleopSwerveWithDetune extends TeleopSwerveBaseCmd {
     @Override
     public void execute() {
         super.execute();
+        detune = DrivingSharedState.getInstance().detune;
         Translation2d vt = translationStick();
         double allianceFlipper = 1.0;
         // if (Robot.isBlue()) {
