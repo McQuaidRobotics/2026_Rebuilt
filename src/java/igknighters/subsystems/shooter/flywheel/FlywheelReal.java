@@ -18,6 +18,8 @@ public class FlywheelReal extends Flywheel {
             new TalonFX(SubsystemConstants.kShooter.kFlywheels.FOLLOWER_MOTOR_ID);
 
     // private final MotionMagicVelocityVoltage velocityControl = new
+
+    private boolean isBeingControlledActivly = false;
     // MotionMagicVelocityVoltage(0.0);
 
     private final MotionMagicVelocityVoltage velocityControl;
@@ -67,7 +69,7 @@ public class FlywheelReal extends Flywheel {
 
         mainShooter.getConfigurator().apply(getLeaderConfig());
         followerShooter.setControl(
-                new Follower(mainShooter.getDeviceID(), MotorAlignmentValue.Aligned));
+                new Follower(mainShooter.getDeviceID(), MotorAlignmentValue.Opposed));
 
         velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(0);
 
@@ -80,12 +82,14 @@ public class FlywheelReal extends Flywheel {
     @Override
     public void setSpeed(double speedRpm) {
         DogLog.log("Subsystems/Shooter/Rollers/setSpeed", speedRpm);
+        isBeingControlledActivly = true;
         // mainShooter.setControl(velocityControl.withVelocity(speedRpm / 60.0));
         mainShooter.setControl(velocityControl.withVelocity(speedRpm / 60.0));
     }
 
     @Override
     public void setVoltage(double voltage) {
+        isBeingControlledActivly = true;
         mainShooter.setControl(dutyCycleControl.withOutput(voltage / 12.0));
     }
 
@@ -98,11 +102,14 @@ public class FlywheelReal extends Flywheel {
     public void periodic() {
         BaseStatusSignal.refreshAll(
                 shooterVelocity, shooterCurrent, shooterVoltage, shooterTemperature);
+        DogLog.log("Subsystems/Shooter/Rollers/being controlled", isBeingControlledActivly);
         DogLog.log(
                 "Subsystems/Shooter/Rollers/velocity", shooterVelocity.getValueAsDouble() * 60.0);
         DogLog.log("Subsystems/Shooter/Rollers/current", shooterCurrent.getValueAsDouble());
         DogLog.log("Subsystems/Shooter/Rollers/voltage", shooterVoltage.getValueAsDouble());
         DogLog.log("Subsystems/Shooter/Rollers/temperature", shooterTemperature.getValueAsDouble());
         DogLog.log("Subsystems/Shooter/Rollers/periodicing", true);
+
+        isBeingControlledActivly = false;
     }
 }

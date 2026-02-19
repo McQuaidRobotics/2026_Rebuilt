@@ -9,7 +9,7 @@ import igknighters.subsystems.shooter.flywheel.Flywheel;
 import igknighters.subsystems.shooter.flywheel.FlywheelDisabled;
 import igknighters.subsystems.shooter.flywheel.FlywheelSimulator;
 import igknighters.subsystems.shooter.hood.Hood;
-import igknighters.subsystems.shooter.hood.HoodDisabled;
+import igknighters.subsystems.shooter.hood.HoodReal;
 import igknighters.subsystems.shooter.hood.HoodSim;
 import igknighters.subsystems.shooter.turret.Turret;
 import igknighters.subsystems.shooter.turret.TurretReal;
@@ -41,7 +41,7 @@ public class Shooter extends SubsystemBase {
         if (Robot.isReal()) {
             rollers = new FlywheelDisabled();
             turret = new TurretReal();
-            hood = new HoodDisabled();
+            hood = new HoodReal();
         } else {
             rollers = new FlywheelSimulator();
             turret = new TurretSim();
@@ -71,15 +71,16 @@ public class Shooter extends SubsystemBase {
         turret.goToAngleDegrees(angleDegrees);
     }
 
-    public void targetState(double rpm, double turretAngleDegrees, double hoodAngleDegrees) {
+    public void targetState(double rpm, double turretAngleDegrees, double hoodAngleRads) {
         DogLog.log("Subsystems/Shooter/TARGETING/RPM", rpm);
         DogLog.log("Subsystems/Shooter/TARGETING/ANGLE", turretAngleDegrees);
+        DogLog.log("Subsystems/Shooter/TARGETING/HoodAngle", hoodAngleRads);
         targetSpeed(rpm);
         goToTurretAngleDegrees(turretAngleDegrees);
-        hood.goToAngleDegrees(hoodAngleDegrees);
+        hood.goToAngleDegrees(hoodAngleRads * Conv.RADIANS_TO_DEGREES);
         goalRPM = rpm;
         goalTurretAngleDegrees = turretAngleDegrees;
-        goalHoodAngleDegrees = hoodAngleDegrees;
+        goalHoodAngleDegrees = hoodAngleRads;
     }
 
     public boolean atTarget(
@@ -113,6 +114,11 @@ public class Shooter extends SubsystemBase {
 
     public double getEstimatedRPM(double distanceMeters) {
         return rpmTable.lerp(distanceMeters);
+    }
+
+    public void setHoodAngleDegrees(double angleDegrees) {
+        DogLog.log("Subsystems/Shooter/SETSTATE/HoodAngle", angleDegrees);
+        hood.setAngleDegrees(angleDegrees);
     }
 
     @Override

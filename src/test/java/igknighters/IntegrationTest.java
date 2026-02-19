@@ -58,8 +58,28 @@ public class IntegrationTest {
         double targetHoodAngle = 30.0;
         double targetRPM = 3000.0;
 
-        for (int i = 0; i < 300; i++) {
+        System.out.println(
+                "Shooter Current -> Turret: "
+                        + targetTurretAngle
+                        + ", Hood: "
+                        + targetHoodAngle
+                        + ", RPM: "
+                        + targetRPM);
+
+        for (int i = 0; i < 500; i++) {
             subsystems.shooter.targetState(targetRPM, targetTurretAngle, targetHoodAngle);
+
+            if (i % 100 == 0) {
+                System.out.println(
+                        "Shooter Update -> Turret: "
+                                + subsystems.shooter.getCurrentState().turretAngleRads
+                                        * Conv.RADIANS_TO_DEGREES
+                                + ", Hood: "
+                                + subsystems.shooter.getCurrentState().hoodAngleRads
+                                        * Conv.RADIANS_TO_DEGREES
+                                + ", RPM: "
+                                + subsystems.shooter.getCurrentState().rpm);
+            }
             DriverStationSim.notifyNewData();
             robot.robotPeriodic();
             robot.autonomousPeriodic();
@@ -127,8 +147,18 @@ public class IntegrationTest {
                         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                         .withVelocityX(maxSpeed * 0.5);
 
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 800; i++) {
             subsystems.swerve.setControl(driveRequest);
+
+            if (i % 50 == 0) {
+                System.out.println(
+                        "Swerve Update -> X: "
+                                + subsystems.swerve.getState().Pose.getX()
+                                + ", Y: "
+                                + subsystems.swerve.getState().Pose.getY()
+                                + ", Rotation: "
+                                + subsystems.swerve.getState().Pose.getRotation().getDegrees());
+            }
             DriverStationSim.notifyNewData();
             robot.robotPeriodic();
             robot.autonomousPeriodic();
