@@ -8,7 +8,8 @@ import dev.doglog.DogLog;
 import igknighters.constants.SubsystemConstants.kIntake;
 
 public class RollersReal extends Rollers {
-    private final TalonFX intakeMotor = new TalonFX(kIntake.kRollers.LEADER_MOTOR_ID);
+    private final TalonFX intakeMotor =
+            new TalonFX(kIntake.kRollers.LEADER_MOTOR_ID, kIntake.CANBUS);
     private final MotionMagicVelocityVoltage velocityContorl =
             new MotionMagicVelocityVoltage(0.0).withSlot(0);
     private BaseStatusSignal intakeSpeed;

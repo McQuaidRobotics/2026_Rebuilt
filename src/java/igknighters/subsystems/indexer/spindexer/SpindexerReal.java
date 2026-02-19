@@ -8,10 +8,11 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import dev.doglog.DogLog;
 import igknighters.constants.SubsystemConstants;
+import igknighters.constants.SubsystemConstants.kIndexer;
 
 public class SpindexerReal extends Spindexer {
-    private final TalonFX mainShooter =
-            new TalonFX(SubsystemConstants.kIndexer.kSpindexer.LEADER_MOTOR_ID);
+    private final TalonFX spindexer =
+            new TalonFX(SubsystemConstants.kIndexer.kSpindexer.LEADER_MOTOR_ID, kIndexer.CANBUS);
 
     // private final MotionMagicVelocityVoltage velocityControl = new
     // MotionMagicVelocityVoltage(0.0);
@@ -61,26 +62,26 @@ public class SpindexerReal extends Spindexer {
 
     public SpindexerReal() {
 
-        mainShooter.getConfigurator().apply(getLeaderConfig());
+        spindexer.getConfigurator().apply(getLeaderConfig());
 
         velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(0);
 
-        spindexerVelocity = mainShooter.getVelocity();
-        spindexerCurrent = mainShooter.getSupplyCurrent();
-        spindexerVoltage = mainShooter.getSupplyVoltage();
-        spindexerTemperature = mainShooter.getDeviceTemp();
+        spindexerVelocity = spindexer.getVelocity();
+        spindexerCurrent = spindexer.getSupplyCurrent();
+        spindexerVoltage = spindexer.getSupplyVoltage();
+        spindexerTemperature = spindexer.getDeviceTemp();
     }
 
     @Override
     public void goToRPM(double RPM) {
         DogLog.log("Subsystems/Indexer/Spindexer/setSpeed", RPM);
-        mainShooter.setControl(velocityControl.withVelocity(RPM / 60.0));
-        mainShooter.setControl(velocityControl.withVelocity(RPM / 60.0));
+        spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
+        spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
     }
 
     @Override
     public void stop() {
-        mainShooter.setControl(dutyCycleControl.withOutput(0.0));
+        spindexer.setControl(dutyCycleControl.withOutput(0.0));
     }
 
     @Override

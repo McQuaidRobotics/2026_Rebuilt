@@ -8,10 +8,11 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import dev.doglog.DogLog;
 import igknighters.constants.SubsystemConstants;
+import igknighters.constants.SubsystemConstants.kIndexer;
 
 public class ExitRollersReal extends ExitRollers {
     private final TalonFX exitRollerMotor =
-            new TalonFX(SubsystemConstants.kIndexer.kExitRollers.LEADER_MOTOR_ID);
+            new TalonFX(SubsystemConstants.kIndexer.kExitRollers.LEADER_MOTOR_ID, kIndexer.CANBUS);
 
     private final MotionMagicVelocityVoltage velocityControl;
     private final DutyCycleOut dutyCycleControl = new DutyCycleOut(0.0);
