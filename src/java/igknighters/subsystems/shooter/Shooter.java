@@ -29,9 +29,10 @@ public class Shooter extends SubsystemBase {
     private LerpTable rpmTable =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, 4000.0),
-                        new LerpTableEntry(5.0, 4500.0),
-                        new LerpTableEntry(10.0, 5000.0),
+                        new LerpTableEntry(1.0, 2800.0),
+                        new LerpTableEntry(3.0, 3000.0),
+                        new LerpTableEntry(5.0, 4000.0),
+                        new LerpTableEntry(10.0, 4500.0),
                         new LerpTableEntry(15.0, 5500.0),
                         new LerpTableEntry(20.0, 6000.0),
                     });
@@ -53,11 +54,15 @@ public class Shooter extends SubsystemBase {
         rollers.setSpeed(speedRPM);
     }
 
+    public double getHoodAngleDegrees() {
+        return hood.getAngleDegrees();
+    }
+
     private void setTurretAngleDegrees(double angleDegrees) {
         turret.setAngleDegrees(angleDegrees);
     }
 
-    private double getTurretAngleDegrees() {
+    public double getTurretAngleDegrees() {
         return turret.getAngleDegrees();
     }
 
