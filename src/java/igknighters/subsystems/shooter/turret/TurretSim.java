@@ -14,9 +14,9 @@ public class TurretSim extends Turret {
     private SingleJointedArmSim turretSim;
     private final ProfiledPIDController controller =
             new ProfiledPIDController(
-                    SubsystemConstants.kShooter.kTurret.kP,
-                    SubsystemConstants.kShooter.kTurret.kI,
-                    SubsystemConstants.kShooter.kTurret.kD,
+                    2.0,
+                    0.0,
+                    0.0,
                     new TrapezoidProfile.Constraints(
                             SubsystemConstants.kShooter.kTurret.MAX_SPEED_RPM,
                             SubsystemConstants.kShooter.kTurret.MAX_ACCELERATION_RPM));

@@ -13,11 +13,9 @@ public class HoodSim extends Hood {
     private final SingleJointedArmSim flapSim =
             new SingleJointedArmSim(
                     LinearSystemId.createSingleJointedArmSystem(
-                            DCMotor.getKrakenX60(1),
-                            SubsystemConstants.kShooter.kHood.JKG_M2,
-                            SubsystemConstants.kShooter.kHood.MOTOR_ROTS_TO_HOOD_DEGREES),
+                            DCMotor.getKrakenX60(1), SubsystemConstants.kShooter.kHood.JKG_M2, 1.0),
                     DCMotor.getKrakenX60(1),
-                    SubsystemConstants.kShooter.kHood.MOTOR_ROTS_TO_HOOD_DEGREES,
+                    1.0,
                     SubsystemConstants.kShooter.kHood.LENGTH_METERS,
                     Math.toRadians(SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES),
                     Math.toRadians(SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES),
