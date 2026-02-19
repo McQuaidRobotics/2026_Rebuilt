@@ -186,7 +186,7 @@ public class Robot extends LoggedRobot {
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
-                        new Swerve(false),
+                        new Swerve(true),
                         new LimeLightVision(),
                         new Led(40, 1),
                         new Shooter(),
@@ -303,7 +303,7 @@ public class Robot extends LoggedRobot {
     }
 
     public void bindDriverController() {
-        driverController.bind(subsytems);
+        driverController.bind(subsytems, DriverController.DebugType.SHOOTER);
     }
 
     @Override
