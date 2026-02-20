@@ -1,26 +1,20 @@
 package igknighters.subsystems.climber;
 
-import igknighters.constants.SubsystemConstants;
+import igknighters.subsystems.climber.chainsaw.Chainsaw.ChainsawState;
 
 public enum ClimberState {
-    EXTENDED_NO_SERVOS(SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_INCHES, false, false),
-    EXTENDED_WITH_TOP_SERVOS(SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_INCHES, false, true),
-    RETRACTED_PRE_HAND_OFF(SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_INCHES, false, true),
-    RETRACTED_HAND_OFF(SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_INCHES, true, true),
-    EXTENDED_WITH_CLINGING(SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_INCHES, true, false),
-    EXTENDED_WITH_CLINGING_DEPLOYING_SERVOS(
-            SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_INCHES, true, true);
+    STOW(ChainsawState.GOING_DOWN, false),
+    CLIMB_PREP(ChainsawState.GOING_UP, false),
+    LATCH_ON(
+            ChainsawState.GOING_UP,
+            true), // Latching on means chainsaw goes up and servo is deployed
+    PULL_UP(ChainsawState.GOING_TO_MIDDLE, true); // Pulling up means chainsaw goes down to middle
 
-    public final double targetHeightInches;
-    public final boolean stationaryClimberServosDeployed;
-    public final boolean movingClimberServosDeployed;
+    public final ChainsawState chainsawState;
+    public final boolean servoDeployed;
 
-    private ClimberState(
-            double targetHeightInches,
-            boolean stationaryClimberServosDeployed,
-            boolean movingClimberServosDeployed) {
-        this.targetHeightInches = targetHeightInches;
-        this.stationaryClimberServosDeployed = stationaryClimberServosDeployed;
-        this.movingClimberServosDeployed = movingClimberServosDeployed;
+    private ClimberState(ChainsawState chainsawState, boolean servoDeployed) {
+        this.chainsawState = chainsawState;
+        this.servoDeployed = servoDeployed;
     }
 }
