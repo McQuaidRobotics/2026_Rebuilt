@@ -417,7 +417,7 @@ public class AimSolver {
                     Math.atan2(
                             targetPose.getY() - shooterPose.getY(),
                             targetPose.getX() - shooterPose.getX());
-            double p = d / 10.0;
+            double p = d / 1.5;
 
             double px = Math.cos(angleToTarget) * p;
             double py = Math.sin(angleToTarget) * p;

@@ -131,30 +131,31 @@ public class DriverController {
                             state.kI,
                             (state.kD)));
         } else if (debugType == DebugType.SHOOTER) {
-            this.A.whileTrue(
-                    ShooterCommands.shootIChoseTargetWithLookAhead(
-                            shooter, () -> swerve.getState().Pose, swerve::getFieldRelativeSpeeds));
-            this.LT.whileTrue(
-                    ShooterCommands.aimAt(
-                            shooter,
-                            () -> swerve.getState().Pose,
-                            () -> FieldConstants.HUB.POSE3D_RED));
-            this.X.whileTrue(
-                    ShooterCommands.aimAt(
-                            shooter,
-                            () -> swerve.getState().Pose,
-                            () -> FieldConstants.PASS.POSITION_LEFT_BLUE));
-            this.Y.whileTrue(
-                    ShooterCommands.aimAt(
-                            shooter,
-                            () -> swerve.getState().Pose,
-                            () -> FieldConstants.PASS.POSITION_RIGHT_BLUE));
-            this.LT.whileTrue(
-                    ShooterCommands.shootWithMaxHeight(
-                            subsystems.shooter,
-                            () -> swerve.getState().Pose,
-                            swerve::getFieldRelativeSpeeds,
-                            3.0));
+            // this.A.whileTrue(
+            //         ShooterCommands.shootIChoseTargetWithLookAhead(
+            //                 shooter, () -> swerve.getState().Pose,
+            // swerve::getFieldRelativeSpeeds));
+            // this.LT.whileTrue(
+            //         ShooterCommands.aimAt(
+            //                 shooter,
+            //                 () -> swerve.getState().Pose,
+            //                 () -> FieldConstants.HUB.POSE3D_RED));
+            // this.X.whileTrue(
+            //         ShooterCommands.aimAt(
+            //                 shooter,
+            //                 () -> swerve.getState().Pose,
+            //                 () -> FieldConstants.PASS.POSITION_LEFT_BLUE));
+            // this.Y.whileTrue(
+            //         ShooterCommands.aimAt(
+            //                 shooter,
+            //                 () -> swerve.getState().Pose,
+            //                 () -> FieldConstants.PASS.POSITION_RIGHT_BLUE));
+            // this.LT.whileTrue(
+            //         ShooterCommands.shootWithMaxHeight(
+            //                 subsystems.shooter,
+            //                 () -> swerve.getState().Pose,
+            //                 swerve::getFieldRelativeSpeeds,
+            //                 3.0));
             // this.A.whileTrue(
             //         ShooterCommands.shootIChoseTargetWithLookAhead(
             //                 shooter, () -> swerve.getState().Pose, () ->
@@ -183,14 +184,15 @@ public class DriverController {
             this.Y.whileTrue(ShooterCommands.targetState(shooter, 5800, 360, 40));
             this.LT.whileTrue(ShooterCommands.targetState(shooter, 5800, 0, 25));
             this.RT.whileTrue(
-                    ShooterCommands.shootIChoseTargetNoLookAhead(
+                    ShooterCommands.shootIChoseTargetWithLookAhead(
                             shooter,
                             () ->
                                     new Pose2d(
                                             FieldConstants.HUB.POSE3D_BLUE.toPose2d().getX()
                                                     - 132 * Conv.INCHES_TO_METERS,
                                             FieldConstants.HUB.POSE3D_BLUE.toPose2d().getY(),
-                                            new Rotation2d(0))));
+                                            new Rotation2d(0)),
+                            () -> swerve.getState().Speeds));
             this.LT.whileTrue(IndexerCommands.dispense(indexer));
 
             this.DPD.whileTrue(ShooterCommands.targetState(shooter, 0, 0, kHood.MAX_ANGLE_DEGREES));

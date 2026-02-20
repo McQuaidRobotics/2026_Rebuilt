@@ -264,7 +264,7 @@ public class ShooterCommands {
                                 shooter.targetState(
                                         RPM,
                                         Math.toDegrees(targetingData.turretAngleRads),
-                                        Math.toDegrees(targetingData.hoodAngleRads));
+                                        targetingData.hoodAngleRads);
                             } else {
                                 if (shooter.getCurrentState().rpm < (RPM - 500)) {
                                     shooter.targetState(
