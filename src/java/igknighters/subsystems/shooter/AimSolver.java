@@ -39,7 +39,7 @@ public class AimSolver {
         }
 
         private static final double FLYWHEEL_RADIUS =
-                SubsystemConstants.kShooter.kRollers.WHEEL_RADIUS_METERS;
+                SubsystemConstants.kShooter.kFlywheels.WHEEL_RADIUS_METERS;
 
         // Gravity
         private static final double G = 9.81;
@@ -548,7 +548,8 @@ public class AimSolver {
             double turretAngle = MathUtil.angleModulus(fieldShotAngle - robotYawFuture);
 
             double rpmError = Math.abs(currentRPM - requiredRPM);
-            boolean rpmPossible = requiredRPM < SubsystemConstants.kShooter.kRollers.MAX_SPEED_RPM;
+            boolean rpmPossible =
+                    requiredRPM < SubsystemConstants.kShooter.kFlywheels.MAX_SPEED_RPM;
             boolean rpmReady = rpmError < 150.0;
 
             // The shot is only "Green" if physics work, hardware can reach it, and RPM is spun up

@@ -20,6 +20,11 @@ public class ShooterCommands {
         return shooter.run(() -> shooter.targetState(RPM, 0, 0)).withName("shoot at speed: " + RPM);
     }
 
+    public static Command targetState(Shooter shooter, ShooterState state) {
+        return shooter.run(
+                () -> shooter.targetState(state.rpm, state.turretAngleRads, state.hoodAngleRads));
+    }
+
     public static Command stopShooting(Shooter shooter) {
         return shooter.runOnce(() -> shooter.setRollerVoltage(0)).withName("stop shooting");
     }
@@ -32,6 +37,12 @@ public class ShooterCommands {
 
     public static Command idle(Shooter shooter) {
         return shooter.run(() -> shooter.targetState(3000, 0, 0)).withName("Idle Shooter");
+    }
+
+    public static Command targetState(
+            Shooter shooter, double RPM, double turretAngleDegrees, double hoodAngleDegrees) {
+        return shooter.run(() -> shooter.targetState(RPM, turretAngleDegrees, hoodAngleDegrees))
+                .withName("Target Shooter State");
     }
 
     public static Command aimAt(
@@ -56,7 +67,7 @@ public class ShooterCommands {
                                             robotPose.getX(),
                                             robotPose.getY(),
                                             SubsystemConstants.kShooter
-                                                    .kRollers
+                                                    .kFlywheels
                                                     .ShooterHeightMeters,
                                             new Rotation3d(
                                                     0.0,
@@ -143,7 +154,7 @@ public class ShooterCommands {
                                                     robotPose.getX(),
                                                     robotPose.getY(),
                                                     SubsystemConstants.kShooter
-                                                            .kRollers
+                                                            .kFlywheels
                                                             .ShooterHeightMeters,
                                                     new Rotation3d(
                                                             0.0,
@@ -184,7 +195,7 @@ public class ShooterCommands {
                                                     robotPose2d.getX(),
                                                     robotPose2d.getY(),
                                                     SubsystemConstants.kShooter
-                                                            .kRollers
+                                                            .kFlywheels
                                                             .ShooterHeightMeters,
                                                     new Rotation3d(
                                                             0.0,
@@ -232,7 +243,7 @@ public class ShooterCommands {
                                                     robotPose2d.getX(),
                                                     robotPose2d.getY(),
                                                     SubsystemConstants.kShooter
-                                                            .kRollers
+                                                            .kFlywheels
                                                             .ShooterHeightMeters,
                                                     new Rotation3d(
                                                             0.0,
@@ -285,7 +296,7 @@ public class ShooterCommands {
                                             robotPose.getX(),
                                             robotPose.getY(),
                                             SubsystemConstants.kShooter
-                                                    .kRollers
+                                                    .kFlywheels
                                                     .ShooterHeightMeters,
                                             new Rotation3d(
                                                     0.0,

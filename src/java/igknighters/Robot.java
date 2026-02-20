@@ -31,6 +31,7 @@ import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
+import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.Climber;
 import igknighters.subsystems.indexer.Indexer;
@@ -185,13 +186,14 @@ public class Robot extends LoggedRobot {
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
-                        new Swerve(false),
+                        new Swerve(true),
                         new LimeLightVision(),
                         new Led(40, 1),
                         new Shooter(),
                         new Indexer(),
                         new Intake(),
-                        new Climber());
+                        new Climber(),
+                        new Luma("object-detection"));
         setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
@@ -216,7 +218,8 @@ public class Robot extends LoggedRobot {
                         new Shooter(),
                         new Indexer(),
                         new Intake(),
-                        new Climber());
+                        new Climber(),
+                        new Luma("object-detection"));
         setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
@@ -259,6 +262,10 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+        // THE COORDINATES LOOK WEIRD WHEN THERE ARE MULTIPLE FUEL, needs tuning
+        DogLog.log(
+                "Subsystems/Vision/ObjectDetection/Closest Game Piece",
+                subsytems.luma.getClosestGamePiece());
         FieldVisualizer.getInstance().testZeroedComponents();
         FieldVisualizer.getInstance()
                 .updateTurret(
@@ -296,7 +303,7 @@ public class Robot extends LoggedRobot {
     }
 
     public void bindDriverController() {
-        driverController.bind(subsytems);
+        driverController.bind(subsytems, DriverController.DebugType.SHOOTER);
     }
 
     @Override
