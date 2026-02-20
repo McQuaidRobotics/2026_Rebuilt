@@ -1,7 +1,9 @@
 package igknighters.subsystems.shooter.hood;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
+import edu.wpi.first.units.measure.Angle;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -9,6 +11,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import dev.doglog.DogLog;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
@@ -22,7 +25,7 @@ public class HoodReal extends Hood {
     private final DigitalInput reverseLimitSwitch =
             new DigitalInput(kShooter.kHood.REVERSE_LIMIT_SWITCH_ID);
     private final BaseStatusSignal motorRots = motor.getPosition();
-    private double targetAngleDegrees = kHood.MIN_ANGLE_DEGREES;
+    private Angle targetAngle = Degrees.of(kHood.MIN_ANGLE_DEGREES);
     private boolean hasHomed = false;
 
     private final PositionVoltage positionControl = new PositionVoltage(0.0).withSlot(0);
@@ -67,28 +70,28 @@ public class HoodReal extends Hood {
     }
 
     @Override
-    public void goToAngleDegrees(double targetAngleDegrees) {
-        if (!isLegalPosition(targetAngleDegrees)) {
-            DogLog.log("Subsystems/Shooter/Hood/IllegalPosition", targetAngleDegrees);
+    public void goToAngle(Angle targetAngle) {
+        if (!isLegalPosition(targetAngle.in(Degrees))) {
+            DogLog.log("Subsystems/Shooter/Hood/IllegalPosition", targetAngle.in(Degrees));
             return;
         }
-        this.targetAngleDegrees = targetAngleDegrees;
-        super.targetDegrees = targetAngleDegrees;
+        this.targetAngle = targetAngle;
+        super.targetDegrees = targetAngle.in(Degrees);
         motor.setControl(
                 positionControl.withPosition(
-                        Rotations.of(targetAngleDegrees / kHood.MOTOR_ROTS_TO_HOOD_DEGREES)));
+                        Rotations.of(targetAngle.in(Degrees) / kHood.MOTOR_ROTS_TO_HOOD_DEGREES)));
     }
 
     public void handleLimitSwitch() {
-        if (reverseLimitSwitch.get() && targetAngleDegrees < getAngleDegrees()) {
+        if (reverseLimitSwitch.get() && targetAngle.in(Degrees) < getAngleDegrees()) {
             if (!hasHomed) {
                 hasHomed = true;
-                setAngleDegrees(kHood.MIN_ANGLE_DEGREES);
+                setAngle(kHood.MIN_ANGLE_DEGREES);
             }
             motor.setVoltage(0.0);
         } else if (reverseLimitSwitch.get() && !hasHomed) {
             hasHomed = true;
-            setAngleDegrees(kHood.MIN_ANGLE_DEGREES);
+            setAngle(kHood.MIN_ANGLE_DEGREES);
         } else if (!reverseLimitSwitch.get()) {
             hasHomed = false;
         }
@@ -105,7 +108,11 @@ public class HoodReal extends Hood {
     }
 
     @Override
-    public void setAngleDegrees(double angleDegrees) {
+    public void setAngle(double angleDegrees) {
         motor.setPosition(Rotation.of(angleDegrees / kHood.MOTOR_ROTS_TO_HOOD_DEGREES));
+    }
+
+    public void setAngle(Angle angle){
+        motor.setPosition(Rotations.of(angle.in(Rotations) / kHood.MOTOR_ROTS_TO_HOOD_DEGREES));
     }
 }

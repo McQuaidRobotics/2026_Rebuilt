@@ -1,8 +1,9 @@
 package igknighters.subsystems.shooter.hood;
+import edu.wpi.first.units.measure.Angle;
 
 public class HoodDisabled extends Hood {
     @Override
-    public void setAngleDegrees(double angleDegrees) {
+    public void setAngle(double angleDegrees) {
         // Do nothing
     }
 
@@ -17,7 +18,7 @@ public class HoodDisabled extends Hood {
     }
 
     @Override
-    public void goToAngleDegrees(double angleDegrees) {
+    public void goToAngle(Angle angle) {
         // Do nothing
     }
 }

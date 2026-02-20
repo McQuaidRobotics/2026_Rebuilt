@@ -1,6 +1,9 @@
 package igknighters.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Radians;
+
 import dev.doglog.DogLog;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.constants.AbleToShootSharedState;
@@ -77,7 +80,7 @@ public class Shooter extends SubsystemBase {
         DogLog.log("Subsystems/Shooter/TARGETING/HoodAngle", hoodAngleRads);
         targetSpeed(rpm);
         goToTurretAngleDegrees(turretAngleDegrees);
-        hood.goToAngleDegrees(hoodAngleRads * Conv.RADIANS_TO_DEGREES);
+        hood.goToAngle(Radians.of(hoodAngleRads));
         goalRPM = rpm;
         goalTurretAngleDegrees = turretAngleDegrees;
         goalHoodAngleDegrees = hoodAngleRads;
@@ -118,7 +121,7 @@ public class Shooter extends SubsystemBase {
 
     public void setHoodAngleDegrees(double angleDegrees) {
         DogLog.log("Subsystems/Shooter/SETSTATE/HoodAngle", angleDegrees);
-        hood.setAngleDegrees(angleDegrees);
+        hood.setAngle(angleDegrees);
     }
 
     @Override

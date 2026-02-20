@@ -1,5 +1,7 @@
 package igknighters.subsystems.shooter.hood;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -8,6 +10,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import igknighters.constants.SubsystemConstants;
+import edu.wpi.first.units.measure.Angle;
 
 public class HoodSim extends Hood {
     private final SingleJointedArmSim flapSim =
@@ -56,16 +59,16 @@ public class HoodSim extends Hood {
     }
 
     @Override
-    public void setAngleDegrees(double angleDegrees) {
+    public void setAngle(double angleDegrees) {
         // State must be stored in RADIANS for the WPILib Sim
         flapSim.setState(Math.toRadians(angleDegrees), 0.0);
     }
 
     @Override
-    public void goToAngleDegrees(double angleDegrees) {
-        super.targetDegrees = angleDegrees;
+    public void goToAngle(Angle angle) {
+        super.targetDegrees = angle.in(Degrees);
         // Goal is DEGREES to match your kP (Volts per Degree)
-        pidController.setGoal(angleDegrees);
+        pidController.setGoal(angle.in(Degrees));
         isControlledThisCycle = true;
     }
 
