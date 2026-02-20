@@ -13,11 +13,11 @@ import java.util.List;
 public class Luma extends SubsystemBase {
     private final List<Camera> cameras;
 
-    public Luma(String... cameraNames) {
+    public Luma(boolean disabled, String... cameraNames) {
         this.cameras = new ArrayList<>();
         boolean isReal = Robot.isReal();
         for (String name : cameraNames) {
-            if (isReal) {
+            if (isReal && !disabled) {
                 this.cameras.add(new CameraReal(name));
             } else {
                 this.cameras.add(new CameraSim(name));

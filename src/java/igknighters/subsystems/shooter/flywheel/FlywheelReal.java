@@ -48,7 +48,7 @@ public class FlywheelReal extends Flywheel {
 
         config.Feedback.SensorToMechanismRatio = SubsystemConstants.kShooter.kFlywheels.GEAR_RATIO;
 
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         config.MotionMagic.MotionMagicJerk =
                 SubsystemConstants.kShooter.kFlywheels.MOTION_MAGIC_JERK;
@@ -96,8 +96,8 @@ public class FlywheelReal extends Flywheel {
 
     @Override
     public double getSpeedRPM() {
-        return shooterVelocity.getValueAsDouble();
-    }
+        return shooterVelocity.getValueAsDouble() * 60.0;
+  }
 
     @Override
     public void periodic() {

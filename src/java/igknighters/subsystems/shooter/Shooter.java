@@ -6,13 +6,13 @@ import igknighters.Robot;
 import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.Conv;
 import igknighters.subsystems.shooter.flywheel.Flywheel;
-import igknighters.subsystems.shooter.flywheel.FlywheelDisabled;
+import igknighters.subsystems.shooter.flywheel.FlywheelReal;
 import igknighters.subsystems.shooter.flywheel.FlywheelSimulator;
 import igknighters.subsystems.shooter.hood.Hood;
 import igknighters.subsystems.shooter.hood.HoodReal;
 import igknighters.subsystems.shooter.hood.HoodSim;
 import igknighters.subsystems.shooter.turret.Turret;
-import igknighters.subsystems.shooter.turret.TurretReal;
+import igknighters.subsystems.shooter.turret.TurretDisabled;
 import igknighters.subsystems.shooter.turret.TurretSim;
 import igknighters.util.LerpTable;
 import igknighters.util.LerpTable.LerpTableEntry;
@@ -39,8 +39,8 @@ public class Shooter extends SubsystemBase {
 
     public Shooter() {
         if (Robot.isReal()) {
-            rollers = new FlywheelDisabled();
-            turret = new TurretReal();
+            rollers = new FlywheelReal();
+            turret = new TurretDisabled();
             hood = new HoodReal();
         } else {
             rollers = new FlywheelSimulator();

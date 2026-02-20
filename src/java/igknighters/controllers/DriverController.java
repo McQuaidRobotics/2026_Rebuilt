@@ -15,6 +15,7 @@ import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
 import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
+import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.ClimberState;
 import java.util.function.DoubleSupplier;
@@ -149,10 +150,17 @@ public class DriverController {
             //                 () -> FieldConstants.PASS.POSITION_RIGHT_BLUE));
             // this.LT.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
 
-            this.A.whileTrue(ShooterCommands.targetState(shooter, 0, 90, 0));
-            this.B.whileTrue(ShooterCommands.targetState(shooter, 0, 180, 0));
-            this.X.whileTrue(ShooterCommands.targetState(shooter, 0, 270, 0));
-            this.Y.whileTrue(ShooterCommands.targetState(shooter, 0, 360, 0));
+            this.A.whileTrue(
+                    ShooterCommands.targetState(shooter, 5800, 90, kHood.MIN_ANGLE_DEGREES));
+            this.B.whileTrue(ShooterCommands.targetState(shooter, 5800, 180, 30));
+            this.X.whileTrue(ShooterCommands.targetState(shooter, 5800, 270, 35));
+            this.Y.whileTrue(ShooterCommands.targetState(shooter, 5800, 360, 40));
+            this.LT.whileTrue(ShooterCommands.targetState(shooter, 5800, 0, 25));
+            this.RT.whileTrue(
+                    ShooterCommands.shootIChoseTargetNoLookAhead(shooter, () -> new Pose2d()));
+
+            this.DPD.whileTrue(ShooterCommands.targetState(shooter, 0, 0, kHood.MAX_ANGLE_DEGREES));
+            this.DPU.whileTrue(ShooterCommands.targetState(shooter, 0, 0, kHood.MIN_ANGLE_DEGREES));
 
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));

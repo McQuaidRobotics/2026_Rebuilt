@@ -195,17 +195,17 @@ public class SubsystemConstants {
             public static final double MOTOR_ROTS_TO_HOOD_DEGREES = 15.0;
             public static final double MAX_ANGLE_DEGREES = 52.855225;
             public static final double MIN_ANGLE_DEGREES = 18.6;
-            public static final double MAX_SPEED_R_P_S = 6.0;
-            public static final double MAX_ACCEL_R_P_S_S = 12.0;
+            public static final double MAX_SPEED_R_P_S = 12.0;
+            public static final double MAX_ACCEL_R_P_S_S = 24.0;
             public static final double MAX_JERK = 1.0;
             public static final int STATOR_CURRENT_LIMIT = 30;
             public static final int SUPPLY_CURRENT_LIMIT = 20;
-            public static final double kP = 0.01;
+            public static final double kP = 4.0;
             public static final double kI = 0.0;
-            public static final double kD = 0.05;
-            public static final double kS = 0.23;
-            public static final double kV = 0.1365;
-            public static final double kA = 0.005;
+            public static final double kD = 0.0;
+            public static final double kS = 0.27;
+            public static final double kV = 0.0;
+            public static final double kA = 0.0;
             public static final double JKG_M2 = 0.01;
             public static final double LENGTH_METERS =
                     .25; // distance from central shaft to edge of flap

@@ -41,7 +41,12 @@ public class ShooterCommands {
 
     public static Command targetState(
             Shooter shooter, double RPM, double turretAngleDegrees, double hoodAngleDegrees) {
-        return shooter.run(() -> shooter.targetState(RPM, turretAngleDegrees, hoodAngleDegrees))
+        return shooter.run(
+                        () ->
+                                shooter.targetState(
+                                        RPM,
+                                        turretAngleDegrees,
+                                        hoodAngleDegrees * Conv.DEGREES_TO_RADIANS))
                 .withName("Target Shooter State");
     }
 

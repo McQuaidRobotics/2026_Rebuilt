@@ -193,7 +193,7 @@ public class Robot extends LoggedRobot {
                         new Indexer(),
                         new Intake(),
                         new Climber(),
-                        new Luma("object-detection"));
+                        new Luma(true, "object-detection"));
         setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
@@ -219,7 +219,7 @@ public class Robot extends LoggedRobot {
                         new Indexer(),
                         new Intake(),
                         new Climber(),
-                        new Luma("object-detection"));
+                        new Luma(false, "object-detection"));
         setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
