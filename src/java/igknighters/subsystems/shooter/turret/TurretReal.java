@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
+import igknighters.constants.SubsystemConstants.kShooter.kTurret;
 
 public class TurretReal extends Turret {
 
@@ -91,31 +92,20 @@ public class TurretReal extends Turret {
         motor.setPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS);
     }
 
-    public double getWrappedAngleDegrees(double angleDegrees) {
-        double angle = angleDegrees;
-        // Wrap to [-180, 180]
-        if (angle > 180.0) {
-            angle -= 360.0;
-        } else if (angle < -180.0) {
-            angle += 360.0;
-        }
-        return angle;
-    }
-
     public boolean isLegalPosition(double angleDegrees) {
         return angleDegrees >= SubsystemConstants.kShooter.kTurret.MIN_ANGLE_DEGREES
                 && angleDegrees <= SubsystemConstants.kShooter.kTurret.MAX_ANGLE_DEGREES;
     }
 
     public boolean isLegalPositionWrapped(double angleDegrees) {
-        double wrappedAngleDegrees = getWrappedAngleDegrees(angleDegrees);
+        double wrappedAngleDegrees = wrapAngleDegrees(angleDegrees);
         return isLegalPosition(wrappedAngleDegrees);
     }
 
     @Override
     public void goToAngleDegrees(double angleDegrees) {
         super.targetDegrees = angleDegrees;
-        double wrappedAngleDegrees = getWrappedAngleDegrees(angleDegrees);
+        double wrappedAngleDegrees = wrapAngleDegrees(angleDegrees);
         if (!isLegalPositionWrapped(angleDegrees)) {
             DriverStation.reportError(
                     "Turret angle out of bounds: "
@@ -130,16 +120,15 @@ public class TurretReal extends Turret {
     }
 
     @Override
-    public double getAngleDegrees() {
+    public double getAngleDegrees(){
         return turretAngle.getValueAsDouble() * 360.0;
     }
 
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(turretAngle, turretCurrent, canCoderAngle);
-
         DogLog.log(
-                "Subsystems/Shooter/Turret/Position (deg)", turretAngle.getValueAsDouble() * 360.0);
+                "Subsystems/Shooter/Turret/Position (deg)", getAngleDegrees());
         DogLog.log("Subsystems/Shooter/Turret/Current (A)", turretCurrent.getValueAsDouble());
         DogLog.log("Subsystems/Shooter/Turret/Target Degrees", super.targetDegrees);
         DogLog.log(
