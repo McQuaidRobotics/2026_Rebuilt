@@ -97,7 +97,7 @@ public class FlywheelReal extends Flywheel {
     @Override
     public double getSpeedRPM() {
         return shooterVelocity.getValueAsDouble() * 60.0;
-  }
+    }
 
     @Override
     public void periodic() {
