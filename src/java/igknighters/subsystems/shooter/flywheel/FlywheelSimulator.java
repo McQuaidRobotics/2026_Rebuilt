@@ -8,6 +8,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
 
@@ -42,7 +43,7 @@ public class FlywheelSimulator extends Flywheel {
     private boolean isVoltageControlledThisCycle = false;
 
     @Override
-    public void setSpeed(double speedRPM) {
+    public void setSpeedRPM(double speedRPM) {
 
         profiledPIDController.setGoal(speedRPM);
 
@@ -80,7 +81,7 @@ public class FlywheelSimulator extends Flywheel {
 
             // Feedforward in volts
 
-            double goalRPS = goalRPM / 60.0;
+            double goalRPS = goalRPM * Conv.RPM_TO_RPS;
 
             ffOutput = kShooter.kFlywheels.kS + kShooter.kFlywheels.kV * goalRPS;
 

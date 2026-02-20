@@ -51,7 +51,7 @@ public class Shooter extends SubsystemBase {
     }
 
     private void targetSpeed(double speedRPM) {
-        rollers.setSpeed(speedRPM);
+        rollers.setSpeedRPM(speedRPM);
     }
 
     public double getHoodAngleDegrees() {

@@ -2,7 +2,7 @@ package igknighters.subsystems.shooter.flywheel;
 
 public class FlywheelDisabled extends Flywheel {
     @Override
-    public void setSpeed(double speedMetersPerSecond) {
+    public void setSpeedRPM(double speedMetersPerSecond) {
         // TODO Auto-generated method stub
 
     }

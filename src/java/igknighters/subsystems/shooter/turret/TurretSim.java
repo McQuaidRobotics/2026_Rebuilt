@@ -32,8 +32,10 @@ public class TurretSim extends Turret {
                         SubsystemConstants.kShooter.kTurret.GEAR_RATIO,
                         .2, // this is not a number that i know it is mainly for gravity sim which
                         // we dont need
-                        SubsystemConstants.kShooter.kTurret.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS,
-                        SubsystemConstants.kShooter.kTurret.MAX_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS,
+                        SubsystemConstants.kShooter.kTurret.MIN_ANGLE_DEGREES
+                                * Conv.DEGREES_TO_RADIANS,
+                        SubsystemConstants.kShooter.kTurret.MAX_ANGLE_DEGREES
+                                * Conv.DEGREES_TO_RADIANS,
                         false,
                         0.0);
     }

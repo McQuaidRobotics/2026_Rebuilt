@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
-import igknighters.constants.SubsystemConstants.kShooter.kTurret;
 
 public class TurretReal extends Turret {
 
@@ -120,21 +119,20 @@ public class TurretReal extends Turret {
     }
 
     @Override
-    public double getAngleDegrees(){
-        return turretAngle.getValueAsDouble() * 360.0;
+    public double getAngleDegrees() {
+        return turretAngle.getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
     }
 
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(turretAngle, turretCurrent, canCoderAngle);
-        DogLog.log(
-                "Subsystems/Shooter/Turret/Position (deg)", getAngleDegrees());
+        DogLog.log("Subsystems/Shooter/Turret/Position (deg)", getAngleDegrees());
         DogLog.log("Subsystems/Shooter/Turret/Current (A)", turretCurrent.getValueAsDouble());
         DogLog.log("Subsystems/Shooter/Turret/Target Degrees", super.targetDegrees);
         DogLog.log(
                 "Subsystems/Shooter/Turret/CANcoder Angle (deg)",
-                canCoderAngle.getValueAsDouble() * 360.0);
+                canCoderAngle.getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES);
 
-        super.degrees = turretAngle.getValueAsDouble() * 360.0;
+        super.degrees = turretAngle.getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
     }
 }

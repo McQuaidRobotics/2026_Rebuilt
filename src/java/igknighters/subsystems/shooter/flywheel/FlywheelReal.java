@@ -9,6 +9,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import dev.doglog.DogLog;
+import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
 
@@ -81,11 +82,11 @@ public class FlywheelReal extends Flywheel {
     }
 
     @Override
-    public void setSpeed(double speedRpm) {
-        DogLog.log("Subsystems/Shooter/Rollers/setSpeed", speedRpm);
+    public void setSpeedRPM(double speedRPM) {
+        DogLog.log("Subsystems/Shooter/Rollers/setSpeed", speedRPM);
         isBeingControlledActivly = true;
-        // mainShooter.setControl(velocityControl.withVelocity(speedRpm / 60.0));
-        mainShooter.setControl(velocityControl.withVelocity(speedRpm / 60.0));
+        // mainShooter.setControl(velocityControl.withVelocity(speedRPM / 60.0));
+        mainShooter.setControl(velocityControl.withVelocity(speedRPM * Conv.RPM_TO_RPS));
     }
 
     @Override
@@ -96,7 +97,7 @@ public class FlywheelReal extends Flywheel {
 
     @Override
     public double getSpeedRPM() {
-        return shooterVelocity.getValueAsDouble() * 60.0;
+        return shooterVelocity.getValueAsDouble() * Conv.RPS_TO_RPM;
     }
 
     @Override
@@ -105,7 +106,7 @@ public class FlywheelReal extends Flywheel {
                 shooterVelocity, shooterCurrent, shooterVoltage, shooterTemperature);
         DogLog.log("Subsystems/Shooter/Rollers/being controlled", isBeingControlledActivly);
         DogLog.log(
-                "Subsystems/Shooter/Rollers/velocity", shooterVelocity.getValueAsDouble() * 60.0);
+                "Subsystems/Shooter/Rollers/velocity", shooterVelocity.getValueAsDouble() * Conv.RPS_TO_RPM);
         DogLog.log("Subsystems/Shooter/Rollers/current", shooterCurrent.getValueAsDouble());
         DogLog.log("Subsystems/Shooter/Rollers/voltage", shooterVoltage.getValueAsDouble());
         DogLog.log("Subsystems/Shooter/Rollers/temperature", shooterTemperature.getValueAsDouble());

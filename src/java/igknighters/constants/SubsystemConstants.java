@@ -176,7 +176,7 @@ public class SubsystemConstants {
             public static final double CANCODER_OFFSET_ROTATIONS = -0.306641;
             public static final double GEAR_RATIO = 16.2;
             public static final double MAX_ANGLE_DEGREES = 270.0;
-            public static final double MIN_ANGLE_DEGREES = -90.0;                                     
+            public static final double MIN_ANGLE_DEGREES = -90.0;
             public static final double MAX_SPEED_RPM = 300.0;
             public static final double MAX_ACCELERATION_RPM = 450.0;
             public static final double MAX_JERK = 10;

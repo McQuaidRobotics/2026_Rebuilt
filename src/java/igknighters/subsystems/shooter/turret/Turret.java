@@ -13,9 +13,8 @@ public abstract class Turret {
         return angle;
     }
 
-    
-
     protected double degrees;
+    
     protected double targetDegrees;
 
     public abstract void periodic();
