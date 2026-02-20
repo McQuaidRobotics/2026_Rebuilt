@@ -196,6 +196,7 @@ public class DriverController {
             this.LT.whileTrue(IndexerCommands.dispense(indexer));
 
             this.DPD.whileTrue(ShooterCommands.targetState(shooter, 0, 0, kHood.MAX_ANGLE_DEGREES));
+            this.DPR.whileTrue(ShooterCommands.targetNetworkTablesValues(shooter));
             this.DPU.whileTrue(ShooterCommands.targetState(shooter, 0, 0, kHood.MIN_ANGLE_DEGREES));
 
         } else if (debugType == DebugType.INDEXER) {

@@ -9,15 +9,31 @@ import igknighters.Robot;
 import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.SubsystemConstants;
+import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.shooter.AimSolver;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
+import igknighters.util.TunableValues;
 import java.util.function.Supplier;
 
 public class ShooterCommands {
 
+    public static TunableValues.TunableDouble shootRPM =
+            TunableValues.getDouble("Shooter/ShootRPM", 3000);
+    public static TunableValues.TunableDouble shootHoodAngle =
+            TunableValues.getDouble("Shooter/ShootHoodAngle", kHood.MIN_ANGLE_DEGREES);
+
     public static Command shootAtSpeed(Shooter shooter, double RPM) {
         return shooter.run(() -> shooter.targetState(RPM, 0, 0)).withName("shoot at speed: " + RPM);
+    }
+
+    public static Command targetNetworkTablesValues(Shooter shooter) {
+        return shooter.run(
+                () ->
+                        shooter.targetState(
+                                shootRPM.value(),
+                                0,
+                                shootHoodAngle.value() * Conv.DEGREES_TO_RADIANS));
     }
 
     public static Command targetState(Shooter shooter, ShooterState state) {
