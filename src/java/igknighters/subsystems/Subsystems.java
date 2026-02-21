@@ -43,22 +43,6 @@ public class Subsystems {
                 new SubsystemBase[] {swerve, shooter, climber, indexer, intake, luma, vision, led};
 
         CommandScheduler.getInstance().registerSubsystem(this.lockedResources);
-        // this.shooter.setDefaultCommand(ShooterCommands.idle(shooter));
-        // for (SharedSubsystem subsystem : this.locklessResources) {
-        //     CommandScheduler.getInstance()
-        //             .registerSubsystem(
-        //                     new Subsystem() {
-        //                         @Override
-        //                         public void periodic() {
-        //                             subsystem.periodic();
-        //                         }
-
-        //                         @Override
-        //                         public String getName() {
-        //                             return subsystem.getName();
-        //                         }
-        //                     });
-        // }
     }
 
     // public static interface SharedSubsystem {
