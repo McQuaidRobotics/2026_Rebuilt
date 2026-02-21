@@ -1,5 +1,9 @@
 package igknighters.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
+
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -70,11 +74,11 @@ public class AimSolver {
             double absoluteAngle =
                     Math.atan2(dy, dx); // angle to target from robot to field in Field plane
             double robotYaw = shooterPose.getRotation().getZ(); // Rotation3d yaw field relative
-            double turretAngle =
+            double turretAngleRADS =
                     absoluteAngle - robotYaw; // the angle the turret must turn to face target
 
             // Normalize to [-π, π]
-            turretAngle = Math.atan2(Math.sin(turretAngle), Math.cos(turretAngle));
+            turretAngleRADS = Math.atan2(Math.sin(turretAngleRADS), Math.cos(turretAngleRADS));
 
             // --- Ballistic geometry ---
             double d = Math.sqrt(dx * dx + dy * dy); // horizontal distance
@@ -95,7 +99,10 @@ public class AimSolver {
                 Logger.recordOutput(
                         "Shooter/ShotTrajectory",
                         new Pose3d[] {}); // Clear trajectory visualization
-                return new ShooterState(0.0, turretAngle, 0.0);
+                return new ShooterState(
+                        RPM.of(0.0),
+                        Radians.of(turretAngleRADS),
+                        Degrees.of(kHood.MIN_ANGLE_DEGREES));
             }
             canShoot(true);
             DogLog.log("Subsystems/Shooter/Aiming/SHOT IS POSSIBLE AT THIS RPM", currentRPM);
@@ -118,9 +125,10 @@ public class AimSolver {
             double hoodAngle = Math.max(thetaLow, thetaHigh);
             double hoodSetpoint = Math.PI / 2 - hoodAngle;
 
-            publishShotTrajectory(v, hoodAngle, turretAngle, shooterPose, targetPose);
+            publishShotTrajectory(v, hoodAngle, turretAngleRADS, shooterPose, targetPose);
 
-            return new ShooterState(currentRPM, turretAngle, hoodSetpoint);
+            return new ShooterState(
+                    RPM.of(currentRPM), Radians.of(turretAngleRADS), Radians.of(hoodSetpoint));
         }
 
         public static double getSwerveVelocityProjection(double vx, double vy, double turretAngle) {
@@ -218,7 +226,8 @@ public class AimSolver {
                 Logger.recordOutput(
                         "Shooter/ShotTrajectory",
                         new Pose3d[] {}); // Clear trajectory visualization
-                return new ShooterState(0.0, turretAngle, 0.0);
+                return new ShooterState(
+                        RPM.of(0.0), Radians.of(turretAngle), Degrees.of(kHood.MIN_ANGLE_DEGREES));
             }
             canShoot(true);
 
@@ -246,7 +255,8 @@ public class AimSolver {
                     turretAngle,
                     new Pose3d(sx, sy, sz, new Rotation3d(0, 0, robotYawFuture)),
                     targetPose);
-            return new ShooterState(currentRPM, turretAngle, hoodSetpoint);
+            return new ShooterState(
+                    RPM.of(currentRPM), Radians.of(turretAngle), Radians.of(hoodSetpoint));
         }
 
         /**
@@ -346,10 +356,7 @@ public class AimSolver {
             if (!possible) {
                 canShoot(false);
                 return new ShooterState(
-                        0.0,
-                        turretAngle,
-                        SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES
-                                * Conv.DEGREES_TO_RADIANS);
+                        RPM.of(0.0), Radians.of(turretAngle), Degrees.of(kHood.MIN_ANGLE_DEGREES));
             }
 
             double hoodSetpoint = Math.PI / 2 - finalTheta;
@@ -360,10 +367,7 @@ public class AimSolver {
                         "Subsystems/Shooter/Aiming/Calculated hood angle out of bounds",
                         Math.toDegrees(hoodSetpoint));
                 return new ShooterState(
-                        0.0,
-                        turretAngle,
-                        SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES
-                                * Conv.DEGREES_TO_RADIANS);
+                        RPM.of(0.0), Radians.of(turretAngle), Degrees.of(kHood.MIN_ANGLE_DEGREES));
             }
 
             canShoot(true);
@@ -378,7 +382,8 @@ public class AimSolver {
             publishShotTrajectory(
                     v_eff, Math.PI / 2 - hoodSetpoint, turretAngle, shooterPose, targetPose);
 
-            return new ShooterState(currentRPM, turretAngle, hoodSetpoint);
+            return new ShooterState(
+                    RPM.of(currentRPM), Radians.of(turretAngle), Radians.of(hoodSetpoint));
         }
 
         public static Translation2d addDToTargetWithAirResistance(
@@ -417,7 +422,7 @@ public class AimSolver {
                     Math.atan2(
                             targetPose.getY() - shooterPose.getY(),
                             targetPose.getX() - shooterPose.getX());
-            double p = d / 10.0;
+            double p = d / 1.5;
 
             double px = Math.cos(angleToTarget) * p;
             double py = Math.sin(angleToTarget) * p;
@@ -502,7 +507,8 @@ public class AimSolver {
 
             if (discriminant < 0) {
                 canShoot(false);
-                return new ShooterState(0, 0, 0);
+                return new ShooterState(
+                        RPM.of(0), Radians.of(0), Degrees.of(kHood.MIN_ANGLE_DEGREES));
             }
 
             double t = (-b + Math.sqrt(discriminant)) / (2 * a);
@@ -557,7 +563,8 @@ public class AimSolver {
 
             // If the angle wasn't possible, we return 0 RPM to prevent shooting a "bad" ball
             if (!anglePossible || !rpmPossible) {
-                return new ShooterState(0, turretAngle, clampedHoodSetpoint);
+                return new ShooterState(
+                        RPM.of(0), Radians.of(turretAngle), Radians.of(clampedHoodSetpoint));
             }
 
             // For visualization, use the predicted future pose and field-relative results
@@ -574,7 +581,8 @@ public class AimSolver {
                     futureShooterPose,
                     targetPose);
 
-            return new ShooterState(requiredRPM, turretAngle, clampedHoodSetpoint);
+            return new ShooterState(
+                    RPM.of(requiredRPM), Radians.of(turretAngle), Radians.of(clampedHoodSetpoint));
         }
     }
 

@@ -1,10 +1,13 @@
 package igknighters.subsystems.shooter.turret;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import dev.doglog.DogLog;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
@@ -32,8 +35,10 @@ public class TurretSim extends Turret {
                         SubsystemConstants.kShooter.kTurret.GEAR_RATIO,
                         .2, // this is not a number that i know it is mainly for gravity sim which
                         // we dont need
-                        SubsystemConstants.kShooter.kTurret.MIN_ANGLE_DEGREES / 360 * 2 * Math.PI,
-                        SubsystemConstants.kShooter.kTurret.MAX_ANGLE_DEGREES / 360 * 2 * Math.PI,
+                        SubsystemConstants.kShooter.kTurret.MIN_ANGLE_DEGREES
+                                * Conv.DEGREES_TO_RADIANS,
+                        SubsystemConstants.kShooter.kTurret.MAX_ANGLE_DEGREES
+                                * Conv.DEGREES_TO_RADIANS,
                         false,
                         0.0);
     }
@@ -41,15 +46,17 @@ public class TurretSim extends Turret {
     private boolean isControlledThisCycle = false;
 
     @Override
-    public void setAngleDegrees(double angleDegrees) {
-        super.degrees = angleDegrees;
-        turretSim.setState(angleDegrees * Conv.DEGREES_TO_RADIANS, 0.0);
-        controller.reset(angleDegrees * Conv.DEGREES_TO_RADIANS);
+    public void setAngle(Angle angle) {
+        super.degrees = angle.in(Degrees);
+        double wrappedAngleDegrees = wrapAngleDegrees(angle.in(Degrees));
+        turretSim.setState(wrappedAngleDegrees * Conv.DEGREES_TO_RADIANS, 0.0);
+        controller.reset(wrappedAngleDegrees * Conv.DEGREES_TO_RADIANS);
     }
 
     @Override
-    public void goToAngleDegrees(double angleDegrees) {
-        controller.setGoal(angleDegrees * Conv.DEGREES_TO_RADIANS);
+    public void goToAngleDegrees(Angle angle) {
+        double wrappedAngleDegrees = wrapAngleDegrees(angle.in(Degrees));
+        controller.setGoal(wrappedAngleDegrees * Conv.DEGREES_TO_RADIANS);
         isControlledThisCycle = true;
     }
 

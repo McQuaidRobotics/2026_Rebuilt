@@ -1,5 +1,7 @@
 package igknighters.subsystems.shooter.flywheel;
 
+import static edu.wpi.first.units.Units.RPM;
+
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -7,7 +9,9 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
 
@@ -42,9 +46,9 @@ public class FlywheelSimulator extends Flywheel {
     private boolean isVoltageControlledThisCycle = false;
 
     @Override
-    public void setSpeed(double speedRPM) {
+    public void setSpeed(AngularVelocity speed) {
 
-        profiledPIDController.setGoal(speedRPM);
+        profiledPIDController.setGoal(speed.in(RPM));
 
         isPidControlledThisCycle = true;
     }
@@ -58,9 +62,9 @@ public class FlywheelSimulator extends Flywheel {
     }
 
     @Override
-    public double getSpeedRPM() {
+    public AngularVelocity getSpeed() {
 
-        return leaderflywheelSim.getAngularVelocityRPM();
+        return RPM.of(leaderflywheelSim.getAngularVelocityRPM());
     }
 
     @Override
@@ -80,7 +84,7 @@ public class FlywheelSimulator extends Flywheel {
 
             // Feedforward in volts
 
-            double goalRPS = goalRPM / 60.0;
+            double goalRPS = goalRPM * Conv.RPM_TO_RPS;
 
             ffOutput = kShooter.kFlywheels.kS + kShooter.kFlywheels.kV * goalRPS;
 

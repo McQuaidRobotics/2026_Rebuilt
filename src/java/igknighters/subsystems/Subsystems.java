@@ -40,25 +40,9 @@ public class Subsystems {
         this.climber = climber;
         this.indexer = indexer;
         this.lockedResources =
-                new SubsystemBase[] {luma, swerve, led, shooter, vision, indexer, intake};
+                new SubsystemBase[] {swerve, shooter, climber, indexer, intake, luma, vision, led};
 
         CommandScheduler.getInstance().registerSubsystem(this.lockedResources);
-        // this.shooter.setDefaultCommand(ShooterCommands.idle(shooter));
-        // for (SharedSubsystem subsystem : this.locklessResources) {
-        //     CommandScheduler.getInstance()
-        //             .registerSubsystem(
-        //                     new Subsystem() {
-        //                         @Override
-        //                         public void periodic() {
-        //                             subsystem.periodic();
-        //                         }
-
-        //                         @Override
-        //                         public String getName() {
-        //                             return subsystem.getName();
-        //                         }
-        //                     });
-        // }
     }
 
     // public static interface SharedSubsystem {

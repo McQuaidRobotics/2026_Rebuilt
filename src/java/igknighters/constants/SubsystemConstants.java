@@ -166,7 +166,7 @@ public class SubsystemConstants {
             public static final double kV = 0.1;
             public static final double kA = 0.02;
             public static final double ShooterHeightMeters =
-                    .3; // 30 cm this is made up it will be off ground though
+                    1.22; // 122er cm this is made up it will be off ground though
             public static final double PEAK_CURRENT_LIMIT = 40;
             public static final double SUPPLY_CURRENT_LIMIT = 30;
         }
@@ -176,8 +176,8 @@ public class SubsystemConstants {
             public static final int CANCODER_ID = 27;
             public static final double CANCODER_OFFSET_ROTATIONS = -0.306641;
             public static final double GEAR_RATIO = 16.2;
-            public static final double MAX_ANGLE_DEGREES = 180.0;
-            public static final double MIN_ANGLE_DEGREES = -180.0;
+            public static final double MAX_ANGLE_DEGREES = 270.0;
+            public static final double MIN_ANGLE_DEGREES = -90.0;
             public static final double MAX_SPEED_RPM = 300.0;
             public static final double MAX_ACCELERATION_RPM = 450.0;
             public static final double MAX_JERK = 10;
@@ -196,17 +196,17 @@ public class SubsystemConstants {
             public static final double MOTOR_ROTS_TO_HOOD_DEGREES = 15.0;
             public static final double MAX_ANGLE_DEGREES = 52.855225;
             public static final double MIN_ANGLE_DEGREES = 18.6;
-            public static final double MAX_SPEED_R_P_S = 6.0;
-            public static final double MAX_ACCEL_R_P_S_S = 12.0;
+            public static final double MAX_SPEED_R_P_S = 12.0;
+            public static final double MAX_ACCEL_R_P_S_S = 24.0;
             public static final double MAX_JERK = 1.0;
             public static final int STATOR_CURRENT_LIMIT = 30;
             public static final int SUPPLY_CURRENT_LIMIT = 20;
-            public static final double kP = 0.01;
+            public static final double kP = 4.0;
             public static final double kI = 0.0;
-            public static final double kD = 0.05;
-            public static final double kS = 0.23;
-            public static final double kV = 0.1365;
-            public static final double kA = 0.005;
+            public static final double kD = 0.0;
+            public static final double kS = 0.27;
+            public static final double kV = 0.0;
+            public static final double kA = 0.0;
             public static final double JKG_M2 = 0.01;
             public static final double LENGTH_METERS =
                     .25; // distance from central shaft to edge of flap

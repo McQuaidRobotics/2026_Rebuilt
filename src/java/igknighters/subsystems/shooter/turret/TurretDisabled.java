@@ -1,5 +1,7 @@
 package igknighters.subsystems.shooter.turret;
 
+import edu.wpi.first.units.measure.Angle;
+
 public class TurretDisabled extends Turret {
 
     @Override
@@ -8,7 +10,7 @@ public class TurretDisabled extends Turret {
     }
 
     @Override
-    public void setAngleDegrees(double angleDegrees) {
+    public void setAngle(Angle angle) {
         // Do nothing
     }
 
@@ -18,7 +20,7 @@ public class TurretDisabled extends Turret {
     }
 
     @Override
-    public void goToAngleDegrees(double angleDegrees) {
+    public void goToAngleDegrees(Angle angle) {
         // Do nothing
     }
 }
