@@ -2,6 +2,7 @@ package igknighters.controllers;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -216,8 +217,6 @@ public class DriverController {
                                 Units.inchesToMeters(317.69 / 2),
                                 new Rotation2d()),
                         2));
-=========
->>>>>>>>> Temporary merge branch 2
 
         this.A.whileTrue(IntakeCommands.goToIntake(subsystems.intake));
         this.A.onFalse(IntakeCommands.goToStow(subsystems.intake));
