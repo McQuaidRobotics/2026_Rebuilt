@@ -75,9 +75,9 @@ public class HigherOrderCommands {
                                         subsystems.swerve,
                                         getClimbEndPose(),
                                         new Pose2d(.5, .5, new Rotation2d(1)))
-                                .until(ClimberCommands.isBumperPressed(subsystems.climber)),
+                                .until(subsystems.climber::isSensorHit),
                         Commands.print("REACHED CLIMBING POSITION"),
-                        ClimberCommands.goToMax(subsystems.climber),
+                        ClimberCommands.goUp(subsystems.climber),
                         Commands.print("CLIMBER IS PREPED TO RUN"))
                 .withName("Moving to Climber and raising to max height");
     }

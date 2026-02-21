@@ -3,49 +3,65 @@ package igknighters.subsystems.climber;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.subsystems.climber.chainsaw.Chainsaw;
-import igknighters.subsystems.climber.chainsaw.ChainsawDisabled;
+import igknighters.subsystems.climber.chainsaw.ChainsawReal;
 import igknighters.subsystems.climber.chainsaw.ChainsawSim;
 import igknighters.subsystems.climber.servos.Servos;
-import igknighters.subsystems.climber.servos.ServosDisabled;
+import igknighters.subsystems.climber.servos.ServosReal;
 import igknighters.subsystems.climber.servos.ServosSim;
 
 public class Climber extends SubsystemBase {
-    private Chainsaw chainsaw;
-    private Servos servos;
-    private boolean usingRealSensor;
+    private final Chainsaw chainsaw;
+    private final Servos servos;
 
     public Climber() {
         if (Robot.isReal()) {
-            chainsaw = new ChainsawDisabled();
-            servos = new ServosDisabled();
-            usingRealSensor = true;
+            chainsaw = new ChainsawReal();
+            servos = new ServosReal();
         } else {
             chainsaw = new ChainsawSim();
             servos = new ServosSim();
-            usingRealSensor = false;
         }
     }
 
-    public double getPositionInches() {
-        return chainsaw.getPositionInches();
+    public boolean isUp() {
+        return chainsaw.isUp();
     }
 
-    public void setPositionInches(double position) {
-        chainsaw.setPositionInches(position);
+    public boolean isDown() {
+        return chainsaw.isDown();
     }
 
-    public void goToInches(double inches) {
-        chainsaw.goToInches(inches);
+    public boolean isMiddle() {
+        return chainsaw.isMiddle();
+    }
+
+    public void goUp() {
+        chainsaw.goUp();
+    }
+
+    public void goDown() {
+        chainsaw.goDown();
+    }
+
+    public void deployServo() {
+        servos.deploy();
+    }
+
+    public void retractServo() {
+        servos.retract();
+    }
+
+    public void stopChainsaw() {
+        chainsaw.goToState(Chainsaw.ChainsawState.STOPPED);
     }
 
     public void goToState(ClimberState state) {
-        chainsaw.goToInches(state.targetHeightInches);
-        servos.goToAngleDegrees(state.movingClimberServosDeployed, Servos.ServoID.MOVING_SERVOS);
-        servos.goToAngleDegrees(state.stationaryClimberServosDeployed, Servos.ServoID.FIXED_SERVOS);
-    }
-
-    public boolean isAt(double targetInches, double toleranceInches) {
-        return Math.abs(getPositionInches() - targetInches) <= toleranceInches;
+        chainsaw.goToState(state.chainsawState);
+        if (state.servoDeployed) {
+            servos.deploy();
+        } else {
+            servos.retract();
+        }
     }
 
     public boolean isSensorHit() {
@@ -55,5 +71,6 @@ public class Climber extends SubsystemBase {
     @Override
     public void periodic() {
         chainsaw.periodic();
+        servos.periodic();
     }
 }
