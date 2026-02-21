@@ -1,13 +1,16 @@
 package igknighters.subsystems.shooter;
 
-public class ShooterState {
-    public final double rpm;
-    public final double turretAngleRads;
-    public final double hoodAngleRads;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 
-    public ShooterState(double rpm, double turretAngleRads, double hoodAngleRads) {
-        this.rpm = rpm;
-        this.turretAngleRads = turretAngleRads;
-        this.hoodAngleRads = hoodAngleRads;
+public class ShooterState {
+    public final AngularVelocity flywheelSpeed;
+    public final Angle turretAngle;
+    public final Angle hoodAngle;
+
+    public ShooterState(AngularVelocity rollerSpeed, Angle turretAngle, Angle hoodAngle) {
+        this.flywheelSpeed = rollerSpeed;
+        this.turretAngle = turretAngle;
+        this.hoodAngle = hoodAngle;
     }
 }

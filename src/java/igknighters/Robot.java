@@ -186,7 +186,7 @@ public class Robot extends LoggedRobot {
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
-                        new Swerve(true),
+                        new Swerve(false),
                         new LimeLightVision(),
                         new Led(40, 1),
                         new Shooter(),
@@ -380,7 +380,7 @@ public class Robot extends LoggedRobot {
             // Logic to launch fuel when dispensing and shooter is ready
             double currentTime = RobotController.getFPGATime() / 1.0e6;
             if (subsytems.indexer.getExitRollerRPM() > 50.0
-                    && subsytems.shooter.getCurrentState().rpm > 500.0
+                    && subsytems.shooter.getCurrentState().flywheelSpeed.in(RPM) > 500.0
                     && (currentTime - lastShotTime) > 0.1) { // 0.1s cooldown
 
                 var shooterState = subsytems.shooter.getCurrentState();
@@ -390,12 +390,12 @@ public class Robot extends LoggedRobot {
                 // AimSolver)
                 double flywheelRadius = 0.0508; // 2 inches
                 double launchVelocity =
-                        (shooterState.rpm * 2.0 * Math.PI / 60.0 * flywheelRadius) / 2.0;
+                        (shooterState.flywheelSpeed.in(RotationsPerSecond) * flywheelRadius) / 2.0;
 
                 fuelSim.launchFuel(
                         MetersPerSecond.of(launchVelocity),
-                        Radians.of(Math.PI / 2 - shooterState.hoodAngleRads),
-                        Radians.of(shooterState.turretAngleRads),
+                        Radians.of(Math.PI / 2 - shooterState.hoodAngle.in(Radian)),
+                        shooterState.turretAngle,
                         Meters.of(0.4) // height of shooter exit
                         );
 

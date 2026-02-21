@@ -1,6 +1,8 @@
 package igknighters;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RPM;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
@@ -10,7 +12,6 @@ import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import igknighters.constants.Conv;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.intake.IntakeState;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
@@ -59,7 +60,7 @@ public class IntegrationTest {
         double targetRPM = 3000.0;
 
         System.out.println(
-                "Shooter Current -> Turret: "
+                "Shooter TARGET -> Turret: "
                         + targetTurretAngle
                         + ", Hood: "
                         + targetHoodAngle
@@ -67,29 +68,26 @@ public class IntegrationTest {
                         + targetRPM);
 
         for (int i = 0; i < 500; i++) {
-            subsystems.shooter.targetState(targetRPM, targetTurretAngle, targetHoodAngle);
+            subsystems.shooter.targetState(
+                    RPM.of(targetRPM), Degrees.of(targetTurretAngle), Degrees.of(targetHoodAngle));
 
             if (i % 100 == 0) {
                 System.out.println(
                         "Shooter Update -> Turret: "
-                                + subsystems.shooter.getCurrentState().turretAngleRads
-                                        * Conv.RADIANS_TO_DEGREES
+                                + subsystems.shooter.getCurrentState().turretAngle.in(Degrees)
                                 + ", Hood: "
-                                + subsystems.shooter.getCurrentState().hoodAngleRads
-                                        * Conv.RADIANS_TO_DEGREES
+                                + subsystems.shooter.getCurrentState().hoodAngle.in(Degrees)
                                 + ", RPM: "
-                                + subsystems.shooter.getCurrentState().rpm);
+                                + subsystems.shooter.getCurrentState().flywheelSpeed.in(RPM));
             }
             DriverStationSim.notifyNewData();
             robot.robotPeriodic();
             robot.autonomousPeriodic();
         }
 
-        double currentTurret =
-                subsystems.shooter.getCurrentState().turretAngleRads * Conv.RADIANS_TO_DEGREES;
-        double currentHood =
-                subsystems.shooter.getCurrentState().hoodAngleRads * Conv.RADIANS_TO_DEGREES;
-        double currentRPM = subsystems.shooter.getCurrentState().rpm;
+        double currentTurret = subsystems.shooter.getCurrentState().turretAngle.in(Degrees);
+        double currentHood = subsystems.shooter.getCurrentState().hoodAngle.in(Degrees);
+        double currentRPM = subsystems.shooter.getCurrentState().flywheelSpeed.in(RPM);
         System.out.println(
                 "Shooter Final -> Turret: "
                         + currentTurret

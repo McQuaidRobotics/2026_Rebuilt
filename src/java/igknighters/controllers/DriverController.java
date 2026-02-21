@@ -14,9 +14,7 @@ import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
 import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
-import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
-import igknighters.constants.FieldConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.ClimberState;
@@ -182,17 +180,7 @@ public class DriverController {
             this.B.whileTrue(ShooterCommands.targetState(shooter, 5800, 180, 30));
             this.X.whileTrue(ShooterCommands.targetState(shooter, 5800, 270, 35));
             this.Y.whileTrue(ShooterCommands.targetState(shooter, 5800, 360, 40));
-            this.LT.whileTrue(ShooterCommands.targetState(shooter, 5800, 0, 25));
-            this.RT.whileTrue(
-                    ShooterCommands.shootIChoseTargetWithLookAhead(
-                            shooter,
-                            () ->
-                                    new Pose2d(
-                                            FieldConstants.HUB.POSE3D_BLUE.toPose2d().getX()
-                                                    - 132 * Conv.INCHES_TO_METERS,
-                                            FieldConstants.HUB.POSE3D_BLUE.toPose2d().getY(),
-                                            new Rotation2d(0)),
-                            () -> swerve.getState().Speeds));
+            this.RT.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
             this.LT.whileTrue(IndexerCommands.dispense(indexer));
 
             this.DPD.whileTrue(ShooterCommands.targetState(shooter, 0, 0, kHood.MAX_ANGLE_DEGREES));

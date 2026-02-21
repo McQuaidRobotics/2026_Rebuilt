@@ -1,4 +1,5 @@
 package igknighters.subsystems.shooter.hood;
+
 import edu.wpi.first.units.measure.Angle;
 
 public class HoodDisabled extends Hood {

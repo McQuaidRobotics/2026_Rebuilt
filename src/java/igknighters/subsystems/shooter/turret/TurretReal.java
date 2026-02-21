@@ -1,5 +1,8 @@
 package igknighters.subsystems.shooter.turret;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotations;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -12,6 +15,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import dev.doglog.DogLog;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
@@ -87,8 +91,8 @@ public class TurretReal extends Turret {
     }
 
     @Override
-    public void setAngleDegrees(double angleDegrees) {
-        motor.setPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS);
+    public void setAngle(Angle angle) {
+        motor.setPosition(angle.in(Rotations));
     }
 
     public boolean isLegalPosition(double angleDegrees) {
@@ -102,10 +106,10 @@ public class TurretReal extends Turret {
     }
 
     @Override
-    public void goToAngleDegrees(double angleDegrees) {
-        super.targetDegrees = angleDegrees;
-        double wrappedAngleDegrees = wrapAngleDegrees(angleDegrees);
-        if (!isLegalPositionWrapped(angleDegrees)) {
+    public void goToAngleDegrees(Angle angleDegrees) {
+        super.targetDegrees = angleDegrees.in(Degrees);
+        double wrappedAngleDegrees = wrapAngleDegrees(angleDegrees.in(Degrees));
+        if (!isLegalPositionWrapped(angleDegrees.in(Degrees))) {
             DriverStation.reportError(
                     "Turret angle out of bounds: "
                             + wrappedAngleDegrees

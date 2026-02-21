@@ -1,5 +1,8 @@
 package igknighters.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -114,9 +117,9 @@ public class ShooterVisualizer {
     }
 
     public void update(ShooterState shooterState, double targetRPM, double targetHoodAngleDegs) {
-        double turretAngleDegrees = Math.toDegrees(shooterState.turretAngleRads);
-        double hoodAngleDegrees = Math.toDegrees(shooterState.hoodAngleRads);
-        double rpm = shooterState.rpm;
+        double turretAngleDegrees = shooterState.turretAngle.in(Degrees);
+        double hoodAngleDegrees = shooterState.hoodAngle.in(Degrees);
+        double rpm = shooterState.flywheelSpeed.in(RPM);
 
         turretLigament.setAngle(turretAngleDegrees);
         hoodLigament.setAngle(hoodAngleDegrees);

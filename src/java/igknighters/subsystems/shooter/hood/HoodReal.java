@@ -3,7 +3,6 @@ package igknighters.subsystems.shooter.hood;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
-import edu.wpi.first.units.measure.Angle;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -112,7 +111,7 @@ public class HoodReal extends Hood {
         motor.setPosition(Rotation.of(angleDegrees / kHood.MOTOR_ROTS_TO_HOOD_DEGREES));
     }
 
-    public void setAngle(Angle angle){
+    public void setAngle(Angle angle) {
         motor.setPosition(Rotations.of(angle.in(Rotations) / kHood.MOTOR_ROTS_TO_HOOD_DEGREES));
     }
 }
