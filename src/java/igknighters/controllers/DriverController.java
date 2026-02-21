@@ -2,7 +2,6 @@ package igknighters.controllers;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -17,6 +16,7 @@ import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
 import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
+import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.ClimberState;
 import java.util.function.DoubleSupplier;
@@ -130,6 +130,30 @@ public class DriverController {
                             state.kI,
                             (state.kD)));
         } else if (debugType == DebugType.SHOOTER) {
+            this.A.whileTrue(
+                    ShooterCommands.shootIChoseTargetWithLookAhead(
+                            shooter, () -> swerve.getState().Pose, swerve::getFieldRelativeSpeeds));
+            this.LT.whileTrue(
+                    ShooterCommands.aimAt(
+                            shooter,
+                            () -> swerve.getState().Pose,
+                            () -> FieldConstants.HUB.POSE3D_RED));
+            this.X.whileTrue(
+                    ShooterCommands.aimAt(
+                            shooter,
+                            () -> swerve.getState().Pose,
+                            () -> FieldConstants.PASS.POSITION_LEFT_BLUE));
+            this.Y.whileTrue(
+                    ShooterCommands.aimAt(
+                            shooter,
+                            () -> swerve.getState().Pose,
+                            () -> FieldConstants.PASS.POSITION_RIGHT_BLUE));
+            this.LT.whileTrue(
+                    ShooterCommands.shootWithMaxHeight(
+                            subsystems.shooter,
+                            () -> swerve.getState().Pose,
+                            swerve::getFieldRelativeSpeeds,
+                            3.0));
             // this.A.whileTrue(
             //         ShooterCommands.shootIChoseTargetWithLookAhead(
             //                 shooter, () -> swerve.getState().Pose, () ->
@@ -161,10 +185,10 @@ public class DriverController {
             this.B.onTrue(IndexerCommands.stopDispensing(indexer));
 
         } else if (debugType == DebugType.CLIMBER) {
-            this.A.onTrue(ClimberCommands.goToState(climber, ClimberState.EXTENDED_WITH_CLINGING));
-            this.B.onTrue(ClimberCommands.goToMin(climber));
-            this.X.onTrue(ClimberCommands.goTo(climber, 10.0));
-            this.Y.onTrue(ClimberCommands.home(climber));
+            this.A.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.CLIMB_PREP));
+            this.B.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.PULL_UP));
+            this.X.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.STOW));
+            this.Y.whileTrue(ClimberCommands.climbSequence(climber));
             this.LT.whileTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
         } else if (debugType == DebugType.INTAKE) {
 
@@ -192,17 +216,21 @@ public class DriverController {
                                 Units.inchesToMeters(317.69 / 2),
                                 new Rotation2d()),
                         2));
-        this.X.whileTrue(IntakeCommands.goTo(intake, 90, 300));
+=========
+>>>>>>>>> Temporary merge branch 2
 
         this.A.whileTrue(IntakeCommands.goToIntake(subsystems.intake));
         this.A.onFalse(IntakeCommands.goToStow(subsystems.intake));
 
         this.LT.whileTrue(
-                ShooterCommands.shootIChoseTargetWithLookAhead(
+                ShooterCommands.shootWithMaxHeight(
                         subsystems.shooter,
                         () -> swerve.getState().Pose,
-                        () -> swerve.getState().Speeds));
+                        swerve::getFieldRelativeSpeeds,
+                        4.0));
         this.RT.whileTrue(IndexerCommands.dispense(subsystems.indexer));
+
+        this.X.whileTrue(HigherOrderCommands.shootNoStop(subsystems));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

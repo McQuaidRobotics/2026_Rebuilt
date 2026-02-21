@@ -57,17 +57,14 @@ public class TeleopSwerveTargetingFutureCmd extends TeleopSwerveBaseCmd {
     public void execute() {
         // x y r
         final var currentPose = swerve.getState().Pose;
+        final var fieldSpeeds = swerve.getFieldRelativeSpeeds();
         final Pose2d futurePose2d =
                 new Pose2d(
-                        currentPose.getX()
-                                + (swerve.getState().Speeds.vxMetersPerSecond
-                                        * lookaheadTimeSeconds),
-                        currentPose.getY()
-                                + (swerve.getState().Speeds.vyMetersPerSecond
-                                        * lookaheadTimeSeconds),
+                        currentPose.getX() + (fieldSpeeds.vxMetersPerSecond * lookaheadTimeSeconds),
+                        currentPose.getY() + (fieldSpeeds.vyMetersPerSecond * lookaheadTimeSeconds),
                         new Rotation2d(
                                 currentPose.getRotation().getRadians()
-                                        + (swerve.getState().Speeds.omegaRadiansPerSecond
+                                        + (fieldSpeeds.omegaRadiansPerSecond
                                                 * lookaheadTimeSeconds)));
 
         double dx = targetPose.getX() - futurePose2d.getX();

@@ -5,12 +5,14 @@ public class SubsystemConstants {
     public static final int firstMotorID = 15;
 
     public static class kClimber {
+        public static final String CANBUS = "rio";
+
         public static class kChainsaw {
             public static final int LEFT_MOTOR_ID = 15;
-            public static final int RIGHT_MOTOR_ID = 16;
-            public static final int BUMPER_SENSOR_ID = 0;
+            public static final int BUMPER_SENSOR_ID = 3;
             public static final int MAX_HEIGHT_SENSOR_ID = 1;
             public static final int MIN_HEIGHT_SENSOR_ID = 2;
+            public static final int MIDDLE_HEIGHT_SENSOR_ID = 4;
 
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.05; // this is made up
             public static final double kP = 0.8;
@@ -30,6 +32,7 @@ public class SubsystemConstants {
             public static final double ROTATIONS_TO_INCHES = 4.5;
             public static final double MAX_HEIGHT_INCHES = 20.0;
             public static final double MIN_HEIGHT_INCHES = 0.0;
+            public static final double MIDDLE_HEIGHT_INCHES = 10.0;
             public static final double LENGTH_METERS = 0.5;
             public static final double MASS = 4.0;
             public static final double PEAK_FORWARD_CURRENT_LIMIT = 40;
@@ -39,7 +42,7 @@ public class SubsystemConstants {
         }
 
         public static class kServos {
-            public static final int SERVO_PORT_1 = 2;
+            public static final int SERVO_PORT_1 = 7;
             public static final int SERVO_PORT_2 = 3;
             public static final int SERVO_PORT_3 = 4;
             public static final int SERVO_PORT_4 = 5;
@@ -49,6 +52,8 @@ public class SubsystemConstants {
     }
 
     public static class kIndexer {
+        public static final String CANBUS = "rio";
+
         public static class kSpindexer {
             public static final int LEADER_MOTOR_ID = 18;
             public static final int FOLLOWER_MOTOR_ID = 19;
@@ -92,6 +97,8 @@ public class SubsystemConstants {
     }
 
     public static class kIntake {
+        public static final String CANBUS = "rio";
+
         public static class kRollers {
             // will be configured such that + voltage will intake game pieces
             public static final int LEADER_MOTOR_ID = 20;
@@ -140,6 +147,8 @@ public class SubsystemConstants {
     }
 
     public static class kShooter {
+        public static final String CANBUS = "rio";
+
         public static class kFlywheels {
             public static final int LEADER_MOTOR_ID = 24;
             public static final int FOLLOWER_MOTOR_ID = 25;

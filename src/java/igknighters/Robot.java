@@ -30,6 +30,7 @@ import igknighters.commands.teleop.TeleopSwerveWithDetune;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
+import igknighters.controllers.DriverController.DebugType;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
@@ -310,12 +311,6 @@ public class Robot extends LoggedRobot {
     public void disabledInit() {
         CommandScheduler.getInstance().cancelAll();
         // CommandScheduler.getInstance().getActiveButtonLoop().clear();
-        if (fuelSim != null) {
-
-            fuelSim.clearFuel();
-            fuelSim.spawnStartingFuel();
-            fuelSim.stop();
-        }
         CommandScheduler.getInstance().clearComposedCommands();
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, detune.value()));
@@ -413,15 +408,14 @@ public class Robot extends LoggedRobot {
 
     private void configureFuelSim() {
         fuelSim = new FuelSim();
-        fuelSim.spawnStartingFuel();
+        // fuelSim.spawnStartingFuel();
         fuelSim.start();
         SmartDashboard.putData(
                 Commands.runOnce(
                                 () -> {
                                     fuelSim.clearFuel();
-                                    fuelSim.spawnStartingFuel();
                                 })
-                        .withName("Reset Fuel")
+                        .withName("Clear Fuel")
                         .ignoringDisable(true));
         fuelSim.enableAirResistance();
 
@@ -439,7 +433,7 @@ public class Robot extends LoggedRobot {
                 length,
                 bumperHeight,
                 () -> subsytems.swerve.getState().Pose,
-                () -> subsytems.swerve.getState().Speeds);
+                subsytems.swerve::getFieldRelativeSpeeds);
 
         // Register a front intake zone (0.1m deep, 0.4m wide, centered in front of bumper)
         fuelSim.registerIntake(

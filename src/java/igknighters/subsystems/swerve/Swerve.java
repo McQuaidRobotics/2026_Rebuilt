@@ -8,6 +8,7 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -118,6 +119,15 @@ public class Swerve extends SubsystemBase {
             return drivetrain.getState();
         } else {
             return new SwerveDriveState();
+        }
+    }
+
+    public ChassisSpeeds getFieldRelativeSpeeds() {
+        if (!isSwerveDisabled) {
+            var state = drivetrain.getState();
+            return ChassisSpeeds.fromRobotRelativeSpeeds(state.Speeds, state.Pose.getRotation());
+        } else {
+            return new ChassisSpeeds();
         }
     }
 

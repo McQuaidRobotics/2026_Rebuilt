@@ -15,7 +15,10 @@ import igknighters.constants.SubsystemConstants.kShooter;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 
 public class HoodReal extends Hood {
-    private final TalonFX motor = new TalonFX(SubsystemConstants.kShooter.kHood.MOTOR_ID);
+    private final TalonFX motor =
+            new TalonFX(SubsystemConstants.kShooter.kHood.MOTOR_ID, kShooter.CANBUS);
+
+    private final BaseStatusSignal flapAngleRots = motor.getPosition();
     private final DigitalInput reverseLimitSwitch =
             new DigitalInput(kShooter.kHood.REVERSE_LIMIT_SWITCH_ID);
     private final BaseStatusSignal motorRots = motor.getPosition();

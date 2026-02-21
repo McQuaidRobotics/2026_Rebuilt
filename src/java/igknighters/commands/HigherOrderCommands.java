@@ -14,7 +14,7 @@ public class HigherOrderCommands {
                         ShooterCommands.shootIChoseTargetWithLookAhead(
                                         subsystems.shooter,
                                         () -> subsystems.swerve.getState().Pose,
-                                        () -> subsystems.swerve.getState().Speeds)
+                                        subsystems.swerve::getFieldRelativeSpeeds)
                                 .withName("Aim At in Shoot till Empty"),
                         IndexerCommands.dispense(subsystems.indexer)
                                 .onlyIf(() -> subsystems.shooter.atTarget(300, 2, 2)))
@@ -23,10 +23,11 @@ public class HigherOrderCommands {
 
     public static Command shootNoStop(Subsystems subsystems) {
         return Commands.parallel(
-                ShooterCommands.shootIChoseTargetWithLookAhead(
+                ShooterCommands.shootWithMaxHeight(
                                 subsystems.shooter,
                                 () -> subsystems.swerve.getState().Pose,
-                                () -> subsystems.swerve.getState().Speeds)
+                                subsystems.swerve::getFieldRelativeSpeeds,
+                                4.0)
                         .repeatedly()
                         .withName("SHOOTING WHILE DOING OTHER STUFF"),
                 IndexerCommands.dispense(subsystems.indexer)
@@ -75,9 +76,9 @@ public class HigherOrderCommands {
                                         subsystems.swerve,
                                         getClimbEndPose(),
                                         new Pose2d(.5, .5, new Rotation2d(1)))
-                                .until(ClimberCommands.isBumperPressed(subsystems.climber)),
+                                .until(subsystems.climber::isSensorHit),
                         Commands.print("REACHED CLIMBING POSITION"),
-                        ClimberCommands.goToMax(subsystems.climber),
+                        ClimberCommands.goUp(subsystems.climber),
                         Commands.print("CLIMBER IS PREPED TO RUN"))
                 .withName("Moving to Climber and raising to max height");
     }

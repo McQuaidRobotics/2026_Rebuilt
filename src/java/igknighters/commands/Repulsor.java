@@ -41,8 +41,6 @@ public class Repulsor {
     public record obstacle(
             Pose2d obstaclePose, double strength, double width, double height, obstacleType type) {}
 
-    static double REPELSCALE = 1.0;
-    static double PUSHSCALE = 4.0;
     static double maxTime = 0.0;
 
     static RepulsorVisualizer visualizer = new RepulsorVisualizer();
