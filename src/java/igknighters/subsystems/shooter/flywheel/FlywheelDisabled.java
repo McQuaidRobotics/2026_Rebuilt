@@ -1,10 +1,12 @@
 package igknighters.subsystems.shooter.flywheel;
 
+import static edu.wpi.first.units.Units.RPM;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 
 public class FlywheelDisabled extends Flywheel {
     @Override
-    public void setSpeed(AngularVelocity speedMetersPerSecond) {
+    public void setSpeed(AngularVelocity speed) {
         // TODO Auto-generated method stub
 
     }
@@ -22,8 +24,8 @@ public class FlywheelDisabled extends Flywheel {
     }
 
     @Override
-    public double getSpeedRPM() {
+    public AngularVelocity getSpeed() {
         // TODO Auto-generated method stub
-        return 0;
+        return RPM.of(0);
     }
 }

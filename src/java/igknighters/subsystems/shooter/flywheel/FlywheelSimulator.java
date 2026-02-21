@@ -62,9 +62,9 @@ public class FlywheelSimulator extends Flywheel {
     }
 
     @Override
-    public double getSpeedRPM() {
+    public AngularVelocity getSpeed() {
 
-        return leaderflywheelSim.getAngularVelocityRPM();
+        return RPM.of(leaderflywheelSim.getAngularVelocityRPM());
     }
 
     @Override

@@ -12,7 +12,7 @@ public class ClimberCommands {
      *
      * @param climber
      * @param state
-    * @param timeSeconds
+     * @param timeSeconds
      * @return A command that goes to the specified state, holds it for the specified time, and then
      *     stops the climber
      */

@@ -10,5 +10,5 @@ public abstract class Flywheel {
 
     public abstract void periodic();
 
-    public abstract double getSpeedRPM();
+    public abstract AngularVelocity getSpeed();
 }

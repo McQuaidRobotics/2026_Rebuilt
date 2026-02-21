@@ -99,8 +99,8 @@ public class FlywheelReal extends Flywheel {
     }
 
     @Override
-    public double getSpeedRPM() {
-        return shooterVelocity.getValueAsDouble() * Conv.RPS_TO_RPM;
+    public AngularVelocity getSpeed() {
+        return RotationsPerSecond.of(shooterVelocity.getValueAsDouble());
     }
 
     @Override
