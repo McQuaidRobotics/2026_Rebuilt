@@ -40,7 +40,7 @@ public class Subsystems {
         this.climber = climber;
         this.indexer = indexer;
         this.lockedResources =
-                new SubsystemBase[] {luma, swerve, led, shooter, vision, indexer, intake};
+                new SubsystemBase[] {swerve, shooter, climber, indexer, intake, luma, vision, led};
 
         CommandScheduler.getInstance().registerSubsystem(this.lockedResources);
         // this.shooter.setDefaultCommand(ShooterCommands.idle(shooter));
