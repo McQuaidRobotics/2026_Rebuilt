@@ -141,7 +141,6 @@ public class AimSolver {
                         targetPose);
             } else {
                 canShoot(false);
-                clearShotTrajectory();
             }
 
             return new ShooterState(
