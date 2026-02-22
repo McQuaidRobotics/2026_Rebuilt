@@ -1,5 +1,7 @@
 package igknighters.subsystems.shooter.flywheel;
 
+import static edu.wpi.first.units.Units.RPM;
+
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -7,7 +9,9 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
 
@@ -19,32 +23,32 @@ public class FlywheelSimulator extends Flywheel {
             new FlywheelSim(
                     LinearSystemId.createFlywheelSystem(
                             DCMotor.getKrakenX60(1),
-                            SubsystemConstants.kShooter.kRollers.MOMENT_OF_INERTIA_KG_M2,
-                            SubsystemConstants.kShooter.kRollers.GEAR_RATIO),
+                            SubsystemConstants.kShooter.kFlywheels.MOMENT_OF_INERTIA_KG_M2,
+                            SubsystemConstants.kShooter.kFlywheels.GEAR_RATIO),
                     DCMotor.getKrakenX60(1));
     private final ProfiledPIDController profiledPIDController =
             new ProfiledPIDController(
                     .8,
-                    SubsystemConstants.kShooter.kRollers.kI,
-                    SubsystemConstants.kShooter.kRollers.kD,
+                    SubsystemConstants.kShooter.kFlywheels.kI,
+                    SubsystemConstants.kShooter.kFlywheels.kD,
                     new Constraints(
-                            SubsystemConstants.kShooter.kRollers.MAX_SPEED_RPM,
-                            SubsystemConstants.kShooter.kRollers.MAX_ACCELERATION_RPM));
+                            SubsystemConstants.kShooter.kFlywheels.MAX_SPEED_RPM,
+                            SubsystemConstants.kShooter.kFlywheels.MAX_ACCELERATION_RPM));
     // Create a new SimpleMotorFeedforward with gains kS, kV, and kA
     private final SimpleMotorFeedforward feedforward =
             new SimpleMotorFeedforward(
-                    SubsystemConstants.kShooter.kRollers.kS,
-                    SubsystemConstants.kShooter.kRollers.kV,
-                    SubsystemConstants.kShooter.kRollers.kA);
+                    SubsystemConstants.kShooter.kFlywheels.kS,
+                    SubsystemConstants.kShooter.kFlywheels.kV,
+                    SubsystemConstants.kShooter.kFlywheels.kA);
 
     private boolean isPidControlledThisCycle = false;
 
     private boolean isVoltageControlledThisCycle = false;
 
     @Override
-    public void setSpeed(double speedRPM) {
+    public void setSpeed(AngularVelocity speed) {
 
-        profiledPIDController.setGoal(speedRPM);
+        profiledPIDController.setGoal(speed.in(RPM));
 
         isPidControlledThisCycle = true;
     }
@@ -58,9 +62,9 @@ public class FlywheelSimulator extends Flywheel {
     }
 
     @Override
-    public double getSpeedRPM() {
+    public AngularVelocity getSpeed() {
 
-        return leaderflywheelSim.getAngularVelocityRPM();
+        return RPM.of(leaderflywheelSim.getAngularVelocityRPM());
     }
 
     @Override
@@ -80,9 +84,9 @@ public class FlywheelSimulator extends Flywheel {
 
             // Feedforward in volts
 
-            double goalRPS = goalRPM / 60.0;
+            double goalRPS = goalRPM * Conv.RPM_TO_RPS;
 
-            ffOutput = kShooter.kRollers.kS + kShooter.kRollers.kV * goalRPS;
+            ffOutput = kShooter.kFlywheels.kS + kShooter.kFlywheels.kV * goalRPS;
 
             // PID output is in RPM, convert to volts with a small gain
 

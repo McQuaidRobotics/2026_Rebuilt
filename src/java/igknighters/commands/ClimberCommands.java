@@ -1,54 +1,150 @@
 package igknighters.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import igknighters.constants.SubsystemConstants;
+import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.subsystems.climber.Climber;
 import igknighters.subsystems.climber.ClimberState;
-import java.util.function.BooleanSupplier;
 
 public class ClimberCommands {
-    public static Command goToMax(Climber climber) {
-        return climber.run(
-                        () ->
-                                climber.goToInches(
-                                        SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_INCHES))
-                .until(
-                        () ->
-                                climber.isAt(
-                                        SubsystemConstants.kClimber.kChainsaw.MAX_HEIGHT_INCHES,
-                                        .5))
-                .withName("GOING TO MAX");
+
+    /**
+     * Goes to a state and holds it for a certain amount of time, then stops the climber
+     *
+     * @param climber
+     * @param state
+     * @param timeSeconds
+     * @return A command that goes to the specified state, holds it for the specified time, and then
+     *     stops the climber
+     */
+    public static Command holdAtStateUntil(
+            Climber climber, ClimberState state, double timeSeconds) {
+
+        return Commands.sequence(
+                        goToState(climber, state),
+                        holdAtState(climber, state).withTimeout(timeSeconds),
+                        climber.runOnce(() -> climber.stopChainsaw()))
+                .withName("HOLDING STATE: " + state.name() + " FOR " + timeSeconds + " SECONDS");
     }
 
-    public static Command goToMin(Climber climber) {
-        return climber.run(
-                        () ->
-                                climber.goToInches(
-                                        SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_INCHES))
-                .until(
-                        () ->
-                                climber.isAt(
-                                        SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_INCHES,
-                                        .5))
-                .withName("GOING TO MIN");
+    /**
+     * Goes through the climb sequence: Climb Prep -> Latch On -> Pull Up, holding Pull up until the
+     * command is interrupted. Climb Prep is held for 2 seconds, and Latch On is held for 1 second.
+     *
+     * @param climber
+     * @return A command that goes through the climb sequence: Climb Prep -> Latch On -> Pull Up,
+     *     holding Pull up until the command is interrupted. Climb Prep is held for 2 seconds, and
+     *     Latch On is held for 1 second.
+     */
+    public static Command climbSequence(Climber climber) {
+        return holdAtStateUntil(climber, ClimberState.LATCH_ON, 2.0)
+                .andThen(holdAtState(climber, ClimberState.PULL_UP))
+                .withName("CLIMB SEQUENCE");
     }
 
-    public static Command goTo(Climber climber, double inches) {
-        return climber.run(() -> climber.goToInches(inches))
-                .until(() -> climber.isAt(inches, .5))
-                .withName("GOING TO: " + inches);
+    /**
+     * Goes through the unclimb sequence: Pull Up -> Latch On -> Climb Prep -> Stow. Ends when
+     * climber reaches state of climb prep
+     *
+     * @param climber
+     * @return A command that goes through the unclimb sequence: Pull Up -> Latch On -> Climb Prep
+     *     -> Stow. Ends when climber reaches state of climb prep
+     */
+    public static Command unClimb(Climber climber) {
+        return goToState(climber, ClimberState.LATCH_ON)
+                .andThen(goToState(climber, ClimberState.CLIMB_PREP))
+                .andThen(goToState(climber, ClimberState.STOW))
+                .withName("UNCLIMB SEQUENCE");
     }
 
-    public static BooleanSupplier isBumperPressed(Climber climber) {
-        return () -> climber.isSensorHit();
+    /**
+     * Chainsaw up until the climber is up, then stops the climber
+     *
+     * @param climber
+     * @return A command that goes up until the Chainsaw is up, then stops the climber
+     */
+    public static Command goUp(Climber climber) {
+        return climber.run(climber::goUp)
+                .until(climber::isUp)
+                .finallyDo(() -> climber.stopChainsaw())
+                .withName("GOING UP");
     }
 
+    /**
+     * Chainsaw down until the climber is down, then stops the climber
+     *
+     * @param climber
+     * @return A command that goes down until the Chainsaw is down, then stops the climber
+     */
+    public static Command goDown(Climber climber) {
+        return climber.run(climber::goDown)
+                .until(climber::isDown)
+                .finallyDo(() -> climber.stopChainsaw())
+                .withName("GOING DOWN");
+    }
+
+    /**
+     * Goes to a state and holds it until the command is interrupted, then stops the climber
+     *
+     * @param climber
+     * @param state
+     * @return A command that goes to the specified state, holds it until the command is
+     *     interrupted, and then stops the climber
+     */
     public static Command goToState(Climber climber, ClimberState state) {
-        return climber.run(() -> climber.goToState(state));
+        return climber.run(() -> climber.goToState(state))
+                .until(
+                        () -> {
+                            if (state == ClimberState.CLIMB_PREP) return climber.isUp();
+                            if (state == ClimberState.STOW) return climber.isDown();
+                            if (state == ClimberState.PULL_UP) return climber.isDown();
+                            return true;
+                        })
+                .finallyDo(() -> climber.stopChainsaw())
+                .withName("GOING TO STATE: " + state.name());
     }
 
-    public static Command home(Climber climber) {
-        return climber.runOnce(
-                () -> climber.setPositionInches(0.0)); // Set current position to 0 inches
+    /**
+     * Holds a state until the command is interrupted, then stops the climber
+     *
+     * @param climber
+     * @param state
+     * @return A command that holds the specified state until the command is interrupted, and then
+     *     stops the climber
+     */
+    public static Command holdAtState(Climber climber, ClimberState state) {
+        return climber.run(() -> climber.goToState(state))
+                .withName("HOLDING STATE: " + state.name());
+    }
+
+    /**
+     * Holds the chainsaw down until the command is interrupted, then stops the climber
+     *
+     * @param climber
+     * @return A command that holds the chainsaw down until the command is interrupted, and then
+     *     stops the climber
+     */
+    public static Command holdDown(Climber climber) {
+        return climber.run(climber::goDown).withName("HOLDING DOWN");
+    }
+
+    /**
+     * Holds the chainsaw up until the command is interrupted, then stops the climber
+     *
+     * @param climber
+     * @return A command that holds the chainsaw up until the command is interrupted, and then stops
+     *     the climber
+     */
+    public static Command holdUp(Climber climber) {
+        return climber.run(climber::goUp).withName("HOLDING UP");
+    }
+
+    /**
+     * Stops the climber
+     *
+     * @param climber
+     * @return A command that stops the climber
+     */
+    public static Command stop(Climber climber) {
+        return climber.runOnce(climber::stopChainsaw).withName("STOP CLIMBER");
     }
 }

@@ -1,15 +1,19 @@
 package igknighters.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+
 import dev.doglog.DogLog;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.constants.AbleToShootSharedState;
-import igknighters.constants.Conv;
 import igknighters.subsystems.shooter.flywheel.Flywheel;
-import igknighters.subsystems.shooter.flywheel.FlywheelDisabled;
+import igknighters.subsystems.shooter.flywheel.FlywheelReal;
 import igknighters.subsystems.shooter.flywheel.FlywheelSimulator;
 import igknighters.subsystems.shooter.hood.Hood;
-import igknighters.subsystems.shooter.hood.HoodDisabled;
+import igknighters.subsystems.shooter.hood.HoodReal;
 import igknighters.subsystems.shooter.hood.HoodSim;
 import igknighters.subsystems.shooter.turret.Turret;
 import igknighters.subsystems.shooter.turret.TurretDisabled;
@@ -29,18 +33,19 @@ public class Shooter extends SubsystemBase {
     private LerpTable rpmTable =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, 4000.0),
-                        new LerpTableEntry(5.0, 4500.0),
-                        new LerpTableEntry(10.0, 5000.0),
+                        new LerpTableEntry(1.0, 2800.0),
+                        new LerpTableEntry(3.0, 3000.0),
+                        new LerpTableEntry(5.0, 4000.0),
+                        new LerpTableEntry(10.0, 4500.0),
                         new LerpTableEntry(15.0, 5500.0),
                         new LerpTableEntry(20.0, 6000.0),
                     });
 
     public Shooter() {
         if (Robot.isReal()) {
-            rollers = new FlywheelDisabled();
+            rollers = new FlywheelReal();
             turret = new TurretDisabled();
-            hood = new HoodDisabled();
+            hood = new HoodReal();
         } else {
             rollers = new FlywheelSimulator();
             turret = new TurretSim();
@@ -49,37 +54,42 @@ public class Shooter extends SubsystemBase {
         visualizer = new ShooterVisualizer();
     }
 
-    private void targetSpeed(double speedRPM) {
-        rollers.setSpeed(speedRPM);
+    private void targetSpeed(AngularVelocity velo) {
+        rollers.setSpeed(velo);
     }
 
-    private void setTurretAngleDegrees(double angleDegrees) {
-        turret.setAngleDegrees(angleDegrees);
+    public double getHoodAngleDegrees() {
+        return hood.getAngleDegrees();
     }
 
-    private double getTurretAngleDegrees() {
+    public void setTurretAngleDegrees(Angle angle) {
+        turret.setAngle(angle);
+    }
+
+    public double getTurretAngleDegrees() {
         return turret.getAngleDegrees();
     }
 
-    private void goToTurretAngleDegrees(double angleDegrees) {
-        DogLog.log("Subsystems/Shooter/TARGETING", angleDegrees);
-        turret.goToAngleDegrees(angleDegrees);
+    private void goToTurretAngle(Angle angle) {
+        DogLog.log("Subsystems/Shooter/TARGETING", angle.in(Degrees));
+        turret.goToAngleDegrees(angle);
     }
 
-    public void targetState(double rpm, double turretAngleDegrees, double hoodAngleDegrees) {
-        DogLog.log("Subsystems/Shooter/TARGETING/RPM", rpm);
-        DogLog.log("Subsystems/Shooter/TARGETING/ANGLE", turretAngleDegrees);
-        targetSpeed(rpm);
-        goToTurretAngleDegrees(turretAngleDegrees);
-        hood.goToAngleDegrees(hoodAngleDegrees);
-        goalRPM = rpm;
-        goalTurretAngleDegrees = turretAngleDegrees;
-        goalHoodAngleDegrees = hoodAngleDegrees;
+    public void targetState(AngularVelocity velo, Angle turretAngle, Angle hoodAngle) {
+        DogLog.log("Subsystems/Shooter/TARGETING/RPM", velo.in(RPM));
+        DogLog.log("Subsystems/Shooter/TARGETING/ANGLE", turretAngle.in(Degrees));
+        DogLog.log("Subsystems/Shooter/TARGETING/HoodAngle", hoodAngle.in(Degrees));
+        targetSpeed(velo);
+        goToTurretAngle(turretAngle);
+        hood.goToAngle(hoodAngle);
+        goalRPM = velo.in(RPM);
+        goalTurretAngleDegrees = turretAngle.in(Degrees);
+        goalHoodAngleDegrees = hoodAngle.in(Degrees);
     }
 
     public boolean atTarget(
             double toleranceRPM, double toleranceDegrees, double toleranceHoodDegrees) {
-        boolean atSpeed = Math.abs(rollers.getSpeedRPM() - goalRPM) < toleranceRPM;
+        boolean atSpeed = Math.abs(rollers.getSpeed().in(RPM) - goalRPM) < toleranceRPM;
         boolean atTurretAngle =
                 Math.abs(getTurretAngleDegrees() - goalTurretAngleDegrees) < toleranceDegrees;
         boolean atHoodAngle =
@@ -90,16 +100,16 @@ public class Shooter extends SubsystemBase {
         return atSpeed && atTurretAngle && atHoodAngle;
     }
 
-    public void setTurretPosition(double angleDegrees) {
-        DogLog.log("Subsystems/Shooter/SETSTATE/ANGLE", angleDegrees);
-        turret.setAngleDegrees(angleDegrees);
+    public void setTurretPosition(Angle angle) {
+        DogLog.log("Subsystems/Shooter/SETSTATE/ANGLE", angle.in(Degrees));
+        turret.setAngle(angle);
     }
 
     public ShooterState getCurrentState() {
         return new ShooterState(
-                rollers.getSpeedRPM(),
-                turret.getAngleDegrees() * Conv.DEGREES_TO_RADIANS,
-                hood.getAngleDegrees() * Conv.DEGREES_TO_RADIANS);
+                rollers.getSpeed(),
+                Degrees.of(turret.getAngleDegrees()),
+                Degrees.of(hood.getAngleDegrees()));
     }
 
     public void setRollerVoltage(double voltage) {
@@ -108,6 +118,11 @@ public class Shooter extends SubsystemBase {
 
     public double getEstimatedRPM(double distanceMeters) {
         return rpmTable.lerp(distanceMeters);
+    }
+
+    public void setHoodAngleDegrees(double angleDegrees) {
+        DogLog.log("Subsystems/Shooter/SETSTATE/HoodAngle", angleDegrees);
+        hood.setAngle(angleDegrees);
     }
 
     @Override

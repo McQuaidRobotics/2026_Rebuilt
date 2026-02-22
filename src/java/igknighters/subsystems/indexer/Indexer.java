@@ -33,6 +33,10 @@ public class Indexer extends SubsystemBase {
         return spindexer.getRPM();
     }
 
+    public double getExitRollerRPM() {
+        return exitRollers.getSpeedRPM();
+    }
+
     public void goToState(IndexerState state) {
         spindexer.goToRPM(state.spindexerRPM);
         exitRollers.setSpeedRPM(state.exitRollerRPM);

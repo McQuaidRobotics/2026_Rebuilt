@@ -1,5 +1,8 @@
 package igknighters.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -8,6 +11,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public class ShooterVisualizer {
+
     private final Mechanism2d shooter = new Mechanism2d(1, 1);
 
     private final MechanismRoot2d hood = shooter.getRoot("Shooter", 0.5, 0.0);
@@ -94,7 +98,7 @@ public class ShooterVisualizer {
     public ShooterVisualizer() {
         shooter.setBackgroundColor(new Color8Bit(Color.kBlack));
 
-        SmartDashboard.putData("Shooter Visualizer", shooter);
+        SmartDashboard.putData("Visualizers/Shooter/Shooter Visualizer", shooter);
     }
 
     public Color8Bit getRPMColor(double rpm, double targetRPM) {
@@ -113,9 +117,9 @@ public class ShooterVisualizer {
     }
 
     public void update(ShooterState shooterState, double targetRPM, double targetHoodAngleDegs) {
-        double turretAngleDegrees = Math.toDegrees(shooterState.turretAngleRads);
-        double hoodAngleDegrees = Math.toDegrees(shooterState.hoodAngleRads);
-        double rpm = shooterState.rpm;
+        double turretAngleDegrees = shooterState.turretAngle.in(Degrees);
+        double hoodAngleDegrees = shooterState.hoodAngle.in(Degrees);
+        double rpm = shooterState.flywheelSpeed.in(RPM);
 
         turretLigament.setAngle(turretAngleDegrees);
         hoodLigament.setAngle(hoodAngleDegrees);

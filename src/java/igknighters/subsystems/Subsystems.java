@@ -1,7 +1,9 @@
 package igknighters.subsystems;
 
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
+import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.climber.Climber;
 import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.Intake;
@@ -16,6 +18,7 @@ public class Subsystems {
     public final Shooter shooter;
     public final Indexer indexer;
     public final Intake intake;
+    public final Luma luma;
     public final Climber climber;
     public final SubsystemBase[] lockedResources;
 
@@ -26,18 +29,20 @@ public class Subsystems {
             Shooter shooter,
             Indexer indexer,
             Intake intake,
-            Climber climber) {
+            Climber climber,
+            Luma luma) {
         this.swerve = swerve;
         this.vision = vision;
         this.led = led;
         this.shooter = shooter;
+        this.luma = luma;
         this.intake = intake;
         this.climber = climber;
         this.indexer = indexer;
         this.lockedResources =
-                new SubsystemBase[] {swerve, led, shooter, vision, indexer, intake, climber};
+                new SubsystemBase[] {swerve, shooter, climber, indexer, intake, luma, vision, led};
 
-        // SubsystemBase objects register themselves automatically in their constructor.
+        CommandScheduler.getInstance().registerSubsystem(this.lockedResources);
     }
 
     // public static interface SharedSubsystem {
