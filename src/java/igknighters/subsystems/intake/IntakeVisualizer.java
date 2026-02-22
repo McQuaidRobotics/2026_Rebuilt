@@ -8,33 +8,34 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public class IntakeVisualizer {
+    private final Mechanism2d intake = new Mechanism2d(1, 1);
 
-    private final Mechanism2d intakeMechanism = new Mechanism2d(20, 20);
+    private final MechanismRoot2d pivot = intake.getRoot("pivot", 0.5, 0.5);
 
-    private final MechanismRoot2d intakeRoot = intakeMechanism.getRoot("PIVOT_INTAKE", 0, 0);
-
-    private final MechanismLigament2d intakePivot =
-            intakeRoot.append(
-                    new MechanismLigament2d("INTAKE_PIVOT", 20, 0)); // initial angle is flat
+    private final MechanismLigament2d intakeLigament =
+            pivot.append(
+                    new MechanismLigament2d(
+                            "bridge", 0.3, 0.0, 10, new Color8Bit(Color.kAntiqueWhite)));
 
     public IntakeVisualizer() {
-        intakeMechanism.setBackgroundColor(new Color8Bit(Color.kBlack));
-        SmartDashboard.putData("Visualizers/Intake/Intake-Visualizer", intakeMechanism);
-        intakePivot.setColor(new Color8Bit(Color.kBeige));
+        intake.setBackgroundColor(new Color8Bit(Color.kBlack));
+
+        SmartDashboard.putData("Intake Visualizer", intake);
     }
 
-    public Color8Bit getColorFromRPM(double rpm) {
-        if (rpm == 0) {
-            return new Color8Bit(Color.kWhite);
-        } else if (rpm > 0) {
-            return new Color8Bit(Color.kGreen);
-        } else {
-            return new Color8Bit(Color.kRed);
-        }
+    public Color8Bit getRPMColor(double rpm) {
+
+        double ratio = rpm / 300;
+
+        double g = 255.0 * ratio;
+        double r = 255.0;
+
+        return new Color8Bit((int) r, (int) g, 0);
     }
 
-    public void update(double pivotAngleDegrees, double rollerSpeedRPM) {
-        intakePivot.setAngle(pivotAngleDegrees);
-        intakePivot.setColor(getColorFromRPM(rollerSpeedRPM));
+    public void update(double pivotAngleDegrees, double RPM) {
+
+        intakeLigament.setAngle(pivotAngleDegrees);
+        intakeLigament.setColor(getRPMColor(RPM));
     }
 }
