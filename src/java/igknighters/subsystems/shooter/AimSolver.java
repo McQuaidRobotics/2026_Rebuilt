@@ -77,10 +77,6 @@ public class AimSolver {
                 double currentCielingHeight =
                         initialGuessHeight + i * (maxHeightMeters - tz) / 10.0;
 
-                double dCieling = currentCielingHeight - sz;
-
-                double vy = Math.sqrt(2.0 * G * dCieling);
-
                 double inside1 = 2 * G * (currentCielingHeight - sz);
 
                 double inside2 = 2 * G * (currentCielingHeight - tz);
@@ -93,19 +89,28 @@ public class AimSolver {
                     continue;
                 }
 
+                // The "Planar" distance the ball must travel across the floor
+                double floorDistance = Math.sqrt(dx * dx + dy * dy);
+
+                // The time of flight (calculated from vertical peak height)
                 double t = (Math.sqrt(inside1) + Math.sqrt(inside2)) / G;
 
-                double vx = Math.abs(dx / t);
+                // The horizontal speed needed to cover that floor distance
+                double v_horizontal = floorDistance / t;
 
-                double v = Math.sqrt(vx * vx + vy * vy);
+                // The vertical speed needed to reach the peak height
+                double v_vertical = Math.sqrt(2.0 * G * (currentCielingHeight - sz));
+
+                // The total speed the ball leaves the shooter with
+                double v_total = Math.sqrt(v_horizontal * v_horizontal + v_vertical * v_vertical);
 
                 double RPM =
-                        v
+                        v_total
                                 / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS)
                                 * 60
                                 * 2.0; // have to move twice as fast to make ball reach
 
-                double thetaRadsLaunchAngle = Math.atan2(vy, vx);
+                double thetaRadsLaunchAngle = Math.atan2(v_vertical, v_horizontal);
 
                 double thetaDegreesLaunchAngle = thetaRadsLaunchAngle * Conv.RADIANS_TO_DEGREES;
 
@@ -123,10 +128,10 @@ public class AimSolver {
 
                 double dBestRPM = currentRPM - bestRPM;
 
-                if (dRPM <= dBestRPM) {
+                if (dRPM <= dBestRPM || bestRPM == 0) {
                     bestRPM = RPM;
                     bestThetaDegrees = thetaHoodDegrees;
-                    bestV = v;
+                    bestV = v_total;
                     DogLog.log(
                             "Subsystems/Shooter/Aiming/MAX_HEIGHT_ITERATIVE/Found Best Solution on"
                                     + " Iteration: ",
@@ -747,45 +752,40 @@ public class AimSolver {
     }
 
     public static void publishShotTrajectory(
-            double ballLaunchVelocity,
-            double launchAngleRads,
-            double turretAngleRads,
-            Pose3d shooterPose3d,
-            Pose3d targetPose3d) {
-        double sx = shooterPose3d.getX();
-        double sy = shooterPose3d.getY();
-        double sz = shooterPose3d.getZ();
+        double ballLaunchVelocity,
+        double launchAngleRads, // Angle relative to the floor
+        double fieldShotAngle,  // Absolute angle toward the target
+        Pose3d shooterPose3d,
+        Pose3d targetPose3d) {
+    
+    double sx = shooterPose3d.getX();
+    double sy = shooterPose3d.getY();
+    double sz = shooterPose3d.getZ();
 
-        // The turret angle is relative to the robot's yaw.
-        // We need the absolute field angle for the trajectory visualization.
-        double fieldShotAngle = shooterPose3d.getRotation().getZ() + turretAngleRads;
+    // vZ is vertical, vH is horizontal across the floor
+    double vZ = ballLaunchVelocity * Math.sin(launchAngleRads);
+    double vH = ballLaunchVelocity * Math.cos(launchAngleRads);
 
-        double time = getShotTime(ballLaunchVelocity, launchAngleRads, sz, targetPose3d.getZ());
-        if (Double.isInfinite(time) || time <= 0) time = 1.5; // Fallback for visualization
+    // Break horizontal velocity into field X and Y
+    double vx = vH * Math.cos(fieldShotAngle);
+    double vy = vH * Math.sin(fieldShotAngle);
 
-        int nPoints = 20;
-        Pose3d[] trajectoryPoints = new Pose3d[nPoints];
+    double time = getShotTime(ballLaunchVelocity, launchAngleRads, sz, targetPose3d.getZ());
+    if (Double.isInfinite(time) || time <= 0) time = 1.5;
 
-        for (int i = 0; i < nPoints; i++) {
-            double t = (time / (nPoints - 1)) * i;
-            double x =
-                    sx
-                            + ballLaunchVelocity
-                                    * Math.cos(launchAngleRads)
-                                    * Math.cos(fieldShotAngle)
-                                    * t;
-            double y =
-                    sy
-                            + ballLaunchVelocity
-                                    * Math.cos(launchAngleRads)
-                                    * Math.sin(fieldShotAngle)
-                                    * t;
-            double z =
-                    sz + ballLaunchVelocity * Math.sin(launchAngleRads) * t - (0.5 * 9.81 * t * t);
+    int nPoints = 25;
+    Pose3d[] trajectoryPoints = new Pose3d[nPoints];
 
-            trajectoryPoints[i] = new Pose3d(x, y, Math.max(0, z), new Rotation3d());
-        }
+    for (int i = 0; i < nPoints; i++) {
+        double t = (time / (nPoints - 1)) * i;
+        
+        double x = sx + vx * t;
+        double y = sy + vy * t;
+        double z = sz + (vZ * t) - (0.5 * 9.81 * t * t);
 
-        Logger.recordOutput("Shooter/ShotTrajectory", trajectoryPoints);
+        trajectoryPoints[i] = new Pose3d(x, y, Math.max(0, z), new Rotation3d());
     }
+
+    Logger.recordOutput("Shooter/ShotTrajectory", trajectoryPoints);
+}
 }
