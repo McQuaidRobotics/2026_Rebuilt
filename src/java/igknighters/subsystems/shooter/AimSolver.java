@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import igknighters.FieldVisualizer;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
+import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import org.littletonrobotics.junction.Logger;
 
@@ -40,6 +41,135 @@ public class AimSolver {
             } else {
                 canSHOOTMECH.setBackgroundColor(new Color8Bit(Color.kRed));
             }
+        }
+
+        public static ShooterState solve_max_height_iterative(
+                Pose3d shooterPose,
+                Pose3d targetPose,
+                ChassisSpeeds speeds,
+                double currentRPM,
+                double maxHeightMeters,
+                double periodTime) {
+            double sx = shooterPose.getX() + speeds.vxMetersPerSecond * periodTime;
+            double sy = shooterPose.getY() + speeds.vyMetersPerSecond * periodTime;
+            double sz = shooterPose.getZ();
+
+            Translation2d airResistanceAdder =
+                    addDToTargetWithAirResistance(targetPose, shooterPose);
+
+            double tx = targetPose.getX() + airResistanceAdder.getX() - speeds.vxMetersPerSecond;
+
+            double ty = targetPose.getY() + airResistanceAdder.getY() - speeds.vyMetersPerSecond;
+            double tz = targetPose.getZ();
+
+            double dx = tx - sx;
+            double dy = ty - sy;
+            double dz = tz - sz;
+
+            double initialGuessHeight = tz + 1.0; // 1 meter above target
+            double bestRPM = 0.0;
+            double bestThetaDegrees =
+                    SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS;
+
+            double bestV = 0.0;
+
+            for (int i = 0; i < 10; i++) {
+                double currentCielingHeight =
+                        initialGuessHeight + i * (maxHeightMeters - tz) / 10.0;
+
+                double dCieling = currentCielingHeight - sz;
+
+                double vy = Math.sqrt(2.0 * G * dCieling);
+
+                double inside1 = 2 * G * (currentCielingHeight - sz);
+
+                double inside2 = 2 * G * (currentCielingHeight - tz);
+
+                if (inside1 < 0 || inside2 < 0) {
+                    DogLog.log(
+                            "Subsystems/Shooter/Aiming/MAX_HEIGHT_ITERATIVE/SHOT NOT POSIBLE AT"
+                                    + " HEIGHT: ",
+                            currentCielingHeight);
+                    continue;
+                }
+
+                double t = (Math.sqrt(inside1) + Math.sqrt(inside2)) / G;
+
+                double vx = Math.abs(dx / t);
+
+                double v = Math.sqrt(vx * vx + vy * vy);
+
+                double RPM =
+                        v
+                                / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS)
+                                * 60
+                                * 2.0; // have to move twice as fast to make ball reach
+
+                double thetaRadsLaunchAngle = Math.atan2(vy, vx);
+
+                double thetaDegreesLaunchAngle = thetaRadsLaunchAngle * Conv.RADIANS_TO_DEGREES;
+
+                double thetaHoodDegrees = 90 - thetaDegreesLaunchAngle;
+
+                if (thetaHoodDegrees < kHood.MIN_ANGLE_DEGREES
+                        || thetaHoodDegrees > kHood.MAX_ANGLE_DEGREES) {
+                    DogLog.log(
+                            "Subsystems/Shooter/Aiming/MAX_HEIGHT_ITERATIVE/THETA NOT POSSIBLE: ",
+                            thetaHoodDegrees);
+                    continue;
+                }
+
+                double dRPM = currentRPM - RPM;
+
+                double dBestRPM = currentRPM - bestRPM;
+
+                if (dRPM <= dBestRPM) {
+                    bestRPM = RPM;
+                    bestThetaDegrees = thetaHoodDegrees;
+                    bestV = v;
+                    DogLog.log(
+                            "Subsystems/Shooter/Aiming/MAX_HEIGHT_ITERATIVE/Found Best Solution on"
+                                    + " Iteration: ",
+                            i);
+                    DogLog.log(
+                            "Subsystems/Shooter/Aiming/MAX_HEIGHT_ITERATIVE/Height Aiming For: ",
+                            currentCielingHeight);
+                }
+            }
+            double absoluteAngle = Math.atan2(dy, dx); // field-relative
+
+            // -----------------------------
+            // 3. Predict robot future yaw
+            // -----------------------------
+            double robotYawNow = shooterPose.getRotation().getZ();
+            double robotYawFuture = robotYawNow + speeds.omegaRadiansPerSecond * periodTime;
+
+            // -----------------------------
+            // 4. Compute turret angle (robot-relative)
+            // -----------------------------
+            double turretAngle = absoluteAngle - robotYawFuture;
+
+            // Normalize
+            turretAngle = Math.atan2(Math.sin(turretAngle), Math.cos(turretAngle));
+            if (bestRPM != 0) {
+                DogLog.log(
+                        "Subsystems/Shooter/Aiming/MAX_HEIGHT_ITERATIVE/SOLUTION RPM: ", bestRPM);
+                DogLog.log(
+                        "Subsystems/Shooter/Aiming/MAX_HEIGHT_ITERATIVE/BEST THETA",
+                        bestThetaDegrees);
+                canShoot(true);
+                publishShotTrajectory(
+                        bestV,
+                        turretAngle,
+                        (90 - bestThetaDegrees) * Conv.DEGREES_TO_RADIANS,
+                        shooterPose,
+                        targetPose);
+            } else {
+                canShoot(false);
+            }
+
+            return new ShooterState(
+                    RPM.of(bestRPM), Radians.of(turretAngle), Degrees.of(bestThetaDegrees));
         }
 
         private static final double FLYWHEEL_RADIUS =
@@ -610,6 +740,10 @@ public class AimSolver {
         // We take the positive root since time cannot be negative
         double time = (-b + Math.sqrt(discriminant)) / (2 * a);
         return time;
+    }
+
+    public static void clearShotTrajectory() {
+        Logger.recordOutput("Shooter/ShotTrajectory", new Translation2d[] {});
     }
 
     public static void publishShotTrajectory(

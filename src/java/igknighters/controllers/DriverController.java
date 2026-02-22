@@ -135,10 +135,11 @@ public class DriverController {
             this.X.whileTrue(ShooterCommands.targetState(shooter, 5800, 270, 35));
             this.Y.whileTrue(ShooterCommands.targetState(shooter, 5800, 360, 40));
             this.RT.whileTrue(
-                    ShooterCommands.shootIChoseTargetWithLookAhead(
+                    ShooterCommands.shootWithMaxHeightIterative(
                             subsystems.shooter,
                             () -> swerve.getState().Pose,
-                            swerve::getFieldRelativeSpeeds));
+                            swerve::getFieldRelativeSpeeds,
+                            5.0));
             this.LT.whileTrue(IndexerCommands.dispense(indexer));
 
             this.DPD.whileTrue(ShooterCommands.targetState(shooter, 0, 0, kHood.MAX_ANGLE_DEGREES));
