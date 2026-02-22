@@ -1,5 +1,6 @@
 package igknighters.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.LEDPattern;
@@ -10,9 +11,13 @@ import igknighters.commands.teleop.AutoRotateOnBump;
 import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.controllers.DriverController;
+import igknighters.controllers.OperatorController;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.climber.Climber;
+import igknighters.subsystems.climber.ClimberState;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
+import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 import java.util.function.BooleanSupplier;
 
@@ -38,19 +43,44 @@ public class SubsystemTriggers {
                     ;
                 });
     }
+    public Pose2d getPoseFromString(String path){
+        double x = dashboardTable.getEntry(path + "/x").getDouble(0.0);
+        double y = dashboardTable.getEntry(path + "/y").getDouble(0.0);
+        double theta = dashboardTable.getEntry(path + "/theta").getDouble(0.0);
+        return new Pose2d(x, y, new Rotation2d(theta));
+    }
+    public void SetupOperatorController(Subsystems subsystems) {
+        Climber climber = subsystems.climber;
+        Swerve swerve = subsystems.swerve;
+        Shooter shooter = subsystems.shooter;
+
+        Trigger prepClimb =
+                new Trigger(() -> dashboardTable.getEntry("climb/stage").getInteger(2) == 0);
+        Trigger pullUpClimb =
+                new Trigger(() -> dashboardTable.getEntry("climb/stage").getInteger(2) == 1);
+        Trigger stowClimbTrigger =
+                new Trigger(() -> dashboardTable.getEntry("climb/stage").getInteger(2) == 2);
+
+        prepClimb.whileTrue(ClimberCommands.goToState(climber, ClimberState.LATCH_ON));
+        pullUpClimb.whileTrue(ClimberCommands.goToState(climber, ClimberState.PULL_UP));
+        stowClimbTrigger.whileTrue(ClimberCommands.goToState(climber, ClimberState.STOW));
+
+        Trigger moveToTrigger = new Trigger(() -> dashboardTable.getEntry("robot/moveTrigger").getBoolean(false));
+        Trigger passTrigger = new Trigger(() -> dashboardTable.getEntry("robot/passTrigger").getBoolean(false));
+
+        passTrigger.whileTrue(ShooterCommands.(shooter, () -> swerve.getState().Pose, swerve::getFieldRelativeSpeeds));
+
+
+    }
 
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
         Led led = subsystems.led;
         Swerve swerve = subsystems.swerve;
         Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
-        Trigger hippoTrigger =
-                new Trigger(() -> dashboardTable.getEntry("hippo").getBoolean(false));
-        Trigger climbTrigger =
-                new Trigger(() -> dashboardTable.getEntry("climb").getBoolean(false));
+
+        SetupOperatorController(subsystems);
 
         onBump.whileTrue(new AutoRotateOnBump(swerve, driverController));
-        hippoTrigger.whileTrue(new AutoRotateOnBump(swerve, driverController));
-        climbTrigger.whileTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
 
         falseOnce()
                 .and(disabled)

@@ -17,9 +17,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -446,12 +444,14 @@ public class Robot extends LoggedRobot {
                 () -> DogLog.log("Simulation/FuelIntaked", true));
     }
 
-    public static boolean isBlue() { // bug is in sim it doesn't know alliance and returns empty optional so we default to blue. Thats why the climb command is wrong.
-    //TODO NEEDS TO BE FIXED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    //TODO fix
-    //TODO fix
-    //TODO fix
-    //TODO fix
+    public static boolean
+            isBlue() { // bug is in sim it doesn't know alliance and returns empty optional so we
+        // default to blue. Thats why the climb command is wrong.
+        // TODO NEEDS TO BE FIXED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // TODO fix
+        // TODO fix
+        // TODO fix
+        // TODO fix
         Optional<Alliance> ally = DriverStation.getAlliance();
 
         if (ally.isPresent()) {
