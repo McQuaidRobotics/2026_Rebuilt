@@ -6,11 +6,13 @@ import static edu.wpi.first.units.Units.RPM;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.SubsystemConstants;
+import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.shooter.AimSolver;
 import igknighters.subsystems.shooter.Shooter;
@@ -417,45 +419,27 @@ public class ShooterCommands {
                             Pose3d targetPose3d = new Pose3d(targetPose);
 
                             ShooterState targetingData =
-                                    AimSolver.Solvers.solve_with_project(
-                                            targetPose,
-                                            new Pose3d(
-                                                    robotPose2d.getX(),
-                                                    robotPose2d.getY(),
-                                                    SubsystemConstants.kShooter
-                                                            .kFlywheels
-                                                            .ShooterHeightMeters,
-                                                    new Rotation3d(
-                                                            0.0,
-                                                            0.0,
-                                                            robotPose2d
-                                                                    .getRotation()
-                                                                    .getRadians())),
-                                            shooter.getCurrentState().flywheelSpeed.in(RPM),
-                                            robotVelocity.get(),
-                                            0.02);
+                                    AimSolver.Solvers.solve_max_height_iterative(
+                                        new Pose3d(robotPose2d).plus(new Transform3d(0, 0, kFlywheels.ShooterHeightMeters, new Rotation3d())),
+                                        targetPose3d,
+                                        robotVelocitySupplier.get(),
+                                        shooter.getCurrentState().flywheelSpeed.in(RPM),
+                                        5,
+                                        0.02
+                                    );
 
-                            if (targetingData.flywheelSpeed.in(RPM) != 0.0) {
+                            if (targetingData.flywheelSpeed.in(RPM) > 0.1) {
                                 shooter.targetState(
-                                        RPM.of(velocity),
+                                        targetingData.flywheelSpeed,
                                         targetingData.turretAngle,
                                         targetingData.hoodAngle);
                             } else {
-                                if (shooter.getCurrentState().flywheelSpeed.in(RPM)
-                                        < (velocity - 500)) {
-                                    shooter.targetState(
-                                            RPM.of(velocity),
-                                            targetingData.turretAngle,
-                                            targetingData.hoodAngle); // keep trying to
-
-                                } else {
-                                    shooter.targetState(
-                                            shooter.getCurrentState()
-                                                    .flywheelSpeed
-                                                    .plus(RPM.of(300.0)),
-                                            targetingData.turretAngle,
-                                            targetingData.hoodAngle);
-                                } // increase RPM to reach shot
+                                // Fallback: Spin up to a safe mid-range RPM and keep turret pointed
+                                // at target
+                                shooter.targetState(
+                                        RPM.of(3000.0),
+                                        targetingData.turretAngle,
+                                        Degrees.of(kHood.MIN_ANGLE_DEGREES));
                             }
                         })
                 .withName("Aiming at auto chosen target with look ahead");

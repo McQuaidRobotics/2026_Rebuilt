@@ -1,6 +1,7 @@
 package igknighters.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.LEDPattern;
@@ -11,7 +12,6 @@ import igknighters.commands.teleop.AutoRotateOnBump;
 import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.controllers.DriverController;
-import igknighters.controllers.OperatorController;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.Climber;
 import igknighters.subsystems.climber.ClimberState;
@@ -44,9 +44,9 @@ public class SubsystemTriggers {
                 });
     }
     public Pose2d getPoseFromString(String path){
-        double x = dashboardTable.getEntry(path + "/x").getDouble(0.0);
-        double y = dashboardTable.getEntry(path + "/y").getDouble(0.0);
-        double theta = dashboardTable.getEntry(path + "/theta").getDouble(0.0);
+        double x = dashboardTable.getEntry(path + "X").getDouble(0.0);
+        double y = dashboardTable.getEntry(path + "Y").getDouble(0.0);
+        double theta = dashboardTable.getEntry(path + "Theta").getDouble(0.0);
         return new Pose2d(x, y, new Rotation2d(theta));
     }
     public void SetupOperatorController(Subsystems subsystems) {
@@ -68,7 +68,8 @@ public class SubsystemTriggers {
         Trigger moveToTrigger = new Trigger(() -> dashboardTable.getEntry("robot/moveTrigger").getBoolean(false));
         Trigger passTrigger = new Trigger(() -> dashboardTable.getEntry("robot/passTrigger").getBoolean(false));
 
-        passTrigger.whileTrue(ShooterCommands.(shooter, () -> swerve.getState().Pose, swerve::getFieldRelativeSpeeds));
+        passTrigger.whileTrue(ShooterCommands.shootAt(shooter, () -> swerve.getState().Pose, swerve::getFieldRelativeSpeeds, () -> getPoseFromString("robot/passWaypoint")));
+        moveToTrigger.whileTrue(Repulsor.moveWithRepulsor(swerve, getPoseFromString("robot/moveWaypoint"), 1));
 
 
     }
