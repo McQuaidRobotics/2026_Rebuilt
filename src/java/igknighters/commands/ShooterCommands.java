@@ -411,7 +411,11 @@ public class ShooterCommands {
                 .withName("Shoot With Max Height: " + maxHeightMeters + "m");
     }
 
-    public static Command shootAt(Shooter shooter, Supplier<Pose2d> robotPoseSupplier, Supplier<ChassisSpeeds> robotVelocitySupplier, Supplier<Pose2d> targetPoseSupplier) {
+    public static Command shootAt(
+            Shooter shooter,
+            Supplier<Pose2d> robotPoseSupplier,
+            Supplier<ChassisSpeeds> robotVelocitySupplier,
+            Supplier<Pose2d> targetPoseSupplier) {
         return shooter.run(
                         () -> {
                             Pose2d robotPose2d = robotPoseSupplier.get();
@@ -420,13 +424,18 @@ public class ShooterCommands {
 
                             ShooterState targetingData =
                                     AimSolver.Solvers.solve_max_height_iterative(
-                                        new Pose3d(robotPose2d).plus(new Transform3d(0, 0, kFlywheels.ShooterHeightMeters, new Rotation3d())),
-                                        targetPose3d,
-                                        robotVelocitySupplier.get(),
-                                        shooter.getCurrentState().flywheelSpeed.in(RPM),
-                                        5,
-                                        0.02
-                                    );
+                                            new Pose3d(robotPose2d)
+                                                    .plus(
+                                                            new Transform3d(
+                                                                    0,
+                                                                    0,
+                                                                    kFlywheels.ShooterHeightMeters,
+                                                                    new Rotation3d())),
+                                            targetPose3d,
+                                            robotVelocitySupplier.get(),
+                                            shooter.getCurrentState().flywheelSpeed.in(RPM),
+                                            5,
+                                            0.02);
 
                             if (targetingData.flywheelSpeed.in(RPM) > 0.1) {
                                 shooter.targetState(

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.teleop.AutoRotateOnBump;
 import igknighters.constants.AbleToShootSharedState;
+import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
@@ -43,12 +44,14 @@ public class SubsystemTriggers {
                     ;
                 });
     }
-    public Pose2d getPoseFromString(String path){
-        double x = dashboardTable.getEntry(path + "X").getDouble(0.0);
-        double y = dashboardTable.getEntry(path + "Y").getDouble(0.0);
+
+    public Pose2d getPoseFromString(String path) {
+        double x = dashboardTable.getEntry(path + "X").getDouble(0.0) * Conv.FEET_TO_METERS;
+        double y = dashboardTable.getEntry(path + "Y").getDouble(0.0) * Conv.FEET_TO_METERS;
         double theta = dashboardTable.getEntry(path + "Theta").getDouble(0.0);
         return new Pose2d(x, y, new Rotation2d(theta));
     }
+
     public void SetupOperatorController(Subsystems subsystems) {
         Climber climber = subsystems.climber;
         Swerve swerve = subsystems.swerve;
@@ -65,13 +68,19 @@ public class SubsystemTriggers {
         pullUpClimb.whileTrue(ClimberCommands.goToState(climber, ClimberState.PULL_UP));
         stowClimbTrigger.whileTrue(ClimberCommands.goToState(climber, ClimberState.STOW));
 
-        Trigger moveToTrigger = new Trigger(() -> dashboardTable.getEntry("robot/moveTrigger").getBoolean(false));
-        Trigger passTrigger = new Trigger(() -> dashboardTable.getEntry("robot/passTrigger").getBoolean(false));
+        Trigger moveToTrigger =
+                new Trigger(() -> dashboardTable.getEntry("robot/moveTrigger").getBoolean(false));
+        Trigger passTrigger =
+                new Trigger(() -> dashboardTable.getEntry("robot/passTrigger").getBoolean(false));
 
-        passTrigger.whileTrue(ShooterCommands.shootAt(shooter, () -> swerve.getState().Pose, swerve::getFieldRelativeSpeeds, () -> getPoseFromString("robot/passWaypoint")));
-        moveToTrigger.whileTrue(Repulsor.moveWithRepulsor(swerve, getPoseFromString("robot/moveWaypoint"), 1));
-
-
+        passTrigger.whileTrue(
+                ShooterCommands.shootAt(
+                        shooter,
+                        () -> swerve.getState().Pose,
+                        swerve::getFieldRelativeSpeeds,
+                        () -> getPoseFromString("robot/passWaypoint")));
+        moveToTrigger.whileTrue(
+                Repulsor.moveWithRepulsor(swerve, getPoseFromString("robot/moveWaypoint"), 1));
     }
 
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
