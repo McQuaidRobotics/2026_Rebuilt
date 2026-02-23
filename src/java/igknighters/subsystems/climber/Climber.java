@@ -62,6 +62,7 @@ public class Climber extends SubsystemBase {
         } else {
             servos.retract();
         }
+        chainsaw.goToState(state.chainsawState);
     }
 
     public boolean isSensorHit() {

@@ -445,20 +445,16 @@ public class Robot extends LoggedRobot {
                 () -> DogLog.log("Simulation/FuelIntaked", true));
     }
 
-    public static boolean
-            isBlue() { // bug is in sim it doesn't know alliance and returns empty optional so we
-        // default to blue. Thats why the climb command is wrong.
-        // TODO NEEDS TO BE FIXED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // TODO fix
-        // TODO fix
-        // TODO fix
-        // TODO fix
+    public static boolean isBlue() {
         Optional<Alliance> ally = DriverStation.getAlliance();
 
         if (ally.isPresent()) {
-            return (ally.get() == Alliance.Blue);
+            return ally.get() == Alliance.Blue;
         } else {
-            return true; // Default to blue if alliance is unknown
+            // Default to blue if alliance is unknown (e.g., in simulation without alliance set)
+            // Log this so we know why things might be going to the blue side.
+            DogLog.log("System/AllianceUnknown", true);
+            return true;
         }
     }
 }

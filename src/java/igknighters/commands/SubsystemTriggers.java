@@ -58,15 +58,14 @@ public class SubsystemTriggers {
         Shooter shooter = subsystems.shooter;
 
         Trigger prepClimb =
-                new Trigger(() -> dashboardTable.getEntry("climb/stage").getInteger(2) == 0);
+                new Trigger(() -> (dashboardTable.getEntry("climb/stage").getDouble(2) == 0));
         Trigger pullUpClimb =
-                new Trigger(() -> dashboardTable.getEntry("climb/stage").getInteger(2) == 1);
+                new Trigger(() -> (dashboardTable.getEntry("climb/stage").getDouble(2) == 1));
         Trigger stowClimbTrigger =
-                new Trigger(() -> dashboardTable.getEntry("climb/stage").getInteger(2) == 2);
-
-        prepClimb.whileTrue(ClimberCommands.goToState(climber, ClimberState.LATCH_ON));
-        pullUpClimb.whileTrue(ClimberCommands.goToState(climber, ClimberState.PULL_UP));
-        stowClimbTrigger.whileTrue(ClimberCommands.goToState(climber, ClimberState.STOW));
+                new Trigger(() -> (dashboardTable.getEntry("climb/stage").getDouble(2) == 2));
+        prepClimb.onTrue(ClimberCommands.goToState(climber, ClimberState.LATCH_ON));
+        pullUpClimb.onTrue(ClimberCommands.goToState(climber, ClimberState.PULL_UP));
+        stowClimbTrigger.onTrue(ClimberCommands.goToState(climber, ClimberState.STOW));
 
         Trigger moveToTrigger =
                 new Trigger(() -> dashboardTable.getEntry("robot/moveTrigger").getBoolean(false));

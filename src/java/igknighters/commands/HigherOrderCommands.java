@@ -64,21 +64,30 @@ public class HigherOrderCommands {
     }
 
     public static Command prepToClimbFirstRung(Subsystems subsystems) {
-        return Commands.sequence(
-                        Commands.print("STARTING AUTO ALIGNMENT TO CLIMB"),
-                        SwerveCommands.moveToSimple(subsystems.swerve, getClimbStartPose())
-                                .until(
-                                        SwerveCommands.isAt(
-                                                subsystems.swerve, getClimbStartPose(), 0.03, 0.1)),
-                        Commands.print("REACHED STARTING POSE FOR CLIMB LINEUP"),
-                        SwerveCommands.moveToSimpleWithVelocityControl(
-                                        subsystems.swerve,
-                                        getClimbEndPose(),
-                                        new Pose2d(.5, .5, new Rotation2d(1)))
-                                .until(subsystems.climber::isSensorHit),
-                        Commands.print("REACHED CLIMBING POSITION"),
-                        ClimberCommands.goUp(subsystems.climber),
-                        Commands.print("CLIMBER IS PREPED TO RUN"))
+        return Commands.defer(
+                        () -> {
+                            Pose2d startPose = getClimbStartPose();
+                            Pose2d endPose = getClimbEndPose();
+                            return Commands.sequence(
+                                    Commands.print("STARTING AUTO ALIGNMENT TO CLIMB"),
+                                    SwerveCommands.moveToSimple(subsystems.swerve, startPose)
+                                            .until(
+                                                    SwerveCommands.isAt(
+                                                            subsystems.swerve,
+                                                            startPose,
+                                                            0.03,
+                                                            0.1)),
+                                    Commands.print("REACHED STARTING POSE FOR CLIMB LINEUP"),
+                                    SwerveCommands.moveToSimpleWithVelocityControl(
+                                                    subsystems.swerve,
+                                                    endPose,
+                                                    new Pose2d(.5, .5, new Rotation2d(1)))
+                                            .until(subsystems.climber::isSensorHit),
+                                    Commands.print("REACHED CLIMBING POSITION"),
+                                    ClimberCommands.goUp(subsystems.climber),
+                                    Commands.print("CLIMBER IS PREPED TO RUN"));
+                        },
+                        java.util.Set.of(subsystems.swerve, subsystems.climber))
                 .withName("Moving to Climber and raising to max height");
     }
 }
