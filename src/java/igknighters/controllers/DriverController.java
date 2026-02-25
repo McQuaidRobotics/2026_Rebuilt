@@ -15,6 +15,7 @@ import igknighters.commands.Repulsor;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
+import igknighters.commands.teleop.TeleopSwerveJoystickRepulsor;
 import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
@@ -173,8 +174,7 @@ public class DriverController {
         this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
         this.A.whileTrue(
                 new TeleopSwerveHeadingCmd(swerve, this, 45.0, state.kP, state.kI, state.kD));
-        this.B.whileTrue(
-                new TeleopSwerveHeadingCmd(swerve, this, 180.0, state.kP, state.kI, state.kD));
+        this.B.whileTrue(new TeleopSwerveJoystickRepulsor(swerve, this));
         this.Y.whileTrue(
                 Repulsor.moveWithRepulsor(
                         swerve,
