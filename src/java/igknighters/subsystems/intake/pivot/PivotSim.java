@@ -1,10 +1,14 @@
 package igknighters.subsystems.intake.pivot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
+
 import dev.doglog.DogLog;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
@@ -42,18 +46,18 @@ public class PivotSim extends Pivot {
     }
 
     @Override
-    public void setAngleDegrees(double angleDegrees) {
-        super.degrees = angleDegrees;
-        pivotSim.setState(angleDegrees * Conv.DEGREES_TO_RADIANS, 0.0);
-        controller.reset(angleDegrees * Conv.DEGREES_TO_RADIANS);
+    public void setAngleDegrees(Angle angle) {
+        super.degrees = angle.in(Degrees);
+        pivotSim.setState(angle.in(Radians), 0.0);
+        controller.reset(angle.in(Radians));
     }
 
     private boolean isControlledThisCycle = false;
 
     @Override
-    public void goToAngleDegrees(double angleDegrees) {
-        super.targetDegrees = angleDegrees;
-        controller.setGoal(angleDegrees * Conv.DEGREES_TO_RADIANS);
+    public void goToAngleDegrees(Angle angle) {
+        super.targetDegrees = angle.in(Degrees);
+        controller.setGoal(angle.in(Radians));
         isControlledThisCycle = true;
     }
 

@@ -1,16 +1,25 @@
 package igknighters.subsystems.intake.pivot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotation;
+
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import dev.doglog.DogLog;
+import edu.wpi.first.units.measure.Angle;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIntake;
 
 public class PivotReal extends Pivot {
     private TalonFX pivotMotor;
+    private CANcoder pivotEncoder;
     private MotionMagicVoltage motionMagicControl;
     private BaseStatusSignal rps, angleRotations;
     private double targetDegrees = 0.0;
@@ -20,10 +29,22 @@ public class PivotReal extends Pivot {
         pivotMotor = new TalonFX(SubsystemConstants.kIntake.kPivot.MOTOR_ID, kIntake.CANBUS);
         pivotMotor.getConfigurator().apply(getPivotConfig());
 
+        pivotEncoder = new CANcoder(SubsystemConstants.kIntake.kPivot.CANCODER_ID, kIntake.CANBUS);
+        pivotEncoder.getConfigurator().apply(getPivotEncoderConfig());
+
         motionMagicControl = new MotionMagicVoltage(0.0).withSlot(0);
 
         rps = pivotMotor.getVelocity();
         angleRotations = pivotMotor.getPosition();
+    }
+
+    public CANcoderConfiguration getPivotEncoderConfig() {
+        CANcoderConfiguration config = new CANcoderConfiguration();
+        config.MagnetSensor.MagnetOffset = SubsystemConstants.kIntake.kPivot.ENCODER_OFFSET;
+        config.MagnetSensor.SensorDirection =
+                SensorDirectionValue.Clockwise_Positive; // made up need tune
+
+        return config;
     }
 
     public TalonFXConfiguration getPivotConfig() {
@@ -36,6 +57,8 @@ public class PivotReal extends Pivot {
         config.Slot0.kV = SubsystemConstants.kIntake.kPivot.kV;
         config.Slot0.kA = SubsystemConstants.kIntake.kPivot.kA;
 
+        config.Feedback.FeedbackRemoteSensorID = SubsystemConstants.kIntake.kPivot.CANCODER_ID;
+        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         config.CurrentLimits.StatorCurrentLimit =
                 SubsystemConstants.kIntake.kPivot.STATOR_CURRENT_LIMIT;
         config.CurrentLimits.SupplyCurrentLimit =
@@ -46,7 +69,8 @@ public class PivotReal extends Pivot {
         config.MotionMagic.MotionMagicAcceleration =
                 SubsystemConstants.kIntake.kPivot.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED;
         config.MotionMagic.MotionMagicJerk = SubsystemConstants.kIntake.kPivot.MAX_JERK;
-        config.Feedback.RotorToSensorRatio = SubsystemConstants.kIntake.kPivot.GEAR_RATIO;
+        config.Feedback.RotorToSensorRatio = 1.0;
+        config.Feedback.SensorToMechanismRatio = 1.0;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
@@ -59,17 +83,16 @@ public class PivotReal extends Pivot {
     }
 
     @Override
-    public void setAngleDegrees(double angleDegrees) {
-        pivotMotor.setPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS);
+    public void setAngleDegrees(Angle angle) {
+        pivotMotor.setPosition(angle.in(Rotation));
     }
 
     @Override
-    public void goToAngleDegrees(double angleDegrees) {
-        targetDegrees = angleDegrees;
+    public void goToAngleDegrees(Angle angle) {
+        targetDegrees = angle.in(Degrees);
         beingCommanded = true;
         DogLog.log("Subsystems/Intake/Pivot/Stopped", false);
-        pivotMotor.setControl(
-                motionMagicControl.withPosition(angleDegrees * Conv.DEGREES_TO_ROTATIONS));
+        pivotMotor.setControl(motionMagicControl.withPosition(angle.in(Rotation)));
     }
 
     @Override

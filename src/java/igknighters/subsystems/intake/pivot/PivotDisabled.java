@@ -1,11 +1,13 @@
 package igknighters.subsystems.intake.pivot;
 
+import edu.wpi.first.units.measure.Angle;
+
 public class PivotDisabled extends Pivot {
     @Override
-    public void goToAngleDegrees(double angleDegrees) {}
+    public void goToAngleDegrees(Angle angle) {}
 
     @Override
-    public void setAngleDegrees(double angleDegrees) {}
+    public void setAngleDegrees(Angle angle) {}
 
     @Override
     public double getAngleDegrees() {

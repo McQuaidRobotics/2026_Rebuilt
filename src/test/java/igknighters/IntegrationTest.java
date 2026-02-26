@@ -103,7 +103,7 @@ public class IntegrationTest {
         // --- 2. Test Intake movement ---
 
         // put intake in stowed position first
-        subsystems.intake.setPivotDegrees(IntakeState.Stowed.pivotDegrees);
+        subsystems.intake.setPivotDegrees(IntakeState.Stowed.pivotDegrees.in(Degrees));
 
         System.out.println("Starting Intake Test...");
 
@@ -129,8 +129,8 @@ public class IntegrationTest {
                 !subsystems.intake.isAt(
                         IntakeState.Stowed.pivotDegrees,
                         IntakeState.Stowed.rollerSpeedRPM,
-                        10.0,
-                        100.0);
+                        Degrees.of(10.0),
+                        RPM.of(100.0));
         System.out.println("Intake Moved from Stowed: " + intakeMoved);
         assertTrue(intakeMoved, "Intake should have moved away from stowed position");
 

@@ -1,5 +1,10 @@
 package igknighters.subsystems.intake;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.subsystems.intake.pivot.Pivot;
@@ -25,9 +30,9 @@ public class Intake extends SubsystemBase {
         visualizer = new IntakeVisualizer();
     }
 
-    public void goTo(double angleDegrees, double speedRPM) {
-        pivot.goToAngleDegrees(angleDegrees);
-        rollers.goToSpeedRPM(speedRPM);
+    public void goTo(Angle angle, AngularVelocity speedRPM) {
+        pivot.goToAngleDegrees(angle);
+        rollers.goToSpeed(speedRPM);
     }
 
     public void goTo(IntakeState state) {
@@ -43,7 +48,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void setPivotDegrees(double degrees) {
-        pivot.setAngleDegrees(degrees);
+        pivot.setAngleDegrees(Degrees.of(degrees));
     }
 
     public void stop() {
@@ -52,9 +57,13 @@ public class Intake extends SubsystemBase {
     }
 
     public boolean isAt(
-            double angleDegrees, double speedRPM, double angleTolerance, double speedTolerance) {
-        return Math.abs(pivot.getAngleDegrees() - angleDegrees) < angleTolerance
-                && Math.abs(rollers.getSpeedRPM() - speedRPM) < speedTolerance;
+            Angle angleDegrees,
+            AngularVelocity speedRPM,
+            Angle angleTolerance,
+            AngularVelocity speedTolerance) {
+        return Math.abs(pivot.getAngleDegrees() - angleDegrees.in(Degrees))
+                        < angleTolerance.in(Degrees)
+                && Math.abs(rollers.getSpeedRPM() - speedRPM.in(RPM)) < speedTolerance.in(RPM);
     }
 
     @Override
