@@ -140,7 +140,6 @@ public class SubsystemConstants {
             public static final double JKG_M2 = 0.01;
             public static final double LENGTH_METERS =
                     .25; // distance from central shaft to edge of wrist
-            public static final int REVERSE_LIMIT_SWITCH_ID = 6;
         }
     }
 
