@@ -226,6 +226,8 @@ public class Robot extends LoggedRobot {
         setUpTest(subsytems);
         bindDriverController();
 
+        System.out.println();
+
         subsystemTriggers.SetupTriggers(subsytems, driverController);
     }
 

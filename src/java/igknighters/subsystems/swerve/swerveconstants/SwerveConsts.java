@@ -8,19 +8,19 @@ public class SwerveConsts {
 
     public enum Robots {
         DEMO_BOT,
-        COMPETITION_BOT,
+        GEMINKNIGHT,
         UNKNOWN
     };
 
     private String DEMO_BOT_SERIAL_NUMBER = "TBD";
-    private String COMPETION_BOT_SERIAL_NUMBER = "IT DOESNT EXIST YET";
+    private String GEMINKNIGHT_SERIAL_NUMBER = "IT DOESNT EXIST YET";
 
     public Robots getRobot() {
         robotSerialNumber = RobotController.getSerialNumber();
         if (robotSerialNumber == DEMO_BOT_SERIAL_NUMBER) {
             return Robots.DEMO_BOT;
-        } else if (robotSerialNumber == COMPETION_BOT_SERIAL_NUMBER) {
-            return Robots.COMPETITION_BOT;
+        } else if (robotSerialNumber == GEMINKNIGHT_SERIAL_NUMBER) {
+            return Robots.GEMINKNIGHT;
         } else {
             return Robots.UNKNOWN;
         }
@@ -30,8 +30,8 @@ public class SwerveConsts {
         Robots robot = getRobot();
         if (robot.equals(Robots.DEMO_BOT)) {
             return new DemoBotConsts();
-        } else if (robot.equals(Robots.COMPETITION_BOT)) {
-            return new knightshadeConsts();
+        } else if (robot.equals(Robots.GEMINKNIGHT)) {
+            return new GemiknightConsts();
         } else {
             return new DemoBotConsts();
         }
