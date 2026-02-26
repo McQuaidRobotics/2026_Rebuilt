@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import igknighters.FieldVisualizer;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
+import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import org.littletonrobotics.junction.Logger;
 
@@ -40,6 +41,110 @@ public class AimSolver {
             } else {
                 canSHOOTMECH.setBackgroundColor(new Color8Bit(Color.kRed));
             }
+        }
+
+        public static ShooterState solve_max_height_iterative(
+                Pose3d shooterPose,
+                Pose3d targetPose,
+                ChassisSpeeds speeds,
+                double currentRPM,
+                double maxHeightMeters,
+                double periodTime) {
+            // 1. Position and Target setup
+            double sx = shooterPose.getX() + speeds.vxMetersPerSecond * periodTime;
+            double sy = shooterPose.getY() + speeds.vyMetersPerSecond * periodTime;
+            double sz = shooterPose.getZ();
+
+            double initialDist =
+                    shooterPose.getTranslation().getDistance(targetPose.getTranslation());
+            double estimatedToF = initialDist / 5.0; // Assume 5m/s avg horizontal velocity
+
+            // 3. TARGET PROJECTION: Scale the target lead by (ToF + Latency)
+            // We subtract the robot's velocity because from the ball's perspective,
+            // the target is moving toward/away at the robot's speed.
+            Translation2d airResistanceAdder =
+                    addDToTargetWithAirResistance(targetPose, shooterPose);
+            double tx =
+                    targetPose.getX()
+                            + airResistanceAdder.getX()
+                            - (speeds.vxMetersPerSecond * (estimatedToF + periodTime));
+            double ty =
+                    targetPose.getY()
+                            + airResistanceAdder.getY()
+                            - (speeds.vyMetersPerSecond * (estimatedToF + periodTime));
+            double tz = targetPose.getZ();
+
+            double dx = tx - sx;
+            double dy = ty - sy;
+            double floorDistance = Math.hypot(dx, dy); // Total horizontal distance
+
+            double bestRPM = 0.0;
+            double bestThetaHoodDegrees = SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES;
+            double bestV = 0.0;
+            double minRPMDiff = Double.MAX_VALUE;
+
+            // 2. Iterative Arc Search
+            for (int i = 0; i < 10; i++) {
+                // Search heights between target + 1m and max ceiling
+                double currentCeilingHeight =
+                        tz + 2.0 + (i * (maxHeightMeters - (tz + 2.0)) / 10.0);
+
+                double hRise = currentCeilingHeight - sz;
+                double hFall = currentCeilingHeight - tz;
+
+                if (hRise < 0 || hFall < 0) continue;
+
+                double tRise = Math.sqrt(2.0 * hRise / 9.81);
+                double tFall = Math.sqrt(2.0 * hFall / 9.81);
+                double totalTime = tRise + tFall;
+
+                double vx_planar = floorDistance / totalTime;
+                double vz_initial = 9.81 * tRise; // Velocity needed to reach peak
+                double v_total = Math.hypot(vx_planar, vz_initial);
+
+                // Single-sided flywheel: Wheel surface speed = 2x Ball speed
+                double RPM = (v_total / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS)) * 60 * 2.0;
+
+                double launchAngleDegrees = Math.toDegrees(Math.atan2(vz_initial, vx_planar));
+                double hoodAngleDegrees = 90.0 - launchAngleDegrees;
+
+                if (hoodAngleDegrees < kHood.MIN_ANGLE_DEGREES
+                        || hoodAngleDegrees > kHood.MAX_ANGLE_DEGREES) continue;
+
+                // Choose the shot closest to our current flywheel speed for faster spin-up
+                double dRPM = Math.abs(currentRPM - RPM);
+                if (dRPM < minRPMDiff) {
+                    minRPMDiff = dRPM;
+                    bestRPM = RPM;
+                    bestThetaHoodDegrees = hoodAngleDegrees;
+                    bestV = v_total;
+                }
+            }
+
+            // 3. Final Angles
+            double absoluteFieldAngle = Math.atan2(dy, dx);
+            double robotYawFuture =
+                    shooterPose.getRotation().getZ() + speeds.omegaRadiansPerSecond * periodTime;
+            double turretAngle =
+                    Math.atan2(
+                            Math.sin(absoluteFieldAngle - robotYawFuture),
+                            Math.cos(absoluteFieldAngle - robotYawFuture));
+
+            if (bestRPM != 0) {
+                canShoot(true);
+                // We pass absoluteFieldAngle so the trajectory line points at the target
+                publishShotTrajectory(
+                        bestV,
+                        Math.toRadians(90 - bestThetaHoodDegrees),
+                        absoluteFieldAngle,
+                        shooterPose,
+                        targetPose);
+            } else {
+                canShoot(false);
+            }
+
+            return new ShooterState(
+                    RPM.of(bestRPM), Radians.of(turretAngle), Degrees.of(bestThetaHoodDegrees));
         }
 
         private static final double FLYWHEEL_RADIUS =
@@ -612,42 +717,41 @@ public class AimSolver {
         return time;
     }
 
+    public static void clearShotTrajectory() {
+        Logger.recordOutput("Shooter/ShotTrajectory", new Translation2d[] {});
+    }
+
     public static void publishShotTrajectory(
             double ballLaunchVelocity,
-            double launchAngleRads,
-            double turretAngleRads,
+            double launchAngleRads, // Angle relative to the floor
+            double fieldShotAngle, // Absolute angle toward the target
             Pose3d shooterPose3d,
             Pose3d targetPose3d) {
+
         double sx = shooterPose3d.getX();
         double sy = shooterPose3d.getY();
         double sz = shooterPose3d.getZ();
 
-        // The turret angle is relative to the robot's yaw.
-        // We need the absolute field angle for the trajectory visualization.
-        double fieldShotAngle = shooterPose3d.getRotation().getZ() + turretAngleRads;
+        // vZ is vertical, vH is horizontal across the floor
+        double vZ = ballLaunchVelocity * Math.sin(launchAngleRads);
+        double vH = ballLaunchVelocity * Math.cos(launchAngleRads);
+
+        // Break horizontal velocity into field X and Y
+        double vx = vH * Math.cos(fieldShotAngle);
+        double vy = vH * Math.sin(fieldShotAngle);
 
         double time = getShotTime(ballLaunchVelocity, launchAngleRads, sz, targetPose3d.getZ());
-        if (Double.isInfinite(time) || time <= 0) time = 1.5; // Fallback for visualization
+        if (Double.isInfinite(time) || time <= 0) time = 1.5;
 
-        int nPoints = 20;
+        int nPoints = 25;
         Pose3d[] trajectoryPoints = new Pose3d[nPoints];
 
         for (int i = 0; i < nPoints; i++) {
             double t = (time / (nPoints - 1)) * i;
-            double x =
-                    sx
-                            + ballLaunchVelocity
-                                    * Math.cos(launchAngleRads)
-                                    * Math.cos(fieldShotAngle)
-                                    * t;
-            double y =
-                    sy
-                            + ballLaunchVelocity
-                                    * Math.cos(launchAngleRads)
-                                    * Math.sin(fieldShotAngle)
-                                    * t;
-            double z =
-                    sz + ballLaunchVelocity * Math.sin(launchAngleRads) * t - (0.5 * 9.81 * t * t);
+
+            double x = sx + vx * t;
+            double y = sy + vy * t;
+            double z = sz + (vZ * t) - (0.5 * 9.81 * t * t);
 
             trajectoryPoints[i] = new Pose3d(x, y, Math.max(0, z), new Rotation3d());
         }
