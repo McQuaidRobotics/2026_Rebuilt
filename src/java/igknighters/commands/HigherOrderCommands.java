@@ -11,7 +11,7 @@ import igknighters.subsystems.Subsystems;
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
         return Commands.parallel(
-                        ShooterCommands.shootIChoseTargetWithLookAhead(
+                        ShooterCommands.shoot(
                                         subsystems.shooter,
                                         () -> subsystems.swerve.getState().Pose,
                                         subsystems.swerve::getFieldRelativeSpeeds)
@@ -23,15 +23,17 @@ public class HigherOrderCommands {
 
     public static Command shootNoStop(Subsystems subsystems) {
         return Commands.parallel(
-                ShooterCommands.shootIChoseTargetWithLookAhead(
-                                subsystems.shooter,
-                                () -> subsystems.swerve.getState().Pose,
-                                subsystems.swerve::getFieldRelativeSpeeds)
-                        .repeatedly()
-                        .withName("SHOOTING WHILE DOING OTHER STUFF"),
-                IndexerCommands.dispense(subsystems.indexer)
-                        .withName("ALLOWED TO SHOOT THEIRFORE DISPENSING TS")
-                        .onlyIf(() -> subsystems.shooter.atTarget(500, 5, 5)));
+                        ShooterCommands.shoot(
+                                        subsystems.shooter,
+                                        () -> subsystems.swerve.getState().Pose,
+                                        subsystems.swerve::getFieldRelativeSpeeds)
+                                .repeatedly()
+                                .withName("SHOOTING WHILE DOING OTHER STUFF"),
+                        IndexerCommands.dispense(subsystems.indexer)
+                                .onlyIf(() -> subsystems.shooter.atTarget(500, 5, 5)))
+                .withName("DISPENSING")
+                .alongWith(Commands.print("DISPENSING"))
+                .withName("SHOOT NO STOP");
     }
 
     public static Pose2d getClimbStartPose() {

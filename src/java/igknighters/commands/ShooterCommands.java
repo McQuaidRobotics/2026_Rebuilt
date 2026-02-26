@@ -316,6 +316,13 @@ public class ShooterCommands {
                 .withName("Aiming at auto chosen target with look ahead");
     }
 
+    public static Command shoot(
+            Shooter shooter,
+            Supplier<Pose2d> robotPoseSupplier,
+            Supplier<ChassisSpeeds> robotVelocitySupplier) {
+        return shootWithMaxHeightIterative(shooter, robotPoseSupplier, robotVelocitySupplier, 4);
+    }
+
     public static Command shootWithMaxHeightIterative(
             Shooter shooter,
             Supplier<Pose2d> robotPose,
