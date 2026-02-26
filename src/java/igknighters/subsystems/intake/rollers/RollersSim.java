@@ -1,5 +1,7 @@
 package igknighters.subsystems.intake.rollers;
 
+import static edu.wpi.first.units.Units.RPM;
+
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -7,6 +9,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import igknighters.constants.SubsystemConstants.kIntake;
 
@@ -47,9 +50,9 @@ public class RollersSim extends Rollers {
     }
 
     @Override
-    public void goToSpeedRPM(double speedRPM) {
-        DogLog.log("Subsystems/Intake/Rollers/Target Speed RPM", speedRPM);
-        profiledPIDController.setGoal(speedRPM);
+    public void goToSpeed(AngularVelocity speed) {
+        DogLog.log("Subsystems/Intake/Rollers/Target Speed RPM", speed.in(RPM));
+        profiledPIDController.setGoal(speed.in(RPM));
         isPidControlledThisCycle = true;
     }
 

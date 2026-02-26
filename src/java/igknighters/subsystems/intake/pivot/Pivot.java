@@ -1,5 +1,7 @@
 package igknighters.subsystems.intake.pivot;
 
+import edu.wpi.first.units.measure.Angle;
+
 public abstract class Pivot {
 
     protected double degrees;
@@ -7,11 +9,11 @@ public abstract class Pivot {
 
     public abstract void periodic();
 
-    public abstract void setAngleDegrees(double angleDegrees);
+    public abstract void setAngleDegrees(Angle angle);
 
     public abstract double getAngleDegrees();
 
-    public abstract void goToAngleDegrees(double angleDegrees);
+    public abstract void goToAngleDegrees(Angle angle);
 
     public abstract void stop();
 }
