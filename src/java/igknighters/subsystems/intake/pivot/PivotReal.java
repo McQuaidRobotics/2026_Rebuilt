@@ -11,7 +11,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
 import dev.doglog.DogLog;
 import edu.wpi.first.units.measure.Angle;
 import igknighters.constants.Conv;
@@ -42,7 +41,8 @@ public class PivotReal extends Pivot {
     public CANcoderConfiguration getPivotEncoderConfig() {
         CANcoderConfiguration config = new CANcoderConfiguration();
         config.MagnetSensor.MagnetOffset = SubsystemConstants.kIntake.kPivot.ENCODER_OFFSET;
-        config.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive; // made up need tune
+        config.MagnetSensor.SensorDirection =
+                SensorDirectionValue.Clockwise_Positive; // made up need tune
 
         return config;
     }
@@ -92,8 +92,7 @@ public class PivotReal extends Pivot {
         targetDegrees = angle.in(Degrees);
         beingCommanded = true;
         DogLog.log("Subsystems/Intake/Pivot/Stopped", false);
-        pivotMotor.setControl(
-                motionMagicControl.withPosition(angle.in(Rotation)));
+        pivotMotor.setControl(motionMagicControl.withPosition(angle.in(Rotation)));
     }
 
     @Override

@@ -57,8 +57,12 @@ public class Intake extends SubsystemBase {
     }
 
     public boolean isAt(
-            Angle angleDegrees, AngularVelocity speedRPM, Angle angleTolerance, AngularVelocity speedTolerance) {
-        return Math.abs(pivot.getAngleDegrees() - angleDegrees.in(Degrees)) < angleTolerance.in(Degrees)
+            Angle angleDegrees,
+            AngularVelocity speedRPM,
+            Angle angleTolerance,
+            AngularVelocity speedTolerance) {
+        return Math.abs(pivot.getAngleDegrees() - angleDegrees.in(Degrees))
+                        < angleTolerance.in(Degrees)
                 && Math.abs(rollers.getSpeedRPM() - speedRPM.in(RPM)) < speedTolerance.in(RPM);
     }
 
