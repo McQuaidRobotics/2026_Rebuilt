@@ -11,7 +11,6 @@ public class IndexerCommands {
 
     public static Command dispense(Indexer indexer) {
         return indexer.run(() -> indexer.goToState(IndexerState.DISPENSE_BALL))
-                .alongWith(Commands.print("IM DISPENSING UHHHHHH"))
                 .withName("DISPENSE");
     }
 

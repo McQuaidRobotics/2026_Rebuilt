@@ -45,8 +45,8 @@ public class FieldConstants {
     public static class PASS {
         public static final Pose3d POSITION_RIGHT_BLUE =
                 new Pose3d(
-                        0.0 * Conv.INCHES_TO_METERS,
-                        0.0 * Conv.INCHES_TO_METERS,
+                        36 * Conv.INCHES_TO_METERS,
+                        36 * Conv.INCHES_TO_METERS,
                         0.0 * Conv.INCHES_TO_METERS,
                         new Rotation3d());
 
@@ -54,10 +54,18 @@ public class FieldConstants {
                 new Pose3d(0.0, FieldConstants.WIDTH, 0.0, new Rotation3d());
 
         public static final Pose3d POSITION_RIGHT_RED =
-                new Pose3d(FieldConstants.LENGTH - 0.0, 0.0, 0.0, new Rotation3d());
+                new Pose3d(
+                        FieldConstants.LENGTH - 36 * Conv.INCHES_TO_METERS,
+                        36 * Conv.INCHES_TO_METERS,
+                        0.0,
+                        new Rotation3d());
 
         public static final Pose3d POSITION_LEFT_RED =
-                new Pose3d(FieldConstants.LENGTH, FieldConstants.WIDTH, 0.0, new Rotation3d());
+                new Pose3d(
+                        FieldConstants.LENGTH - 36 * Conv.INCHES_TO_METERS,
+                        FieldConstants.WIDTH - 36 * Conv.INCHES_TO_METERS,
+                        0.0,
+                        new Rotation3d());
     }
 
     public static class OBSTACLES {
