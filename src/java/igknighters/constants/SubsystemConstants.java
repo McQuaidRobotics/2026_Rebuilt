@@ -55,8 +55,7 @@ public class SubsystemConstants {
         public static final String CANBUS = "rio";
 
         public static class kSpindexer {
-            public static final int LEADER_MOTOR_ID = 18;
-            public static final int FOLLOWER_MOTOR_ID = 19;
+            public static final int LEADER_MOTOR_ID = 16;
             public static final double WHEEL_RADIUS_METERS = 0.0508; // 2 inch radius
             public static final double GEAR_RATIO = 5.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
@@ -78,7 +77,7 @@ public class SubsystemConstants {
         }
 
         public static class kExitRollers {
-            public static final int LEADER_MOTOR_ID = 50;
+            public static final int LEADER_MOTOR_ID = 17;
             public static final double GEAR_RATIO = 5.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
             public static final double MAX_SPEED_RPM = 5000.0;
@@ -101,8 +100,7 @@ public class SubsystemConstants {
 
         public static class kRollers {
             // will be configured such that + voltage will intake game pieces
-            public static final int LEADER_MOTOR_ID = 20;
-            public static final int FOLLOWER_MOTOR_ID = 21;
+            public static final int LEADER_MOTOR_ID = 18;
             public static final double WHEEL_RADIUS_METERS = 0.0508; // 2 inch radius
             public static final double GEAR_RATIO = 1.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
@@ -123,8 +121,8 @@ public class SubsystemConstants {
         }
 
         public static class kPivot {
-            public static final int MOTOR_ID = 22;
-            public static final int CANCODER_ID = 23;
+            public static final int MOTOR_ID = 20;
+            public static final int CANCODER_ID = 21;
             public static final double GEAR_RATIO = 15.0;
             public static final double MAX_ANGLE_DEGREES = 90.0;
             public static final double MIN_ANGLE_DEGREES = 0.0;
@@ -150,8 +148,8 @@ public class SubsystemConstants {
         public static final String CANBUS = "rio";
 
         public static class kFlywheels {
-            public static final int LEADER_MOTOR_ID = 24;
-            public static final int FOLLOWER_MOTOR_ID = 25;
+            public static final int LEADER_MOTOR_ID = 22;
+            public static final int FOLLOWER_MOTOR_ID = 23;
             public static final double WHEEL_RADIUS_METERS = 0.0508; // 2 inch radius
             public static final double GEAR_RATIO = 1.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
@@ -172,8 +170,8 @@ public class SubsystemConstants {
         }
 
         public static class kTurret {
-            public static final int MOTOR_ID = 26;
-            public static final int CANCODER_ID = 27;
+            public static final int MOTOR_ID = 24;
+            public static final int CANCODER_ID = 25;
             public static final double CANCODER_OFFSET_ROTATIONS = -0.306641;
             public static final double GEAR_RATIO = 16.2;
             public static final double MAX_ANGLE_DEGREES = 270.0;
@@ -192,7 +190,7 @@ public class SubsystemConstants {
         }
 
         public static class kHood {
-            public static final int MOTOR_ID = 28;
+            public static final int MOTOR_ID = 26;
             public static final double MOTOR_ROTS_TO_HOOD_DEGREES = 15.0;
             public static final double MAX_ANGLE_DEGREES = 52.855225;
             public static final double MIN_ANGLE_DEGREES = 18.6;
