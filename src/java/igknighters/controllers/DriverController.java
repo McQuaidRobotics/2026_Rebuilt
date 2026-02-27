@@ -132,21 +132,25 @@ public class DriverController {
                             (state.kD)));
         } else if (debugType == DebugType.SHOOTER) {
             this.A.whileTrue(
-                    ShooterCommands.targetState(shooter, 5800, 90, kHood.MIN_ANGLE_DEGREES));
-            this.B.whileTrue(ShooterCommands.targetState(shooter, 5800, 180, 30));
-            this.X.whileTrue(ShooterCommands.targetState(shooter, 5800, 270, 35));
-            this.Y.whileTrue(ShooterCommands.targetState(shooter, 5800, 360, 40));
-            this.RT.whileTrue(
-                    ShooterCommands.shootWithMaxHeightIterative(
-                            subsystems.shooter,
-                            () -> swerve.getState().Pose,
-                            swerve::getFieldRelativeSpeeds,
-                            5.0));
-            this.LT.whileTrue(IndexerCommands.dispense(indexer));
+                    ShooterCommands.targetState(shooter, 5000, 90, kHood.MIN_ANGLE_DEGREES));
+            this.B.whileTrue(ShooterCommands.targetState(shooter, 5000, 180, 30));
+            this.X.whileTrue(ShooterCommands.targetState(shooter, 5000, 270, 35));
+            this.Y.whileTrue(ShooterCommands.targetState(shooter, 5000, 360, 40));
+            this.RT.whileTrue(IndexerCommands.dispense(indexer));
+            this.LT.whileTrue(IndexerCommands.stopDispensing(indexer));
+            // this.RT.whileTrue(
+            //         ShooterCommands.shootWithMaxHeightIterative(
+            //                 subsystems.shooter,
+            //                 () -> swerve.getState().Pose,
+            //                 swerve::getFieldRelativeSpeeds,
+            //                 5.0));
+            // this.LT.whileTrue(IndexerCommands.dispense(indexer));
 
-            this.DPD.whileTrue(ShooterCommands.targetState(shooter, 0, 0, kHood.MAX_ANGLE_DEGREES));
-            this.DPR.whileTrue(ShooterCommands.targetNetworkTablesValues(shooter));
-            this.DPU.whileTrue(ShooterCommands.targetState(shooter, 0, 0, kHood.MIN_ANGLE_DEGREES));
+            // this.DPD.whileTrue(ShooterCommands.targetState(shooter, 0, 0,
+            // kHood.MAX_ANGLE_DEGREES));
+            // this.DPR.whileTrue(ShooterCommands.targetNetworkTablesValues(shooter));
+            // this.DPU.whileTrue(ShooterCommands.targetState(shooter, 0, 0,
+            // kHood.MIN_ANGLE_DEGREES));
 
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));

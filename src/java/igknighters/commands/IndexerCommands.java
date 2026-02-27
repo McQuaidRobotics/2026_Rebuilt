@@ -11,13 +11,15 @@ public class IndexerCommands {
 
     public static Command dispense(Indexer indexer) {
         return indexer.run(() -> indexer.goToState(IndexerState.DISPENSE_BALL))
-                .alongWith(Commands.print("IM DISPENSING UHHHHHH"));
+                .alongWith(Commands.print("IM DISPENSING UHHHHHH"))
+                .withName("DISPENSE");
     }
 
     public static Command stopDispensing(Indexer indexer) {
         return indexer.run(() -> indexer.goToState(IndexerState.PREP_TO_STOP))
                 .withTimeout(3)
-                .andThen(indexer.run(() -> indexer.goToState(IndexerState.STOP)));
+                .andThen(indexer.run(() -> indexer.goToState(IndexerState.STOP)))
+                .withName("STOPPING");
     }
 
     public static BooleanSupplier isBallPresent() {

@@ -57,7 +57,7 @@ public class SubsystemConstants {
         public static class kSpindexer {
             public static final int LEADER_MOTOR_ID = 16;
             public static final double WHEEL_RADIUS_METERS = 0.0508; // 2 inch radius
-            public static final double GEAR_RATIO = 5.0;
+            public static final double GEAR_RATIO = 4.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
             public static final double MAX_SPEED_RPM = 5000.0;
             public static final double MAX_ACCELERATION_RPM = 70.0;
@@ -148,8 +148,8 @@ public class SubsystemConstants {
         public static final String CANBUS = "SuperStructureBus";
 
         public static class kFlywheels {
-            public static final int LEADER_MOTOR_ID = 22;
-            public static final int FOLLOWER_MOTOR_ID = 23;
+            public static final int LEADER_MOTOR_ID = 23;
+            public static final int FOLLOWER_MOTOR_ID = 22;
             public static final double WHEEL_RADIUS_METERS = 0.0508; // 2 inch radius
             public static final double GEAR_RATIO = 1.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
@@ -176,8 +176,8 @@ public class SubsystemConstants {
             public static final double GEAR_RATIO = 16.2;
             public static final double MAX_ANGLE_DEGREES = 270.0;
             public static final double MIN_ANGLE_DEGREES = -90.0;
-            public static final double MAX_SPEED_RPM = 300.0;
-            public static final double MAX_ACCELERATION_RPM = 450.0;
+            public static final double MAX_SPEED_RPM = 200.0;
+            public static final double MAX_ACCELERATION_RPM = 300.0;
             public static final double MAX_JERK = 10;
             public static final int STATOR_CURRENT_LIMIT = 40;
             public static final int SUPPLY_CURRENT_LIMIT = 30;
@@ -208,7 +208,7 @@ public class SubsystemConstants {
             public static final double JKG_M2 = 0.01;
             public static final double LENGTH_METERS =
                     .25; // distance from central shaft to edge of flap
-            public static final int REVERSE_LIMIT_SWITCH_ID = 7;
+            public static final int REVERSE_LIMIT_SWITCH_ID = 9;
         }
     }
 

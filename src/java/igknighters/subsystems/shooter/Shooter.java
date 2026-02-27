@@ -9,11 +9,9 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.constants.AbleToShootSharedState;
-import igknighters.subsystems.shooter.flywheel.Flywheel;
-import igknighters.subsystems.shooter.flywheel.FlywheelDisabled;
-import igknighters.subsystems.shooter.flywheel.FlywheelSimulator;
+import igknighters.subsystems.shooter.flywheel.*;
+import igknighters.subsystems.shooter.hood.*;
 import igknighters.subsystems.shooter.hood.Hood;
-import igknighters.subsystems.shooter.hood.HoodDisabled;
 import igknighters.subsystems.shooter.hood.HoodSim;
 import igknighters.subsystems.shooter.turret.Turret;
 import igknighters.subsystems.shooter.turret.TurretReal;
@@ -43,9 +41,9 @@ public class Shooter extends SubsystemBase {
 
     public Shooter() {
         if (Robot.isReal()) {
-            rollers = new FlywheelDisabled();
+            rollers = new FlywheelReal();
             turret = new TurretReal();
-            hood = new HoodDisabled();
+            hood = new HoodReal();
         } else {
             rollers = new FlywheelSimulator();
             turret = new TurretSim();
