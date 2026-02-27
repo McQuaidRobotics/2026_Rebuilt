@@ -33,7 +33,7 @@ public class TurretReal extends Turret {
 
     private final BaseStatusSignal turretAngle = motor.getPosition();
     private final BaseStatusSignal turretCurrent = motor.getStatorCurrent();
-    private final BaseStatusSignal canCoderAngle = turretCaNcoder.getAbsolutePosition();
+    private final BaseStatusSignal canCoderAngle = turretCaNcoder.getPosition();
 
     private final TalonFXConfiguration turretConfiguration() {
         var cfg = new TalonFXConfiguration();
@@ -78,7 +78,7 @@ public class TurretReal extends Turret {
 
         cfg.MagnetSensor.MagnetOffset =
                 SubsystemConstants.kShooter.kTurret.CANCODER_OFFSET_ROTATIONS;
-        cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
+        cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.75;
         cfg.MagnetSensor.SensorDirection =
                 SensorDirectionValue.Clockwise_Positive; // Adjust as needed
 
