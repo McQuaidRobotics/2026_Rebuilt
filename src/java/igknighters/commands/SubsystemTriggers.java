@@ -50,7 +50,7 @@ public class SubsystemTriggers {
                                 .withName("DisabledRed"));
 
         autonomous.whileTrue(
-                LEDCommands.run(led, LedUtil.makeRainbow(255, 256))
+                LEDCommands.run(led, LedUtil.makeRainbow(255, 128))
                         .ignoringDisable(true)
                         .withName("AutoRainbow"));
 
