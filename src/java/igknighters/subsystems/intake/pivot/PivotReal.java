@@ -41,6 +41,7 @@ public class PivotReal extends Pivot {
     public CANcoderConfiguration getPivotEncoderConfig() {
         CANcoderConfiguration config = new CANcoderConfiguration();
         config.MagnetSensor.MagnetOffset = SubsystemConstants.kIntake.kPivot.ENCODER_OFFSET;
+        config.MagnetSensor.AbsoluteSensorDiscontinuityPoint = .5;
         config.MagnetSensor.SensorDirection =
                 SensorDirectionValue.Clockwise_Positive; // made up need tune
 

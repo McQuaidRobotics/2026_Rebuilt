@@ -5,7 +5,7 @@ public class SubsystemConstants {
     public static final int firstMotorID = 15;
 
     public static class kClimber {
-        public static final String CANBUS = "rio";
+        public static final String CANBUS = "SuperStructureBus";
 
         public static class kChainsaw {
             public static final int LEFT_MOTOR_ID = 15;
@@ -52,7 +52,7 @@ public class SubsystemConstants {
     }
 
     public static class kIndexer {
-        public static final String CANBUS = "rio";
+        public static final String CANBUS = "SuperStructureBus";
 
         public static class kSpindexer {
             public static final int LEADER_MOTOR_ID = 16;
@@ -96,7 +96,7 @@ public class SubsystemConstants {
     }
 
     public static class kIntake {
-        public static final String CANBUS = "rio";
+        public static final String CANBUS = "SuperStructureBus";
 
         public static class kRollers {
             // will be configured such that + voltage will intake game pieces
@@ -128,7 +128,7 @@ public class SubsystemConstants {
             public static final double MIN_ANGLE_DEGREES = 0.0;
             public static final double MAX_SPEED_METERS_PER_SECOND = 1.0;
             public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = .5;
-            public static final double ENCODER_OFFSET = 0.0;
+            public static final double ENCODER_OFFSET = -1.454834;
             public static final double MAX_JERK = 1.0;
             public static final int STATOR_CURRENT_LIMIT = 30;
             public static final int SUPPLY_CURRENT_LIMIT = 20;
@@ -145,7 +145,7 @@ public class SubsystemConstants {
     }
 
     public static class kShooter {
-        public static final String CANBUS = "rio";
+        public static final String CANBUS = "SuperStructureBus";
 
         public static class kFlywheels {
             public static final int LEADER_MOTOR_ID = 22;

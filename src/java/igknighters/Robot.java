@@ -66,7 +66,7 @@ public class Robot extends LoggedRobot {
     private FuelSim fuelSim;
     private double lastShotTime = 0.0;
 
-    private final boolean kUseLimelight = true;
+    private final boolean kUseLimelight = false;
 
     private Telemetry logger;
     TunableDouble detune = TunableValues.getDouble("Tunables/Detune", 0.6);
@@ -227,8 +227,6 @@ public class Robot extends LoggedRobot {
         setUpTest(subsytems);
         bindDriverController();
 
-        System.out.println();
-
         subsystemTriggers.SetupTriggers(subsytems, driverController);
     }
 
@@ -265,27 +263,27 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-        // THE COORDINATES LOOK WEIRD WHEN THERE ARE MULTIPLE FUEL, needs tuning
-        DogLog.log(
-                "Subsystems/Vision/ObjectDetection/Closest Game Piece",
-                subsytems.luma.getClosestGamePiece());
+        // // THE COORDINATES LOOK WEIRD WHEN THERE ARE MULTIPLE FUEL, needs tuning
+        // DogLog.log(
+        //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
+        //         subsytems.luma.getClosestGamePiece());
         FieldVisualizer.getInstance().testZeroedComponents();
         FieldVisualizer.getInstance()
                 .updateTurret(
                         subsytems.shooter.getTurretAngleDegrees(),
                         subsytems.swerve.getState().Pose);
-        Logger.recordOutput(
-                "componentPoses",
-                new Pose3d[] {
-                    getTurretPose(subsytems.shooter.getTurretAngleDegrees()),
-                    getHoodPose(subsytems.shooter.getHoodAngleDegrees())
-                });
-        Logger.recordOutput(
-                "zeroedPoses",
-                new Pose3d[] {
-                    new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0)),
-                    new Pose3d(0, 0, 0, new Rotation3d(0, 0.0, 0))
-                });
+        // Logger.recordOutput(
+        //         "componentPoses",
+        //         new Pose3d[] {
+        //             getTurretPose(subsytems.shooter.getTurretAngleDegrees()),
+        //             getHoodPose(subsytems.shooter.getHoodAngleDegrees())
+        //         });
+        // Logger.recordOutput(
+        //         "zeroedPoses",
+        //         new Pose3d[] {
+        //             new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0)),
+        //             new Pose3d(0, 0, 0, new Rotation3d(0, 0.0, 0))
+        //         });
 
         if (kUseLimelight) {
             var driveState = subsytems.swerve.getState();
