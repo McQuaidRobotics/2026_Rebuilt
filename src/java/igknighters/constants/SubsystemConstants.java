@@ -1,11 +1,15 @@
 package igknighters.constants;
 
+import com.ctre.phoenix6.CANBus;
+
 public class SubsystemConstants {
 
     public static final int firstMotorID = 15;
+    public static final CANBus superStructure = new CANBus("SuperStructureBus");
+    public static final CANBus drive = new CANBus("DriveBus");
 
     public static class kClimber {
-        public static final String CANBUS = "SuperStructureBus";
+        public static final CANBus CANBUS = SubsystemConstants.superStructure;
 
         public static class kChainsaw {
             public static final int LEFT_MOTOR_ID = 15;
@@ -52,7 +56,7 @@ public class SubsystemConstants {
     }
 
     public static class kIndexer {
-        public static final String CANBUS = "SuperStructureBus";
+        public static final CANBus CANBUS = SubsystemConstants.superStructure;
 
         public static class kSpindexer {
             public static final int LEADER_MOTOR_ID = 16;
@@ -96,7 +100,7 @@ public class SubsystemConstants {
     }
 
     public static class kIntake {
-        public static final String CANBUS = "SuperStructureBus";
+        public static final CANBus CANBUS = SubsystemConstants.superStructure;
 
         public static class kRollers {
             // will be configured such that + voltage will intake game pieces
@@ -145,7 +149,7 @@ public class SubsystemConstants {
     }
 
     public static class kShooter {
-        public static final String CANBUS = "SuperStructureBus";
+        public static final CANBus CANBUS = SubsystemConstants.superStructure;
 
         public static class kFlywheels {
             public static final int LEADER_MOTOR_ID = 23;
