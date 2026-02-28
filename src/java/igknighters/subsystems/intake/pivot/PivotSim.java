@@ -46,7 +46,7 @@ public class PivotSim extends Pivot {
     }
 
     @Override
-    public void setAngleDegrees(Angle angle) {
+    public void setAngle(Angle angle) {
         super.degrees = angle.in(Degrees);
         pivotSim.setState(angle.in(Radians), 0.0);
         controller.reset(angle.in(Radians));
@@ -55,7 +55,7 @@ public class PivotSim extends Pivot {
     private boolean isControlledThisCycle = false;
 
     @Override
-    public void goToAngleDegrees(Angle angle) {
+    public void goToAngle(Angle angle) {
         super.targetDegrees = angle.in(Degrees);
         controller.setGoal(angle.in(Radians));
         isControlledThisCycle = true;

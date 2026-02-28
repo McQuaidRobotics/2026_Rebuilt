@@ -9,11 +9,11 @@ public abstract class Pivot {
 
     public abstract void periodic();
 
-    public abstract void setAngleDegrees(Angle angle);
+    public abstract void setAngle(Angle angle);
 
     public abstract double getAngleDegrees();
 
-    public abstract void goToAngleDegrees(Angle angle);
+    public abstract void goToAngle(Angle angle);
 
     public abstract void stop();
 }

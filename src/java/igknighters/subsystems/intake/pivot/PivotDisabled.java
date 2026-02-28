@@ -4,10 +4,10 @@ import edu.wpi.first.units.measure.Angle;
 
 public class PivotDisabled extends Pivot {
     @Override
-    public void goToAngleDegrees(Angle angle) {}
+    public void goToAngle(Angle angle) {}
 
     @Override
-    public void setAngleDegrees(Angle angle) {}
+    public void setAngle(Angle angle) {}
 
     @Override
     public double getAngleDegrees() {

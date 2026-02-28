@@ -6,6 +6,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import dev.doglog.DogLog;
 import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.constants.SubsystemConstants.kIntake;
@@ -34,6 +35,8 @@ public class RollersReal extends Rollers {
 
         config.TorqueCurrent.PeakForwardTorqueCurrent = kIntake.kRollers.FORWARD_CURRENT_LIMIT;
         config.TorqueCurrent.PeakReverseTorqueCurrent = kIntake.kRollers.REVERSE_CURRENT_LIMIT;
+
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         config.Feedback.SensorToMechanismRatio = kIntake.kRollers.GEAR_RATIO;
 

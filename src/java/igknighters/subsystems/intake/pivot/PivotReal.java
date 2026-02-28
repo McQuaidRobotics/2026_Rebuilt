@@ -6,10 +6,11 @@ import static edu.wpi.first.units.Units.Rotation;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import dev.doglog.DogLog;
 import edu.wpi.first.units.measure.Angle;
@@ -20,7 +21,7 @@ import igknighters.constants.SubsystemConstants.kIntake;
 public class PivotReal extends Pivot {
     private TalonFX pivotMotor;
     private CANcoder pivotEncoder;
-    private MotionMagicVoltage motionMagicControl;
+    private PositionVoltage motionMagicControl;
     private BaseStatusSignal rps, angleRotations;
     private double targetDegrees = 0.0;
     private boolean beingCommanded = false;
@@ -32,7 +33,7 @@ public class PivotReal extends Pivot {
         pivotEncoder = new CANcoder(SubsystemConstants.kIntake.kPivot.CANCODER_ID, kIntake.CANBUS);
         pivotEncoder.getConfigurator().apply(getPivotEncoderConfig());
 
-        motionMagicControl = new MotionMagicVoltage(0.0).withSlot(0);
+        motionMagicControl = new PositionVoltage(0.0).withSlot(0);
 
         rps = pivotMotor.getVelocity();
         angleRotations = pivotMotor.getPosition();
@@ -59,6 +60,7 @@ public class PivotReal extends Pivot {
 
         config.Feedback.FeedbackRemoteSensorID = SubsystemConstants.kIntake.kPivot.CANCODER_ID;
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         config.CurrentLimits.StatorCurrentLimit =
                 SubsystemConstants.kIntake.kPivot.STATOR_CURRENT_LIMIT;
         config.CurrentLimits.SupplyCurrentLimit =
@@ -83,12 +85,12 @@ public class PivotReal extends Pivot {
     }
 
     @Override
-    public void setAngleDegrees(Angle angle) {
+    public void setAngle(Angle angle) {
         pivotMotor.setPosition(angle.in(Rotation));
     }
 
     @Override
-    public void goToAngleDegrees(Angle angle) {
+    public void goToAngle(Angle angle) {
         targetDegrees = angle.in(Degrees);
         beingCommanded = true;
         DogLog.log("Subsystems/Intake/Pivot/Stopped", false);

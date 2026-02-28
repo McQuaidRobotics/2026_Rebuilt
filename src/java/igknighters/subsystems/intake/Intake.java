@@ -11,7 +11,7 @@ import igknighters.subsystems.intake.pivot.Pivot;
 import igknighters.subsystems.intake.pivot.PivotReal;
 import igknighters.subsystems.intake.pivot.PivotSim;
 import igknighters.subsystems.intake.rollers.Rollers;
-import igknighters.subsystems.intake.rollers.RollersDisabled;
+import igknighters.subsystems.intake.rollers.RollersReal;
 import igknighters.subsystems.intake.rollers.RollersSim;
 
 public class Intake extends SubsystemBase {
@@ -22,7 +22,7 @@ public class Intake extends SubsystemBase {
     public Intake() {
         if (Robot.isReal()) {
             pivot = new PivotReal();
-            rollers = new RollersDisabled();
+            rollers = new RollersReal();
         } else {
             pivot = new PivotSim();
             rollers = new RollersSim();
@@ -31,7 +31,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void goTo(Angle angle, AngularVelocity speedRPM) {
-        pivot.goToAngleDegrees(angle);
+        pivot.goToAngle(angle);
         rollers.goToSpeed(speedRPM);
     }
 
@@ -48,7 +48,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void setPivotDegrees(double degrees) {
-        pivot.setAngleDegrees(Degrees.of(degrees));
+        pivot.setAngle(Degrees.of(degrees));
     }
 
     public void stop() {

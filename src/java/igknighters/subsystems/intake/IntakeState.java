@@ -8,8 +8,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.util.struct.StructSerializable;
 
 public enum IntakeState implements StructSerializable {
-    Intake(Degrees.of(62.085), RPM.of(1500), Degrees.of(5)),
-    Stowed(Degrees.of(0), RPM.of(0), Degrees.of(5));
+    Intake(Degrees.of(64), RPM.of(3000), Degrees.of(5)),
+    Stowed(Degrees.of(0), RPM.of(100), Degrees.of(5));
 
     public final Angle pivotDegrees;
     public final AngularVelocity rollerSpeedRPM;

@@ -104,7 +104,7 @@ public class SubsystemConstants {
 
         public static class kRollers {
             // will be configured such that + voltage will intake game pieces
-            public static final int LEADER_MOTOR_ID = 18;
+            public static final int LEADER_MOTOR_ID = 20;
             public static final double WHEEL_RADIUS_METERS = 0.0508; // 2 inch radius
             public static final double GEAR_RATIO = 1.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
@@ -125,23 +125,23 @@ public class SubsystemConstants {
         }
 
         public static class kPivot {
-            public static final int MOTOR_ID = 20;
+            public static final int MOTOR_ID = 18;
             public static final int CANCODER_ID = 21;
             public static final double GEAR_RATIO = 15.0;
-            public static final double MAX_ANGLE_DEGREES = 62.085;
+            public static final double MAX_ANGLE_DEGREES = 64.0;
             public static final double MIN_ANGLE_DEGREES = 0.0;
             public static final double MAX_SPEED_METERS_PER_SECOND = 1.0;
             public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = .5;
             public static final double ENCODER_OFFSET = -1.454834;
             public static final double MAX_JERK = 1.0;
-            public static final int STATOR_CURRENT_LIMIT = 30;
+            public static final int STATOR_CURRENT_LIMIT = 20;
             public static final int SUPPLY_CURRENT_LIMIT = 20;
-            public static final double kP = 0.2;
+            public static final double kP = 45.0;
             public static final double kI = 0.0;
-            public static final double kD = 0.05;
-            public static final double kS = 0.1;
-            public static final double kV = 0.02;
-            public static final double kA = 0.005;
+            public static final double kD = 0.0;
+            public static final double kS = 0.0;
+            public static final double kV = 0.0;
+            public static final double kA = 0.0;
             public static final double JKG_M2 = 0.01;
             public static final double LENGTH_METERS =
                     .25; // distance from central shaft to edge of wrist
@@ -217,9 +217,9 @@ public class SubsystemConstants {
     }
 
     public static class kLimelightVision {
-        public static final String frontLeft = "limelight-fl";
-        public static final String frontRight = "limelight-fr";
-        public static final String backLeft = "limelight-bl";
-        public static final String backRight = "limelight-br";
+        public static final String turretCam = "limelight-turret";
+        public static final String intakeCam = "limelight-intake";
+        public static final String backCam = "limelight-back";
+        public static final String rightCam = "limelight-br";
     }
 }

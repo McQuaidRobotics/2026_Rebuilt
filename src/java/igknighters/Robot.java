@@ -66,7 +66,7 @@ public class Robot extends LoggedRobot {
     private FuelSim fuelSim;
     private double lastShotTime = 0.0;
 
-    private final boolean kUseLimelight = false;
+    private final boolean kUseLimelight = true;
 
     private Telemetry logger;
     TunableDouble detune = TunableValues.getDouble("Tunables/Detune", 0.6);
@@ -187,7 +187,7 @@ public class Robot extends LoggedRobot {
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
-                        new Swerve(true),
+                        new Swerve(false),
                         new LimeLightVision(),
                         new Led(60, 1),
                         new Shooter(),
@@ -299,12 +299,15 @@ public class Robot extends LoggedRobot {
                         VecBuilder.fill(
                                 0.05, 0.05, 0.1)); // trusts vision rotation less. Needs tuning
                 // increase the std devs to trust vision less
+                DogLog.log("Subsystems/Vision/Null Pose", false);
+            } else {
+                DogLog.log("Subsystems/Vision/Null Pose", true);
             }
         }
     }
 
     public void bindDriverController() {
-        driverController.bind(subsytems, DriverController.DebugType.SHOOTER);
+        driverController.bind(subsytems);
     }
 
     @Override
