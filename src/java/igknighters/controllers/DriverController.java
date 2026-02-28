@@ -1,8 +1,5 @@
 package igknighters.controllers;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.RPM;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,7 +18,6 @@ import igknighters.constants.DrivingSharedState;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.ClimberState;
-import igknighters.subsystems.shooter.ShooterState;
 import java.util.function.DoubleSupplier;
 
 public class DriverController {
@@ -31,6 +27,8 @@ public class DriverController {
     // Define the buttons on the controller
 
     private final CommandXboxController controller;
+
+    private boolean intakeActive = false;
 
     /** Button: 1 */
     protected final Trigger A;
@@ -182,14 +180,16 @@ public class DriverController {
         var climber = subsystems.climber;
 
         this.A.whileTrue(IntakeCommands.goToIntake(intake));
-        this.B.whileTrue(IntakeCommands.goToStow(intake));
+        this.A.onFalse(IntakeCommands.goToStow(intake));
         this.LT.whileTrue(
-                ShooterCommands.targetState(
+                ShooterCommands.shootWithMaxHeightIterative(
                         shooter,
-                        new ShooterState(
-                                RPM.of(3000),
-                                Degrees.of(45),
-                                Degrees.of(kHood.MIN_ANGLE_DEGREES))));
+                        () -> swerve.getState().Pose,
+                        swerve::getFieldRelativeSpeeds,
+                        5.0));
+        this.LT.onFalse(
+                ShooterCommands.idleCommand(
+                        shooter, () -> swerve.getState().Pose, swerve::getFieldRelativeSpeeds));
         this.RT.whileTrue(IndexerCommands.dispense(indexer));
         this.RT.onFalse(IndexerCommands.stopDispensing(indexer));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));

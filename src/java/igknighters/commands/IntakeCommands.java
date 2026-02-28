@@ -15,7 +15,17 @@ public class IntakeCommands {
     }
 
     public static Command goToStow(Intake intake) {
-        return intake.run(() -> intake.goTo(IntakeState.Stowed)).withName("Stow Intake");
+        return intake.run(() -> intake.goTo(IntakeState.PREP_TO_STOW))
+                .until(
+                        () ->
+                                intake.isAt(
+                                        IntakeState.PREP_TO_STOW.pivotDegrees,
+                                        IntakeState.PREP_TO_STOW.rollerSpeedRPM,
+                                        IntakeState.PREP_TO_STOW.tolerenceDegrees,
+                                        RPM.of(200)))
+                //  FIX: Use intake.run() here so it stays alive and holds the stowed state!
+                .andThen(intake.run(() -> intake.goTo(IntakeState.Stowed)))
+                .withName("Stow Intake");
     }
 
     public static Command goTo(Intake intake, Angle angle, AngularVelocity speed) {

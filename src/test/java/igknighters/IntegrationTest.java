@@ -109,7 +109,7 @@ public class IntegrationTest {
 
         System.out.println(
                 "Intake Initial -> Pivot: "
-                        + subsystems.intake.getPivotAngleDegrees()
+                        + subsystems.intake.getPivotAngle().in(Degrees)
                         + ", Roller RPM: "
                         + subsystems.intake.getRollerSpeedRPM());
 
@@ -121,7 +121,7 @@ public class IntegrationTest {
         }
         System.out.println(
                 "Intake Final -> Pivot: "
-                        + subsystems.intake.getPivotAngleDegrees()
+                        + subsystems.intake.getPivotAngle().in(Degrees)
                         + ", Roller RPM: "
                         + subsystems.intake.getRollerSpeedRPM());
 

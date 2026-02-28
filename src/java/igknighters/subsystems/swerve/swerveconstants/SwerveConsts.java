@@ -39,8 +39,8 @@ public class SwerveConsts {
             DogLog.log("SWERVE CONSTS", "Using DemoBotConsts");
             return new DemoBotConsts();
         } else if (robot.equals(Robots.GEMINKNIGHT)) {
-            DogLog.log("SWERVE CONSTS", "Using GemiknightConsts");
-            return new GemiknightConsts();
+            DogLog.log("SWERVE CONSTS", "Using GeminiConsts");
+            return new GeminiConsts();
         } else {
             DogLog.log("SWERVE CONSTS", "Using DemoBotConsts (default)");
             return new DemoBotConsts();

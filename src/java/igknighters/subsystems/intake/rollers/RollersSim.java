@@ -39,8 +39,8 @@ public class RollersSim extends Rollers {
     private boolean isVoltageControlledThisCycle = false;
 
     @Override
-    public double getSpeedRPM() {
-        return leaderflywheelSim.getAngularVelocityRPM();
+    public AngularVelocity getSpeed() {
+        return RPM.of(leaderflywheelSim.getAngularVelocityRPM());
     }
 
     @Override

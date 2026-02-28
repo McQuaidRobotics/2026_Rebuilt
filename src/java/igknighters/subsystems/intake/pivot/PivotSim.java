@@ -62,8 +62,8 @@ public class PivotSim extends Pivot {
     }
 
     @Override
-    public double getAngleDegrees() {
-        return pivotSim.getAngleRads() * Conv.RADIANS_TO_DEGREES;
+    public Angle getAngle() {
+        return Radians.of(pivotSim.getAngleRads());
     }
 
     @Override
@@ -83,7 +83,7 @@ public class PivotSim extends Pivot {
         pivotSim.setInput(input);
         pivotSim.update(0.020);
 
-        DogLog.log("Subsystems/Intake/Pivot/AngleDegrees", getAngleDegrees());
+        DogLog.log("Subsystems/Intake/Pivot/AngleDegrees", getAngle().in(Degrees));
         DogLog.log("Subsystems/Intake/Pivot/TargetDegrees", super.targetDegrees);
         DogLog.log("Subsystems/Intake/Pivot/MotorVoltage", input);
     }

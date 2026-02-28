@@ -81,7 +81,7 @@ public class LimeLightVisionReal extends LimeLights {
         lastTimeStamp = timestamp;
 
         DogLog.log("Subsystems/Vision/LimeLightVision/TimeStampOfMeasurements", timestamp);
-        DogLog.log("Subsystems/Vision/LimeLightVision/NumberOfTagsSeen", poses.size());
+        DogLog.log("Subsystems/Vision/LimeLightVision/NumberOfTagsSeen", visibleTagIds.size());
 
         return averagePose2ds(poses);
     }

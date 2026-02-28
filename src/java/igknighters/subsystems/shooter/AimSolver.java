@@ -6,7 +6,9 @@ import static edu.wpi.first.units.Units.Radians;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -73,6 +75,9 @@ public class AimSolver {
                             + airResistanceAdder.getY()
                             - (speeds.vyMetersPerSecond * (estimatedToF + periodTime));
             double tz = targetPose.getZ();
+
+            FieldVisualizer.getInstance()
+                    .updateShootingTarget(new Pose2d(tx, ty, new Rotation2d()));
 
             double dx = tx - sx;
             double dy = ty - sy;
@@ -144,7 +149,7 @@ public class AimSolver {
             }
 
             return new ShooterState(
-                    RPM.of(bestRPM), Radians.of(turretAngle), Degrees.of(bestThetaHoodDegrees));
+                    RPM.of(bestRPM), Radians.of(-turretAngle), Degrees.of(bestThetaHoodDegrees));
         }
 
         private static final double FLYWHEEL_RADIUS =
@@ -527,7 +532,7 @@ public class AimSolver {
                     Math.atan2(
                             targetPose.getY() - shooterPose.getY(),
                             targetPose.getX() - shooterPose.getX());
-            double p = d / 1.5;
+            double p = d / 2.5;
 
             double px = Math.cos(angleToTarget) * p;
             double py = Math.sin(angleToTarget) * p;

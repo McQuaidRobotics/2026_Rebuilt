@@ -44,8 +44,8 @@ public class RollersReal extends Rollers {
     }
 
     @Override
-    public double getSpeedRPM() {
-        return intakeSpeed.getValueAsDouble();
+    public AngularVelocity getSpeed() {
+        return RotationsPerSecond.of(intakeSpeed.getValueAsDouble());
     }
 
     @Override
@@ -61,6 +61,6 @@ public class RollersReal extends Rollers {
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(intakeSpeed);
-        DogLog.log("Subsystems/Intake/Rollers/SpeedRPS", getSpeedRPM());
+        DogLog.log("Subsystems/Intake/Rollers/SpeedRPS", getSpeed());
     }
 }

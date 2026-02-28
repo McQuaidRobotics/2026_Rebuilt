@@ -297,7 +297,7 @@ public class Robot extends LoggedRobot {
                         currentPose,
                         subsytems.vision.getLastTimeStamp(),
                         VecBuilder.fill(
-                                0.05, 0.05, 0.1)); // trusts vision rotation less. Needs tuning
+                                0.07, 0.07, 0.01)); // trusts vision rotation less. Needs tuning
                 // increase the std devs to trust vision less
                 DogLog.log("Subsystems/Vision/Null Pose", false);
             } else {

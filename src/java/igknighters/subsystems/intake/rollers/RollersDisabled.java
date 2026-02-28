@@ -1,5 +1,7 @@
 package igknighters.subsystems.intake.rollers;
 
+import static edu.wpi.first.units.Units.RPM;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 
 public class RollersDisabled extends Rollers {
@@ -10,8 +12,8 @@ public class RollersDisabled extends Rollers {
     }
 
     @Override
-    public double getSpeedRPM() {
-        return 0.0;
+    public AngularVelocity getSpeed() {
+        return RPM.of(0.0);
     }
 
     @Override

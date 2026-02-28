@@ -141,8 +141,9 @@ public class Shooter extends SubsystemBase {
         hood.periodic();
 
         DogLog.log("Subsystems/Shooter/BEING CONTROLLED", beingControlled);
-
-        visualizer.update(getCurrentState(), goalRPM, goalHoodAngleDegrees);
+        if (!Robot.isReal()) {
+            visualizer.update(getCurrentState(), goalRPM, goalHoodAngleDegrees);
+        }
         ableToShootState.setCanShoot(atTarget(600, 1, 5));
         ableToShootState.setBeingControlled(beingControlled);
         beingControlled = false;

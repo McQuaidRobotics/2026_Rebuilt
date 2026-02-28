@@ -10,7 +10,7 @@ public abstract class Rollers {
 
     public abstract void goToSpeed(AngularVelocity speed);
 
-    public abstract double getSpeedRPM();
+    public abstract AngularVelocity getSpeed();
 
     public abstract void stop();
 

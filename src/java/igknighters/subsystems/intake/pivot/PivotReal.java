@@ -105,8 +105,8 @@ public class PivotReal extends Pivot {
     }
 
     @Override
-    public double getAngleDegrees() {
-        return angleRotations.getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
+    public Angle getAngle() {
+        return Rotation.of(angleRotations.getValueAsDouble());
     }
 
     @Override

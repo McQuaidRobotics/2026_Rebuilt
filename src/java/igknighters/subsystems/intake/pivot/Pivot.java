@@ -11,7 +11,7 @@ public abstract class Pivot {
 
     public abstract void setAngle(Angle angle);
 
-    public abstract double getAngleDegrees();
+    public abstract Angle getAngle();
 
     public abstract void goToAngle(Angle angle);
 

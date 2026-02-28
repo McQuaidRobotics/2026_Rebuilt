@@ -3,6 +3,7 @@ package igknighters.subsystems.intake;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -39,12 +40,12 @@ public class Intake extends SubsystemBase {
         goTo(state.pivotDegrees, state.rollerSpeedRPM);
     }
 
-    public double getPivotAngleDegrees() {
-        return pivot.getAngleDegrees();
+    public Angle getPivotAngle() {
+        return pivot.getAngle();
     }
 
-    public double getRollerSpeedRPM() {
-        return rollers.getSpeedRPM();
+    public AngularVelocity getRollerSpeedRPM() {
+        return rollers.getSpeed();
     }
 
     public void setPivotDegrees(double degrees) {
@@ -61,15 +62,29 @@ public class Intake extends SubsystemBase {
             AngularVelocity speedRPM,
             Angle angleTolerance,
             AngularVelocity speedTolerance) {
-        return Math.abs(pivot.getAngleDegrees() - angleDegrees.in(Degrees))
-                        < angleTolerance.in(Degrees)
-                && Math.abs(rollers.getSpeedRPM() - speedRPM.in(RPM)) < speedTolerance.in(RPM);
+        boolean isAtAngle =
+                Math.abs(pivot.getAngle().in(Degrees) - angleDegrees.in(Degrees))
+                        < angleTolerance.in(Degrees);
+        boolean isAtSpeed =
+                Math.abs(rollers.getSpeed().in(RPM) - speedRPM.in(RPM)) < speedTolerance.in(RPM);
+
+        DogLog.log("Subsystems/Intake/AT STATE/Is At Speed", isAtSpeed);
+        DogLog.log("Subsystems/Intake/AT STATE/Is At Angle", isAtAngle);
+        DogLog.log(
+                "Subsystems/Intake/AT STATE/DELTA THETA",
+                pivot.getAngle().in(Degrees) - angleDegrees.in(Degrees));
+        DogLog.log(
+                "Subsystems/Intake/AT STATE/DELTA RPM",
+                rollers.getSpeed().in(RPM) - speedRPM.in(RPM));
+        return isAtAngle && isAtSpeed;
     }
 
     @Override
     public void periodic() {
         pivot.periodic();
         rollers.periodic();
-        visualizer.update(pivot.getAngleDegrees(), rollers.getSpeedRPM());
+        if (!Robot.isReal()) {
+            visualizer.update(pivot.getAngle().in(Degrees), rollers.getSpeed().in(RPM));
+        }
     }
 }
