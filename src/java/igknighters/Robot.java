@@ -52,13 +52,14 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
+    
     private Command m_autonomousCommand;
     private AutoFactory autoFactory;
     public final AutoChooser autoChooser = new AutoChooser();
     double i = 0;
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
-
+    
     private final DriverController driverController = new DriverController(0);
 
     public final Subsystems subsytems;

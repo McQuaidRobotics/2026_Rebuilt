@@ -23,9 +23,6 @@ public class Led extends SubsystemBase {
     public void periodic() {
         DogLog.log("Subsystems/LED/Periodic", true);
         Tracer.startTrace("LedPeriodic");
-        DogLog.log(
-                "Subsystems/LED/BeingUsed",
-                getCurrentCommand() != null ? getCurrentCommand().getName() : "None");
         pwm1.periodic();
         Tracer.endTrace();
     }

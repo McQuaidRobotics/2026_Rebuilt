@@ -8,7 +8,7 @@ import monologue.Logged;
 public class PWMDriver implements Logged {
 
     private final AddressableLED led;
-    private final AddressableLEDBuffer previousBuffer;
+    private AddressableLEDBuffer previousBuffer;
     public final int length;
     public final int numberOfStrips;
 
@@ -34,6 +34,7 @@ public class PWMDriver implements Logged {
             newBuffer = false;
         } else {
             newBuffer = true;
+            previousBuffer = appliedBuffer;
             led.setData(appliedBuffer);
         }
         DogLog.log("Subsystems/LED/New Buffer Applied", newBuffer);
