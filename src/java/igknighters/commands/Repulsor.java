@@ -73,7 +73,7 @@ public class Repulsor {
             }
             // if robot is too close to walls set repel to 0
             if (currentPose.getX() < 0 + 30 * Conv.INCHES_TO_METERS
-                    || currentPose.getX() > FieldConstants.LENGTH - 30 * Conv.INCHES_TO_METERS) {
+                    || currentPose.getX() > FieldConstants.X_FIELD - 30 * Conv.INCHES_TO_METERS) {
                 xRepelForce = 0;
             }
         }
@@ -136,11 +136,11 @@ public class Repulsor {
                 yRepelForce = 0;
                 if ((currentPose.getX() < 182.11 * Conv.INCHES_TO_METERS
                                 || currentPose.getX()
-                                        > FieldConstants.LENGTH - 182.11 * Conv.INCHES_TO_METERS)
+                                        > FieldConstants.X_FIELD - 182.11 * Conv.INCHES_TO_METERS)
                         && Math.abs(currentPose.getX() - obs.obstaclePose.getX()) > 1) {
-                    if (currentPose.getY() < FieldConstants.WIDTH / 2) {
+                    if (currentPose.getY() < FieldConstants.Y_FIELD / 2) {
                         yRepelForce += Math.abs(currentPose.getX() - obs.obstaclePose.getX()) * 2;
-                    } else if (currentPose.getY() > FieldConstants.WIDTH / 2) {
+                    } else if (currentPose.getY() > FieldConstants.Y_FIELD / 2) {
                         yRepelForce -= Math.abs(currentPose.getX() - obs.obstaclePose.getX()) * 2;
                     }
                 }
@@ -154,10 +154,10 @@ public class Repulsor {
         }
         // if in front of the hubs, there will be a up/down force to get robot to move towards one
         // side
-        if (currentPose.getY() < FieldConstants.WIDTH / 2 && currentPose.getY() > 50.35) {
+        if (currentPose.getY() < FieldConstants.Y_FIELD / 2 && currentPose.getY() > 50.35) {
             yRepelForce += .5;
-        } else if (currentPose.getY() > FieldConstants.WIDTH / 2
-                && currentPose.getY() < FieldConstants.WIDTH - 50.59 * Conv.INCHES_TO_METERS) {
+        } else if (currentPose.getY() > FieldConstants.Y_FIELD / 2
+                && currentPose.getY() < FieldConstants.Y_FIELD - 50.59 * Conv.INCHES_TO_METERS) {
             yRepelForce -= .5;
         }
         return -yRepelForce;
