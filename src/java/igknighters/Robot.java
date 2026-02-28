@@ -449,9 +449,12 @@ public class Robot extends LoggedRobot {
         Optional<Alliance> ally = DriverStation.getAlliance();
 
         if (ally.isPresent()) {
-            return (ally.get() == Alliance.Blue);
+            return ally.get() == Alliance.Blue;
         } else {
-            return true; // Default to blue if alliance is unknown
+            // Default to blue if alliance is unknown (e.g., in simulation without alliance set)
+            // Log this so we know why things might be going to the blue side.
+            DogLog.log("System/AllianceUnknown", true);
+            return true;
         }
     }
 }

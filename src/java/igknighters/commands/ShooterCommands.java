@@ -6,11 +6,13 @@ import static edu.wpi.first.units.Units.RPM;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.SubsystemConstants;
+import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.shooter.AimSolver;
 import igknighters.subsystems.shooter.Shooter;
@@ -128,12 +130,12 @@ public class ShooterCommands {
     public static Pose3d getPassTarget(Supplier<Pose2d> robotPoSupplier) {
         if (Robot.isBlue()) {
             Pose2d robotPose2d = robotPoSupplier.get();
-            return robotPose2d.getY() > FieldConstants.WIDTH / 2
+            return robotPose2d.getY() > FieldConstants.Y_FIELD / 2
                     ? FieldConstants.PASS.POSITION_LEFT_BLUE
                     : FieldConstants.PASS.POSITION_RIGHT_BLUE;
         } else {
             Pose2d robotPose2d = robotPoSupplier.get();
-            return robotPose2d.getY() > FieldConstants.WIDTH / 2
+            return robotPose2d.getY() > FieldConstants.Y_FIELD / 2
                     ? FieldConstants.PASS.POSITION_LEFT_RED
                     : FieldConstants.PASS.POSITION_RIGHT_RED;
         }
@@ -407,5 +409,48 @@ public class ShooterCommands {
                             }
                         })
                 .withName("Shoot With Max Height: " + maxHeightMeters + "m");
+    }
+
+    public static Command shootAt(
+            Shooter shooter,
+            Supplier<Pose2d> robotPoseSupplier,
+            Supplier<ChassisSpeeds> robotVelocitySupplier,
+            Supplier<Pose2d> targetPoseSupplier) {
+        return shooter.run(
+                        () -> {
+                            Pose2d robotPose2d = robotPoseSupplier.get();
+                            Pose2d targetPose = targetPoseSupplier.get();
+                            Pose3d targetPose3d = new Pose3d(targetPose);
+
+                            ShooterState targetingData =
+                                    AimSolver.Solvers.solve_max_height_iterative(
+                                            new Pose3d(robotPose2d)
+                                                    .plus(
+                                                            new Transform3d(
+                                                                    0,
+                                                                    0,
+                                                                    kFlywheels.ShooterHeightMeters,
+                                                                    new Rotation3d())),
+                                            targetPose3d,
+                                            robotVelocitySupplier.get(),
+                                            shooter.getCurrentState().flywheelSpeed.in(RPM),
+                                            5,
+                                            0.02);
+
+                            if (targetingData.flywheelSpeed.in(RPM) > 0.1) {
+                                shooter.targetState(
+                                        targetingData.flywheelSpeed,
+                                        targetingData.turretAngle,
+                                        targetingData.hoodAngle);
+                            } else {
+                                // Fallback: Spin up to a safe mid-range RPM and keep turret pointed
+                                // at target
+                                shooter.targetState(
+                                        RPM.of(3000.0),
+                                        targetingData.turretAngle,
+                                        Degrees.of(kHood.MIN_ANGLE_DEGREES));
+                            }
+                        })
+                .withName("Aiming at auto chosen target with look ahead");
     }
 }

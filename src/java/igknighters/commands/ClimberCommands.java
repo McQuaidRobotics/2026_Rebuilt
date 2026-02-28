@@ -94,10 +94,17 @@ public class ClimberCommands {
         return climber.run(() -> climber.goToState(state))
                 .until(
                         () -> {
-                            if (state == ClimberState.CLIMB_PREP) return climber.isUp();
-                            if (state == ClimberState.STOW) return climber.isDown();
-                            if (state == ClimberState.PULL_UP) return climber.isDown();
-                            return true;
+                            switch (state) {
+                                case CLIMB_PREP:
+                                case LATCH_ON:
+                                    return climber.isUp();
+                                case STOW:
+                                    return climber.isDown();
+                                case PULL_UP:
+                                    return climber.isMiddle();
+                                default:
+                                    return true;
+                            }
                         })
                 .finallyDo(() -> climber.stopChainsaw())
                 .withName("GOING TO STATE: " + state.name());

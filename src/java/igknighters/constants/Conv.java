@@ -11,4 +11,6 @@ public class Conv {
     public static final double RPM_TO_RPS = 1.0 / 60.0;
     public static final double RPS_TO_RPM = 60.0;
     public static final double ROTATIONS_TO_DEGREES = 360.0;
+    public static final double FEET_TO_METERS = 0.3048;
+    public static final double METERS_TO_FEET = 1.0 / 0.3048;
 }
