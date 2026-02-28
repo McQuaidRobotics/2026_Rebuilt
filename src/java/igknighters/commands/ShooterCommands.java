@@ -344,7 +344,9 @@ public class ShooterCommands {
 
                     if (targetingData.flywheelSpeed.in(RPM) != 0) {
                         shooter.targetState(
-                                RPM.of(2000), targetingData.turretAngle, targetingData.hoodAngle);
+                                RPM.of(2000),
+                                targetingData.turretAngle,
+                                Degrees.of(kHood.MIN_ANGLE_DEGREES));
                     } else {
                         // shot is imposible so we should idle the shooter rpm at like 4000 so it
                         // spins up faster

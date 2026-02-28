@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import igknighters.FieldVisualizer;
+import igknighters.Robot;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
@@ -148,8 +149,15 @@ public class AimSolver {
                 canShoot(false);
             }
 
-            return new ShooterState(
-                    RPM.of(bestRPM), Radians.of(-turretAngle), Degrees.of(bestThetaHoodDegrees));
+            if (Robot.isBlue()) {
+                return new ShooterState(
+                        RPM.of(bestRPM),
+                        Radians.of(-turretAngle),
+                        Degrees.of(bestThetaHoodDegrees));
+            } else {
+                return new ShooterState(
+                        RPM.of(bestRPM), Radians.of(turretAngle), Degrees.of(bestThetaHoodDegrees));
+            }
         }
 
         private static final double FLYWHEEL_RADIUS =

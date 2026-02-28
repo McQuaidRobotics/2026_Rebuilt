@@ -69,7 +69,7 @@ public class TeleopSwerveBaseCmd extends Command {
             return new Translation2d(processedY, -processedX);
         } else {
             DogLog.log("TeleopSwerveBaseCmd", "Red Alliance - Inversion");
-            return new Translation2d(-processedY, processedX);
+            return new Translation2d(processedY, -processedX);
         }
     }
 

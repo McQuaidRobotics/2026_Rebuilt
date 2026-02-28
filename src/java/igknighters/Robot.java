@@ -189,7 +189,7 @@ public class Robot extends LoggedRobot {
                 new Subsystems(
                         new Swerve(false),
                         new LimeLightVision(),
-                        new Led(60, 1),
+                        new Led(80, 1),
                         new Shooter(),
                         new Indexer(),
                         new Intake(),
@@ -220,7 +220,7 @@ public class Robot extends LoggedRobot {
                         new Indexer(),
                         new Intake(),
                         new Climber(),
-                        new Luma(false, "object-detection"));
+                        new Luma(true, "object-detection"));
         setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
