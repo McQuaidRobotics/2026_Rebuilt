@@ -45,8 +45,8 @@ public class FieldConstants {
     public static class PASS {
         public static final Pose3d POSITION_RIGHT_BLUE =
                 new Pose3d(
-                        0.0 * Conv.INCHES_TO_METERS,
-                        0.0 * Conv.INCHES_TO_METERS,
+                        36 * Conv.INCHES_TO_METERS,
+                        36 * Conv.INCHES_TO_METERS,
                         0.0 * Conv.INCHES_TO_METERS,
                         new Rotation3d());
 

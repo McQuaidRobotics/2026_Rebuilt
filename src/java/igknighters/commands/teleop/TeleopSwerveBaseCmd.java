@@ -66,7 +66,7 @@ public class TeleopSwerveBaseCmd extends Command {
         double processedY = magnitude * Math.sin(angle);
         if (Robot.isBlue()) {
             DogLog.log("TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
-            return new Translation2d(-processedY, processedX);
+            return new Translation2d(processedY, -processedX);
         } else {
             DogLog.log("TeleopSwerveBaseCmd", "Red Alliance - Inversion");
             return new Translation2d(processedY, -processedX);

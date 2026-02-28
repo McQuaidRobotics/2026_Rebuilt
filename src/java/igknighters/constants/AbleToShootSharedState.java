@@ -12,10 +12,13 @@ public class AbleToShootSharedState {
     private static AbleToShootSharedState instance;
 
     private boolean canShoot = false;
+    private boolean beingControlled = false;
     private final Trigger canShootTrigger;
+    private final Trigger beingControlledTrigger;
 
     private AbleToShootSharedState() {
         this.canShootTrigger = new Trigger(this::getCanShoot);
+        this.beingControlledTrigger = new Trigger(this::isBeingControlled);
     }
 
     public static AbleToShootSharedState getInstance() {
@@ -36,6 +39,15 @@ public class AbleToShootSharedState {
         this.canShoot = newState;
     }
 
+    public void setBeingControlled(boolean newState) {
+        DogLog.log("STATUS/BEING CONTROLLED", newState);
+        this.beingControlled = newState;
+    }
+
+    public boolean isBeingControlled() {
+        return this.beingControlled;
+    }
+
     /**
      * Returns true if the shooter is currently able to shoot. This state is updated externally via
      * setCanShoot().
@@ -54,5 +66,9 @@ public class AbleToShootSharedState {
      */
     public Trigger canShootTrigger() {
         return canShootTrigger;
+    }
+
+    public Trigger beingControlledTrigger() {
+        return beingControlledTrigger;
     }
 }

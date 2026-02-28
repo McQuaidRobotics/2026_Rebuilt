@@ -1,11 +1,15 @@
 package igknighters.constants;
 
+import com.ctre.phoenix6.CANBus;
+
 public class SubsystemConstants {
 
     public static final int firstMotorID = 15;
+    public static final CANBus superStructure = new CANBus("SuperStructureBus");
+    public static final CANBus drive = new CANBus("DriveBus");
 
     public static class kClimber {
-        public static final String CANBUS = "rio";
+        public static final CANBus CANBUS = SubsystemConstants.superStructure;
 
         public static class kChainsaw {
             public static final int LEFT_MOTOR_ID = 15;
@@ -52,12 +56,12 @@ public class SubsystemConstants {
     }
 
     public static class kIndexer {
-        public static final String CANBUS = "rio";
+        public static final CANBus CANBUS = SubsystemConstants.superStructure;
 
         public static class kSpindexer {
             public static final int LEADER_MOTOR_ID = 16;
             public static final double WHEEL_RADIUS_METERS = 0.0508; // 2 inch radius
-            public static final double GEAR_RATIO = 5.0;
+            public static final double GEAR_RATIO = 4.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
             public static final double MAX_SPEED_RPM = 5000.0;
             public static final double MAX_ACCELERATION_RPM = 70.0;
@@ -96,11 +100,11 @@ public class SubsystemConstants {
     }
 
     public static class kIntake {
-        public static final String CANBUS = "rio";
+        public static final CANBus CANBUS = SubsystemConstants.superStructure;
 
         public static class kRollers {
             // will be configured such that + voltage will intake game pieces
-            public static final int LEADER_MOTOR_ID = 18;
+            public static final int LEADER_MOTOR_ID = 20;
             public static final double WHEEL_RADIUS_METERS = 0.0508; // 2 inch radius
             public static final double GEAR_RATIO = 1.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
@@ -121,35 +125,35 @@ public class SubsystemConstants {
         }
 
         public static class kPivot {
-            public static final int MOTOR_ID = 20;
+            public static final int MOTOR_ID = 18;
             public static final int CANCODER_ID = 21;
             public static final double GEAR_RATIO = 15.0;
-            public static final double MAX_ANGLE_DEGREES = 90.0;
+            public static final double MAX_ANGLE_DEGREES = 64.0;
             public static final double MIN_ANGLE_DEGREES = 0.0;
             public static final double MAX_SPEED_METERS_PER_SECOND = 1.0;
             public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = .5;
+            public static final double ENCODER_OFFSET = -1.454834;
             public static final double MAX_JERK = 1.0;
-            public static final int STATOR_CURRENT_LIMIT = 30;
+            public static final int STATOR_CURRENT_LIMIT = 20;
             public static final int SUPPLY_CURRENT_LIMIT = 20;
-            public static final double kP = 0.2;
+            public static final double kP = 45.0;
             public static final double kI = 0.0;
-            public static final double kD = 0.05;
-            public static final double kS = 0.1;
-            public static final double kV = 0.02;
-            public static final double kA = 0.005;
+            public static final double kD = 0.0;
+            public static final double kS = 0.0;
+            public static final double kV = 0.0;
+            public static final double kA = 0.0;
             public static final double JKG_M2 = 0.01;
             public static final double LENGTH_METERS =
                     .25; // distance from central shaft to edge of wrist
-            public static final int REVERSE_LIMIT_SWITCH_ID = 6;
         }
     }
 
     public static class kShooter {
-        public static final String CANBUS = "rio";
+        public static final CANBus CANBUS = SubsystemConstants.superStructure;
 
         public static class kFlywheels {
-            public static final int LEADER_MOTOR_ID = 22;
-            public static final int FOLLOWER_MOTOR_ID = 23;
+            public static final int LEADER_MOTOR_ID = 23;
+            public static final int FOLLOWER_MOTOR_ID = 22;
             public static final double WHEEL_RADIUS_METERS = 0.0508; // 2 inch radius
             public static final double GEAR_RATIO = 1.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
@@ -172,12 +176,12 @@ public class SubsystemConstants {
         public static class kTurret {
             public static final int MOTOR_ID = 24;
             public static final int CANCODER_ID = 25;
-            public static final double CANCODER_OFFSET_ROTATIONS = -0.306641;
+            public static final double CANCODER_OFFSET_ROTATIONS = 0.469482 + 0.064209;
             public static final double GEAR_RATIO = 16.2;
             public static final double MAX_ANGLE_DEGREES = 270.0;
             public static final double MIN_ANGLE_DEGREES = -90.0;
-            public static final double MAX_SPEED_RPM = 300.0;
-            public static final double MAX_ACCELERATION_RPM = 450.0;
+            public static final double MAX_SPEED_RPM = 200.0;
+            public static final double MAX_ACCELERATION_RPM = 300.0;
             public static final double MAX_JERK = 10;
             public static final int STATOR_CURRENT_LIMIT = 40;
             public static final int SUPPLY_CURRENT_LIMIT = 30;
@@ -208,14 +212,14 @@ public class SubsystemConstants {
             public static final double JKG_M2 = 0.01;
             public static final double LENGTH_METERS =
                     .25; // distance from central shaft to edge of flap
-            public static final int REVERSE_LIMIT_SWITCH_ID = 7;
+            public static final int REVERSE_LIMIT_SWITCH_ID = 9;
         }
     }
 
     public static class kLimelightVision {
-        public static final String frontLeft = "limelight-fl";
-        public static final String frontRight = "limelight-fr";
-        public static final String backLeft = "limelight-bl";
-        public static final String backRight = "limelight-br";
+        public static final String turretCam = "limelight-turret";
+        public static final String intakeCam = "limelight-intake";
+        public static final String backCam = "limelight-back";
+        public static final String rightCam = "limelight-br";
     }
 }

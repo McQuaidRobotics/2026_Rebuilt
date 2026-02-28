@@ -187,9 +187,9 @@ public class Robot extends LoggedRobot {
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
-                        new Swerve(true),
+                        new Swerve(false),
                         new LimeLightVision(),
-                        new Led(60, 1),
+                        new Led(80, 1),
                         new Shooter(),
                         new Indexer(),
                         new Intake(),
@@ -220,14 +220,12 @@ public class Robot extends LoggedRobot {
                         new Indexer(),
                         new Intake(),
                         new Climber(),
-                        new Luma(false, "object-detection"));
+                        new Luma(true, "object-detection"));
         setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
         setUpTest(subsytems);
         bindDriverController();
-
-        System.out.println();
 
         subsystemTriggers.SetupTriggers(subsytems, driverController);
     }
@@ -265,10 +263,10 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-        // THE COORDINATES LOOK WEIRD WHEN THERE ARE MULTIPLE FUEL, needs tuning
-        DogLog.log(
-                "Subsystems/Vision/ObjectDetection/Closest Game Piece",
-                subsytems.luma.getClosestGamePiece());
+        // // THE COORDINATES LOOK WEIRD WHEN THERE ARE MULTIPLE FUEL, needs tuning
+        // DogLog.log(
+        //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
+        //         subsytems.luma.getClosestGamePiece());
         FieldVisualizer.getInstance().testZeroedComponents();
         FieldVisualizer.getInstance()
                 .updateTurret(
@@ -299,14 +297,17 @@ public class Robot extends LoggedRobot {
                         currentPose,
                         subsytems.vision.getLastTimeStamp(),
                         VecBuilder.fill(
-                                0.05, 0.05, 0.1)); // trusts vision rotation less. Needs tuning
+                                0.07, 0.07, 0.01)); // trusts vision rotation less. Needs tuning
                 // increase the std devs to trust vision less
+                DogLog.log("Subsystems/Vision/Null Pose", false);
+            } else {
+                DogLog.log("Subsystems/Vision/Null Pose", true);
             }
         }
     }
 
     public void bindDriverController() {
-        driverController.bind(subsytems, DriverController.DebugType.SHOOTER);
+        driverController.bind(subsytems);
     }
 
     @Override
