@@ -30,7 +30,6 @@ public class TeleopSwerveJoystickRepulsor extends Command {
     private final TunableDouble translationMod;
     private final TunableDouble rotationMod;
     private static final boolean demo = false;
-    private final Repulsor repulsor = new Repulsor();
 
     public TeleopSwerveJoystickRepulsor(Swerve swerve, DriverController controller) {
         this.swerve = swerve;
@@ -59,22 +58,32 @@ public class TeleopSwerveJoystickRepulsor extends Command {
     }
 
     protected Translation2d translationStick() {
-        double repulseMod = 10000.0;
+        double repulseMod = .05;
         ArrayList<obstacle> obstacles = FieldConstants.OBSTACLES.ALL_OBSTACLES;
         double rawX = rawTranslationXSup.getAsDouble();
         double rawY = rawTranslationYSup.getAsDouble();
         double angle = Math.atan2(rawY, rawX);
         double rawMagnitude = solveJoystickDiagonalDelta(rawX, rawY);
+        double XRepulse = Repulsor.getXRepulse(swerve.getState().Pose, obstacles) * repulseMod;
+        double YRepulse = Repulsor.getYRepulse(swerve.getState().Pose, obstacles) * repulseMod;
         rawMagnitude = MathUtil.clamp(rawMagnitude, -1, 1);
         double magnitude =
                 ControllerConstants.TELEOP_TRANSLATION_AXIS_CURVE.lerpKeepSign(rawMagnitude);
         if (demo) magnitude *= translationMod.value();
         double processedX = magnitude * Math.cos(angle);
         double processedY = magnitude * Math.sin(angle);
-        double repulseProcessedX =
-                processedX + repulsor.getXRepulse(swerve.getState().Pose, obstacles) * repulseMod;
-        double repulseProcessedY =
-                processedY + repulsor.getYRepulse(swerve.getState().Pose, obstacles) * repulseMod;
+        double repulseProcessedX = processedX;
+        double repulseProcessedY = processedY;
+        if (XRepulse != 0 && YRepulse != 0) {
+        repulseProcessedX += XRepulse;
+        }
+        if (YRepulse != 0) {
+        repulseProcessedY += YRepulse;
+    }
+                DogLog.log("Commands/repulsor/Teleop/TeleopXRepulse", XRepulse);
+                DogLog.log("Commands/repulsor/Teleop/XForce", repulseProcessedX);
+                DogLog.log("Commands/repulsor/Teleop/TeleopYRepulse", YRepulse);
+                DogLog.log("Commands/repulsor/Teleop/YForce", repulseProcessedY);
         if (Robot.isBlue()) {
             DogLog.log("TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
             return new Translation2d(-repulseProcessedY, repulseProcessedX);

@@ -303,7 +303,7 @@ public class Robot extends LoggedRobot {
     }
 
     public void bindDriverController() {
-        driverController.bind(subsytems, DriverController.DebugType.SHOOTER);
+        driverController.bind(subsytems);
     }
 
     @Override

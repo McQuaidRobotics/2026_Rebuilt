@@ -12,8 +12,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
+import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import java.util.ArrayList;
@@ -83,6 +86,14 @@ public class Repulsor {
             DogLog.log("Commands/repulsor/MaxDeltaTime", maxTime);
         }
         return -xRepelForce;
+    }
+
+    public static double getXAttraction(Pose2d currentPose, final Subsystems subsystems) {
+        var luma = subsystems.luma;
+        return luma.getClosestGamePiece().getX() - currentPose.getX();
+    }
+
+    public static double getYAttraction(Pose2d currentPose) {
     }
 
     // find attractive force to goal in the x
@@ -228,7 +239,7 @@ public class Repulsor {
         return yGoalDist;
     }
 
-    public static Command moveWithRepulsor(Swerve swerve, Pose2d targetPose, double strength) {
+    public static Command moveWithRepulsor(Swerve swerve, Pose2d targetPose) {
         ArrayList<obstacle> obstacles = FieldConstants.OBSTACLES.ALL_OBSTACLES;
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
@@ -246,12 +257,12 @@ public class Repulsor {
                     double xVelo =
                             10
                                     * -(getXGoal(currentPose, targetPose)
-                                            + getXRepulse(currentPose, obstacles));
+                                            + getXRepulse(currentPose, obstacles) + getXAttraction(currentPose));
                     DogLog.log("Commands/repulsor/xRepel", getXRepulse(currentPose, obstacles));
                     double yVelo =
                             10
                                     * -(getYGoal(currentPose, targetPose)
-                                            + getYRepulse(currentPose, obstacles, targetPose));
+                                            + getYRepulse(currentPose, obstacles, targetPose) + getYAttraction(currentPose));
                     DogLog.log(
                             "Commands/repulsor/yRepel",
                             getYRepulse(currentPose, obstacles, targetPose));

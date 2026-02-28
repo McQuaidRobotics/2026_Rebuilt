@@ -10,12 +10,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.ClimberCommands;
 import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
-import igknighters.commands.IntakeCommands;
 import igknighters.commands.Repulsor;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
-import igknighters.commands.teleop.TeleopSwerveJoystickRepulsor;
+import igknighters.commands.teleop.TeleopSwerveJoystickHeadingCmd;
 import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
@@ -170,22 +169,24 @@ public class DriverController {
         DrivingSharedState state = DrivingSharedState.getInstance();
         var swerve = subsystems.swerve;
         var intake = subsystems.intake;
+        var luma = subsystems.luma;
 
         this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
+        // this.A.whileTrue(
+        new TeleopSwerveHeadingCmd(swerve, this, 45.0, state.kP, state.kI, state.kD);
+        this.B.whileTrue(
+                new TeleopSwerveJoystickHeadingCmd(
+                        swerve, this, 45.0, state.kP, state.kI, state.kD));
         this.A.whileTrue(
-                new TeleopSwerveHeadingCmd(swerve, this, 45.0, state.kP, state.kI, state.kD));
-        this.B.whileTrue(new TeleopSwerveJoystickRepulsor(swerve, this));
-        this.Y.whileTrue(
                 Repulsor.moveWithRepulsor(
                         swerve,
                         new Pose2d(
                                 Units.inchesToMeters(651.22 / 2),
                                 Units.inchesToMeters(317.69 / 2),
-                                new Rotation2d()),
-                        2));
+                                new Rotation2d())));
 
-        this.A.whileTrue(IntakeCommands.goToIntake(subsystems.intake));
-        this.A.onFalse(IntakeCommands.goToStow(subsystems.intake));
+        // this.A.whileTrue(IntakeCommands.goToIntake(subsystems.intake));
+        // this.A.onFalse(IntakeCommands.goToStow(subsystems.intake));
 
         this.LT.whileTrue(
                 ShooterCommands.shootWithMaxHeight(
