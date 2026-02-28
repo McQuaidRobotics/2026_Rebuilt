@@ -156,7 +156,9 @@ public class AimSolver {
                         Degrees.of(bestThetaHoodDegrees));
             } else {
                 return new ShooterState(
-                        RPM.of(bestRPM), Radians.of(turretAngle), Degrees.of(bestThetaHoodDegrees));
+                        RPM.of(bestRPM),
+                        Radians.of(-turretAngle),
+                        Degrees.of(bestThetaHoodDegrees));
             }
         }
 
