@@ -51,13 +51,17 @@ public class FieldConstants {
                         new Rotation3d());
 
         public static final Pose3d POSITION_LEFT_BLUE =
-                new Pose3d(0.0, FieldConstants.Y_FIELD, 0.0, new Rotation3d());
+                new Pose3d(2, FieldConstants.Y_FIELD - 2, 0.0, new Rotation3d());
 
         public static final Pose3d POSITION_RIGHT_RED =
-                new Pose3d(FieldConstants.X_FIELD - 0.0, 0.0, 0.0, new Rotation3d());
+                new Pose3d(FieldConstants.X_FIELD - 2, 2, 0.0, new Rotation3d());
 
         public static final Pose3d POSITION_LEFT_RED =
-                new Pose3d(FieldConstants.X_FIELD, FieldConstants.Y_FIELD, 0.0, new Rotation3d());
+                new Pose3d(
+                        FieldConstants.X_FIELD - 2,
+                        FieldConstants.Y_FIELD - 2,
+                        0.0,
+                        new Rotation3d());
     }
 
     public static class OBSTACLES {

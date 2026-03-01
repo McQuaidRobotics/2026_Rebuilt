@@ -2,7 +2,6 @@ package igknighters.subsystems.shooter.turret;
 
 import static edu.wpi.first.units.Units.Degrees;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.units.measure.Angle;
 import igknighters.util.log.Log;
 

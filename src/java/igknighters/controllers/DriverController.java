@@ -177,14 +177,17 @@ public class DriverController {
         var indexer = subsystems.indexer;
         var shooter = subsystems.shooter;
 
-        this.LB.whileTrue(IntakeCommands.goToIntake(intake)).onFalse(IntakeCommands.goToStow(intake));
-        this.LT.whileTrue(
-                ShooterCommands.shootWithMaxHeightIterative(
-                        shooter,
-                        () -> swerve.getState().Pose,
-                        swerve::getFieldRelativeSpeeds,
-                        5.0)).onFalse(ShooterCommands.idleCommand(
-                        shooter, () -> swerve.getState().Pose, swerve::getFieldRelativeSpeeds));
+        this.LB
+                .whileTrue(IntakeCommands.goToIntake(intake))
+                .onFalse(IntakeCommands.goToStow(intake));
+        this.LT
+                .whileTrue(HigherOrderCommands.rapidFireStream(subsystems))
+                .onFalse(
+                        ShooterCommands.idleCommand(
+                                shooter,
+                                () -> swerve.getState().Pose,
+                                swerve::getFieldRelativeSpeeds));
+
         this.RT.whileTrue(IndexerCommands.dispense(indexer));
         this.RT.onFalse(IndexerCommands.stopDispensing(indexer));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));

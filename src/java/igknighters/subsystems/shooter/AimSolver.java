@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -26,7 +25,6 @@ import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import igknighters.util.log.Log;
-
 import org.littletonrobotics.junction.Logger;
 
 public class AimSolver {
@@ -42,7 +40,8 @@ public class AimSolver {
             hasBeenAdded = true;
         }
 
-        public static TunableDouble effiencyConst = TunableValues.getDouble("Shooter/EfficiencyConst", 2.0);
+        public static TunableDouble effiencyConst =
+                TunableValues.getDouble("Shooter/EfficiencyConst", 2.0);
 
         public static void canShoot(boolean canShoot) {
             publishOnce();
@@ -97,10 +96,9 @@ public class AimSolver {
             double minRPMDiff = Double.MAX_VALUE;
 
             // 2. Iterative Arc Search
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 3; i++) {
                 // Search heights between target + 1m and max ceiling
-                double currentCeilingHeight =
-                        tz + 2.0 + (i * (maxHeightMeters - (tz + 2.0)) / 10.0);
+                double currentCeilingHeight = tz + 2.0 + (i * (maxHeightMeters - (tz + 2.0)) / 3.0);
 
                 double hRise = currentCeilingHeight - sz;
                 double hFall = currentCeilingHeight - tz;
