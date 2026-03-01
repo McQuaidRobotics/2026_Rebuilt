@@ -75,15 +75,15 @@ public class TeleopSwerveJoystickRepulsor extends Command {
         double repulseProcessedX = processedX;
         double repulseProcessedY = processedY;
         if (XRepulse != 0 && YRepulse != 0) {
-        repulseProcessedX += XRepulse;
+            repulseProcessedX += XRepulse;
         }
         if (YRepulse != 0) {
-        repulseProcessedY += YRepulse;
-    }
-                DogLog.log("Commands/repulsor/Teleop/TeleopXRepulse", XRepulse);
-                DogLog.log("Commands/repulsor/Teleop/XForce", repulseProcessedX);
-                DogLog.log("Commands/repulsor/Teleop/TeleopYRepulse", YRepulse);
-                DogLog.log("Commands/repulsor/Teleop/YForce", repulseProcessedY);
+            repulseProcessedY += YRepulse;
+        }
+        DogLog.log("Commands/repulsor/Teleop/TeleopXRepulse", XRepulse);
+        DogLog.log("Commands/repulsor/Teleop/XForce", repulseProcessedX);
+        DogLog.log("Commands/repulsor/Teleop/TeleopYRepulse", YRepulse);
+        DogLog.log("Commands/repulsor/Teleop/YForce", repulseProcessedY);
         if (Robot.isBlue()) {
             DogLog.log("TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
             return new Translation2d(-repulseProcessedY, repulseProcessedX);
