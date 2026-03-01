@@ -2,7 +2,6 @@ package igknighters.subsystems.shooter.flywheel;
 
 import static edu.wpi.first.units.Units.RPM;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -14,6 +13,7 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
+import igknighters.util.log.Log;
 
 public class FlywheelSimulator extends Flywheel {
 
@@ -109,19 +109,19 @@ public class FlywheelSimulator extends Flywheel {
 
         // Logging
 
-        DogLog.log("Subsystems/Shooter/Rollers/SimVoltage", voltage);
+        Log.log("Subsystems/Shooter/Rollers/SimVoltage", voltage);
 
-        DogLog.log("Subsystems/Shooter/Rollers/SimSpeedRPM", currentRPM);
+        Log.log("Subsystems/Shooter/Rollers/SimSpeedRPM", currentRPM);
 
-        DogLog.log("Subsystems/Shooter/Rollers/GoalSpeedRPM", goalRPM);
+        Log.log("Subsystems/Shooter/Rollers/GoalSpeedRPM", goalRPM);
 
-        DogLog.log(
+        Log.log(
                 "Subsystems/Shooter/Rollers/PIDOutputRPM",
                 profiledPIDController.getPositionError());
 
-        DogLog.log("Subsystems/Shooter/Rollers/PIDVolts", pidOutput);
+        Log.log("Subsystems/Shooter/Rollers/PIDVolts", pidOutput);
 
-        DogLog.log("Subsystems/Shooter/Rollers/FFVolts", ffOutput);
+        Log.log("Subsystems/Shooter/Rollers/FFVolts", ffOutput);
 
         // Apply to sim
 

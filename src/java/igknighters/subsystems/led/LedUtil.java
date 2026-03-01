@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Microsecond;
 import static edu.wpi.first.units.Units.Seconds;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.util.struct.Struct;
@@ -17,6 +16,7 @@ import edu.wpi.first.wpilibj.LEDWriter;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.util.Color;
 import igknighters.Robot;
+import igknighters.util.log.Log;
 import java.nio.ByteBuffer;
 
 public class LedUtil {
@@ -145,9 +145,9 @@ public class LedUtil {
             blue[i] = color.blue;
         }
 
-        DogLog.log("Commands/" + name + "Led/Reds", red);
-        DogLog.log("Commands/" + name + "Led/Greens", green);
-        DogLog.log("Commands/" + name + "Led/Blues", blue);
+        Log.log("Commands/" + name + "Led/Reds", red);
+        Log.log("Commands/" + name + "Led/Greens", green);
+        Log.log("Commands/" + name + "Led/Blues", blue);
     }
 
     public static class NamedLEDPattern implements LEDPattern {

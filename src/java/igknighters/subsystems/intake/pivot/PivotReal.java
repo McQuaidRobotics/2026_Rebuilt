@@ -12,11 +12,11 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import dev.doglog.DogLog;
 import edu.wpi.first.units.measure.Angle;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIntake;
+import igknighters.util.log.Log;
 
 public class PivotReal extends Pivot {
     private TalonFX pivotMotor;
@@ -93,14 +93,14 @@ public class PivotReal extends Pivot {
     public void goToAngle(Angle angle) {
         targetDegrees = angle.in(Degrees);
         beingCommanded = true;
-        DogLog.log("Subsystems/Intake/Pivot/Stopped", false);
+        Log.log("Subsystems/Intake/Pivot/Stopped", false);
         pivotMotor.setControl(motionMagicControl.withPosition(angle.in(Rotation)));
     }
 
     @Override
     public void stop() {
         beingCommanded = true;
-        DogLog.log("Subsystems/Intake/Pivot/Stopped", true);
+        Log.log("Subsystems/Intake/Pivot/Stopped", true);
         pivotMotor.setVoltage(0.0);
     }
 
@@ -112,11 +112,8 @@ public class PivotReal extends Pivot {
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(rps, angleRotations);
-        double angleDegrees = angleRotations.getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
-        double angleRPM = rps.getValueAsDouble() * 60.0;
-        DogLog.log("Subsystems/Intake/Pivot/Being Commanded Currently", beingCommanded);
-        DogLog.log("Subsystems/Intake/Pivot/AngleDegrees", angleDegrees);
-        DogLog.log("Subsystems/Intake/Pivot/AngleRPM", angleRPM);
-        DogLog.log("Subsystems/Intake/Pivot/Target", targetDegrees);
+        Log.log("Subsystems/Intake/Pivot/Being Commanded Currently", beingCommanded);
+        Log.logMotor("Subsystems/Intake/Pivot/Motor", pivotMotor);
+        Log.log("Subsystems/Intake/Pivot/Target", targetDegrees);
     }
 }

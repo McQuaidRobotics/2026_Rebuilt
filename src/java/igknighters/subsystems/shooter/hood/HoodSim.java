@@ -2,8 +2,8 @@ package igknighters.subsystems.shooter.hood;
 
 import static edu.wpi.first.units.Units.Degrees;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.units.measure.Angle;
+import igknighters.util.log.Log;
 
 public class HoodSim extends Hood {
     double currentAngleDegrees = 0.0;
@@ -11,8 +11,8 @@ public class HoodSim extends Hood {
     @Override
     public void periodic() {
 
-        DogLog.log("Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());
-        DogLog.log("Subsystems/Shooter/Hood/TargetDegrees", super.targetDegrees);
+        Log.log("Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());
+        Log.log("Subsystems/Shooter/Hood/TargetDegrees", super.targetDegrees);
     }
 
     @Override
