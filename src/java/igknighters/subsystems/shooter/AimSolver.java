@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import igknighters.FieldVisualizer;
 import igknighters.Robot;
+import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
@@ -91,7 +92,7 @@ public class AimSolver {
             double floorDistance = Math.hypot(dx, dy); // Total horizontal distance
 
             double bestRPM = 0.0;
-            double bestThetaHoodDegrees = SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES;
+            double bestThetaHoodDegrees = 0.0;
             double bestV = 0.0;
             double minRPMDiff = Double.MAX_VALUE;
 
@@ -142,9 +143,10 @@ public class AimSolver {
                             Math.sin(absoluteFieldAngle - robotYawFuture),
                             Math.cos(absoluteFieldAngle - robotYawFuture));
 
-            if (bestRPM != 0) {
+            if (bestRPM != 0 && bestThetaHoodDegrees != 0) {
                 canShoot(true);
                 // We pass absoluteFieldAngle so the trajectory line points at the target
+                AbleToShootSharedState.getInstance().setPossibleShot(true);
                 publishShotTrajectory(
                         bestV,
                         Math.toRadians(90 - bestThetaHoodDegrees),
@@ -153,6 +155,7 @@ public class AimSolver {
                         targetPose);
             } else {
                 canShoot(false);
+                AbleToShootSharedState.getInstance().setPossibleShot(false);
             }
 
             if (Robot.isBlue()) {

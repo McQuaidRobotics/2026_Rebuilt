@@ -112,11 +112,11 @@ public class SubsystemTriggers {
         // Bind LED commands to the canShootTrigger
 
         ableToShootState
-                .canShootTrigger()
+                .atCommandedStateTrigger()
                 .and(ableToShootState.beingControlledTrigger())
                 .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kYellow)));
         ableToShootState
-                .canShootTrigger()
+                .atCommandedStateTrigger()
                 .and(ableToShootState.beingControlledTrigger().negate())
                 .whileFalse(LEDCommands.run(led, LEDPattern.solid(Color.kPurple)));
     }

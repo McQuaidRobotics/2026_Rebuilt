@@ -28,7 +28,7 @@ public class Indexer extends SubsystemBase {
         spindexer.goToRPM(RPM);
     }
 
-    public double getRPM() {
+    public double getSpindexerRPM() {
         return spindexer.getRPM();
     }
 

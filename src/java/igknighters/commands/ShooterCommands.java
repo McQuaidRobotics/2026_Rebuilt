@@ -9,7 +9,9 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
+import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
@@ -176,6 +178,7 @@ public class ShooterCommands {
             double velocity) {
         return shooter.run(
                         () -> {
+                            AbleToShootSharedState.getInstance().setBeingControlled(true);
                             Pose2d robotPose = robotPoseSupplier.get();
                             Pose3d targetPose = targetPoseSupplier.get();
                             ShooterState targetingData =
@@ -221,6 +224,7 @@ public class ShooterCommands {
                             Pose2d robotPose2d = robotPose.get();
                             Pose3d targetPose = getTargetPose(robotPose);
                             double velocity = getRPM(robotPose, () -> targetPose, shooter);
+                            AbleToShootSharedState.getInstance().setBeingControlled(true);
 
                             ShooterState targetingData =
                                     AimSolver.Solvers.solve_simple_no_AR_or_FutureTiming(
@@ -268,6 +272,7 @@ public class ShooterCommands {
         return shooter.run(
                         () -> {
                             Pose2d robotPose2d = robotPose.get();
+                            AbleToShootSharedState.getInstance().setBeingControlled(true);
                             Pose3d targetPose = getTargetPose(robotPose);
                             double velocity = getRPM(robotPose, () -> targetPose, shooter);
 
@@ -316,12 +321,23 @@ public class ShooterCommands {
                 .withName("Aiming at auto chosen target with look ahead");
     }
 
+    public static Command shoot(
+            Shooter shooter,
+            Supplier<Pose2d> robotPoseSupplier,
+            Supplier<ChassisSpeeds> robotVelocitySupplier) {
+        return Commands.sequence(
+                Commands.runOnce(
+                        () -> AbleToShootSharedState.getInstance().setBeingControlled(true)),
+                shootWithMaxHeightIterative(shooter, robotPoseSupplier, robotVelocitySupplier, 4));
+    }
+
     public static Command idleCommand(
             Shooter shooter,
             Supplier<Pose2d> robotPoseSupplier,
             Supplier<ChassisSpeeds> robotVelocitySupplier) {
         return shooter.run(
                 () -> {
+                    AbleToShootSharedState.getInstance().setBeingControlled(false);
                     Pose2d robotPose2d = robotPoseSupplier.get();
                     Pose3d targetPose = getTargetPose(robotPoseSupplier);
                     ChassisSpeeds robotVel = robotVelocitySupplier.get();
