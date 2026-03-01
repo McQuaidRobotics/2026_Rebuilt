@@ -1,9 +1,5 @@
 package igknighters.subsystems.shooter.solvers;
-import java.util.function.Supplier;
 
-import org.littletonrobotics.junction.Logger;
-
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -12,45 +8,53 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
+import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
+
 public abstract class Solver {
 
-    public abstract ShooterState solve(Supplier<Pose3d> shooterPose, Supplier<Pose3d> targetPose, Supplier<ChassisSpeeds> chassisSpeeds, double currentRPM, double maxHeightMeters);
+    public abstract ShooterState solve(
+            Supplier<Pose3d> shooterPose,
+            Supplier<Pose3d> targetPose,
+            Supplier<ChassisSpeeds> chassisSpeeds,
+            double currentRPM,
+            double maxHeightMeters);
+
     static Mechanism2d canSHOOTMECH = new Mechanism2d(20, 20);
-        static boolean hasBeenAdded = false;
+    static boolean hasBeenAdded = false;
 
-        public static void publishOnce() {
-            if (!hasBeenAdded) {
-                SmartDashboard.putData("Visualizers/Shooter/CAN SHOOT", canSHOOTMECH);
-            }
-            hasBeenAdded = true;
+    public static void publishOnce() {
+        if (!hasBeenAdded) {
+            SmartDashboard.putData("Visualizers/Shooter/CAN SHOOT", canSHOOTMECH);
         }
+        hasBeenAdded = true;
+    }
 
-        public static void canShoot(boolean canShoot) {
-            publishOnce();
-            if (canShoot) {
-                canSHOOTMECH.setBackgroundColor(new Color8Bit(Color.kGreen));
-            } else {
-                canSHOOTMECH.setBackgroundColor(new Color8Bit(Color.kRed));
-            }
+    public static void canShoot(boolean canShoot) {
+        publishOnce();
+        if (canShoot) {
+            canSHOOTMECH.setBackgroundColor(new Color8Bit(Color.kGreen));
+        } else {
+            canSHOOTMECH.setBackgroundColor(new Color8Bit(Color.kRed));
         }
+    }
 
     public static Translation2d addDToTargetWithAirResistance(
-                Pose3d targetPose, Pose3d shooterPose) {
-            double d = shooterPose.getTranslation().getDistance(targetPose.getTranslation());
+            Pose3d targetPose, Pose3d shooterPose) {
+        double d = shooterPose.getTranslation().getDistance(targetPose.getTranslation());
 
-            // this is complete bs
-            double angleToTarget =
-                    Math.atan2(
-                            targetPose.getY() - shooterPose.getY(),
-                            targetPose.getX() - shooterPose.getX());
-            double p = d / 1.5;
+        // this is complete bs
+        double angleToTarget =
+                Math.atan2(
+                        targetPose.getY() - shooterPose.getY(),
+                        targetPose.getX() - shooterPose.getX());
+        double p = d / 1.5;
 
-            double px = Math.cos(angleToTarget) * p;
-            double py = Math.sin(angleToTarget) * p;
+        double px = Math.cos(angleToTarget) * p;
+        double py = Math.sin(angleToTarget) * p;
 
-            return new Translation2d(px, py);
+        return new Translation2d(px, py);
     }
 
     public static double getShotTime(

@@ -181,12 +181,7 @@ public class DriverController {
 
         this.A.whileTrue(IntakeCommands.goToIntake(intake));
         this.A.onFalse(IntakeCommands.goToStow(intake));
-        this.LT.whileTrue(
-                ShooterCommands.shootWithMaxHeightIterative(
-                        shooter,
-                        () -> swerve.getState().Pose,
-                        swerve::getFieldRelativeSpeeds,
-                        5.0));
+        this.LT.whileTrue(HigherOrderCommands.rapidFireStream(subsystems));
         this.LT.onFalse(
                 ShooterCommands.idleCommand(
                         shooter, () -> swerve.getState().Pose, swerve::getFieldRelativeSpeeds));

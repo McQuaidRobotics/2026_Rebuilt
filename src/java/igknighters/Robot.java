@@ -385,6 +385,7 @@ public class Robot extends LoggedRobot {
             double currentTime = RobotController.getFPGATime() / 1.0e6;
             if (subsytems.indexer.getExitRollerRPM() > 50.0
                     && subsytems.shooter.getCurrentState().flywheelSpeed.in(RPM) > 500.0
+                    && subsytems.indexer.getSpindexerRPM() > 50.0
                     && (currentTime - lastShotTime) > 0.1) { // 0.1s cooldown
 
                 var shooterState = subsytems.shooter.getCurrentState();
