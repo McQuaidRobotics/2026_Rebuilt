@@ -96,10 +96,9 @@ public class AimSolver {
             double minRPMDiff = Double.MAX_VALUE;
 
             // 2. Iterative Arc Search
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 3; i++) {
                 // Search heights between target + 1m and max ceiling
-                double currentCeilingHeight =
-                        tz + 2.0 + (i * (maxHeightMeters - (tz + 2.0)) / 10.0);
+                double currentCeilingHeight = tz + 2.0 + (i * (maxHeightMeters - (tz + 2.0)) / 3.0);
 
                 double hRise = currentCeilingHeight - sz;
                 double hFall = currentCeilingHeight - tz;

@@ -20,6 +20,10 @@ public class IndexerCommands {
                 .withName("STOPPING");
     }
 
+    public static Command justStop(Indexer indexer) {
+        return indexer.runOnce(() -> indexer.goToState(IndexerState.STOP)).withName("JUST STOP");
+    }
+
     public static BooleanSupplier isBallPresent() {
         return () -> false;
     }

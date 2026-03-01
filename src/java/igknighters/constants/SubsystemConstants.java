@@ -168,7 +168,7 @@ public class SubsystemConstants {
             public static final double kV = 0.1;
             public static final double kA = 0.02;
             public static final double ShooterHeightMeters =
-                    .4; // 40 cm this is made up it will be off ground though
+                    .5; // 40 cm this is made up it will be off ground though
             public static final double PEAK_CURRENT_LIMIT = 40;
             public static final double SUPPLY_CURRENT_LIMIT = 30;
         }

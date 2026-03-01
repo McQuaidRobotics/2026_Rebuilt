@@ -46,13 +46,27 @@ public class HigherOrderCommands {
         Command smartFeed =
                 Commands.either(
                         IndexerCommands.dispense(subsystems.indexer),
-                        IndexerCommands.stopDispensing(subsystems.indexer),
+                        IndexerCommands.justStop(subsystems.indexer),
                         AbleToShootSharedState.getInstance()
                                 .atCommandedStateTrigger()
-                                .and(AbleToShootSharedState.getInstance().atCommandedStateTrigger())
+                                .and(AbleToShootSharedState.getInstance().beingControlledTrigger())
                                 .and(AbleToShootSharedState.getInstance().shotPosible()));
 
         return Commands.parallel(shooterCommand, smartFeed.repeatedly()).withName("SMART STREAM");
+    }
+
+    public static Command forceDispense(Subsystems subsystems) {
+        // 1. The Active Shooter (Tracks and spools continuously)
+        Command shooterCommand =
+                ShooterCommands.shoot(
+                                subsystems.shooter,
+                                () -> subsystems.swerve.getState().Pose,
+                                subsystems.swerve::getFieldRelativeSpeeds)
+                        .withName("Active Spool & Aim");
+
+        return Commands.parallel(
+                        shooterCommand, IndexerCommands.dispense(subsystems.indexer).repeatedly())
+                .withName("SMART STREAM");
     }
 
     public static Pose2d getClimbStartPose() {
