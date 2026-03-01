@@ -1,6 +1,6 @@
 package igknighters.subsystems.indexer.launcherRollers;
 
-import dev.doglog.DogLog;
+import igknighters.util.log.Log;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -96,14 +96,14 @@ public class ExitRollersSim extends ExitRollers {
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
 
         // Logging
-        DogLog.log("Subsystems/Indexer/ExitRollers/SimVoltage", voltage);
-        DogLog.log("Subsystems/Indexer/ExitRollers/SimSpeedRPM", currentRPM);
-        DogLog.log("Subsystems/Indexer/ExitRollers/GoalSpeedRPM", goalRPM);
-        DogLog.log(
+        Log.log("Subsystems/Indexer/ExitRollers/SimVoltage", voltage);
+        Log.log("Subsystems/Indexer/ExitRollers/SimSpeedRPM", currentRPM);
+        Log.log("Subsystems/Indexer/ExitRollers/GoalSpeedRPM", goalRPM);
+        Log.log(
                 "Subsystems/Indexer/ExitRollers/PIDOutputRPM",
                 profiledPIDController.getPositionError());
-        DogLog.log("Subsystems/Indexer/ExitRollers/PIDVolts", pidOutput);
-        DogLog.log("Subsystems/Indexer/ExitRollers/FFVolts", ffOutput);
+        Log.log("Subsystems/Indexer/ExitRollers/PIDVolts", pidOutput);
+        Log.log("Subsystems/Indexer/ExitRollers/FFVolts", ffOutput);
 
         // Apply to sim
         leaderflywheelSim.setInputVoltage(voltage);

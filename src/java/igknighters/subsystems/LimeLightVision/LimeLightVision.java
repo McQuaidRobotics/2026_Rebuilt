@@ -1,6 +1,6 @@
 package igknighters.subsystems.LimeLightVision;
 
-import dev.doglog.DogLog;
+import igknighters.util.log.Log;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
@@ -40,7 +40,7 @@ public class LimeLightVision extends SubsystemBase {
             double pitchRate,
             double roll,
             double rollRate) {
-        DogLog.log("Subsystems/Vison/Limelight/ENABLED", true);
+        Log.log("Subsystems/Vison/Limelight/ENABLED", true);
         return vision.getRobotPoseFromVision(yaw, yawRate, pitch, pitchRate, roll, rollRate);
     }
 }

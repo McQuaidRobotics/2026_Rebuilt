@@ -1,6 +1,7 @@
 package igknighters.subsystems.climber.servos;
 
-import dev.doglog.DogLog;
+
+import igknighters.util.log.Log;
 
 public class ServosSim extends Servos {
 
@@ -18,6 +19,6 @@ public class ServosSim extends Servos {
 
     @Override
     public void periodic() {
-        DogLog.log("Subsystems/Climber/Servos/Deployed", deployed);
+        Log.log("Subsystems/Climber/Servos/Deployed", deployed);
     }
 }

@@ -6,7 +6,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import dev.doglog.DogLog;
+import igknighters.util.log.Log;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -79,13 +79,13 @@ public class TeleopSwerveTargetingFutureCmd extends TeleopSwerveBaseCmd {
 
         double error = wrapAngleRadians(desiredAngleRad - futureAngleRad);
 
-        DogLog.log(
+        Log.log(
                 "Robot/Commands/Swerve/TeleopSwerveTargetingFutureCmd/Desired Angle (deg)",
                 Math.toDegrees(desiredAngleRad));
-        DogLog.log(
+        Log.log(
                 "Robot/Commands/Swerve/TeleopSwerveTargetingFutureCmd/Current Angle (deg)",
                 Math.toDegrees(futureAngleRad));
-        DogLog.log(
+        Log.log(
                 "Robot/Commands/Swerve/TeleopSwerveTargetingFutureCmd/Wrapped Error (deg)",
                 Math.toDegrees(error));
 

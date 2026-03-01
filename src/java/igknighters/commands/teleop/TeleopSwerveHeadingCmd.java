@@ -6,7 +6,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import dev.doglog.DogLog;
+import igknighters.util.log.Log;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.controllers.DriverController;
@@ -42,13 +42,13 @@ public class TeleopSwerveHeadingCmd extends TeleopSwerveBaseCmd {
         double omega =
                 rotationController.calculate(
                         swerve.getState().Pose.getRotation().getDegrees(), heading);
-        DogLog.log(
+        Log.log(
                 "Robot/Commands/Swerve/TeleopSwerveHeadingCmd/Swerve Heading: ",
                 (swerve.getState().Pose.getRotation().getDegrees()));
-        DogLog.log(
+        Log.log(
                 "Robot/Commands/Swerve/TeleopSwerveHeadingCmd/error: ",
                 (swerve.getState().Pose.getRotation().getDegrees() - heading));
-        DogLog.log("Robot/Commands/Swerve/TeleopSwerveHeadingCmd/PID CALCULATION: ", omega);
+        Log.log("Robot/Commands/Swerve/TeleopSwerveHeadingCmd/PID CALCULATION: ", omega);
         Translation2d vt = translationStick();
 
         double allianceFlipper = 1.0;

@@ -4,7 +4,7 @@ import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import choreo.trajectory.Trajectory;
-import dev.doglog.DogLog;
+import igknighters.util.log.Log;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -36,7 +36,7 @@ public class AutoCommands {
     }
 
     protected void logAutoEvent(String message, String event) {
-        DogLog.log("Robot/Commands/Autos", message + " is " + event);
+        Log.log("Robot/Commands/Autos", message + " is " + event);
     }
 
     protected Command loggedCmd(Command command) {
@@ -88,7 +88,7 @@ public class AutoCommands {
             final AtomicBoolean flag = new AtomicBoolean(false);
             headCommand.addCommands(Commands.print(bodyCommand.getRequirements().toString()));
             bodyCommand.addCommands(
-                    Commands.runOnce(() -> DogLog.log("Robot/Autos/ending the auto", true)),
+                    Commands.runOnce(() -> Log.log("Robot/Autos/ending the auto", true)),
                     new ScheduleCommand(Commands.runOnce(() -> flag.set(true))));
             routine.active()
                     .onTrue(
@@ -171,7 +171,7 @@ public class AutoCommands {
     }
 
     protected RebuiltAuto newRebuiltAuto(String name) {
-        DogLog.log("Robot/Commands/Autos/Creation", "Creating new rebuilt auto: " + name);
+        Log.log("Robot/Commands/Autos/Creation", "Creating new rebuilt auto: " + name);
         return new RebuiltAuto(autoFactory.newRoutine(name));
     }
 }

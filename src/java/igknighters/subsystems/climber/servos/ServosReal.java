@@ -1,6 +1,6 @@
 package igknighters.subsystems.climber.servos;
 
-import dev.doglog.DogLog;
+import igknighters.util.log.Log;
 import edu.wpi.first.wpilibj.Servo;
 import igknighters.constants.SubsystemConstants;
 
@@ -28,7 +28,7 @@ public class ServosReal extends Servos {
 
     @Override
     public void periodic() {
-        DogLog.log("Subsystems/Climber/Servos/Deployed", deployed);
+        Log.log("Subsystems/Climber/Servos/Deployed", deployed);
         // Ensure the servo stays in position
         if (deployed) {
             servo.setAngle(SubsystemConstants.kClimber.kServos.MAX_ANGLE_DEGREES);

@@ -4,7 +4,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
 
-import dev.doglog.DogLog;
+import igknighters.util.log.Log;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -342,7 +342,7 @@ public class AimSolver {
 
             if (inside < 0) {
                 // Shot is physically impossible at this RPM
-                DogLog.log(
+                Log.log(
                         "Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM", currentRPM);
                 canShoot(false);
                 Logger.recordOutput(
@@ -354,7 +354,7 @@ public class AimSolver {
                         Degrees.of(kHood.MIN_ANGLE_DEGREES));
             }
             canShoot(true);
-            DogLog.log("Subsystems/Shooter/Aiming/SHOT IS POSSIBLE AT THIS RPM", currentRPM);
+            Log.log("Subsystems/Shooter/Aiming/SHOT IS POSSIBLE AT THIS RPM", currentRPM);
 
             double root = Math.sqrt(inside);
 
@@ -364,11 +364,11 @@ public class AimSolver {
                                     / (G * d)); // this is the ball launch angle turretTheta is 90 -
             // theta if theta in degs
             double thetaHigh = Math.atan((v * v + root) / (G * d));
-            DogLog.log("Subsystems/Shooter/Aiming/Theta Low (deg)", Math.toDegrees(thetaLow));
-            DogLog.log("Subsystems/Shooter/Aiming/Theta High (deg)", Math.toDegrees(thetaHigh));
-            DogLog.log("Subsystems/Shooter/Aiming/Distance to Target (m)", d);
-            DogLog.log("Subsystems/Shooter/Aiming/Height to Target (m)", h);
-            DogLog.log("Subsystems/Shooter/Aiming/Launch Velocity", v);
+            Log.log("Subsystems/Shooter/Aiming/Theta Low (deg)", Math.toDegrees(thetaLow));
+            Log.log("Subsystems/Shooter/Aiming/Theta High (deg)", Math.toDegrees(thetaHigh));
+            Log.log("Subsystems/Shooter/Aiming/Distance to Target (m)", d);
+            Log.log("Subsystems/Shooter/Aiming/Height to Target (m)", h);
+            Log.log("Subsystems/Shooter/Aiming/Launch Velocity", v);
 
             // You want the HIGH arc
             double hoodAngle = Math.max(thetaLow, thetaHigh);
@@ -460,16 +460,16 @@ public class AimSolver {
             // -----------------------------
             double inside = v * v * v * v - G * (G * d * d + 2 * h * v * v);
 
-            DogLog.log("Subsystems/Shooter/Aiming/Distance", d);
-            DogLog.log("Subsystems/Shooter/Aiming/Height", h);
-            DogLog.log("Subsystems/Shooter/Aiming/Robot Velocity Projection", vRobotProj);
-            DogLog.log("Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
-            DogLog.log("Subsystems/Shooter/Aiming/Launch Velocity", v);
-            DogLog.log("Subsystems/Shooter/Aiming/RPM", currentRPM);
-            DogLog.log("Subsystems/Shooter/Aiming/Ballistic Discriminant", inside);
+            Log.log("Subsystems/Shooter/Aiming/Distance", d);
+            Log.log("Subsystems/Shooter/Aiming/Height", h);
+            Log.log("Subsystems/Shooter/Aiming/Robot Velocity Projection", vRobotProj);
+            Log.log("Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
+            Log.log("Subsystems/Shooter/Aiming/Launch Velocity", v);
+            Log.log("Subsystems/Shooter/Aiming/RPM", currentRPM);
+            Log.log("Subsystems/Shooter/Aiming/Ballistic Discriminant", inside);
 
             if (inside < 0) {
-                DogLog.log(
+                Log.log(
                         "Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM", currentRPM);
                 canShoot(false);
                 Logger.recordOutput(
@@ -480,22 +480,22 @@ public class AimSolver {
             }
             canShoot(true);
 
-            DogLog.log("Subsystems/Shooter/Aiming/SHOT IS POSSIBLE AT THIS RPM", currentRPM);
+            Log.log("Subsystems/Shooter/Aiming/SHOT IS POSSIBLE AT THIS RPM", currentRPM);
 
             double root = Math.sqrt(inside);
 
             double thetaLow = Math.atan((v * v - root) / (G * d));
             double thetaHigh = Math.atan((v * v + root) / (G * d));
 
-            DogLog.log("Subsystems/Shooter/Aiming/Theta Low", thetaLow);
-            DogLog.log("Subsystems/Shooter/Aiming/Theta High", thetaHigh);
-            DogLog.log("Subsystems/Shooter/Aiming/Predicted Turret Angle", turretAngle);
+            Log.log("Subsystems/Shooter/Aiming/Theta Low", thetaLow);
+            Log.log("Subsystems/Shooter/Aiming/Theta High", thetaHigh);
+            Log.log("Subsystems/Shooter/Aiming/Predicted Turret Angle", turretAngle);
             // High arc
             double hoodAngle = Math.max(thetaLow, thetaHigh);
 
             // Convert to your mechanical hood reference
             double hoodSetpoint = Math.PI / 2 - hoodAngle;
-            DogLog.log("Subsystems/Shooter/Aiming/Predicted Hood Angle", hoodSetpoint);
+            Log.log("Subsystems/Shooter/Aiming/Predicted Hood Angle", hoodSetpoint);
 
             // Pass the predicted pose so the trajectory starts from where the robot WILL be
             publishShotTrajectory(
@@ -575,13 +575,13 @@ public class AimSolver {
             boolean possible = false;
             double v_eff = 0.0;
 
-            DogLog.log("Subsystems/Shooter/Aiming/Distance", d);
-            DogLog.log("Subsystems/Shooter/Aiming/Height", h);
-            DogLog.log(
+            Log.log("Subsystems/Shooter/Aiming/Distance", d);
+            Log.log("Subsystems/Shooter/Aiming/Height", h);
+            Log.log(
                     "Subsystems/Shooter/Aiming/TurretAngle", turretAngle * Conv.RADIANS_TO_DEGREES);
-            DogLog.log("Subsystems/Shooter/Aiming/Robot Velocity Lateral", vRobotLateral);
-            DogLog.log("Subsystems/Shooter/Aiming/Robot Velocity Radial", vRobotRadial);
-            DogLog.log("Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
+            Log.log("Subsystems/Shooter/Aiming/Robot Velocity Lateral", vRobotLateral);
+            Log.log("Subsystems/Shooter/Aiming/Robot Velocity Radial", vRobotRadial);
+            Log.log("Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
 
             for (int i = 0; i < 8; i++) {
                 double v_h = vFlywheel * Math.cos(currentGuessTheta) + vRobotRadial;
@@ -612,7 +612,7 @@ public class AimSolver {
 
             if (hoodSetpoint < kHood.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS
                     || hoodSetpoint > kHood.MAX_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS) {
-                DogLog.log(
+                Log.log(
                         "Subsystems/Shooter/Aiming/Calculated hood angle out of bounds",
                         Math.toDegrees(hoodSetpoint));
                 return new ShooterState(

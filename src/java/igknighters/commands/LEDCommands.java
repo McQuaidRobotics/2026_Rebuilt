@@ -1,6 +1,6 @@
 package igknighters.commands;
 
-import dev.doglog.DogLog;
+import igknighters.util.log.Log;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
@@ -49,7 +49,7 @@ public class LEDCommands {
             names.add(section.name());
         }
 
-        DogLog.log("Subsystems/LED/Run/Sections", sections.length);
+        Log.log("Subsystems/LED/Run/Sections", sections.length);
 
         return Commands.startRun(
                         () -> {
@@ -80,7 +80,7 @@ public class LEDCommands {
 
         for (int i = 0; i < led.pwm1.numberOfStrips; i++) {
             String name = "full led strip " + (i + 1);
-            DogLog.log("Subsystems/LED/Run/AddingSection", name);
+            Log.log("Subsystems/LED/Run/AddingSection", name);
             sections[i] = new LEDSection(i, 0, pattern, stripLength, name);
         }
 

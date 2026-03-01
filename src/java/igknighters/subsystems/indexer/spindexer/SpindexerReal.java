@@ -6,7 +6,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import dev.doglog.DogLog;
+import igknighters.util.log.Log;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIndexer;
 
@@ -74,7 +74,7 @@ public class SpindexerReal extends Spindexer {
 
     @Override
     public void goToRPM(double RPM) {
-        DogLog.log("Subsystems/Indexer/Spindexer/setSpeed", RPM);
+        Log.log("Subsystems/Indexer/Spindexer/setSpeed", RPM);
         spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
         spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
     }
@@ -93,12 +93,12 @@ public class SpindexerReal extends Spindexer {
     public void periodic() {
         BaseStatusSignal.refreshAll(
                 spindexerVelocity, spindexerCurrent, spindexerVoltage, spindexerTemperature);
-        DogLog.log(
+        Log.log(
                 "Subsystems/Indexer/Spindexer/velocity",
                 spindexerVelocity.getValueAsDouble() * 60.0);
-        DogLog.log("Subsystems/Indexer/Spindexer/current", spindexerCurrent.getValueAsDouble());
-        DogLog.log("Subsystems/Indexer/Spindexer/voltage", spindexerVoltage.getValueAsDouble());
-        DogLog.log(
+        Log.log("Subsystems/Indexer/Spindexer/current", spindexerCurrent.getValueAsDouble());
+        Log.log("Subsystems/Indexer/Spindexer/voltage", spindexerVoltage.getValueAsDouble());
+        Log.log(
                 "Subsystems/Indexer/Spindexer/temperature",
                 spindexerTemperature.getValueAsDouble());
     }

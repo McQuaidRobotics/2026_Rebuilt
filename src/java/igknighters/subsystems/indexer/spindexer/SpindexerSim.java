@@ -1,6 +1,6 @@
 package igknighters.subsystems.indexer.spindexer;
 
-import dev.doglog.DogLog;
+import igknighters.util.log.Log;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -88,14 +88,14 @@ public class SpindexerSim extends Spindexer {
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
 
         // Logging
-        DogLog.log("Subsystems/Indexer/Spindexer/SimVoltage", voltage);
-        DogLog.log("Subsystems/Indexer/Spindexer/SimSpeedRPM", currentRPM);
-        DogLog.log("Subsystems/Indexer/Spindexer/GoalSpeedRPM", goalRPS * 60.0);
-        DogLog.log(
+        Log.log("Subsystems/Indexer/Spindexer/SimVoltage", voltage);
+        Log.log("Subsystems/Indexer/Spindexer/SimSpeedRPM", currentRPM);
+        Log.log("Subsystems/Indexer/Spindexer/GoalSpeedRPM", goalRPS * 60.0);
+        Log.log(
                 "Subsystems/Indexer/Spindexer/PIDOutputRPM",
                 profiledPIDController.getPositionError());
-        DogLog.log("Subsystems/Indexer/Spindexer/PIDVolts", pidOutput);
-        DogLog.log("Subsystems/Indexer/Spindexer/FFVolts", ffOutput);
+        Log.log("Subsystems/Indexer/Spindexer/PIDVolts", pidOutput);
+        Log.log("Subsystems/Indexer/Spindexer/FFVolts", ffOutput);
 
         // Apply to sim
         indexerSim.setInputVoltage(voltage);

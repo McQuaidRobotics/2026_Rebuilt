@@ -2,7 +2,7 @@ package igknighters.subsystems.shooter.turret;
 
 import static edu.wpi.first.units.Units.Degrees;
 
-import dev.doglog.DogLog;
+import igknighters.util.log.Log;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -76,9 +76,9 @@ public class TurretSim extends Turret {
         turretSim.setInput(input);
         turretSim.update(0.020);
 
-        DogLog.log("Subsystems/Shooter/Turret/AngleDegrees", getAngleDegrees());
-        DogLog.log("Subsystems/Shooter/Turret/TargetDegrees", super.targetDegrees);
-        DogLog.log("Subsystems/Shooter/Turret/MotorVoltage", input);
+        Log.log("Subsystems/Shooter/Turret/AngleDegrees", getAngleDegrees());
+        Log.log("Subsystems/Shooter/Turret/TargetDegrees", super.targetDegrees);
+        Log.log("Subsystems/Shooter/Turret/MotorVoltage", input);
 
         isControlledThisCycle = false;
     }

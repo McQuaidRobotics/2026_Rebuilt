@@ -3,7 +3,7 @@ package igknighters.subsystems.intake.pivot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
 
-import dev.doglog.DogLog;
+import igknighters.util.log.Log;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -83,8 +83,8 @@ public class PivotSim extends Pivot {
         pivotSim.setInput(input);
         pivotSim.update(0.020);
 
-        DogLog.log("Subsystems/Intake/Pivot/AngleDegrees", getAngle().in(Degrees));
-        DogLog.log("Subsystems/Intake/Pivot/TargetDegrees", super.targetDegrees);
-        DogLog.log("Subsystems/Intake/Pivot/MotorVoltage", input);
+        Log.log("Subsystems/Intake/Pivot/AngleDegrees", getAngle().in(Degrees));
+        Log.log("Subsystems/Intake/Pivot/TargetDegrees", super.targetDegrees);
+        Log.log("Subsystems/Intake/Pivot/MotorVoltage", input);
     }
 }

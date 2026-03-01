@@ -7,7 +7,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import dev.doglog.DogLog;
+import igknighters.util.log.Log;
 import edu.wpi.first.wpilibj.DigitalInput;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kClimber;
@@ -133,15 +133,15 @@ public class ChainsawReal extends Chainsaw {
 
         leftMotor.setControl(dutyCycleControl.withOutput(output));
 
-        DogLog.log(
+        Log.log(
                 "Subsystems/Climber/Inches",
                 armPosition.getValueAsDouble()
                         * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES);
-        DogLog.log("Subsystems/Climber/Is Up", isUp());
-        DogLog.log("Subsystems/Climber/Is Middle", isMiddle());
-        DogLog.log("Subsystems/Climber/Is Down", isDown());
-        DogLog.log("Subsystems/Climber/Sensor Hit", isSensorHit());
-        DogLog.log("Subsystems/Climber/State", state.toString());
-        DogLog.log("Subsystems/Climber/Current", armCurrent.getValueAsDouble());
+        Log.log("Subsystems/Climber/Is Up", isUp());
+        Log.log("Subsystems/Climber/Is Middle", isMiddle());
+        Log.log("Subsystems/Climber/Is Down", isDown());
+        Log.log("Subsystems/Climber/Sensor Hit", isSensorHit());
+        Log.log("Subsystems/Climber/State", state.toString());
+        Log.log("Subsystems/Climber/Current", armCurrent.getValueAsDouble());
     }
 }

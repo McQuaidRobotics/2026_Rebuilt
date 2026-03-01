@@ -1,6 +1,6 @@
 package igknighters.subsystems.led;
 
-import dev.doglog.DogLog;
+import igknighters.util.log.Log;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.subsystems.led.driver.PWMDriver;
@@ -15,13 +15,13 @@ public class Led extends SubsystemBase {
     }
 
     public void animate(AddressableLEDBuffer buffer) {
-        DogLog.log("Subsystems/LED/Animate", true);
+        Log.log("Subsystems/LED/Animate", true);
         pwm1.applyBuffer(buffer);
     }
 
     @Override
     public void periodic() {
-        DogLog.log("Subsystems/LED/Periodic", true);
+        Log.log("Subsystems/LED/Periodic", true);
         Tracer.startTrace("LedPeriodic");
         pwm1.periodic();
         Tracer.endTrace();

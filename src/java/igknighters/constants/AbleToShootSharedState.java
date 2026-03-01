@@ -1,6 +1,6 @@
 package igknighters.constants;
 
-import dev.doglog.DogLog;
+import igknighters.util.log.Log;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -35,12 +35,12 @@ public class AbleToShootSharedState {
      * @param newState The new boolean state for canShoot.
      */
     public void setCanShoot(boolean newState) {
-        DogLog.log("STATUS/CAN SHOOT", newState);
+        Log.log("Subsystems/Shooter/CanShoot", newState);
         this.canShoot = newState;
     }
 
     public void setBeingControlled(boolean newState) {
-        DogLog.log("STATUS/BEING CONTROLLED", newState);
+        Log.log("Subsystems/Shooter/BeingControlled", newState);
         this.beingControlled = newState;
     }
 
