@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.*;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import dev.doglog.DogLog;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -295,9 +294,8 @@ public class Robot extends LoggedRobot {
             if (currentPose != null) {
                 subsytems.swerve.addVisionMeasurement(
                         currentPose,
-                        subsytems.vision.getLastTimeStamp(),
-                        VecBuilder.fill(
-                                0.07, 0.07, 0.01)); // trusts vision rotation less. Needs tuning
+                        subsytems.vision
+                                .getLastTimeStamp()); // trusts vision rotation less. Needs tuning
                 // increase the std devs to trust vision less
                 DogLog.log("Subsystems/Vision/Null Pose", false);
             } else {
