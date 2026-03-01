@@ -33,8 +33,12 @@ import org.littletonrobotics.junction.Logger;
 public class AimSolver {
 
     public static class LERP_SOLVERS {
+        static enum SHOT_TYPE{
+            HUB,
+            PASS
+        }
         // distance to RPM mapping
-        static LerpTable rpmTable =
+        static LerpTable hubRPMTable =
             new LerpTable(
                     new LerpTableEntry[] {
                         new LerpTableEntry(1.0, 2800.0),
@@ -45,7 +49,7 @@ public class AimSolver {
                         new LerpTableEntry(20.0, 6000.0),
                     });
         // distance to hood angle mapping
-        static LerpTable hoodTable =
+        static LerpTable hubHoodTable =
             new LerpTable(
                     new LerpTableEntry[] {
                         new LerpTableEntry(1.0, 10.0),
@@ -56,11 +60,38 @@ public class AimSolver {
                         new LerpTableEntry(20.0, 60.0),
                     });
 
-        static LerpTable TOFTable = new LerpTable(new LerpTableEntry[]{
+        static LerpTable hubTofTable = new LerpTable(new LerpTableEntry[]{
             new LerpTableEntry(1.0, 1.0),
             new LerpTableEntry(2.0, 2.0)
         });
-        public static ShooterState solve(Pose3d shooterPose, Pose3d targetPose, ChassisSpeeds speeds){
+
+        static LerpTable passRPMTable =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(1.0, 2800.0),
+                        new LerpTableEntry(3.0, 3000.0),
+                        new LerpTableEntry(5.0, 4000.0),
+                        new LerpTableEntry(10.0, 4500.0),
+                        new LerpTableEntry(15.0, 5500.0),
+                        new LerpTableEntry(20.0, 6000.0),
+                    });
+        // distance to hood angle mapping
+        static LerpTable passHoodTable =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(1.0, 10.0),
+                        new LerpTableEntry(3.0, 20.0),
+                        new LerpTableEntry(5.0, 30.0),
+                        new LerpTableEntry(10.0, 40.0),
+                        new LerpTableEntry(15.0, 50.0),
+                        new LerpTableEntry(20.0, 60.0),
+                    });
+
+        static LerpTable passTofTable = new LerpTable(new LerpTableEntry[]{
+            new LerpTableEntry(1.0, 1.0),
+            new LerpTableEntry(2.0, 2.0)
+        });
+        public static ShooterState solve(Pose3d shooterPose, Pose3d targetPose, ChassisSpeeds speeds, SHOT_TYPE shotType){
             double sx = shooterPose.getX();
             double sy = shooterPose.getY();
 
@@ -79,8 +110,14 @@ public class AimSolver {
             double predictedDistance = initialDistance;
 
             // 2. Iterate to find the true Virtual Target
+            // t changes based on distance but at some point it will start to become 0
             for (int i = 0; i < 3; i++) {
-                double t = TOFTable.lerp(predictedDistance);
+                double t;
+                if (shotType == SHOT_TYPE.HUB) {
+                    t = hubTofTable.lerp(predictedDistance);
+                } else {
+                    t = passTofTable.lerp(predictedDistance);
+                }
                 
                 // SUBTRACT velocity to shift the target in the opposite direction of movement
                 px = tx - (vx * t);
@@ -105,8 +142,15 @@ public class AimSolver {
             );
 
             // 5. Get hardware setpoints using the fully-calculated Virtual Distance
-            double predictedRPM = rpmTable.lerp(predictedDistance);
-            double predictedHoodAngle = hoodTable.lerp(predictedDistance);
+            double predictedRPM;
+            double predictedHoodAngle;
+            if (shotType == SHOT_TYPE.HUB) {
+                predictedRPM = hubRPMTable.lerp(predictedDistance);
+                predictedHoodAngle = hubHoodTable.lerp(predictedDistance);
+            } else {
+                predictedRPM = passRPMTable.lerp(predictedDistance);
+                predictedHoodAngle = passHoodTable.lerp(predictedDistance);
+            }
 
             return new ShooterState(RPM.of(predictedRPM), Radians.of(-turretTheta), Degrees.of(predictedHoodAngle));
         }
