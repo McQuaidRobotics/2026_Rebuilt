@@ -9,12 +9,12 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import igknighters.util.log.Log;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
+import igknighters.util.log.Log;
 
 public class HoodReal extends Hood {
     private final TalonFX motor =

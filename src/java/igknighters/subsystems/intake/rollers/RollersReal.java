@@ -7,9 +7,9 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import igknighters.util.log.Log;
 import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.constants.SubsystemConstants.kIntake;
+import igknighters.util.log.Log;
 
 public class RollersReal extends Rollers {
     private final TalonFX intakeMotor =

@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Microsecond;
 import static edu.wpi.first.units.Units.Seconds;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.util.struct.Struct;
@@ -17,6 +16,7 @@ import edu.wpi.first.wpilibj.LEDWriter;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.util.Color;
 import igknighters.Robot;
+import igknighters.util.log.Log;
 import java.nio.ByteBuffer;
 
 public class LedUtil {

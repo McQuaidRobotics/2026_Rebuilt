@@ -7,10 +7,10 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import igknighters.util.log.Log;
 import edu.wpi.first.wpilibj.DigitalInput;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kClimber;
+import igknighters.util.log.Log;
 
 public class ChainsawReal extends Chainsaw {
 

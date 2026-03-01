@@ -10,12 +10,10 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
-import igknighters.util.log.Log;
 import edu.wpi.first.units.measure.AngularVelocity;
-import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
-
+import igknighters.util.log.Log;
 
 public class FlywheelReal extends Flywheel {
     private final TalonFX mainShooter =

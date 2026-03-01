@@ -1,6 +1,5 @@
 package igknighters.commands.teleop;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.struct.Struct;
@@ -12,6 +11,7 @@ import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.ControllerConstants;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
+import igknighters.util.log.Log;
 import java.util.function.DoubleSupplier;
 import monologue.ProceduralStructGenerator;
 

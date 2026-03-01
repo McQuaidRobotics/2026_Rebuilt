@@ -2,8 +2,8 @@ package igknighters.subsystems.shooter.hood;
 
 import static edu.wpi.first.units.Units.Degrees;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.units.measure.Angle;
+import igknighters.util.log.Log;
 
 public class HoodSim extends Hood {
     double currentAngleDegrees = 0.0;

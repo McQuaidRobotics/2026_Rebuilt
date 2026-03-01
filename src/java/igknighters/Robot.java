@@ -43,7 +43,6 @@ import igknighters.util.FuelSim;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import igknighters.util.log.Log;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Optional;
@@ -53,14 +52,14 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
-    
+
     private Command m_autonomousCommand;
     private AutoFactory autoFactory;
     public final AutoChooser autoChooser = new AutoChooser();
     double i = 0;
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
-    
+
     private final DriverController driverController = new DriverController(0);
 
     public final Subsystems subsytems;
@@ -269,7 +268,6 @@ public class Robot extends LoggedRobot {
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsytems.luma.getClosestGamePiece());
-        FieldVisualizer.getInstance().testZeroedComponents();
         FieldVisualizer.getInstance()
                 .updateTurret(
                         subsytems.shooter.getTurretAngleDegrees(),

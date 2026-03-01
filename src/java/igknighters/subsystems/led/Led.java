@@ -1,9 +1,9 @@
 package igknighters.subsystems.led;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.subsystems.led.driver.PWMDriver;
+import igknighters.util.log.Log;
 import wpilibExt.Tracer;
 
 public class Led extends SubsystemBase {

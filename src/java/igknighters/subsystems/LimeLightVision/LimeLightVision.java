@@ -1,6 +1,5 @@
 package igknighters.subsystems.LimeLightVision;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
@@ -8,6 +7,7 @@ import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.LimeLightVision.Cameras.LimeLightVisionReal;
 import igknighters.subsystems.LimeLightVision.Cameras.LimeLightVisionSim;
 import igknighters.subsystems.LimeLightVision.Cameras.LimeLights;
+import igknighters.util.log.Log;
 import java.util.List;
 
 public class LimeLightVision extends SubsystemBase {

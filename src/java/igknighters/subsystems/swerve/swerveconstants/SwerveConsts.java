@@ -1,7 +1,7 @@
 package igknighters.subsystems.swerve.swerveconstants;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.wpilibj.RobotController;
+import igknighters.util.log.Log;
 
 public class SwerveConsts {
 

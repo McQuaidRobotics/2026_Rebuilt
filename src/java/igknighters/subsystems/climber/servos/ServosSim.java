@@ -1,6 +1,5 @@
 package igknighters.subsystems.climber.servos;
 
-
 import igknighters.util.log.Log;
 
 public class ServosSim extends Servos {

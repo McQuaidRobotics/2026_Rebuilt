@@ -1,6 +1,5 @@
 package igknighters.commands;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
@@ -10,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
+import igknighters.util.log.Log;
 import java.util.ArrayList;
 import java.util.List;
 

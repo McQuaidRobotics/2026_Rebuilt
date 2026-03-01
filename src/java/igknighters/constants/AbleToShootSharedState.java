@@ -1,7 +1,7 @@
 package igknighters.constants;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import igknighters.util.log.Log;
 
 /**
  * Shared state to determine if the shooter is able to shoot. This class acts as a "lockless"

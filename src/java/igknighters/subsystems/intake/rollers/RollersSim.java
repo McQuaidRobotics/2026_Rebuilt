@@ -2,7 +2,6 @@ package igknighters.subsystems.intake.rollers;
 
 import static edu.wpi.first.units.Units.RPM;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -12,6 +11,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import igknighters.constants.SubsystemConstants.kIntake;
+import igknighters.util.log.Log;
 
 public class RollersSim extends Rollers {
 

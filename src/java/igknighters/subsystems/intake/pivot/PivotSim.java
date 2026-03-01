@@ -3,7 +3,6 @@ package igknighters.subsystems.intake.pivot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -12,6 +11,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
+import igknighters.util.log.Log;
 
 public class PivotSim extends Pivot {
 

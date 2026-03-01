@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import igknighters.util.log.Log;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
+import igknighters.util.log.Log;
 import java.util.function.BooleanSupplier;
 
 public class SwerveCommands {
@@ -181,10 +181,8 @@ public class SwerveCommands {
                                     Math.min(-omega, maxVelocities.getRotation().getRadians()),
                                     -maxVelocities.getRotation().getRadians());
 
-                    Log.log(
-                            "Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedVX", clampedVx);
-                    Log.log(
-                            "Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedVY", clampedVy);
+                    Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedVX", clampedVx);
+                    Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedVY", clampedVy);
                     Log.log(
                             "Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedOmega",
                             clampedOmega);

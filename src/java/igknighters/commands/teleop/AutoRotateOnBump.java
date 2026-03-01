@@ -6,13 +6,13 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import igknighters.util.log.Log;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
+import igknighters.util.log.Log;
 
 public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
     private double detune;

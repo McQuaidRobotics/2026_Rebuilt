@@ -4,7 +4,6 @@ import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import choreo.trajectory.Trajectory;
-import igknighters.util.log.Log;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -21,6 +20,7 @@ import igknighters.commands.SwerveCommands;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.swerve.Swerve;
+import igknighters.util.log.Log;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AutoCommands {

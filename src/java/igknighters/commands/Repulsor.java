@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import igknighters.util.log.Log;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotController;
@@ -16,6 +15,7 @@ import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
+import igknighters.util.log.Log;
 import java.util.ArrayList;
 
 // rename

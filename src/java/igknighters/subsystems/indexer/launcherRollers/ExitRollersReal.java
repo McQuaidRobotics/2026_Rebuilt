@@ -6,9 +6,9 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import igknighters.util.log.Log;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIndexer;
+import igknighters.util.log.Log;
 
 public class ExitRollersReal extends ExitRollers {
     private final TalonFX exitRollerMotor =

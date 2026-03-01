@@ -1,8 +1,8 @@
 package igknighters.subsystems.led.driver;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import igknighters.util.log.Log;
 import monologue.Logged;
 
 public class PWMDriver implements Logged {

@@ -1,6 +1,5 @@
 package igknighters.subsystems.indexer.spindexer;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -10,6 +9,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIndexer.kSpindexer;
+import igknighters.util.log.Log;
 
 public class SpindexerSim extends Spindexer {
     private double inputVoltage = 0.0;

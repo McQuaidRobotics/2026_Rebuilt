@@ -1,12 +1,12 @@
 package igknighters.commands;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import igknighters.util.log.Log;
 
 public class RepulsorVisualizer {
     private static final Mechanism2d repulsor = new Mechanism2d(1, 1);

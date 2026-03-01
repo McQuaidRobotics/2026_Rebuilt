@@ -3,7 +3,6 @@ package igknighters.subsystems.shooter;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,6 +17,7 @@ import igknighters.subsystems.shooter.turret.TurretReal;
 import igknighters.subsystems.shooter.turret.TurretSim;
 import igknighters.util.LerpTable;
 import igknighters.util.LerpTable.LerpTableEntry;
+import igknighters.util.log.Log;
 
 public class Shooter extends SubsystemBase {
     private final Flywheel rollers;

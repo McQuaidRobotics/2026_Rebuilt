@@ -3,7 +3,6 @@ package igknighters.subsystems.intake;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -14,6 +13,7 @@ import igknighters.subsystems.intake.pivot.PivotSim;
 import igknighters.subsystems.intake.rollers.Rollers;
 import igknighters.subsystems.intake.rollers.RollersReal;
 import igknighters.subsystems.intake.rollers.RollersSim;
+import igknighters.util.log.Log;
 
 public class Intake extends SubsystemBase {
     private final Pivot pivot;

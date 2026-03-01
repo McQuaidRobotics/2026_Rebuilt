@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -12,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -22,6 +22,10 @@ import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
+import igknighters.util.TunableValues;
+import igknighters.util.TunableValues.TunableDouble;
+import igknighters.util.log.Log;
+
 import org.littletonrobotics.junction.Logger;
 
 public class AimSolver {
@@ -36,6 +40,8 @@ public class AimSolver {
             }
             hasBeenAdded = true;
         }
+
+        public static TunableDouble effiencyConst = TunableValues.getDouble("Shooter/EfficiencyConst", 2.0);
 
         public static void canShoot(boolean canShoot) {
             publishOnce();
@@ -70,11 +76,11 @@ public class AimSolver {
             double tx =
                     targetPose.getX()
                             + airResistanceAdder.getX()
-                            - (speeds.vxMetersPerSecond * (estimatedToF + periodTime));
+                            - (speeds.vxMetersPerSecond * (estimatedToF));
             double ty =
                     targetPose.getY()
                             + airResistanceAdder.getY()
-                            - (speeds.vyMetersPerSecond * (estimatedToF + periodTime));
+                            - (speeds.vyMetersPerSecond * (estimatedToF));
             double tz = targetPose.getZ();
 
             FieldVisualizer.getInstance()
@@ -161,8 +167,10 @@ public class AimSolver {
                         Degrees.of(bestThetaHoodDegrees));
             }
         }
+
         /**
          * MAKES THE PARABOLA FALL BACK TO THE MINIMUM HEIGHT
+         *
          * @param shooterPose The pose of the shooter where the balls leave
          * @param targetPose The pose of the target
          * @param speeds The chassis speeds
@@ -197,11 +205,11 @@ public class AimSolver {
             double tx =
                     targetPose.getX()
                             + airResistanceAdder.getX()
-                            - (speeds.vxMetersPerSecond * (estimatedToF + periodTime));
+                            - (speeds.vxMetersPerSecond * (estimatedToF));
             double ty =
                     targetPose.getY()
                             + airResistanceAdder.getY()
-                            - (speeds.vyMetersPerSecond * (estimatedToF + periodTime));
+                            - (speeds.vyMetersPerSecond * (estimatedToF));
             double tz = targetPose.getZ();
 
             FieldVisualizer.getInstance()
@@ -217,10 +225,10 @@ public class AimSolver {
             double minRPMDiff = Double.MAX_VALUE;
 
             // 2. Iterative Arc Search
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 5; i++) {
                 // Search heights between target + 1m and max ceiling
                 double currentCeilingHeight =
-                        minHeightMeters + (i * (maxHeightMeters - minHeightMeters) / 10.0);
+                        minHeightMeters + (i * (maxHeightMeters - minHeightMeters) / 5.0);
 
                 double hRise = currentCeilingHeight - sz;
                 double hFall = currentCeilingHeight - tz;
@@ -289,8 +297,6 @@ public class AimSolver {
             }
         }
 
-        
-
         private static final double FLYWHEEL_RADIUS =
                 SubsystemConstants.kShooter.kFlywheels.WHEEL_RADIUS_METERS;
 
@@ -342,8 +348,7 @@ public class AimSolver {
 
             if (inside < 0) {
                 // Shot is physically impossible at this RPM
-                Log.log(
-                        "Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM", currentRPM);
+                Log.log("Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM", currentRPM);
                 canShoot(false);
                 Logger.recordOutput(
                         "Shooter/ShotTrajectory",
@@ -469,8 +474,7 @@ public class AimSolver {
             Log.log("Subsystems/Shooter/Aiming/Ballistic Discriminant", inside);
 
             if (inside < 0) {
-                Log.log(
-                        "Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM", currentRPM);
+                Log.log("Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM", currentRPM);
                 canShoot(false);
                 Logger.recordOutput(
                         "Shooter/ShotTrajectory",
@@ -577,8 +581,7 @@ public class AimSolver {
 
             Log.log("Subsystems/Shooter/Aiming/Distance", d);
             Log.log("Subsystems/Shooter/Aiming/Height", h);
-            Log.log(
-                    "Subsystems/Shooter/Aiming/TurretAngle", turretAngle * Conv.RADIANS_TO_DEGREES);
+            Log.log("Subsystems/Shooter/Aiming/TurretAngle", turretAngle * Conv.RADIANS_TO_DEGREES);
             Log.log("Subsystems/Shooter/Aiming/Robot Velocity Lateral", vRobotLateral);
             Log.log("Subsystems/Shooter/Aiming/Robot Velocity Radial", vRobotRadial);
             Log.log("Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
@@ -834,8 +837,6 @@ public class AimSolver {
                     RPM.of(requiredRPM), Radians.of(turretAngle), Radians.of(clampedHoodSetpoint));
         }
     }
-
-    
 
     public static double getShotTime(
             double ballLaunchVelocity,

@@ -12,12 +12,11 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import igknighters.util.log.Log;
 import edu.wpi.first.units.measure.Angle;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIntake;
-
+import igknighters.util.log.Log;
 
 public class PivotReal extends Pivot {
     private TalonFX pivotMotor;

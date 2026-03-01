@@ -1,8 +1,8 @@
 package igknighters.subsystems.climber.servos;
 
-import igknighters.util.log.Log;
 import edu.wpi.first.wpilibj.Servo;
 import igknighters.constants.SubsystemConstants;
+import igknighters.util.log.Log;
 
 public class ServosReal extends Servos {
 
