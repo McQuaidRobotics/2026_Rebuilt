@@ -77,7 +77,7 @@ public class SubsystemTriggers {
                         swerve::getFieldRelativeSpeeds,
                         () -> getPoseFromString("robot/passWaypoint")));
         moveToTrigger.whileTrue(
-                Repulsor.moveWithRepulsor(swerve, getPoseFromString("robot/moveWaypoint"), 1));
+                Repulsor.moveWithRepulsor(swerve, getPoseFromString("robot/moveWaypoint")));
     }
 
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
