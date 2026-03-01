@@ -1,5 +1,6 @@
 package igknighters.subsystems.swerve.swerveconstants;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj.RobotController;
 
 public class SwerveConsts {
@@ -8,20 +9,26 @@ public class SwerveConsts {
 
     public enum Robots {
         DEMO_BOT,
-        COMPETITION_BOT,
+        GEMINKNIGHT,
         UNKNOWN
     };
 
     private String DEMO_BOT_SERIAL_NUMBER = "TBD";
-    private String COMPETION_BOT_SERIAL_NUMBER = "IT DOESNT EXIST YET";
+    private String GEMINKNIGHT_SERIAL_NUMBER = "03260AF0";
 
     public Robots getRobot() {
         robotSerialNumber = RobotController.getSerialNumber();
-        if (robotSerialNumber == DEMO_BOT_SERIAL_NUMBER) {
+        DogLog.log("ROBOT_INFO/ROBOT SERIAL NUMBER", "Serial Number: " + robotSerialNumber);
+        if (robotSerialNumber.equals(DEMO_BOT_SERIAL_NUMBER)) {
+            DogLog.log("ROBOT_INFO/ROBOT TYPE", "DEMO_BOT");
             return Robots.DEMO_BOT;
-        } else if (robotSerialNumber == COMPETION_BOT_SERIAL_NUMBER) {
-            return Robots.COMPETITION_BOT;
+        } else if (robotSerialNumber.equals(GEMINKNIGHT_SERIAL_NUMBER)) {
+            DogLog.log("ROBOT_INFO/ROBOT TYPE", "GEMINKNIGHT");
+            return Robots.GEMINKNIGHT;
         } else {
+            DogLog.log(
+                    "ROBOT_INFO/ROBOT TYPE",
+                    "UNKNOWN: geminknight is: " + GEMINKNIGHT_SERIAL_NUMBER);
             return Robots.UNKNOWN;
         }
     }
@@ -29,10 +36,13 @@ public class SwerveConsts {
     public CommonSwerveConsts getSwerveConsts() {
         Robots robot = getRobot();
         if (robot.equals(Robots.DEMO_BOT)) {
+            DogLog.log("SWERVE CONSTS", "Using DemoBotConsts");
             return new DemoBotConsts();
-        } else if (robot.equals(Robots.COMPETITION_BOT)) {
-            return new knightshadeConsts();
+        } else if (robot.equals(Robots.GEMINKNIGHT)) {
+            DogLog.log("SWERVE CONSTS", "Using GeminiConsts");
+            return new GeminiConsts();
         } else {
+            DogLog.log("SWERVE CONSTS", "Using DemoBotConsts (default)");
             return new DemoBotConsts();
         }
     }

@@ -8,10 +8,8 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import igknighters.commands.teleop.AutoRotateOnBump;
 import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.Conv;
-import igknighters.constants.FieldConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.Climber;
@@ -85,11 +83,11 @@ public class SubsystemTriggers {
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
         Led led = subsystems.led;
         Swerve swerve = subsystems.swerve;
-        Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
+        // Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
 
         SetupOperatorController(subsystems);
 
-        onBump.whileTrue(new AutoRotateOnBump(swerve, driverController));
+        // onBump.whileTrue(new AutoRotateOnBump(swerve, driverController));
 
         falseOnce()
                 .and(disabled)
@@ -99,7 +97,7 @@ public class SubsystemTriggers {
                                 .withName("DisabledRed"));
 
         autonomous.whileTrue(
-                LEDCommands.run(led, LedUtil.makeRainbow(255, 256))
+                LEDCommands.run(led, LedUtil.makeRainbow(255, 128))
                         .ignoringDisable(true)
                         .withName("AutoRainbow"));
 
@@ -115,9 +113,11 @@ public class SubsystemTriggers {
 
         ableToShootState
                 .canShootTrigger()
+                .and(ableToShootState.beingControlledTrigger())
                 .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kYellow)));
         ableToShootState
                 .canShootTrigger()
+                .and(ableToShootState.beingControlledTrigger().negate())
                 .whileFalse(LEDCommands.run(led, LEDPattern.solid(Color.kPurple)));
     }
 }

@@ -1,6 +1,5 @@
 package igknighters.subsystems;
 
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
@@ -42,7 +41,7 @@ public class Subsystems {
         this.lockedResources =
                 new SubsystemBase[] {swerve, shooter, climber, indexer, intake, luma, vision, led};
 
-        CommandScheduler.getInstance().registerSubsystem(this.lockedResources);
+        // CommandScheduler.getInstance().registerSubsystem(this.lockedResources);
     }
 
     // public static interface SharedSubsystem {

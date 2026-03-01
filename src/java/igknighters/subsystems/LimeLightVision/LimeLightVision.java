@@ -17,8 +17,9 @@ public class LimeLightVision extends SubsystemBase {
         if (Robot.isReal()) {
             vision =
                     new LimeLightVisionReal(
-                            SubsystemConstants.kLimelightVision.backLeft,
-                            SubsystemConstants.kLimelightVision.backRight);
+                            SubsystemConstants.kLimelightVision.backCam,
+                            SubsystemConstants.kLimelightVision.turretCam,
+                            SubsystemConstants.kLimelightVision.intakeCam);
         } else {
             vision = new LimeLightVisionSim();
         }

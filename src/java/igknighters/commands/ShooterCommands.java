@@ -323,6 +323,48 @@ public class ShooterCommands {
         return shootWithMaxHeightIterative(shooter, robotPoseSupplier, robotVelocitySupplier, 4);
     }
 
+    public static Command idleCommand(
+            Shooter shooter,
+            Supplier<Pose2d> robotPoseSupplier,
+            Supplier<ChassisSpeeds> robotVelocitySupplier) {
+        return shooter.run(
+                () -> {
+                    Pose2d robotPose2d = robotPoseSupplier.get();
+                    Pose3d targetPose = getTargetPose(robotPoseSupplier);
+                    ChassisSpeeds robotVel = robotVelocitySupplier.get();
+
+                    Pose3d shooterPose =
+                            new Pose3d(
+                                    robotPose2d.getX(),
+                                    robotPose2d.getY(),
+                                    SubsystemConstants.kShooter.kFlywheels.ShooterHeightMeters,
+                                    new Rotation3d(
+                                            0.0, 0.0, robotPose2d.getRotation().getRadians()));
+                    ShooterState targetingData =
+                            AimSolver.Solvers.solve_max_height_iterative(
+                                    shooterPose,
+                                    targetPose,
+                                    robotVel,
+                                    shooter.getCurrentState().flywheelSpeed.in(RPM),
+                                    5,
+                                    0.02);
+
+                    if (targetingData.flywheelSpeed.in(RPM) != 0) {
+                        shooter.targetState(
+                                RPM.of(2000),
+                                targetingData.turretAngle,
+                                Degrees.of(kHood.MIN_ANGLE_DEGREES));
+                    } else {
+                        // shot is imposible so we should idle the shooter rpm at like 4000 so it
+                        // spins up faster
+                        shooter.targetState(
+                                RPM.of(2000),
+                                targetingData.turretAngle,
+                                Degrees.of(kHood.MIN_ANGLE_DEGREES));
+                    }
+                });
+    }
+
     public static Command shootWithMaxHeightIterative(
             Shooter shooter,
             Supplier<Pose2d> robotPose,

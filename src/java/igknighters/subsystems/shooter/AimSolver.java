@@ -6,7 +6,9 @@ import static edu.wpi.first.units.Units.Radians;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -15,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import igknighters.FieldVisualizer;
+import igknighters.Robot;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
@@ -73,6 +76,9 @@ public class AimSolver {
                             + airResistanceAdder.getY()
                             - (speeds.vyMetersPerSecond * (estimatedToF + periodTime));
             double tz = targetPose.getZ();
+
+            FieldVisualizer.getInstance()
+                    .updateShootingTarget(new Pose2d(tx, ty, new Rotation2d()));
 
             double dx = tx - sx;
             double dy = ty - sy;
@@ -143,8 +149,15 @@ public class AimSolver {
                 canShoot(false);
             }
 
-            return new ShooterState(
-                    RPM.of(bestRPM), Radians.of(turretAngle), Degrees.of(bestThetaHoodDegrees));
+            if (Robot.isBlue()) {
+                return new ShooterState(
+                        RPM.of(bestRPM),
+                        Radians.of(-turretAngle),
+                        Degrees.of(bestThetaHoodDegrees));
+            } else {
+                return new ShooterState(
+                        RPM.of(bestRPM), Radians.of(turretAngle), Degrees.of(bestThetaHoodDegrees));
+            }
         }
 
         private static final double FLYWHEEL_RADIUS =
@@ -527,7 +540,7 @@ public class AimSolver {
                     Math.atan2(
                             targetPose.getY() - shooterPose.getY(),
                             targetPose.getX() - shooterPose.getX());
-            double p = d / 1.5;
+            double p = d / 2.5;
 
             double px = Math.cos(angleToTarget) * p;
             double py = Math.sin(angleToTarget) * p;

@@ -32,7 +32,7 @@ public class ExitRollersReal extends ExitRollers {
         config.Feedback.SensorToMechanismRatio =
                 SubsystemConstants.kIndexer.kExitRollers.GEAR_RATIO;
 
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         config.MotionMagic.MotionMagicJerk =
                 SubsystemConstants.kIndexer.kExitRollers.MOTION_MAGIC_JERK;

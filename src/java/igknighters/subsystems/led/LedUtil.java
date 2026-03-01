@@ -73,6 +73,11 @@ public class LedUtil {
         return baseColor.blink(Seconds.of(flashSpeed), Seconds.of(flashSpeed));
     }
 
+    public static LEDPattern makeFlash(Color color, double flashOn, double flashOff) {
+        final LEDPattern baseColor = LEDPattern.solid(color);
+        return baseColor.blink(Seconds.of(flashOn), Seconds.of(flashOff));
+    }
+
     public static LEDPattern bounceMaskLayer(LinearVelocity velocity, Distance ledSpacing) {
         return new LEDPattern() {
             final int[] brightnessMask = new int[] {0b11111111, 0b11111100, 0b11110000, 0b11000000};
