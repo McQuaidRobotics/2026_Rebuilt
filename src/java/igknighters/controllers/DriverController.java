@@ -179,8 +179,7 @@ public class DriverController {
         var luma = subsystems.luma;
 
         this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
-        // this.A.whileTrue(
-        new TeleopSwerveHeadingCmd(swerve, this, 45.0, state.kP, state.kI, state.kD);
+        this.A.whileTrue(new TeleopSwerveHeadingCmd(swerve, this, 45.0, state.kP, state.kI, state.kD))  ;
         this.B.whileTrue(
                 new TeleopSwerveJoystickHeadingCmd(
                         swerve, this, 45.0, state.kP, state.kI, state.kD));
