@@ -145,7 +145,7 @@ public class Shooter extends SubsystemBase {
             visualizer.update(getCurrentState(), goalRPM, goalHoodAngleDegrees);
         }
         if (Robot.isReal()) {
-            ableToShootState.setAtTarget(atTarget(200, 3, 1.5));
+            ableToShootState.setAtTarget(atTarget(200, 5, 2.5));
         } else {
             ableToShootState.setAtTarget(atTarget(600, 5, 1));
         }

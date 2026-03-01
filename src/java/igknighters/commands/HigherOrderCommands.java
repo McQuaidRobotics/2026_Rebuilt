@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
 import igknighters.constants.AbleToShootSharedState;
+import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
 
@@ -77,7 +78,8 @@ public class HigherOrderCommands {
                                 .and(AbleToShootSharedState.getInstance().beingControlledTrigger())
                                 .and(AbleToShootSharedState.getInstance().shotPosible()));
 
-        return Commands.parallel(shooterCommand, smartFeed.repeatedly()).withName("SMART STREAM");
+        return Commands.runOnce(() -> DrivingSharedState.getInstance().setDetune(.5))
+                .andThen(Commands.parallel(shooterCommand, smartFeed.repeatedly()).withName("SMART STREAM"));
     }
 
     public static Command IdleShooter(Subsystems subsystems) {
@@ -85,7 +87,7 @@ public class HigherOrderCommands {
                         subsystems.shooter,
                         () -> subsystems.swerve.getState().Pose,
                         subsystems.swerve::getFieldRelativeSpeeds)
-                .alongWith(IndexerCommands.justStop(subsystems.indexer));
+                .alongWith(IndexerCommands.justStop(subsystems.indexer)).alongWith(Commands.runOnce(() -> DrivingSharedState.getInstance().setDetune(1.0)));
     }
 
     public static Command forceDispense(Subsystems subsystems) {

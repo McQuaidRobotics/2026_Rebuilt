@@ -196,7 +196,7 @@ public class AimSolver {
 
             double initialDist =
                     shooterPose.getTranslation().getDistance(targetPose.getTranslation());
-            double estimatedToF = initialDist / 5.0; // Assume 5m/s avg horizontal velocity
+            double estimatedToF = initialDist / 2.0; // Assume 5m/s avg horizontal velocity
 
             // 3. TARGET PROJECTION: Scale the target lead by (ToF + Latency)
             // We subtract the robot's velocity because from the ball's perspective,

@@ -14,7 +14,7 @@ public class DrivingSharedState {
         return SingletonHelper.INSTANCE;
     }
 
-    public double detune = 0.8;
+    public double detune = 1.0;
     public double kP = 0.07;
     public double kI = 0.00;
     public double kD = 0.00;

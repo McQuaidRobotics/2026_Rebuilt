@@ -69,7 +69,7 @@ public class Robot extends LoggedRobot {
     private final boolean kUseLimelight = true;
 
     private Telemetry logger;
-    TunableDouble detune = TunableValues.getDouble("Tunables/Detune", 0.6);
+    TunableDouble detune = TunableValues.getDouble("Tunables/Detune", 1.0);
     TunableDouble targetingP = TunableValues.getDouble("Tunables/TargetingP", 0.07);
     TunableDouble targetingI = TunableValues.getDouble("Tunables/TargetingI", 0.00);
     TunableDouble targetingD = TunableValues.getDouble("Tunables/TargetingD", 0.00);
