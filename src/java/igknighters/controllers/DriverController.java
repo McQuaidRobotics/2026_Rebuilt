@@ -182,11 +182,10 @@ public class DriverController {
                 .onFalse(IntakeCommands.goToStow(intake));
         this.LT
                 .whileTrue(HigherOrderCommands.rapidFireStream(subsystems))
-                .onFalse(
-                        ShooterCommands.idleCommand(
-                                shooter,
-                                () -> swerve.getState().Pose,
-                                swerve::getFieldRelativeSpeeds));
+                .onFalse(HigherOrderCommands.IdleShooter(subsystems));
+        this.DPD
+                .whileTrue(IndexerCommands.unBlock(subsystems.indexer))
+                .onFalse(IndexerCommands.justStop(subsystems.indexer));
 
         this.RT.whileTrue(IndexerCommands.dispense(indexer));
         this.RT.onFalse(IndexerCommands.stopDispensing(indexer));

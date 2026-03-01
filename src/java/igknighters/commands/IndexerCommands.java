@@ -13,6 +13,10 @@ public class IndexerCommands {
                 .withName("DISPENSE");
     }
 
+    public static Command unBlock(Indexer indexer) {
+        return indexer.runOnce(() -> indexer.goToState(IndexerState.AGITATE));
+    }
+
     public static Command stopDispensing(Indexer indexer) {
         return indexer.run(() -> indexer.goToState(IndexerState.PREP_TO_STOP))
                 .withTimeout(3)

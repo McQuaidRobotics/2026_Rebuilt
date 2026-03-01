@@ -223,7 +223,7 @@ public class AimSolver {
             double bestRPM = 0.0;
             double bestThetaHoodDegrees = SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES;
             double bestV = 0.0;
-            double minRPMDiff = Double.MAX_VALUE;
+            double highestArc = 0.0;
 
             // 2. Iterative Arc Search
             for (int i = 0; i < 5; i++) {
@@ -253,10 +253,10 @@ public class AimSolver {
                 if (hoodAngleDegrees < kHood.MIN_ANGLE_DEGREES
                         || hoodAngleDegrees > kHood.MAX_ANGLE_DEGREES) continue;
 
-                // Choose the shot closest to our current flywheel speed for faster spin-up
-                double dRPM = Math.abs(currentRPM - RPM);
-                if (dRPM < minRPMDiff) {
-                    minRPMDiff = dRPM;
+                // Choose the shot with the highest arc
+                double arc = launchAngleDegrees;
+                if (arc > highestArc) {
+                    highestArc = arc;
                     bestRPM = RPM;
                     bestThetaHoodDegrees = hoodAngleDegrees;
                     bestV = v_total;

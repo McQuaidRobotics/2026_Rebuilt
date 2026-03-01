@@ -1,8 +1,6 @@
 package igknighters.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -10,8 +8,10 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import igknighters.commands.teleop.AutoRotateOnBump;
 import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.Conv;
+import igknighters.constants.FieldConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.Climber;
@@ -74,20 +74,20 @@ public class SubsystemTriggers {
 
         passTrigger.whileTrue(
                 HigherOrderCommands.fireAtTarget(
-                        subsystems,
-                        getPoseFromString("robot/passWaypoint")));
+                        subsystems, getPoseFromString("robot/passWaypoint")));
         moveToTrigger.whileTrue(
-                Repulsor.moveWithRepulsor(swerve, getPoseFromString("robot/moveWaypoint").toPose2d(), 1));
+                Repulsor.moveWithRepulsor(
+                        swerve, getPoseFromString("robot/moveWaypoint").toPose2d(), 1));
     }
 
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
         Led led = subsystems.led;
         Swerve swerve = subsystems.swerve;
-        // Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
+        Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
 
         SetupOperatorController(subsystems);
 
-        // onBump.whileTrue(new AutoRotateOnBump(swerve, driverController));
+        onBump.whileTrue(new AutoRotateOnBump(swerve, driverController));
 
         falseOnce()
                 .and(disabled)

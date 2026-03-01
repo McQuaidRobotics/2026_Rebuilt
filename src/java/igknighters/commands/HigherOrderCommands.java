@@ -80,6 +80,14 @@ public class HigherOrderCommands {
         return Commands.parallel(shooterCommand, smartFeed.repeatedly()).withName("SMART STREAM");
     }
 
+    public static Command IdleShooter(Subsystems subsystems) {
+        return ShooterCommands.idleCommand(
+                        subsystems.shooter,
+                        () -> subsystems.swerve.getState().Pose,
+                        subsystems.swerve::getFieldRelativeSpeeds)
+                .alongWith(IndexerCommands.justStop(subsystems.indexer));
+    }
+
     public static Command forceDispense(Subsystems subsystems) {
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
