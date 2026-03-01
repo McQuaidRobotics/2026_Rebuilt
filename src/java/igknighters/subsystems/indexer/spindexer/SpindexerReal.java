@@ -6,9 +6,9 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import dev.doglog.DogLog;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIndexer;
+import igknighters.util.log.Log;
 
 public class SpindexerReal extends Spindexer {
     private final TalonFX spindexer =
@@ -42,7 +42,7 @@ public class SpindexerReal extends Spindexer {
 
         config.Feedback.SensorToMechanismRatio = SubsystemConstants.kIndexer.kSpindexer.GEAR_RATIO;
 
-        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         config.MotionMagic.MotionMagicJerk =
                 SubsystemConstants.kIndexer.kSpindexer.MOTION_MAGIC_JERK;
@@ -74,7 +74,7 @@ public class SpindexerReal extends Spindexer {
 
     @Override
     public void goToRPM(double RPM) {
-        DogLog.log("Subsystems/Indexer/Spindexer/setSpeed", RPM);
+        Log.log("Subsystems/Indexer/Spindexer/setSpeed", RPM);
         spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
         spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
     }
@@ -93,12 +93,12 @@ public class SpindexerReal extends Spindexer {
     public void periodic() {
         BaseStatusSignal.refreshAll(
                 spindexerVelocity, spindexerCurrent, spindexerVoltage, spindexerTemperature);
-        DogLog.log(
+        Log.log(
                 "Subsystems/Indexer/Spindexer/velocity",
                 spindexerVelocity.getValueAsDouble() * 60.0);
-        DogLog.log("Subsystems/Indexer/Spindexer/current", spindexerCurrent.getValueAsDouble());
-        DogLog.log("Subsystems/Indexer/Spindexer/voltage", spindexerVoltage.getValueAsDouble());
-        DogLog.log(
+        Log.log("Subsystems/Indexer/Spindexer/current", spindexerCurrent.getValueAsDouble());
+        Log.log("Subsystems/Indexer/Spindexer/voltage", spindexerVoltage.getValueAsDouble());
+        Log.log(
                 "Subsystems/Indexer/Spindexer/temperature",
                 spindexerTemperature.getValueAsDouble());
     }

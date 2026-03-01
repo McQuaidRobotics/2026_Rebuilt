@@ -1,11 +1,11 @@
 package igknighters.subsystems.climber.chainsaw;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
+import igknighters.util.log.Log;
 
 public class ChainsawSim extends Chainsaw {
 
@@ -112,15 +112,15 @@ public class ChainsawSim extends Chainsaw {
         double currentRot = chainsawSim.getPositionMeters() * METERS_TO_ROT;
 
         // Logging
-        DogLog.log("Subsystems/Climber/Chainsaw/SimVoltage", voltage);
-        DogLog.log("Subsystems/Climber/Chainsaw/SimPositionRot", currentRot);
-        DogLog.log(
+        Log.log("Subsystems/Climber/Chainsaw/SimVoltage", voltage);
+        Log.log("Subsystems/Climber/Chainsaw/SimPositionRot", currentRot);
+        Log.log(
                 "Subsystems/Climber/Inches",
                 currentRot * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES);
-        DogLog.log("Subsystems/Climber/Is Up", isUp());
-        DogLog.log("Subsystems/Climber/Is Middle", isMiddle());
-        DogLog.log("Subsystems/Climber/Is Down", isDown());
-        DogLog.log("Subsystems/Climber/State", state.toString());
+        Log.log("Subsystems/Climber/Is Up", isUp());
+        Log.log("Subsystems/Climber/Is Middle", isMiddle());
+        Log.log("Subsystems/Climber/Is Down", isDown());
+        Log.log("Subsystems/Climber/State", state.toString());
 
         // Update sim
         chainsawSim.setInputVoltage(voltage);

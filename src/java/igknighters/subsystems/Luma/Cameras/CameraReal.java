@@ -1,9 +1,9 @@
 package igknighters.subsystems.Luma.Cameras;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import igknighters.util.log.Log;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -18,45 +18,49 @@ public class CameraReal extends Camera {
     double cameraHeightMeters;
     double cameraPitchRadians = 0.0;
     Translation2d robotToCameraTranslation;
+
     List<PhotonPipelineResult> results = new ArrayList<>();
     List<Translation2d> gamePieceTranslations = new ArrayList<>();
-    boolean noObjects = false;
+    boolean noObjects = true; // Default to true
 
     public CameraReal(
             String cameraName, double cameraHeightMeters, Translation2d robotToCameraTranslation) {
         this.camera = new PhotonCamera(cameraName);
-        DogLog.log(cameraName, true);
         this.name = cameraName;
-        DogLog.log("Subsystems/Vision/" + cameraName + "/Status", "ENABLED");
-
-        camera.setPipelineIndex(0);
         this.cameraHeightMeters = cameraHeightMeters;
         this.robotToCameraTranslation = robotToCameraTranslation;
+
+        camera.setPipelineIndex(0);
+
+        Log.log(cameraName, true);
+        Log.log("Subsystems/Vision/" + cameraName + "/Status", "ENABLED");
     }
 
     public CameraReal(String cameraName) {
-        this(
-                cameraName,
-                0.05,
-                new Translation2d()); // placeholder values, the camera itself is 5cm tall
+        // placeholder values, the camera itself is 5cm tall
+        this(cameraName, 0.05, new Translation2d());
     }
 
     @Override
     public void periodic() {
+        Log.log("Subsystems/Vision/" + name + "/Connected", camera.isConnected());
 
-        DogLog.log("Subsystems/Vision/" + name + "/Connected", camera.isConnected());
-        List<PhotonPipelineResult> potentialResults = new ArrayList<>();
-        potentialResults = camera.getAllUnreadResults();
-        // this stops the robot from using an empty list if it is the first cycle of empty
+        // Removed unnecessary new ArrayList<>() allocation
+        List<PhotonPipelineResult> potentialResults = camera.getAllUnreadResults();
+
+        // Simplified sticky-fault/memory logic
         if (!potentialResults.isEmpty()) {
             results = potentialResults;
             noObjects = false;
-        } else if (potentialResults.isEmpty() && noObjects == true) {
-            results = potentialResults;
-            noObjects = true;
         } else {
+            // If it was already empty, keep it empty. If it wasn't, now it is.
+            if (noObjects) {
+                results = potentialResults; // Clear the cached results
+            }
             noObjects = true;
         }
+
+        // Update translations
         getTargetTranslations();
     }
 
@@ -68,7 +72,9 @@ public class CameraReal extends Camera {
             throw new IllegalArgumentException(
                     "Target list is empty in getGamePieceOffsetFromTargetList");
         }
-        targets.sort(Comparator.comparingDouble(t -> t.getArea()));
+
+        // Sort mutates the list, but we already made a safe copy in getGamePieceOffset()
+        targets.sort(Comparator.comparingDouble(PhotonTrackedTarget::getArea));
 
         var bestTarget = targets.get(targets.size() - 1);
         double distance =
@@ -85,23 +91,27 @@ public class CameraReal extends Camera {
 
     @Override
     public Translation2d getGamePieceOffset() {
-        DogLog.log("Subsystems/Vision/Getting Offset", true);
-        if (results.isEmpty()) {
-            DogLog.log("Subsystems/Vision/ObjectDetection/Camera Results", false);
-            return new Translation2d();
-        } else {
-            DogLog.log("Subsystems/Vision/ObjectDetection/Camera Results", true);
-        }
-        var result = results.get(results.size() - 1);
-        if (!result.hasTargets()) {
-            DogLog.log("Subsystems/Vision/ObjectDetection/Camera Has Target", false);
-            return new Translation2d();
-        } else {
-            DogLog.log("Subsystems/Vision/ObjectDetection/Camera Has Target", true);
-        }
-        var targets = result.getTargets();
+        Log.log("Subsystems/Vision/Getting Offset", true);
 
-        targets.sort(Comparator.comparingDouble(t -> t.getYaw()));
+        if (results.isEmpty()) {
+            Log.log("Subsystems/Vision/ObjectDetection/Camera Results", false);
+            return new Translation2d();
+        }
+
+        Log.log("Subsystems/Vision/ObjectDetection/Camera Results", true);
+        var result = results.get(results.size() - 1);
+
+        if (!result.hasTargets()) {
+            Log.log("Subsystems/Vision/ObjectDetection/Camera Has Target", false);
+            return new Translation2d();
+        }
+
+        Log.log("Subsystems/Vision/ObjectDetection/Camera Has Target", true);
+
+        // Make a COPY of the targets list before sorting to avoid mutating PhotonVision's internal
+        // data
+        List<PhotonTrackedTarget> targets = new ArrayList<>(result.getTargets());
+        targets.sort(Comparator.comparingDouble(PhotonTrackedTarget::getYaw));
 
         List<PhotonTrackedTarget> bestCluster = new ArrayList<>();
         List<PhotonTrackedTarget> currentCluster = new ArrayList<>();
@@ -131,7 +141,7 @@ public class CameraReal extends Camera {
             bestCluster = currentCluster;
         }
 
-        DogLog.log("Subsystems/Vision/ObjectDetection/Camera Cluster Size", bestCluster.size());
+        Log.log("Subsystems/Vision/ObjectDetection/Camera Cluster Size", bestCluster.size());
 
         return getGamePieceOffsetFromTargetList(bestCluster);
     }
@@ -148,18 +158,23 @@ public class CameraReal extends Camera {
 
     @Override
     public List<Translation2d> getTargetTranslations() {
+        // MEMORY LEAK FIXED: Clear the list at the start of the loop
+        gamePieceTranslations.clear();
+
         for (int resultNumber = 0; resultNumber < results.size(); resultNumber++) {
             PhotonPipelineResult gamePieces = results.get(resultNumber);
+
             for (int gamePieceNumber = 0;
                     gamePieceNumber < gamePieces.getTargets().size();
                     gamePieceNumber++) {
                 PhotonTrackedTarget gamePiece = gamePieces.getTargets().get(gamePieceNumber);
-                DogLog.log(
+
+                Log.log(
                         "Subsystems/Vision/ObjectDetection/GAMEPIECES/"
                                 + gamePieceNumber
                                 + "/pitch",
                         gamePiece.pitch);
-                DogLog.log(
+                Log.log(
                         "Subsystems/Vision/ObjectDetection/GAMEPIECES/" + gamePieceNumber + "/yaw",
                         gamePiece.yaw);
 
@@ -176,7 +191,7 @@ public class CameraReal extends Camera {
                         new Translation2d(distance * Math.cos(yaw), distance * Math.sin(yaw))
                                 .plus(robotToCameraTranslation);
 
-                DogLog.log(
+                Log.log(
                         "Subsystems/Vision/ObjectDetection/GAMEPIECES/"
                                 + gamePieceNumber
                                 + "/translation",

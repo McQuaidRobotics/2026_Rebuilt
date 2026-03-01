@@ -1,6 +1,5 @@
 package igknighters.subsystems.LimeLightVision;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
@@ -8,6 +7,7 @@ import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.LimeLightVision.Cameras.LimeLightVisionReal;
 import igknighters.subsystems.LimeLightVision.Cameras.LimeLightVisionSim;
 import igknighters.subsystems.LimeLightVision.Cameras.LimeLights;
+import igknighters.util.log.Log;
 import java.util.List;
 
 public class LimeLightVision extends SubsystemBase {
@@ -17,8 +17,9 @@ public class LimeLightVision extends SubsystemBase {
         if (Robot.isReal()) {
             vision =
                     new LimeLightVisionReal(
-                            SubsystemConstants.kLimelightVision.backLeft,
-                            SubsystemConstants.kLimelightVision.backRight);
+                            SubsystemConstants.kLimelightVision.backCam,
+                            SubsystemConstants.kLimelightVision.turretCam,
+                            SubsystemConstants.kLimelightVision.intakeCam);
         } else {
             vision = new LimeLightVisionSim();
         }
@@ -39,7 +40,7 @@ public class LimeLightVision extends SubsystemBase {
             double pitchRate,
             double roll,
             double rollRate) {
-        DogLog.log("Subsystems/Vison/Limelight/ENABLED", true);
+        Log.log("Subsystems/Vison/Limelight/ENABLED", true);
         return vision.getRobotPoseFromVision(yaw, yawRate, pitch, pitchRate, roll, rollRate);
     }
 }

@@ -1,7 +1,7 @@
 package igknighters.constants;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import igknighters.util.log.Log;
 
 /**
  * Shared state to determine if the shooter is able to shoot. This class acts as a "lockless"
@@ -11,11 +11,17 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class AbleToShootSharedState {
     private static AbleToShootSharedState instance;
 
-    private boolean canShoot = false;
-    private final Trigger canShootTrigger;
+    private boolean atTarget = false;
+    private boolean beingControlled = false;
+    private boolean possibleShot = false;
+    private final Trigger atComandedStateTrigger;
+    private final Trigger beingControlledTrigger;
+    private final Trigger possibleShotTrigger;
 
     private AbleToShootSharedState() {
-        this.canShootTrigger = new Trigger(this::getCanShoot);
+        this.atComandedStateTrigger = new Trigger(this::getAtTarget);
+        this.beingControlledTrigger = new Trigger(this::isBeingControlled);
+        this.possibleShotTrigger = new Trigger(this::isPossibleShot);
     }
 
     public static AbleToShootSharedState getInstance() {
@@ -31,9 +37,27 @@ public class AbleToShootSharedState {
      *
      * @param newState The new boolean state for canShoot.
      */
-    public void setCanShoot(boolean newState) {
-        DogLog.log("STATUS/CAN SHOOT", newState);
-        this.canShoot = newState;
+    public void setAtTarget(boolean newState) {
+        Log.log("STATUS/CAN SHOOT", newState);
+        this.atTarget = newState;
+    }
+
+    public void setPossibleShot(boolean newState) {
+        Log.log("STATUS/POSSIBLE SHOT", newState);
+        this.possibleShot = newState;
+    }
+
+    public void setBeingControlled(boolean newState) {
+        Log.log("Subsystems/Shooter/BeingControlled", newState);
+        this.beingControlled = newState;
+    }
+
+    public boolean isBeingControlled() {
+        return this.beingControlled;
+    }
+
+    public boolean isPossibleShot() {
+        return this.possibleShot;
     }
 
     /**
@@ -42,17 +66,25 @@ public class AbleToShootSharedState {
      *
      * @return boolean indicating if the shooter is ready to shoot.
      */
-    public boolean getCanShoot() {
-        return this.canShoot;
+    public boolean getAtTarget() {
+        return this.atTarget;
     }
 
     /**
      * Provides a Trigger that is active when the shooter is able to shoot. This can be used to bind
-     * commands to the "can shoot" state.
+     * commands to the "atCommandedState" state.
      *
-     * @return a Trigger for the canShoot state.
+     * @return a Trigger for the atCommandedState state.
      */
-    public Trigger canShootTrigger() {
-        return canShootTrigger;
+    public Trigger atCommandedStateTrigger() {
+        return atComandedStateTrigger;
+    }
+
+    public Trigger shotPosible() {
+        return possibleShotTrigger;
+    }
+
+    public Trigger beingControlledTrigger() {
+        return beingControlledTrigger;
     }
 }

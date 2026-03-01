@@ -1,11 +1,15 @@
 package igknighters.subsystems.intake.rollers;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import dev.doglog.DogLog;
+import com.ctre.phoenix6.signals.InvertedValue;
+import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.constants.SubsystemConstants.kIntake;
+import igknighters.util.log.Log;
 
 public class RollersReal extends Rollers {
     private final TalonFX intakeMotor =
@@ -32,19 +36,21 @@ public class RollersReal extends Rollers {
         config.TorqueCurrent.PeakForwardTorqueCurrent = kIntake.kRollers.FORWARD_CURRENT_LIMIT;
         config.TorqueCurrent.PeakReverseTorqueCurrent = kIntake.kRollers.REVERSE_CURRENT_LIMIT;
 
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
         config.Feedback.SensorToMechanismRatio = kIntake.kRollers.GEAR_RATIO;
 
         return config;
     }
 
     @Override
-    public double getSpeedRPM() {
-        return intakeSpeed.getValueAsDouble();
+    public AngularVelocity getSpeed() {
+        return RotationsPerSecond.of(intakeSpeed.getValueAsDouble());
     }
 
     @Override
-    public void goToSpeedRPM(double speedRPS) {
-        intakeMotor.setControl(velocityContorl.withVelocity(speedRPS));
+    public void goToSpeed(AngularVelocity speed) {
+        intakeMotor.setControl(velocityContorl.withVelocity(speed.in(RotationsPerSecond)));
     }
 
     @Override
@@ -55,6 +61,6 @@ public class RollersReal extends Rollers {
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(intakeSpeed);
-        DogLog.log("Subsystems/Intake/Rollers/SpeedRPS", getSpeedRPM());
+        Log.log("Subsystems/Intake/Rollers/SpeedRPS", getSpeed());
     }
 }

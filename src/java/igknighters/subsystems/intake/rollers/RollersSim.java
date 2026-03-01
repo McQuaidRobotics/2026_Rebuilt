@@ -1,14 +1,17 @@
 package igknighters.subsystems.intake.rollers;
 
-import dev.doglog.DogLog;
+import static edu.wpi.first.units.Units.RPM;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import igknighters.constants.SubsystemConstants.kIntake;
+import igknighters.util.log.Log;
 
 public class RollersSim extends Rollers {
 
@@ -36,8 +39,8 @@ public class RollersSim extends Rollers {
     private boolean isVoltageControlledThisCycle = false;
 
     @Override
-    public double getSpeedRPM() {
-        return leaderflywheelSim.getAngularVelocityRPM();
+    public AngularVelocity getSpeed() {
+        return RPM.of(leaderflywheelSim.getAngularVelocityRPM());
     }
 
     @Override
@@ -47,9 +50,9 @@ public class RollersSim extends Rollers {
     }
 
     @Override
-    public void goToSpeedRPM(double speedRPM) {
-        DogLog.log("Subsystems/Intake/Rollers/Target Speed RPM", speedRPM);
-        profiledPIDController.setGoal(speedRPM);
+    public void goToSpeed(AngularVelocity speed) {
+        Log.log("Subsystems/Intake/Rollers/Target Speed RPM", speed.in(RPM));
+        profiledPIDController.setGoal(speed.in(RPM));
         isPidControlledThisCycle = true;
     }
 
@@ -88,14 +91,14 @@ public class RollersSim extends Rollers {
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
 
         // Logging
-        DogLog.log("Subsystems/Intake/Rollers/SimVoltage", voltage);
-        DogLog.log("Subsystems/Intake/Rollers/SimSpeedRPM", currentRPM);
-        DogLog.log("Subsystems/Intake/Rollers/GoalSpeedRPM", goalRPM);
-        DogLog.log(
+        Log.log("Subsystems/Intake/Rollers/SimVoltage", voltage);
+        Log.log("Subsystems/Intake/Rollers/SimSpeedRPM", currentRPM);
+        Log.log("Subsystems/Intake/Rollers/GoalSpeedRPM", goalRPM);
+        Log.log(
                 "Subsystems/Intake/Rollers/Pid Error RPM",
                 profiledPIDController.getPositionError());
-        DogLog.log("Subsystems/Intake/Rollers/PIDVolts", pidOutput);
-        DogLog.log("Subsystems/Intake/Rollers/FFVolts", ffOutput);
+        Log.log("Subsystems/Intake/Rollers/PIDVolts", pidOutput);
+        Log.log("Subsystems/Intake/Rollers/FFVolts", ffOutput);
 
         // Apply to sim
         leaderflywheelSim.setInputVoltage(voltage);

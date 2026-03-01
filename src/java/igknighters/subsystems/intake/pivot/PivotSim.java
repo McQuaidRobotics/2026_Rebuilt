@@ -1,13 +1,17 @@
 package igknighters.subsystems.intake.pivot;
 
-import dev.doglog.DogLog;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
+import igknighters.util.log.Log;
 
 public class PivotSim extends Pivot {
 
@@ -42,24 +46,24 @@ public class PivotSim extends Pivot {
     }
 
     @Override
-    public void setAngleDegrees(double angleDegrees) {
-        super.degrees = angleDegrees;
-        pivotSim.setState(angleDegrees * Conv.DEGREES_TO_RADIANS, 0.0);
-        controller.reset(angleDegrees * Conv.DEGREES_TO_RADIANS);
+    public void setAngle(Angle angle) {
+        super.degrees = angle.in(Degrees);
+        pivotSim.setState(angle.in(Radians), 0.0);
+        controller.reset(angle.in(Radians));
     }
 
     private boolean isControlledThisCycle = false;
 
     @Override
-    public void goToAngleDegrees(double angleDegrees) {
-        super.targetDegrees = angleDegrees;
-        controller.setGoal(angleDegrees * Conv.DEGREES_TO_RADIANS);
+    public void goToAngle(Angle angle) {
+        super.targetDegrees = angle.in(Degrees);
+        controller.setGoal(angle.in(Radians));
         isControlledThisCycle = true;
     }
 
     @Override
-    public double getAngleDegrees() {
-        return pivotSim.getAngleRads() * Conv.RADIANS_TO_DEGREES;
+    public Angle getAngle() {
+        return Radians.of(pivotSim.getAngleRads());
     }
 
     @Override
@@ -79,8 +83,8 @@ public class PivotSim extends Pivot {
         pivotSim.setInput(input);
         pivotSim.update(0.020);
 
-        DogLog.log("Subsystems/Intake/Pivot/AngleDegrees", getAngleDegrees());
-        DogLog.log("Subsystems/Intake/Pivot/TargetDegrees", super.targetDegrees);
-        DogLog.log("Subsystems/Intake/Pivot/MotorVoltage", input);
+        Log.log("Subsystems/Intake/Pivot/AngleDegrees", getAngle().in(Degrees));
+        Log.log("Subsystems/Intake/Pivot/TargetDegrees", super.targetDegrees);
+        Log.log("Subsystems/Intake/Pivot/MotorVoltage", input);
     }
 }

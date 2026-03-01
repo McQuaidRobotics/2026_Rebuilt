@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.*;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
-import dev.doglog.DogLog;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -29,6 +28,7 @@ import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
+import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
@@ -42,6 +42,7 @@ import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.FuelSim;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
+import igknighters.util.log.Log;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Optional;
@@ -51,6 +52,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
+
     private Command m_autonomousCommand;
     private AutoFactory autoFactory;
     public final AutoChooser autoChooser = new AutoChooser();
@@ -76,29 +78,29 @@ public class Robot extends LoggedRobot {
     public void setUpCommandLogging() {
         scheduler.onCommandInitialize(
                 command ->
-                        DogLog.log(
+                        Log.log(
                                 "Commands/Tracking/" + command.getName() + "/ Command Running",
                                 "TRUE"));
 
         scheduler.onCommandInitialize(
                 command ->
-                        DogLog.log(
+                        Log.log(
                                 "Commands/Tracking/" + command.getName() + "/ Command Interrupted",
                                 "FALSE"));
 
         scheduler.onCommandInterrupt(
                 command ->
-                        DogLog.log(
+                        Log.log(
                                 "Commands/Tracking/" + command.getName() + "/ Command Interrupted",
                                 "TRUE"));
         scheduler.onCommandFinish(
                 command ->
-                        DogLog.log(
+                        Log.log(
                                 "Commands/Tracking/" + command.getName() + "/ Command Running",
                                 "FALSE"));
         scheduler.onCommandFinish(
                 command ->
-                        DogLog.log(
+                        Log.log(
                                 "Commands/Tracking/" + command.getName() + "/ Command Interrupted",
                                 "FALSE"));
     }
@@ -188,7 +190,7 @@ public class Robot extends LoggedRobot {
                 new Subsystems(
                         new Swerve(false),
                         new LimeLightVision(),
-                        new Led(40, 1),
+                        new Led(80, 1),
                         new Shooter(),
                         new Indexer(),
                         new Intake(),
@@ -219,7 +221,7 @@ public class Robot extends LoggedRobot {
                         new Indexer(),
                         new Intake(),
                         new Climber(),
-                        new Luma(false, "object-detection"));
+                        new Luma(true, "object-detection"));
         setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
@@ -262,11 +264,10 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-        // THE COORDINATES LOOK WEIRD WHEN THERE ARE MULTIPLE FUEL, needs tuning
-        DogLog.log(
-                "Subsystems/Vision/ObjectDetection/Closest Game Piece",
-                subsytems.luma.getClosestGamePiece());
-        FieldVisualizer.getInstance().testZeroedComponents();
+        // // THE COORDINATES LOOK WEIRD WHEN THERE ARE MULTIPLE FUEL, needs tuning
+        // Log.log(
+        //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
+        //         subsytems.luma.getClosestGamePiece());
         FieldVisualizer.getInstance()
                 .updateTurret(
                         subsytems.shooter.getTurretAngleDegrees(),
@@ -296,8 +297,11 @@ public class Robot extends LoggedRobot {
                         currentPose,
                         subsytems.vision.getLastTimeStamp(),
                         VecBuilder.fill(
-                                0.05, 0.05, 0.1)); // trusts vision rotation less. Needs tuning
+                                0.07, 0.07, 0.01)); // trusts vision rotation less. Needs tuning
                 // increase the std devs to trust vision less
+                Log.log("Subsystems/Vision/Null Pose", false);
+            } else {
+                Log.log("Subsystems/Vision/Null Pose", true);
             }
         }
     }
@@ -381,6 +385,7 @@ public class Robot extends LoggedRobot {
             double currentTime = RobotController.getFPGATime() / 1.0e6;
             if (subsytems.indexer.getExitRollerRPM() > 50.0
                     && subsytems.shooter.getCurrentState().flywheelSpeed.in(RPM) > 500.0
+                    && subsytems.indexer.getSpindexerRPM() > 50.0
                     && (currentTime - lastShotTime) > 0.1) { // 0.1s cooldown
 
                 var shooterState = subsytems.shooter.getCurrentState();
@@ -390,17 +395,17 @@ public class Robot extends LoggedRobot {
                 // AimSolver)
                 double flywheelRadius = 0.0508; // 2 inches
                 double launchVelocity =
-                        (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.0;
+                        (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.2;
 
                 fuelSim.launchFuel(
                         MetersPerSecond.of(launchVelocity),
                         Radians.of(Math.PI / 2 - shooterState.hoodAngle.in(Radian)),
                         shooterState.turretAngle,
-                        Meters.of(0.4) // height of shooter exit
+                        Meters.of(kFlywheels.ShooterHeightMeters) // height of shooter exit
                         );
 
                 lastShotTime = currentTime;
-                DogLog.log("Simulation/FuelLaunched", true);
+                Log.log("Simulation/FuelLaunched", true);
             }
         }
     }
@@ -441,16 +446,19 @@ public class Robot extends LoggedRobot {
                 -0.2,
                 0.2,
                 () -> true,
-                () -> DogLog.log("Simulation/FuelIntaked", true));
+                () -> Log.log("Simulation/FuelIntaked", true));
     }
 
     public static boolean isBlue() {
         Optional<Alliance> ally = DriverStation.getAlliance();
 
         if (ally.isPresent()) {
-            return (ally.get() == Alliance.Blue);
+            return ally.get() == Alliance.Blue;
         } else {
-            return true; // Default to blue if alliance is unknown
+            // Default to blue if alliance is unknown (e.g., in simulation without alliance set)
+            // Log this so we know why things might be going to the blue side.
+            Log.log("System/AllianceUnknown", true);
+            return true;
         }
     }
 }

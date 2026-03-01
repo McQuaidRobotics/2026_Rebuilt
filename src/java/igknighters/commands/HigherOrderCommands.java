@@ -5,33 +5,54 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
+import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
 
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
-        return Commands.parallel(
-                        ShooterCommands.shootIChoseTargetWithLookAhead(
-                                        subsystems.shooter,
-                                        () -> subsystems.swerve.getState().Pose,
-                                        subsystems.swerve::getFieldRelativeSpeeds)
-                                .withName("Aim At in Shoot till Empty"),
-                        IndexerCommands.dispense(subsystems.indexer)
-                                .onlyIf(() -> subsystems.shooter.atTarget(300, 2, 2)))
+        return rapidFireStream(subsystems)
                 .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
     }
 
     public static Command shootNoStop(Subsystems subsystems) {
         return Commands.parallel(
-                ShooterCommands.shootIChoseTargetWithLookAhead(
+                        ShooterCommands.shoot(
+                                        subsystems.shooter,
+                                        () -> subsystems.swerve.getState().Pose,
+                                        subsystems.swerve::getFieldRelativeSpeeds)
+                                .repeatedly()
+                                .withName("SHOOTING WHILE DOING OTHER STUFF"),
+                        IndexerCommands.dispense(subsystems.indexer)
+                                .onlyIf(
+                                        AbleToShootSharedState.getInstance()
+                                                .atCommandedStateTrigger()))
+                .withName("DISPENSING")
+                .alongWith(Commands.print("DISPENSING"))
+                .withName("SHOOT NO STOP");
+    }
+
+    public static Command rapidFireStream(Subsystems subsystems) {
+
+        // 1. The Active Shooter (Tracks and spools continuously)
+        Command shooterCommand =
+                ShooterCommands.shoot(
                                 subsystems.shooter,
                                 () -> subsystems.swerve.getState().Pose,
                                 subsystems.swerve::getFieldRelativeSpeeds)
-                        .repeatedly()
-                        .withName("SHOOTING WHILE DOING OTHER STUFF"),
-                IndexerCommands.dispense(subsystems.indexer)
-                        .withName("ALLOWED TO SHOOT THEIRFORE DISPENSING TS")
-                        .onlyIf(() -> subsystems.shooter.atTarget(500, 5, 5)));
+                        .withName("Active Spool & Aim");
+
+        // 2. The Smart Hopper/Indexer Feed
+        Command smartFeed =
+                Commands.either(
+                        IndexerCommands.dispense(subsystems.indexer),
+                        IndexerCommands.stopDispensing(subsystems.indexer),
+                        AbleToShootSharedState.getInstance()
+                                .atCommandedStateTrigger()
+                                .and(AbleToShootSharedState.getInstance().atCommandedStateTrigger())
+                                .and(AbleToShootSharedState.getInstance().shotPosible()));
+
+        return Commands.parallel(shooterCommand, smartFeed.repeatedly()).withName("SMART STREAM");
     }
 
     public static Pose2d getClimbStartPose() {
@@ -64,21 +85,30 @@ public class HigherOrderCommands {
     }
 
     public static Command prepToClimbFirstRung(Subsystems subsystems) {
-        return Commands.sequence(
-                        Commands.print("STARTING AUTO ALIGNMENT TO CLIMB"),
-                        SwerveCommands.moveToSimple(subsystems.swerve, getClimbStartPose())
-                                .until(
-                                        SwerveCommands.isAt(
-                                                subsystems.swerve, getClimbStartPose(), 0.03, 0.1)),
-                        Commands.print("REACHED STARTING POSE FOR CLIMB LINEUP"),
-                        SwerveCommands.moveToSimpleWithVelocityControl(
-                                        subsystems.swerve,
-                                        getClimbEndPose(),
-                                        new Pose2d(.5, .5, new Rotation2d(1)))
-                                .until(subsystems.climber::isSensorHit),
-                        Commands.print("REACHED CLIMBING POSITION"),
-                        ClimberCommands.goUp(subsystems.climber),
-                        Commands.print("CLIMBER IS PREPED TO RUN"))
+        return Commands.defer(
+                        () -> {
+                            Pose2d startPose = getClimbStartPose();
+                            Pose2d endPose = getClimbEndPose();
+                            return Commands.sequence(
+                                    Commands.print("STARTING AUTO ALIGNMENT TO CLIMB"),
+                                    SwerveCommands.moveToSimple(subsystems.swerve, startPose)
+                                            .until(
+                                                    SwerveCommands.isAt(
+                                                            subsystems.swerve,
+                                                            startPose,
+                                                            0.03,
+                                                            0.1)),
+                                    Commands.print("REACHED STARTING POSE FOR CLIMB LINEUP"),
+                                    SwerveCommands.moveToSimpleWithVelocityControl(
+                                                    subsystems.swerve,
+                                                    endPose,
+                                                    new Pose2d(.5, .5, new Rotation2d(1)))
+                                            .until(subsystems.climber::isSensorHit),
+                                    Commands.print("REACHED CLIMBING POSITION"),
+                                    ClimberCommands.goUp(subsystems.climber),
+                                    Commands.print("CLIMBER IS PREPED TO RUN"));
+                        },
+                        java.util.Set.of(subsystems.swerve, subsystems.climber))
                 .withName("Moving to Climber and raising to max height");
     }
 }

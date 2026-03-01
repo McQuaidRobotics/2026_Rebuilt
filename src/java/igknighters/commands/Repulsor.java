@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import dev.doglog.DogLog;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotController;
@@ -16,8 +15,10 @@ import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
+import igknighters.util.log.Log;
 import java.util.ArrayList;
 
+// rename
 public class Repulsor {
     public enum obstacleType {
         CIRCLE,
@@ -48,7 +49,7 @@ public class Repulsor {
     // finds X repulsive force by summing all the forces of the obstacles
     public static double getXRepulse(Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
-        DogLog.log("Commands/repulsor/Time", currentTime);
+        Log.log("Commands/repulsor/Time", currentTime);
         double xRepelForce = 0.0;
         for (Repulsor.obstacle obs : obstacles) {
             if (obs.type == obstacleType.CIRCLE) {
@@ -72,22 +73,22 @@ public class Repulsor {
             }
             // if robot is too close to walls set repel to 0
             if (currentPose.getX() < 0 + 30 * Conv.INCHES_TO_METERS
-                    || currentPose.getX() > FieldConstants.LENGTH - 30 * Conv.INCHES_TO_METERS) {
+                    || currentPose.getX() > FieldConstants.X_FIELD - 30 * Conv.INCHES_TO_METERS) {
                 xRepelForce = 0;
             }
         }
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
-        DogLog.log("Commands/repulsor/DeltaTime", deltaTime);
+        Log.log("Commands/repulsor/DeltaTime", deltaTime);
         if (deltaTime > maxTime) {
             maxTime = deltaTime;
-            DogLog.log("Commands/repulsor/MaxDeltaTime", maxTime);
+            Log.log("Commands/repulsor/MaxDeltaTime", maxTime);
         }
         return -xRepelForce;
     }
 
     public static double getXGoal(Pose2d currentPose, Pose2d target) {
         double xGoalDist = target.getX() - currentPose.getX();
-        DogLog.log("Commands/repulsor/xGoalDist", target.getX() - currentPose.getX());
+        Log.log("Commands/repulsor/xGoalDist", target.getX() - currentPose.getX());
         return xGoalDist;
     }
 
@@ -96,7 +97,7 @@ public class Repulsor {
             Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles, Pose2d target) {
         double yRepelForce = 0.0;
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
-        DogLog.log("Commands/repulsor/Time", currentTime);
+        Log.log("Commands/repulsor/Time", currentTime);
         for (Repulsor.obstacle obs : obstacles) {
             if (obs.type == obstacleType.CIRCLE) {
                 double dist =
@@ -134,28 +135,28 @@ public class Repulsor {
                 yRepelForce = 0;
                 if ((currentPose.getX() < 182.11 * Conv.INCHES_TO_METERS
                                 || currentPose.getX()
-                                        > FieldConstants.LENGTH - 182.11 * Conv.INCHES_TO_METERS)
+                                        > FieldConstants.X_FIELD - 182.11 * Conv.INCHES_TO_METERS)
                         && Math.abs(currentPose.getX() - obs.obstaclePose.getX()) > 1) {
-                    if (currentPose.getY() < FieldConstants.WIDTH / 2) {
+                    if (currentPose.getY() < FieldConstants.Y_FIELD / 2) {
                         yRepelForce += Math.abs(currentPose.getX() - obs.obstaclePose.getX()) * 2;
-                    } else if (currentPose.getY() > FieldConstants.WIDTH / 2) {
+                    } else if (currentPose.getY() > FieldConstants.Y_FIELD / 2) {
                         yRepelForce -= Math.abs(currentPose.getX() - obs.obstaclePose.getX()) * 2;
                     }
                 }
             }
         }
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
-        DogLog.log("Commands/repulsor/DeltaTime", deltaTime);
+        Log.log("Commands/repulsor/DeltaTime", deltaTime);
         if (deltaTime > maxTime) {
             maxTime = deltaTime;
-            DogLog.log("Commands/repulsor/MaxDeltaTime", maxTime);
+            Log.log("Commands/repulsor/MaxDeltaTime", maxTime);
         }
         // if in front of the hubs, there will be a up/down force to get robot to move towards one
         // side
-        if (currentPose.getY() < FieldConstants.WIDTH / 2 && currentPose.getY() > 50.35) {
+        if (currentPose.getY() < FieldConstants.Y_FIELD / 2 && currentPose.getY() > 50.35) {
             yRepelForce += .5;
-        } else if (currentPose.getY() > FieldConstants.WIDTH / 2
-                && currentPose.getY() < FieldConstants.WIDTH - 50.59 * Conv.INCHES_TO_METERS) {
+        } else if (currentPose.getY() > FieldConstants.Y_FIELD / 2
+                && currentPose.getY() < FieldConstants.Y_FIELD - 50.59 * Conv.INCHES_TO_METERS) {
             yRepelForce -= .5;
         }
         return -yRepelForce;
@@ -166,7 +167,7 @@ public class Repulsor {
     public static double getYRepulse(Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
         double yRepelForce = 0.0;
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
-        DogLog.log("Commands/repulsor/Time", currentTime);
+        Log.log("Commands/repulsor/Time", currentTime);
         for (Repulsor.obstacle obs : obstacles) {
             if (obs.type == obstacleType.CIRCLE) {
                 double dist =
@@ -194,28 +195,28 @@ public class Repulsor {
                 yRepelForce = 0;
                 if ((currentPose.getX() < 182.11 * Conv.INCHES_TO_METERS
                                 || currentPose.getX()
-                                        > FieldConstants.LENGTH - 182.11 * Conv.INCHES_TO_METERS)
+                                        > FieldConstants.X_FIELD - 182.11 * Conv.INCHES_TO_METERS)
                         && Math.abs(currentPose.getX() - obs.obstaclePose.getX()) > 1) {
-                    if (currentPose.getY() < FieldConstants.WIDTH / 2) {
+                    if (currentPose.getY() < FieldConstants.Y_FIELD / 2) {
                         yRepelForce += Math.abs(currentPose.getX() - obs.obstaclePose.getX()) * 2;
-                    } else if (currentPose.getY() > FieldConstants.WIDTH / 2) {
+                    } else if (currentPose.getY() > FieldConstants.Y_FIELD / 2) {
                         yRepelForce -= Math.abs(currentPose.getX() - obs.obstaclePose.getX()) * 2;
                     }
                 }
             }
         }
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
-        DogLog.log("Commands/repulsor/DeltaTime", deltaTime);
+        Log.log("Commands/repulsor/DeltaTime", deltaTime);
         if (deltaTime > maxTime) {
             maxTime = deltaTime;
-            DogLog.log("Commands/repulsor/MaxDeltaTime", maxTime);
+            Log.log("Commands/repulsor/MaxDeltaTime", maxTime);
         }
         // if in front of the hubs, there will be a up/down force to get robot to move towards one
         // side
-        if (currentPose.getY() < FieldConstants.WIDTH / 2 && currentPose.getY() > 50.35) {
+        if (currentPose.getY() < FieldConstants.Y_FIELD / 2 && currentPose.getY() > 50.35) {
             yRepelForce += .5;
-        } else if (currentPose.getY() > FieldConstants.WIDTH / 2
-                && currentPose.getY() < FieldConstants.WIDTH - 50.59 * Conv.INCHES_TO_METERS) {
+        } else if (currentPose.getY() > FieldConstants.Y_FIELD / 2
+                && currentPose.getY() < FieldConstants.Y_FIELD - 50.59 * Conv.INCHES_TO_METERS) {
             yRepelForce -= .5;
         }
         return -yRepelForce;
@@ -223,7 +224,7 @@ public class Repulsor {
 
     public static double getYGoal(Pose2d currentPose, Pose2d target) {
         double yGoalDist = target.getY() - currentPose.getY();
-        DogLog.log("Commands/repulsor/yGoalDist", target.getY() - currentPose.getY());
+        Log.log("Commands/repulsor/yGoalDist", target.getY() - currentPose.getY());
         return yGoalDist;
     }
 
@@ -246,12 +247,12 @@ public class Repulsor {
                             10
                                     * -(getXGoal(currentPose, targetPose)
                                             + getXRepulse(currentPose, obstacles));
-                    DogLog.log("Commands/repulsor/xRepel", getXRepulse(currentPose, obstacles));
+                    Log.log("Commands/repulsor/xRepel", getXRepulse(currentPose, obstacles));
                     double yVelo =
                             10
                                     * -(getYGoal(currentPose, targetPose)
                                             + getYRepulse(currentPose, obstacles, targetPose));
-                    DogLog.log(
+                    Log.log(
                             "Commands/repulsor/yRepel",
                             getYRepulse(currentPose, obstacles, targetPose));
                     double omega =
@@ -273,7 +274,7 @@ public class Repulsor {
                                     getXRepulse(currentPose, obstacles)));
 
                     omega *= 20.0;
-                    DogLog.log("Commands/repulsor/Omega", omega);
+                    Log.log("Commands/repulsor/Omega", omega);
                     swerve.setControl(
                             m_driveRequest
                                     .withVelocityX(xVelo)

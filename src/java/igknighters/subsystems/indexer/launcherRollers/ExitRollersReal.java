@@ -6,9 +6,9 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import dev.doglog.DogLog;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIndexer;
+import igknighters.util.log.Log;
 
 public class ExitRollersReal extends ExitRollers {
     private final TalonFX exitRollerMotor =
@@ -32,7 +32,7 @@ public class ExitRollersReal extends ExitRollers {
         config.Feedback.SensorToMechanismRatio =
                 SubsystemConstants.kIndexer.kExitRollers.GEAR_RATIO;
 
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         config.MotionMagic.MotionMagicJerk =
                 SubsystemConstants.kIndexer.kExitRollers.MOTION_MAGIC_JERK;
@@ -64,7 +64,7 @@ public class ExitRollersReal extends ExitRollers {
 
     @Override
     public void setSpeedRPM(double speedRpm) {
-        DogLog.log("Subsystems/Indexer/ExitRollers/setSpeed", speedRpm);
+        Log.log("Subsystems/Indexer/ExitRollers/setSpeed", speedRpm);
         exitRollerMotor.setControl(velocityControl.withVelocity(speedRpm / 60.0));
     }
 
@@ -88,14 +88,14 @@ public class ExitRollersReal extends ExitRollers {
     public void periodic() {
         BaseStatusSignal.refreshAll(
                 shooterVelocity, shooterCurrent, shooterVoltage, shooterTemperature);
-        DogLog.log(
+        Log.log(
                 "Subsystems/Indexer/ExitRollers/velocity",
                 shooterVelocity.getValueAsDouble() * 60.0);
-        DogLog.log("Subsystems/Indexer/ExitRollers/current", shooterCurrent.getValueAsDouble());
-        DogLog.log("Subsystems/Indexer/ExitRollers/voltage", shooterVoltage.getValueAsDouble());
-        DogLog.log(
+        Log.log("Subsystems/Indexer/ExitRollers/current", shooterCurrent.getValueAsDouble());
+        Log.log("Subsystems/Indexer/ExitRollers/voltage", shooterVoltage.getValueAsDouble());
+        Log.log(
                 "Subsystems/Indexer/ExitRollers/temperature",
                 shooterTemperature.getValueAsDouble());
-        DogLog.log("Subsystems/Indexer/ExitRollers/periodicing", true);
+        Log.log("Subsystems/Indexer/ExitRollers/periodicing", true);
     }
 }

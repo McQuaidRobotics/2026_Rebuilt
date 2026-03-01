@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.Rotations;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -14,17 +13,16 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import dev.doglog.DogLog;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
+import igknighters.util.log.Log;
 
 public class TurretReal extends Turret {
 
     private final MotionMagicVoltage positionControl = new MotionMagicVoltage(0.0).withSlot(0);
-    private final DutyCycleOut voltageControl = new DutyCycleOut(0.0);
 
     private final TalonFX motor =
             new TalonFX(SubsystemConstants.kShooter.kTurret.MOTOR_ID, kShooter.CANBUS);
@@ -33,7 +31,6 @@ public class TurretReal extends Turret {
 
     private final BaseStatusSignal turretAngle = motor.getPosition();
     private final BaseStatusSignal turretCurrent = motor.getStatorCurrent();
-    private final BaseStatusSignal canCoderAngle = turretCaNcoder.getAbsolutePosition();
 
     private final TalonFXConfiguration turretConfiguration() {
         var cfg = new TalonFXConfiguration();
@@ -78,7 +75,7 @@ public class TurretReal extends Turret {
 
         cfg.MagnetSensor.MagnetOffset =
                 SubsystemConstants.kShooter.kTurret.CANCODER_OFFSET_ROTATIONS;
-        cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
+        cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.75;
         cfg.MagnetSensor.SensorDirection =
                 SensorDirectionValue.Clockwise_Positive; // Adjust as needed
 
@@ -129,13 +126,9 @@ public class TurretReal extends Turret {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(turretAngle, turretCurrent, canCoderAngle);
-        DogLog.log("Subsystems/Shooter/Turret/Position (deg)", getAngleDegrees());
-        DogLog.log("Subsystems/Shooter/Turret/Current (A)", turretCurrent.getValueAsDouble());
-        DogLog.log("Subsystems/Shooter/Turret/Target Degrees", super.targetDegrees);
-        DogLog.log(
-                "Subsystems/Shooter/Turret/CANcoder Angle (deg)",
-                canCoderAngle.getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES);
+        BaseStatusSignal.refreshAll(turretAngle, turretCurrent);
+        Log.logMotor("Subsystems/Shooter/Turret/Motor", motor);
+        Log.log("Subsystems/Shooter/Turret/Target Degrees", super.targetDegrees);
 
         super.degrees = turretAngle.getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
     }

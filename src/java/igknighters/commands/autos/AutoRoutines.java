@@ -79,12 +79,12 @@ public class AutoRoutines extends AutoCommands {
     public Pose3d getPassTarget() {
         if (Robot.isBlue()) {
             Pose2d robotPose2d = subsystems.swerve.getState().Pose;
-            return robotPose2d.getY() > FieldConstants.WIDTH / 2
+            return robotPose2d.getY() > FieldConstants.Y_FIELD / 2
                     ? FieldConstants.PASS.POSITION_LEFT_BLUE
                     : FieldConstants.PASS.POSITION_RIGHT_BLUE;
         } else {
             Pose2d robotPose2d = subsystems.swerve.getState().Pose;
-            return robotPose2d.getY() > FieldConstants.WIDTH / 2
+            return robotPose2d.getY() > FieldConstants.Y_FIELD / 2
                     ? FieldConstants.PASS.POSITION_LEFT_RED
                     : FieldConstants.PASS.POSITION_RIGHT_RED;
         }
@@ -110,7 +110,7 @@ public class AutoRoutines extends AutoCommands {
                                 Commands.print("INTAKE BALLS"),
                                 Commands.parallel(
                                         IntakeCommands.goToIntake(subsystems.intake),
-                                        HigherOrderCommands.shootNoStop(subsystems))));
+                                        HigherOrderCommands.rapidFireStream(subsystems))));
 
         return routine;
     }
@@ -123,10 +123,10 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                         outpostTraj.resetOdometry(),
-                                        HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 6),
                                         Commands.parallel(
                                                 IntakeCommands.goToIntake(subsystems.intake),
-                                                HigherOrderCommands.shootNoStop(subsystems),
+                                                HigherOrderCommands.rapidFireStream(subsystems),
                                                 outpostTraj.cmd()))
                                 .withName("Right Outpost Climb"));
         outpostTraj
@@ -146,10 +146,10 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                         outpostTraj.resetOdometry(),
-                                        HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 6),
                                         Commands.parallel(
                                                 IntakeCommands.goToIntake(subsystems.intake),
-                                                HigherOrderCommands.shootNoStop(subsystems),
+                                                HigherOrderCommands.rapidFireStream(subsystems),
                                                 outpostTraj.cmd()))
                                 .withName("Left Outpost Climb"));
         outpostTraj
@@ -168,10 +168,10 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                         depoTraj.resetOdometry(),
-                                        HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 6),
                                         Commands.parallel(
                                                 IntakeCommands.goToIntake(subsystems.intake),
-                                                HigherOrderCommands.shootNoStop(subsystems),
+                                                HigherOrderCommands.rapidFireStream(subsystems),
                                                 depoTraj.cmd()))
                                 .withName("Left Depo Climb"));
         depoTraj.done()
@@ -189,7 +189,7 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                         depoTraj.resetOdometry(),
-                                        HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 6),
                                         Commands.parallel(
                                                 HigherOrderCommands.hippoShoot(subsystems),
                                                 depoTraj.cmd()))
@@ -211,10 +211,10 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                         moveTraj.resetOdometry(),
-                                        HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 6),
                                         Commands.parallel(
                                                 IntakeCommands.goToIntake(subsystems.intake),
-                                                HigherOrderCommands.shootNoStop(subsystems),
+                                                HigherOrderCommands.rapidFireStream(subsystems),
                                                 moveTraj.cmd()))
                                 .withName("RIGHT NUETRAL HIPPO"));
         moveTraj.atTimeBeforeEnd(0.0).onTrue(SwerveCommands.stopDriving(swerve));
@@ -230,10 +230,10 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                         moveTraj.resetOdometry(),
-                                        HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 6),
                                         Commands.parallel(
                                                 IntakeCommands.goToIntake(subsystems.intake),
-                                                HigherOrderCommands.shootNoStop(subsystems),
+                                                HigherOrderCommands.rapidFireStream(subsystems),
                                                 moveTraj.cmd()))
                                 .withName("LEFT NUETRAL HIPPO"));
         moveTraj.atTimeBeforeEnd(0.0).onTrue(SwerveCommands.stopDriving(swerve));
@@ -251,7 +251,7 @@ public class AutoRoutines extends AutoCommands {
                                         moveTraj.resetOdometry(),
                                         HigherOrderCommands.shootTillEmpty(subsystems, 2),
                                         Commands.parallel(
-                                                HigherOrderCommands.shootNoStop(subsystems),
+                                                HigherOrderCommands.rapidFireStream(subsystems),
                                                 moveTraj.cmd()))
                                 .withName("Move and Shoot"));
         HigherOrderCommands.prepToClimbFirstRung(subsystems);
