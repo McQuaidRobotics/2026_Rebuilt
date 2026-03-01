@@ -172,23 +172,18 @@ public class DriverController {
     }
 
     public void bind(final Subsystems subsystems) {
-        DrivingSharedState state = DrivingSharedState.getInstance();
         var swerve = subsystems.swerve;
         var intake = subsystems.intake;
         var indexer = subsystems.indexer;
         var shooter = subsystems.shooter;
-        var climber = subsystems.climber;
 
-        this.A.whileTrue(IntakeCommands.goToIntake(intake));
-        this.A.onFalse(IntakeCommands.goToStow(intake));
+        this.LB.whileTrue(IntakeCommands.goToIntake(intake)).onFalse(IntakeCommands.goToStow(intake));
         this.LT.whileTrue(
                 ShooterCommands.shootWithMaxHeightIterative(
                         shooter,
                         () -> swerve.getState().Pose,
                         swerve::getFieldRelativeSpeeds,
-                        5.0));
-        this.LT.onFalse(
-                ShooterCommands.idleCommand(
+                        5.0)).onFalse(ShooterCommands.idleCommand(
                         shooter, () -> swerve.getState().Pose, swerve::getFieldRelativeSpeeds));
         this.RT.whileTrue(IndexerCommands.dispense(indexer));
         this.RT.onFalse(IndexerCommands.stopDispensing(indexer));
