@@ -342,7 +342,10 @@ public class ShooterCommands {
                                     5,
                                     0.02);
 
-                    shooter.targetState(RPM.of(2000), targetingData.turretAngle, Degrees.of(kHood.MIN_ANGLE_DEGREES));
+                    shooter.targetState(
+                            RPM.of(2000),
+                            targetingData.turretAngle,
+                            Degrees.of(kHood.MIN_ANGLE_DEGREES));
                 });
     }
 

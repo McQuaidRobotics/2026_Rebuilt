@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -25,7 +24,6 @@ import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import igknighters.util.log.Log;
-
 import org.littletonrobotics.junction.Logger;
 
 public class AimSolver {
@@ -41,7 +39,8 @@ public class AimSolver {
             hasBeenAdded = true;
         }
 
-        public static TunableDouble effiencyConst = TunableValues.getDouble("Shooter/EfficiencyConst", 2.0);
+        public static TunableDouble effiencyConst =
+                TunableValues.getDouble("Shooter/EfficiencyConst", 2.0);
 
         public static void canShoot(boolean canShoot) {
             publishOnce();
