@@ -9,12 +9,12 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import dev.doglog.DogLog;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
+import igknighters.util.log.Log;
 
 public class HoodReal extends Hood {
     private final TalonFX motor =
@@ -55,7 +55,7 @@ public class HoodReal extends Hood {
     }
 
     public HoodReal() {
-        DogLog.log("Subsystems/Shooter/Hood/Initialized", true);
+        Log.log("Subsystems/Shooter/Hood/Initialized", true);
         motor.getConfigurator().apply(flapConfiguration());
     }
 
@@ -71,7 +71,7 @@ public class HoodReal extends Hood {
     @Override
     public void goToAngle(Angle targetAngle) {
         if (!isLegalPosition(targetAngle.in(Degrees))) {
-            DogLog.log("Subsystems/Shooter/Hood/IllegalPosition", targetAngle.in(Degrees));
+            Log.log("Subsystems/Shooter/Hood/IllegalPosition", targetAngle.in(Degrees));
             return;
         }
         this.targetAngle = targetAngle;
@@ -100,10 +100,10 @@ public class HoodReal extends Hood {
     public void periodic() {
         BaseStatusSignal.refreshAll(motorRots);
         handleLimitSwitch();
-        DogLog.log("Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());
-        DogLog.log("Subsystems/Shooter/Hood/Homing", hasHomed);
-        DogLog.log("Subsystems/Shooter/Hood/TargetDegrees", super.targetDegrees);
-        DogLog.log("Subsystems/Shooter/Hood/ReverseLimitSwitch", reverseLimitSwitch.get());
+        Log.log("Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());
+        Log.log("Subsystems/Shooter/Hood/Homing", hasHomed);
+        Log.log("Subsystems/Shooter/Hood/TargetDegrees", super.targetDegrees);
+        Log.log("Subsystems/Shooter/Hood/ReverseLimitSwitch", reverseLimitSwitch.get());
     }
 
     @Override

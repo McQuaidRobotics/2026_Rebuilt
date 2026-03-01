@@ -3,7 +3,6 @@ package igknighters.subsystems.intake;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -14,6 +13,7 @@ import igknighters.subsystems.intake.pivot.PivotSim;
 import igknighters.subsystems.intake.rollers.Rollers;
 import igknighters.subsystems.intake.rollers.RollersReal;
 import igknighters.subsystems.intake.rollers.RollersSim;
+import igknighters.util.log.Log;
 
 public class Intake extends SubsystemBase {
     private final Pivot pivot;
@@ -68,12 +68,12 @@ public class Intake extends SubsystemBase {
         boolean isAtSpeed =
                 Math.abs(rollers.getSpeed().in(RPM) - speedRPM.in(RPM)) < speedTolerance.in(RPM);
 
-        DogLog.log("Subsystems/Intake/AT STATE/Is At Speed", isAtSpeed);
-        DogLog.log("Subsystems/Intake/AT STATE/Is At Angle", isAtAngle);
-        DogLog.log(
+        Log.log("Subsystems/Intake/AT STATE/Is At Speed", isAtSpeed);
+        Log.log("Subsystems/Intake/AT STATE/Is At Angle", isAtAngle);
+        Log.log(
                 "Subsystems/Intake/AT STATE/DELTA THETA",
                 pivot.getAngle().in(Degrees) - angleDegrees.in(Degrees));
-        DogLog.log(
+        Log.log(
                 "Subsystems/Intake/AT STATE/DELTA RPM",
                 rollers.getSpeed().in(RPM) - speedRPM.in(RPM));
         return isAtAngle && isAtSpeed;

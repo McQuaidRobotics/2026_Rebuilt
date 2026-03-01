@@ -1,12 +1,12 @@
 package igknighters.commands;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import igknighters.util.log.Log;
 
 public class RepulsorVisualizer {
     private static final Mechanism2d repulsor = new Mechanism2d(1, 1);
@@ -48,10 +48,10 @@ public class RepulsorVisualizer {
 
     public static void update(
             double goalTheta, double repulseTheta, double goalStrength, double repulseStrength) {
-        DogLog.log("Commands/repulsor/repulse theta", repulseTheta);
-        DogLog.log("Commands/repulsor/goal theta", goalTheta);
-        DogLog.log("Commands/repulsor/repulse strength", repulseStrength);
-        DogLog.log("Commands/repulsor/goal strength", goalStrength);
+        Log.log("Commands/repulsor/repulse theta", repulseTheta);
+        Log.log("Commands/repulsor/goal theta", goalTheta);
+        Log.log("Commands/repulsor/repulse strength", repulseStrength);
+        Log.log("Commands/repulsor/goal strength", goalStrength);
         goalLigament.setAngle(Math.toDegrees(goalTheta));
         repulseLigament.setAngle(Math.toDegrees(180) + Math.toDegrees(repulseTheta));
         goalLigament.setColor(getStrengthColor(goalStrength));

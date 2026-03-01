@@ -1,7 +1,7 @@
 package igknighters.constants;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import igknighters.util.log.Log;
 
 /**
  * Shared state to determine if the shooter is able to shoot. This class acts as a "lockless"
@@ -35,12 +35,12 @@ public class AbleToShootSharedState {
      * @param newState The new boolean state for canShoot.
      */
     public void setCanShoot(boolean newState) {
-        DogLog.log("STATUS/CAN SHOOT", newState);
+        Log.log("Subsystems/Shooter/CanShoot", newState);
         this.canShoot = newState;
     }
 
     public void setBeingControlled(boolean newState) {
-        DogLog.log("STATUS/BEING CONTROLLED", newState);
+        Log.log("Subsystems/Shooter/BeingControlled", newState);
         this.beingControlled = newState;
     }
 

@@ -7,9 +7,9 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import dev.doglog.DogLog;
 import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.constants.SubsystemConstants.kIntake;
+import igknighters.util.log.Log;
 
 public class RollersReal extends Rollers {
     private final TalonFX intakeMotor =
@@ -61,6 +61,6 @@ public class RollersReal extends Rollers {
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(intakeSpeed);
-        DogLog.log("Subsystems/Intake/Rollers/SpeedRPS", getSpeed());
+        Log.log("Subsystems/Intake/Rollers/SpeedRPS", getSpeed());
     }
 }
