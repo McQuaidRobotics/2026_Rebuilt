@@ -452,6 +452,48 @@ public class ShooterCommands {
                 });
     }
 
+    public static Command SHOOT_MAX_MIN_NO_AUTO_PICKED_TARGET(
+            Shooter shooter,
+            Pose3d targetPose,
+            Supplier<Pose2d> robotPose,
+            Supplier<ChassisSpeeds> robotVeloSupplier,
+            double maxHeightMeters,
+            double minHeightMeters) {
+        return shooter.run(
+                () -> {
+                    Pose2d robotPose2d = robotPose.get();
+                    ChassisSpeeds robotVel = robotVeloSupplier.get();
+
+                    Pose3d shooterPose =
+                            new Pose3d(
+                                    robotPose2d.getX(),
+                                    robotPose2d.getY(),
+                                    SubsystemConstants.kShooter.kFlywheels.ShooterHeightMeters,
+                                    new Rotation3d(
+                                            0.0, 0.0, robotPose2d.getRotation().getRadians()));
+                    ShooterState targetingData =
+                            AimSolver.Solvers.solve_max_and_min_iterative(
+                                    shooterPose,
+                                    targetPose,
+                                    robotVel,
+                                    shooter.getCurrentState().flywheelSpeed.in(RPM),
+                                    maxHeightMeters,
+                                    minHeightMeters,
+                                    0.02);
+
+                    if (targetingData.flywheelSpeed.in(RPM) != 0) {
+                        shooter.targetState(targetingData);
+                    } else {
+                        // shot is imposible so we should idle the shooter rpm at like 4000 so it
+                        // spins up faster
+                        shooter.targetState(
+                                RPM.of(4000),
+                                targetingData.turretAngle,
+                                Degrees.of(kHood.MIN_ANGLE_DEGREES));
+                    }
+                });
+    }
+
     public static Command shootWithMaxHeight(
             Shooter shooter,
             Supplier<Pose2d> robotPoseSupplier,

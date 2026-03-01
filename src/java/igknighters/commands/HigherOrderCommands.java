@@ -1,6 +1,7 @@
 package igknighters.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -40,6 +41,30 @@ public class HigherOrderCommands {
                                 subsystems.shooter,
                                 () -> subsystems.swerve.getState().Pose,
                                 subsystems.swerve::getFieldRelativeSpeeds)
+                        .withName("Active Spool & Aim");
+
+        // 2. The Smart Hopper/Indexer Feed
+        Command smartFeed =
+                Commands.either(
+                        IndexerCommands.dispense(subsystems.indexer),
+                        IndexerCommands.justStop(subsystems.indexer),
+                        AbleToShootSharedState.getInstance()
+                                .atCommandedStateTrigger()
+                                .and(AbleToShootSharedState.getInstance().beingControlledTrigger())
+                                .and(AbleToShootSharedState.getInstance().shotPosible()));
+
+        return Commands.parallel(shooterCommand, smartFeed.repeatedly()).withName("SMART STREAM");
+    }
+
+    public static Command fireAtTarget(Subsystems subsystems, Pose3d targetPose) {
+        Command shooterCommand =
+                ShooterCommands.SHOOT_MAX_MIN_NO_AUTO_PICKED_TARGET(
+                                subsystems.shooter,
+                                targetPose,
+                                () -> subsystems.swerve.getState().Pose,
+                                subsystems.swerve::getFieldRelativeSpeeds,
+                                5,
+                                3)
                         .withName("Active Spool & Aim");
 
         // 2. The Smart Hopper/Indexer Feed

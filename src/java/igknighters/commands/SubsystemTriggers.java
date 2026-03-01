@@ -1,7 +1,9 @@
 package igknighters.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.LEDPattern;
@@ -43,11 +45,11 @@ public class SubsystemTriggers {
                 });
     }
 
-    public Pose2d getPoseFromString(String path) {
+    public Pose3d getPoseFromString(String path) {
         double x = dashboardTable.getEntry(path + "X").getDouble(0.0) * Conv.FEET_TO_METERS;
         double y = dashboardTable.getEntry(path + "Y").getDouble(0.0) * Conv.FEET_TO_METERS;
         double theta = dashboardTable.getEntry(path + "Theta").getDouble(0.0);
-        return new Pose2d(x, y, new Rotation2d(theta));
+        return new Pose3d(x, y, 0, new Rotation3d(0, 0, theta));
     }
 
     public void SetupOperatorController(Subsystems subsystems) {
@@ -71,13 +73,11 @@ public class SubsystemTriggers {
                 new Trigger(() -> dashboardTable.getEntry("robot/passTrigger").getBoolean(false));
 
         passTrigger.whileTrue(
-                ShooterCommands.shootAt(
-                        shooter,
-                        () -> swerve.getState().Pose,
-                        swerve::getFieldRelativeSpeeds,
-                        () -> getPoseFromString("robot/passWaypoint")));
+                HigherOrderCommands.fireAtTarget(
+                        subsystems,
+                        getPoseFromString("robot/passWaypoint")));
         moveToTrigger.whileTrue(
-                Repulsor.moveWithRepulsor(swerve, getPoseFromString("robot/moveWaypoint"), 1));
+                Repulsor.moveWithRepulsor(swerve, getPoseFromString("robot/moveWaypoint").toPose2d(), 1));
     }
 
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
