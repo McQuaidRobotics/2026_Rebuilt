@@ -38,12 +38,12 @@ public class AbleToShootSharedState {
      * @param newState The new boolean state for canShoot.
      */
     public void setAtTarget(boolean newState) {
-        DogLog.log("STATUS/CAN SHOOT", newState);
+        Log.log("STATUS/CAN SHOOT", newState);
         this.atTarget = newState;
     }
 
     public void setPossibleShot(boolean newState) {
-        DogLog.log("STATUS/POSSIBLE SHOT", newState);
+        Log.log("STATUS/POSSIBLE SHOT", newState);
         this.possibleShot = newState;
     }
 

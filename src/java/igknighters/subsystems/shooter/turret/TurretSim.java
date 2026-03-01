@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Degrees;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.units.measure.Angle;
+import igknighters.util.log.Log;
 
 public class TurretSim extends Turret {
 
@@ -33,7 +34,6 @@ public class TurretSim extends Turret {
 
         Log.log("Subsystems/Shooter/Turret/AngleDegrees", getAngleDegrees());
         Log.log("Subsystems/Shooter/Turret/TargetDegrees", super.targetDegrees);
-        Log.log("Subsystems/Shooter/Turret/MotorVoltage", input);
 
         isControlledThisCycle = false;
     }
