@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.*;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
-import dev.doglog.DogLog;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -43,6 +42,7 @@ import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.FuelSim;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
+import igknighters.util.log.Log;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Optional;
@@ -52,6 +52,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
+
     private Command m_autonomousCommand;
     private AutoFactory autoFactory;
     public final AutoChooser autoChooser = new AutoChooser();
@@ -77,29 +78,29 @@ public class Robot extends LoggedRobot {
     public void setUpCommandLogging() {
         scheduler.onCommandInitialize(
                 command ->
-                        DogLog.log(
+                        Log.log(
                                 "Commands/Tracking/" + command.getName() + "/ Command Running",
                                 "TRUE"));
 
         scheduler.onCommandInitialize(
                 command ->
-                        DogLog.log(
+                        Log.log(
                                 "Commands/Tracking/" + command.getName() + "/ Command Interrupted",
                                 "FALSE"));
 
         scheduler.onCommandInterrupt(
                 command ->
-                        DogLog.log(
+                        Log.log(
                                 "Commands/Tracking/" + command.getName() + "/ Command Interrupted",
                                 "TRUE"));
         scheduler.onCommandFinish(
                 command ->
-                        DogLog.log(
+                        Log.log(
                                 "Commands/Tracking/" + command.getName() + "/ Command Running",
                                 "FALSE"));
         scheduler.onCommandFinish(
                 command ->
-                        DogLog.log(
+                        Log.log(
                                 "Commands/Tracking/" + command.getName() + "/ Command Interrupted",
                                 "FALSE"));
     }
@@ -264,10 +265,9 @@ public class Robot extends LoggedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
         // // THE COORDINATES LOOK WEIRD WHEN THERE ARE MULTIPLE FUEL, needs tuning
-        // DogLog.log(
+        // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsytems.luma.getClosestGamePiece());
-        FieldVisualizer.getInstance().testZeroedComponents();
         FieldVisualizer.getInstance()
                 .updateTurret(
                         subsytems.shooter.getTurretAngleDegrees(),
@@ -299,9 +299,9 @@ public class Robot extends LoggedRobot {
                         VecBuilder.fill(
                                 0.07, 0.07, 0.01)); // trusts vision rotation less. Needs tuning
                 // increase the std devs to trust vision less
-                DogLog.log("Subsystems/Vision/Null Pose", false);
+                Log.log("Subsystems/Vision/Null Pose", false);
             } else {
-                DogLog.log("Subsystems/Vision/Null Pose", true);
+                Log.log("Subsystems/Vision/Null Pose", true);
             }
         }
     }
@@ -405,7 +405,7 @@ public class Robot extends LoggedRobot {
                         );
 
                 lastShotTime = currentTime;
-                DogLog.log("Simulation/FuelLaunched", true);
+                Log.log("Simulation/FuelLaunched", true);
             }
         }
     }
@@ -446,7 +446,7 @@ public class Robot extends LoggedRobot {
                 -0.2,
                 0.2,
                 () -> true,
-                () -> DogLog.log("Simulation/FuelIntaked", true));
+                () -> Log.log("Simulation/FuelIntaked", true));
     }
 
     public static boolean isBlue() {
@@ -457,7 +457,7 @@ public class Robot extends LoggedRobot {
         } else {
             // Default to blue if alliance is unknown (e.g., in simulation without alliance set)
             // Log this so we know why things might be going to the blue side.
-            DogLog.log("System/AllianceUnknown", true);
+            Log.log("System/AllianceUnknown", true);
             return true;
         }
     }

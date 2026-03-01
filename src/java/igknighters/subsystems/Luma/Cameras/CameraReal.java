@@ -1,9 +1,9 @@
 package igknighters.subsystems.Luma.Cameras;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import igknighters.util.log.Log;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -32,8 +32,8 @@ public class CameraReal extends Camera {
 
         camera.setPipelineIndex(0);
 
-        DogLog.log(cameraName, true);
-        DogLog.log("Subsystems/Vision/" + cameraName + "/Status", "ENABLED");
+        Log.log(cameraName, true);
+        Log.log("Subsystems/Vision/" + cameraName + "/Status", "ENABLED");
     }
 
     public CameraReal(String cameraName) {
@@ -43,7 +43,7 @@ public class CameraReal extends Camera {
 
     @Override
     public void periodic() {
-        DogLog.log("Subsystems/Vision/" + name + "/Connected", camera.isConnected());
+        Log.log("Subsystems/Vision/" + name + "/Connected", camera.isConnected());
 
         // Removed unnecessary new ArrayList<>() allocation
         List<PhotonPipelineResult> potentialResults = camera.getAllUnreadResults();
@@ -91,22 +91,22 @@ public class CameraReal extends Camera {
 
     @Override
     public Translation2d getGamePieceOffset() {
-        DogLog.log("Subsystems/Vision/Getting Offset", true);
+        Log.log("Subsystems/Vision/Getting Offset", true);
 
         if (results.isEmpty()) {
-            DogLog.log("Subsystems/Vision/ObjectDetection/Camera Results", false);
+            Log.log("Subsystems/Vision/ObjectDetection/Camera Results", false);
             return new Translation2d();
         }
 
-        DogLog.log("Subsystems/Vision/ObjectDetection/Camera Results", true);
+        Log.log("Subsystems/Vision/ObjectDetection/Camera Results", true);
         var result = results.get(results.size() - 1);
 
         if (!result.hasTargets()) {
-            DogLog.log("Subsystems/Vision/ObjectDetection/Camera Has Target", false);
+            Log.log("Subsystems/Vision/ObjectDetection/Camera Has Target", false);
             return new Translation2d();
         }
 
-        DogLog.log("Subsystems/Vision/ObjectDetection/Camera Has Target", true);
+        Log.log("Subsystems/Vision/ObjectDetection/Camera Has Target", true);
 
         // Make a COPY of the targets list before sorting to avoid mutating PhotonVision's internal
         // data
@@ -141,7 +141,7 @@ public class CameraReal extends Camera {
             bestCluster = currentCluster;
         }
 
-        DogLog.log("Subsystems/Vision/ObjectDetection/Camera Cluster Size", bestCluster.size());
+        Log.log("Subsystems/Vision/ObjectDetection/Camera Cluster Size", bestCluster.size());
 
         return getGamePieceOffsetFromTargetList(bestCluster);
     }
@@ -169,12 +169,12 @@ public class CameraReal extends Camera {
                     gamePieceNumber++) {
                 PhotonTrackedTarget gamePiece = gamePieces.getTargets().get(gamePieceNumber);
 
-                DogLog.log(
+                Log.log(
                         "Subsystems/Vision/ObjectDetection/GAMEPIECES/"
                                 + gamePieceNumber
                                 + "/pitch",
                         gamePiece.pitch);
-                DogLog.log(
+                Log.log(
                         "Subsystems/Vision/ObjectDetection/GAMEPIECES/" + gamePieceNumber + "/yaw",
                         gamePiece.yaw);
 
@@ -191,7 +191,7 @@ public class CameraReal extends Camera {
                         new Translation2d(distance * Math.cos(yaw), distance * Math.sin(yaw))
                                 .plus(robotToCameraTranslation);
 
-                DogLog.log(
+                Log.log(
                         "Subsystems/Vision/ObjectDetection/GAMEPIECES/"
                                 + gamePieceNumber
                                 + "/translation",

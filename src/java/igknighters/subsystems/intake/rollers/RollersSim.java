@@ -2,7 +2,6 @@ package igknighters.subsystems.intake.rollers;
 
 import static edu.wpi.first.units.Units.RPM;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -12,6 +11,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import igknighters.constants.SubsystemConstants.kIntake;
+import igknighters.util.log.Log;
 
 public class RollersSim extends Rollers {
 
@@ -51,7 +51,7 @@ public class RollersSim extends Rollers {
 
     @Override
     public void goToSpeed(AngularVelocity speed) {
-        DogLog.log("Subsystems/Intake/Rollers/Target Speed RPM", speed.in(RPM));
+        Log.log("Subsystems/Intake/Rollers/Target Speed RPM", speed.in(RPM));
         profiledPIDController.setGoal(speed.in(RPM));
         isPidControlledThisCycle = true;
     }
@@ -91,14 +91,14 @@ public class RollersSim extends Rollers {
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
 
         // Logging
-        DogLog.log("Subsystems/Intake/Rollers/SimVoltage", voltage);
-        DogLog.log("Subsystems/Intake/Rollers/SimSpeedRPM", currentRPM);
-        DogLog.log("Subsystems/Intake/Rollers/GoalSpeedRPM", goalRPM);
-        DogLog.log(
+        Log.log("Subsystems/Intake/Rollers/SimVoltage", voltage);
+        Log.log("Subsystems/Intake/Rollers/SimSpeedRPM", currentRPM);
+        Log.log("Subsystems/Intake/Rollers/GoalSpeedRPM", goalRPM);
+        Log.log(
                 "Subsystems/Intake/Rollers/Pid Error RPM",
                 profiledPIDController.getPositionError());
-        DogLog.log("Subsystems/Intake/Rollers/PIDVolts", pidOutput);
-        DogLog.log("Subsystems/Intake/Rollers/FFVolts", ffOutput);
+        Log.log("Subsystems/Intake/Rollers/PIDVolts", pidOutput);
+        Log.log("Subsystems/Intake/Rollers/FFVolts", ffOutput);
 
         // Apply to sim
         leaderflywheelSim.setInputVoltage(voltage);

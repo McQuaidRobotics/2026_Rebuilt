@@ -6,13 +6,13 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import dev.doglog.DogLog;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
+import igknighters.util.log.Log;
 
 public class TeleopSwerveForwardTargetingCmd extends TeleopSwerveBaseCmd {
 
@@ -65,13 +65,13 @@ public class TeleopSwerveForwardTargetingCmd extends TeleopSwerveBaseCmd {
 
         double error = wrapAngleRadians(desiredAngleRad - currentAngleRad);
 
-        DogLog.log(
+        Log.log(
                 "Robot/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Desired Angle (deg)",
                 Math.toDegrees(desiredAngleRad));
-        DogLog.log(
+        Log.log(
                 "Robot/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Current Angle (deg)",
                 Math.toDegrees(currentAngleRad));
-        DogLog.log(
+        Log.log(
                 "Robot/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Wrapped Error (deg)",
                 Math.toDegrees(error));
 
