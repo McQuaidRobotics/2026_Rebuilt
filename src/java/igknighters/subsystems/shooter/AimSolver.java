@@ -22,6 +22,8 @@ import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
+import igknighters.util.LerpTable;
+import igknighters.util.LerpTable.LerpTableEntry;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import igknighters.util.log.Log;
@@ -29,6 +31,86 @@ import igknighters.util.log.Log;
 import org.littletonrobotics.junction.Logger;
 
 public class AimSolver {
+
+    public static class LERP_SOLVERS {
+        // distance to RPM mapping
+        static LerpTable rpmTable =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(1.0, 2800.0),
+                        new LerpTableEntry(3.0, 3000.0),
+                        new LerpTableEntry(5.0, 4000.0),
+                        new LerpTableEntry(10.0, 4500.0),
+                        new LerpTableEntry(15.0, 5500.0),
+                        new LerpTableEntry(20.0, 6000.0),
+                    });
+        // distance to hood angle mapping
+        static LerpTable hoodTable =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(1.0, 10.0),
+                        new LerpTableEntry(3.0, 20.0),
+                        new LerpTableEntry(5.0, 30.0),
+                        new LerpTableEntry(10.0, 40.0),
+                        new LerpTableEntry(15.0, 50.0),
+                        new LerpTableEntry(20.0, 60.0),
+                    });
+
+        static LerpTable TOFTable = new LerpTable(new LerpTableEntry[]{
+            new LerpTableEntry(1.0, 1.0),
+            new LerpTableEntry(2.0, 2.0)
+        });
+        public static ShooterState solve(Pose3d shooterPose, Pose3d targetPose, ChassisSpeeds speeds){
+            double sx = shooterPose.getX();
+            double sy = shooterPose.getY();
+
+            double tx = targetPose.getX();
+            double ty = targetPose.getY();
+
+            // CRITICAL: These MUST be field-relative speeds, not robot-relative!
+            double vx = speeds.vxMetersPerSecond; 
+            double vy = speeds.vyMetersPerSecond;
+
+            // 1. Get initial distance
+            double initialDistance = Math.hypot(tx - sx, ty - sy);
+
+            double px = tx;
+            double py = ty;
+            double predictedDistance = initialDistance;
+
+            // 2. Iterate to find the true Virtual Target
+            for (int i = 0; i < 3; i++) {
+                double t = TOFTable.lerp(predictedDistance);
+                
+                // SUBTRACT velocity to shift the target in the opposite direction of movement
+                px = tx - (vx * t);
+                py = ty - (vy * t);
+                
+                // Recalculate distance to the new virtual target
+                predictedDistance = Math.hypot(px - sx, py - sy);
+            }
+
+            // 3. Find delta to Virtual Target (Destination - Start)
+            double dx = px - sx;
+            double dy = py - sy;
+
+            // 4. Calculate Absolute Angle using atan2
+            double absoluteFieldAngle = Math.atan2(dy, dx);
+            double robotTheta = shooterPose.getRotation().getZ();
+
+            // Wrap the angle safely using atan2(sin, cos) so the turret takes the shortest path
+            double turretTheta = Math.atan2(
+                    Math.sin(absoluteFieldAngle - robotTheta),
+                    Math.cos(absoluteFieldAngle - robotTheta)
+            );
+
+            // 5. Get hardware setpoints using the fully-calculated Virtual Distance
+            double predictedRPM = rpmTable.lerp(predictedDistance);
+            double predictedHoodAngle = hoodTable.lerp(predictedDistance);
+
+            return new ShooterState(RPM.of(predictedRPM), Radians.of(-turretTheta), Degrees.of(predictedHoodAngle));
+        }
+    }
 
     public static class Solvers {
         static Mechanism2d canSHOOTMECH = new Mechanism2d(20, 20);
