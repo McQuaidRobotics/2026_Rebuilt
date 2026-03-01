@@ -180,8 +180,11 @@ public class DriverController {
         var indexer = subsystems.indexer;
         var shooter = subsystems.shooter;
         var luma = subsystems.luma;
+        DrivingSharedState state = DrivingSharedState.getInstance();
 
         this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
+        this.X.whileTrue(
+                new TeleopSwerveJoystickHeadingCmd(swerve, this, 45.0, state.kP, state.kI, state.kD));
         this.A.whileTrue(
                 Repulsor.moveWithRepulsor(
                         swerve,
