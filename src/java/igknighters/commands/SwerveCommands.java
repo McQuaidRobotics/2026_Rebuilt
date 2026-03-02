@@ -84,9 +84,9 @@ public class SwerveCommands {
             boolean isAt =
                     positionError <= positionToleranceMeters && angleError <= angleToleranceRadians;
 
-            Log.log("Commands/Swerve/IsAt/PositionError", positionError);
-            Log.log("Commands/Swerve/IsAt/AngleError", angleError);
-            Log.log("Commands/Swerve/IsAt/Reached Target", isAt);
+            Log.log("LOGGING/Commands/Swerve/IsAt/PositionError", positionError);
+            Log.log("LOGGING/Commands/Swerve/IsAt/AngleError", angleError);
+            Log.log("LOGGING/Commands/Swerve/IsAt/Reached Target", isAt);
 
             return isAt;
         };
@@ -122,9 +122,9 @@ public class SwerveCommands {
                             thetaController.calculate(
                                     currentPose.getRotation().getRadians(),
                                     targetPose.getRotation().getRadians());
-                    Log.log("Commands/Swerve/MoveToSimple/VX", vx);
-                    Log.log("Commands/Swerve/MoveToSimple/VY", vy);
-                    Log.log("Commands/Swerve/MoveToSimple/Omega", omega);
+                    Log.log("LOGGING/Commands/Swerve/MoveToSimple/VX", vx);
+                    Log.log("LOGGING/Commands/Swerve/MoveToSimple/VY", vy);
+                    Log.log("LOGGING/Commands/Swerve/MoveToSimple/Omega", omega);
                     Log.log(
                             "Commands/Swerve/MoveToSimple/dx",
                             targetPose.getX() - currentPose.getX());
@@ -181,15 +181,19 @@ public class SwerveCommands {
                                     Math.min(-omega, maxVelocities.getRotation().getRadians()),
                                     -maxVelocities.getRotation().getRadians());
 
-                    Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedVX", clampedVx);
-                    Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedVY", clampedVy);
+                    Log.log(
+                            "LOGGING/Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedVX",
+                            clampedVx);
+                    Log.log(
+                            "LOGGING/Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedVY",
+                            clampedVy);
                     Log.log(
                             "Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedOmega",
                             clampedOmega);
 
-                    Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/VX", vx);
-                    Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/VY", vy);
-                    Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/Omega", omega);
+                    Log.log("LOGGING/Commands/Swerve/MoveToSimpleWithVelocityControl/VX", vx);
+                    Log.log("LOGGING/Commands/Swerve/MoveToSimpleWithVelocityControl/VY", vy);
+                    Log.log("LOGGING/Commands/Swerve/MoveToSimpleWithVelocityControl/Omega", omega);
                     Log.log(
                             "Commands/Swerve/MoveToSimpleWithVelocityControl/dx",
                             targetPose.getX() - currentPose.getX());

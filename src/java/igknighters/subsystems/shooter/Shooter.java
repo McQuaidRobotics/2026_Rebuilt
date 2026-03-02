@@ -73,14 +73,14 @@ public class Shooter extends SubsystemBase {
 
     private void goToTurretAngle(Angle angle) {
         beingControlled = true;
-        Log.log("Subsystems/Shooter/TARGETING", angle.in(Degrees));
+        Log.log("LOGGING/Subsystems/Shooter/TARGETING", angle.in(Degrees));
         turret.goToAngleDegrees(angle);
     }
 
     public void targetState(AngularVelocity velo, Angle turretAngle, Angle hoodAngle) {
-        Log.log("Subsystems/Shooter/TARGETING/RPM", velo.in(RPM));
-        Log.log("Subsystems/Shooter/TARGETING/ANGLE", turretAngle.in(Degrees));
-        Log.log("Subsystems/Shooter/TARGETING/HoodAngle", hoodAngle.in(Degrees));
+        Log.log("LOGGING/Subsystems/Shooter/TARGETING/RPM", velo.in(RPM));
+        Log.log("LOGGING/Subsystems/Shooter/TARGETING/ANGLE", turretAngle.in(Degrees));
+        Log.log("LOGGING/Subsystems/Shooter/TARGETING/HoodAngle", hoodAngle.in(Degrees));
         beingControlled = true;
         targetSpeed(velo);
         goToTurretAngle(turretAngle);
@@ -94,21 +94,34 @@ public class Shooter extends SubsystemBase {
         targetState(state.flywheelSpeed, state.turretAngle, state.hoodAngle);
     }
 
-    public boolean atTarget(
+    public boolean atSimTarget(
+            double toleranceRPM, double toleranceDegrees, double toleranceHoodDegrees) {
+        boolean atSpeed = Math.abs(rollers.getSpeed().in(RPM) - goalRPM) < toleranceRPM;
+        boolean atTurretAngle =
+                Math.abs(-getTurretAngleDegrees() - goalTurretAngleDegrees) < toleranceDegrees;
+        boolean atHoodAngle =
+                Math.abs(hood.getAngleDegrees() - goalHoodAngleDegrees) < toleranceHoodDegrees;
+        Log.log("LOGGING/Subsystems/Shooter/AT TARGET/AT SPEED", atSpeed);
+        Log.log("LOGGING/Subsystems/Shooter/AT TARGET/AT TURRET ANGLE", atTurretAngle);
+        Log.log("LOGGING/Subsystems/Shooter/AT TARGET/AT HOOD ANGLE", atHoodAngle);
+        return atSpeed && atTurretAngle && atHoodAngle;
+    }
+
+    public boolean atRealTarget(
             double toleranceRPM, double toleranceDegrees, double toleranceHoodDegrees) {
         boolean atSpeed = Math.abs(rollers.getSpeed().in(RPM) - goalRPM) < toleranceRPM;
         boolean atTurretAngle =
                 Math.abs(getTurretAngleDegrees() - goalTurretAngleDegrees) < toleranceDegrees;
         boolean atHoodAngle =
                 Math.abs(hood.getAngleDegrees() - goalHoodAngleDegrees) < toleranceHoodDegrees;
-        Log.log("Subsystems/Shooter/AT TARGET/AT SPEED", atSpeed);
-        Log.log("Subsystems/Shooter/AT TARGET/AT TURRET ANGLE", atTurretAngle);
-        Log.log("Subsystems/Shooter/AT TARGET/AT HOOD ANGLE", atHoodAngle);
+        Log.log("LOGGING/Subsystems/Shooter/AT TARGET/AT SPEED", atSpeed);
+        Log.log("LOGGING/Subsystems/Shooter/AT TARGET/AT TURRET ANGLE", atTurretAngle);
+        Log.log("LOGGING/Subsystems/Shooter/AT TARGET/AT HOOD ANGLE", atHoodAngle);
         return atSpeed && atTurretAngle && atHoodAngle;
     }
 
     public void setTurretPosition(Angle angle) {
-        Log.log("Subsystems/Shooter/SETSTATE/ANGLE", angle.in(Degrees));
+        Log.log("LOGGING/Subsystems/Shooter/SETSTATE/ANGLE", angle.in(Degrees));
         turret.setAngle(angle);
     }
 
@@ -129,7 +142,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setHoodAngleDegrees(double angleDegrees) {
-        Log.log("Subsystems/Shooter/SETSTATE/HoodAngle", angleDegrees);
+        Log.log("LOGGING/Subsystems/Shooter/SETSTATE/HoodAngle", angleDegrees);
         beingControlled = true;
         hood.setAngle(angleDegrees);
     }
@@ -140,14 +153,14 @@ public class Shooter extends SubsystemBase {
         turret.periodic();
         hood.periodic();
 
-        Log.log("Subsystems/Shooter/BEING CONTROLLED", beingControlled);
+        Log.log("LOGGING/Subsystems/Shooter/BEING CONTROLLED", beingControlled);
         if (!Robot.isReal()) {
             visualizer.update(getCurrentState(), goalRPM, goalHoodAngleDegrees);
         }
         if (Robot.isReal()) {
-            ableToShootState.setAtTarget(atTarget(200, 5, 2.5));
+            ableToShootState.setAtTarget(atRealTarget(200, 5, 2.5));
         } else {
-            ableToShootState.setAtTarget(atTarget(600, 5, 1));
+            ableToShootState.setAtTarget(atSimTarget(600, 5, 1));
         }
         beingControlled = false;
     }

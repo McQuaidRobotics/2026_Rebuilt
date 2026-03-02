@@ -37,7 +37,7 @@ public class PWMDriver implements Logged {
             previousBuffer = appliedBuffer;
             led.setData(appliedBuffer);
         }
-        Log.log("Subsystems/LED/New Buffer Applied", newBuffer);
+        Log.log("LOGGING/Subsystems/LED/New Buffer Applied", newBuffer);
     }
 
     public void periodic() {}

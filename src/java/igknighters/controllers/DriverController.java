@@ -154,7 +154,7 @@ public class DriverController {
 
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));
-            this.B.onTrue(IndexerCommands.stopDispensing(indexer));
+            this.B.onTrue(IndexerCommands.justStop(indexer));
 
         } else if (debugType == DebugType.CLIMBER) {
             this.A.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.CLIMB_PREP));
@@ -183,12 +183,9 @@ public class DriverController {
         this.LT
                 .whileTrue(HigherOrderCommands.rapidFireStream(subsystems))
                 .onFalse(HigherOrderCommands.IdleShooter(subsystems));
-        this.DPD
-                .whileTrue(IndexerCommands.unBlock(subsystems.indexer))
-                .onFalse(IndexerCommands.justStop(subsystems.indexer));
+        this.DPD.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
 
         this.RT.whileTrue(IndexerCommands.dispense(indexer));
-        this.RT.onFalse(IndexerCommands.stopDispensing(indexer));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
     }
 

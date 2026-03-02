@@ -4,10 +4,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.subsystems.climber.chainsaw.Chainsaw;
 import igknighters.subsystems.climber.chainsaw.ChainsawDisabled;
-import igknighters.subsystems.climber.chainsaw.ChainsawSim;
 import igknighters.subsystems.climber.servos.Servos;
 import igknighters.subsystems.climber.servos.ServosDisabled;
-import igknighters.subsystems.climber.servos.ServosSim;
 
 public class Climber extends SubsystemBase {
     private final Chainsaw chainsaw;
@@ -18,8 +16,8 @@ public class Climber extends SubsystemBase {
             chainsaw = new ChainsawDisabled();
             servos = new ServosDisabled();
         } else {
-            chainsaw = new ChainsawSim();
-            servos = new ServosSim();
+            chainsaw = new ChainsawDisabled();
+            servos = new ServosDisabled();
         }
     }
 

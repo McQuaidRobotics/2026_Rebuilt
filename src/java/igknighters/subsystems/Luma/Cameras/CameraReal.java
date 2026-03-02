@@ -33,7 +33,7 @@ public class CameraReal extends Camera {
         camera.setPipelineIndex(0);
 
         Log.log(cameraName, true);
-        Log.log("Subsystems/Vision/" + cameraName + "/Status", "ENABLED");
+        Log.log("LOGGING/Subsystems/Vision/" + cameraName + "/Status", "ENABLED");
     }
 
     public CameraReal(String cameraName) {
@@ -43,7 +43,7 @@ public class CameraReal extends Camera {
 
     @Override
     public void periodic() {
-        Log.log("Subsystems/Vision/" + name + "/Connected", camera.isConnected());
+        Log.log("LOGGING/Subsystems/Vision/" + name + "/Connected", camera.isConnected());
 
         // Removed unnecessary new ArrayList<>() allocation
         List<PhotonPipelineResult> potentialResults = camera.getAllUnreadResults();
@@ -91,22 +91,22 @@ public class CameraReal extends Camera {
 
     @Override
     public Translation2d getGamePieceOffset() {
-        Log.log("Subsystems/Vision/Getting Offset", true);
+        Log.log("LOGGING/Subsystems/Vision/Getting Offset", true);
 
         if (results.isEmpty()) {
-            Log.log("Subsystems/Vision/ObjectDetection/Camera Results", false);
+            Log.log("LOGGING/Subsystems/Vision/ObjectDetection/Camera Results", false);
             return new Translation2d();
         }
 
-        Log.log("Subsystems/Vision/ObjectDetection/Camera Results", true);
+        Log.log("LOGGING/Subsystems/Vision/ObjectDetection/Camera Results", true);
         var result = results.get(results.size() - 1);
 
         if (!result.hasTargets()) {
-            Log.log("Subsystems/Vision/ObjectDetection/Camera Has Target", false);
+            Log.log("LOGGING/Subsystems/Vision/ObjectDetection/Camera Has Target", false);
             return new Translation2d();
         }
 
-        Log.log("Subsystems/Vision/ObjectDetection/Camera Has Target", true);
+        Log.log("LOGGING/Subsystems/Vision/ObjectDetection/Camera Has Target", true);
 
         // Make a COPY of the targets list before sorting to avoid mutating PhotonVision's internal
         // data
@@ -141,7 +141,9 @@ public class CameraReal extends Camera {
             bestCluster = currentCluster;
         }
 
-        Log.log("Subsystems/Vision/ObjectDetection/Camera Cluster Size", bestCluster.size());
+        Log.log(
+                "LOGGING/Subsystems/Vision/ObjectDetection/Camera Cluster Size",
+                bestCluster.size());
 
         return getGamePieceOffsetFromTargetList(bestCluster);
     }

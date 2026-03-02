@@ -8,7 +8,6 @@ public enum IndexerState {
     JORK_FORWARD(500, 0),
     JORK_BACKWARD(-500, 0);
 
-
     public final double spindexerRPM;
     public final double exitRollerRPM;
 

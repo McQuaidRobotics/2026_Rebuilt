@@ -15,13 +15,13 @@ public class Led extends SubsystemBase {
     }
 
     public void animate(AddressableLEDBuffer buffer) {
-        Log.log("Subsystems/LED/Animate", true);
+        Log.log("LOGGING/Subsystems/LED/Animate", true);
         pwm1.applyBuffer(buffer);
     }
 
     @Override
     public void periodic() {
-        Log.log("Subsystems/LED/Periodic", true);
+        Log.log("LOGGING/Subsystems/LED/Periodic", true);
         Tracer.startTrace("LedPeriodic");
         pwm1.periodic();
         Tracer.endTrace();

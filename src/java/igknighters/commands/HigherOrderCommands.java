@@ -79,7 +79,9 @@ public class HigherOrderCommands {
                                 .and(AbleToShootSharedState.getInstance().shotPosible()));
 
         return Commands.runOnce(() -> DrivingSharedState.getInstance().setDetune(.5))
-                .andThen(Commands.parallel(shooterCommand, smartFeed.repeatedly()).withName("SMART STREAM"));
+                .andThen(
+                        Commands.parallel(shooterCommand, smartFeed.repeatedly())
+                                .withName("SMART STREAM"));
     }
 
     public static Command IdleShooter(Subsystems subsystems) {
@@ -87,7 +89,8 @@ public class HigherOrderCommands {
                         subsystems.shooter,
                         () -> subsystems.swerve.getState().Pose,
                         subsystems.swerve::getFieldRelativeSpeeds)
-                .alongWith(IndexerCommands.justStop(subsystems.indexer)).alongWith(Commands.runOnce(() -> DrivingSharedState.getInstance().setDetune(1.0)));
+                .alongWith(IndexerCommands.jorkIt(subsystems.indexer))
+                .alongWith(Commands.runOnce(() -> DrivingSharedState.getInstance().setDetune(1.0)));
     }
 
     public static Command forceDispense(Subsystems subsystems) {

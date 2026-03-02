@@ -49,7 +49,7 @@ public class Repulsor {
     // finds X repulsive force by summing all the forces of the obstacles
     public static double getXRepulse(Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
-        Log.log("Commands/repulsor/Time", currentTime);
+        Log.log("LOGGING/Commands/repulsor/Time", currentTime);
         double xRepelForce = 0.0;
         for (Repulsor.obstacle obs : obstacles) {
             if (obs.type == obstacleType.CIRCLE) {
@@ -78,10 +78,10 @@ public class Repulsor {
             }
         }
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
-        Log.log("Commands/repulsor/DeltaTime", deltaTime);
+        Log.log("LOGGING/Commands/repulsor/DeltaTime", deltaTime);
         if (deltaTime > maxTime) {
             maxTime = deltaTime;
-            Log.log("Commands/repulsor/MaxDeltaTime", maxTime);
+            Log.log("LOGGING/Commands/repulsor/MaxDeltaTime", maxTime);
         }
         return -xRepelForce;
     }
@@ -89,7 +89,7 @@ public class Repulsor {
     // find attractive force to goal in the x
     public static double getXGoal(Pose2d currentPose, Pose2d target) {
         double xGoalDist = target.getX() - currentPose.getX();
-        Log.log("Commands/repulsor/xGoalDist", target.getX() - currentPose.getX());
+        Log.log("LOGGING/Commands/repulsor/xGoalDist", target.getX() - currentPose.getX());
         return xGoalDist;
     }
 
@@ -98,7 +98,7 @@ public class Repulsor {
             Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles, Pose2d target) {
         double yRepelForce = 0.0;
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
-        Log.log("Commands/repulsor/Time", currentTime);
+        Log.log("LOGGING/Commands/repulsor/Time", currentTime);
         for (Repulsor.obstacle obs : obstacles) {
             if (obs.type == obstacleType.CIRCLE) {
                 double dist =
@@ -147,10 +147,10 @@ public class Repulsor {
             }
         }
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
-        Log.log("Commands/repulsor/DeltaTime", deltaTime);
+        Log.log("LOGGING/Commands/repulsor/DeltaTime", deltaTime);
         if (deltaTime > maxTime) {
             maxTime = deltaTime;
-            Log.log("Commands/repulsor/MaxDeltaTime", maxTime);
+            Log.log("LOGGING/Commands/repulsor/MaxDeltaTime", maxTime);
         }
         // if in front of the hubs, there will be a up/down force to get robot to move towards one
         // side
@@ -165,7 +165,7 @@ public class Repulsor {
 
     public static double getYGoal(Pose2d currentPose, Pose2d target) {
         double yGoalDist = target.getY() - currentPose.getY();
-        Log.log("Commands/repulsor/yGoalDist", target.getY() - currentPose.getY());
+        Log.log("LOGGING/Commands/repulsor/yGoalDist", target.getY() - currentPose.getY());
         return yGoalDist;
     }
 
@@ -188,7 +188,9 @@ public class Repulsor {
                             10
                                     * -(getXGoal(currentPose, targetPose)
                                             + getXRepulse(currentPose, obstacles));
-                    Log.log("Commands/repulsor/xRepel", getXRepulse(currentPose, obstacles));
+                    Log.log(
+                            "LOGGING/Commands/repulsor/xRepel",
+                            getXRepulse(currentPose, obstacles));
                     double yVelo =
                             10
                                     * -(getYGoal(currentPose, targetPose)
@@ -215,7 +217,7 @@ public class Repulsor {
                                     getXRepulse(currentPose, obstacles)));
 
                     omega *= 20.0;
-                    Log.log("Commands/repulsor/Omega", omega);
+                    Log.log("LOGGING/Commands/repulsor/Omega", omega);
                     swerve.setControl(
                             m_driveRequest
                                     .withVelocityX(xVelo)

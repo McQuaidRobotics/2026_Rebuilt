@@ -51,7 +51,7 @@ public class RollersSim extends Rollers {
 
     @Override
     public void goToSpeed(AngularVelocity speed) {
-        Log.log("Subsystems/Intake/Rollers/Target Speed RPM", speed.in(RPM));
+        Log.log("LOGGING/Subsystems/Intake/Rollers/Target Speed RPM", speed.in(RPM));
         profiledPIDController.setGoal(speed.in(RPM));
         isPidControlledThisCycle = true;
     }
@@ -91,14 +91,14 @@ public class RollersSim extends Rollers {
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
 
         // Logging
-        Log.log("Subsystems/Intake/Rollers/SimVoltage", voltage);
-        Log.log("Subsystems/Intake/Rollers/SimSpeedRPM", currentRPM);
-        Log.log("Subsystems/Intake/Rollers/GoalSpeedRPM", goalRPM);
+        Log.log("LOGGING/Subsystems/Intake/Rollers/SimVoltage", voltage);
+        Log.log("LOGGING/Subsystems/Intake/Rollers/SimSpeedRPM", currentRPM);
+        Log.log("LOGGING/Subsystems/Intake/Rollers/GoalSpeedRPM", goalRPM);
         Log.log(
                 "Subsystems/Intake/Rollers/Pid Error RPM",
                 profiledPIDController.getPositionError());
-        Log.log("Subsystems/Intake/Rollers/PIDVolts", pidOutput);
-        Log.log("Subsystems/Intake/Rollers/FFVolts", ffOutput);
+        Log.log("LOGGING/Subsystems/Intake/Rollers/PIDVolts", pidOutput);
+        Log.log("LOGGING/Subsystems/Intake/Rollers/FFVolts", ffOutput);
 
         // Apply to sim
         leaderflywheelSim.setInputVoltage(voltage);

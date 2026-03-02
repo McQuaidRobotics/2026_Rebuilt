@@ -6,11 +6,13 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.teleop.AutoRotateOnBump;
 import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.Conv;
+import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
@@ -28,6 +30,9 @@ public class SubsystemTriggers {
     private final Trigger teleop = RobotModeTriggers.teleop();
     private final NetworkTable dashboardTable =
             NetworkTableInstance.getDefault().getTable("dashboard");
+    private boolean shotPossible = false;
+    private boolean atState = false;
+    private boolean beingCommanded = false;
 
     public static Trigger falseOnce() {
         return new Trigger(
@@ -87,7 +92,10 @@ public class SubsystemTriggers {
 
         SetupOperatorController(subsystems);
 
-        onBump.whileTrue(new AutoRotateOnBump(swerve, driverController));
+        onBump.whileTrue(
+                Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true))
+                        .andThen(new AutoRotateOnBump(swerve, driverController)));
+        onBump.onFalse(Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(false)));
 
         falseOnce()
                 .and(disabled)

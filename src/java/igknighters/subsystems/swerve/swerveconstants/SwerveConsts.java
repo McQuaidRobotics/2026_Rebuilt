@@ -18,12 +18,12 @@ public class SwerveConsts {
 
     public Robots getRobot() {
         robotSerialNumber = RobotController.getSerialNumber();
-        Log.log("ROBOT_INFO/ROBOT SERIAL NUMBER", "Serial Number: " + robotSerialNumber);
+        Log.log("LOGGING/ROBOT_INFO/ROBOT SERIAL NUMBER", "Serial Number: " + robotSerialNumber);
         if (robotSerialNumber.equals(DEMO_BOT_SERIAL_NUMBER)) {
-            Log.log("ROBOT_INFO/ROBOT TYPE", "DEMO_BOT");
+            Log.log("LOGGING/ROBOT_INFO/ROBOT TYPE", "DEMO_BOT");
             return Robots.DEMO_BOT;
         } else if (robotSerialNumber.equals(GEMINKNIGHT_SERIAL_NUMBER)) {
-            Log.log("ROBOT_INFO/ROBOT TYPE", "GEMINKNIGHT");
+            Log.log("LOGGING/ROBOT_INFO/ROBOT TYPE", "GEMINKNIGHT");
             return Robots.GEMINKNIGHT;
         } else {
             Log.log(
@@ -36,13 +36,13 @@ public class SwerveConsts {
     public CommonSwerveConsts getSwerveConsts() {
         Robots robot = getRobot();
         if (robot.equals(Robots.DEMO_BOT)) {
-            Log.log("SWERVE CONSTS", "Using DemoBotConsts");
+            Log.log("LOGGING/SWERVE CONSTS", "Using DemoBotConsts");
             return new DemoBotConsts();
         } else if (robot.equals(Robots.GEMINKNIGHT)) {
-            Log.log("SWERVE CONSTS", "Using GeminiConsts");
+            Log.log("LOGGING/SWERVE CONSTS", "Using GeminiConsts");
             return new GeminiConsts();
         } else {
-            Log.log("SWERVE CONSTS", "Using DemoBotConsts (default)");
+            Log.log("LOGGING/SWERVE CONSTS", "Using DemoBotConsts (default)");
             return new DemoBotConsts();
         }
     }

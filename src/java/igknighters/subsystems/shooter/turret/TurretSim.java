@@ -3,7 +3,6 @@ package igknighters.subsystems.shooter.turret;
 import static edu.wpi.first.units.Units.Degrees;
 
 import edu.wpi.first.units.measure.Angle;
-import igknighters.util.log.Log;
 
 public class TurretSim extends Turret {
 
@@ -13,13 +12,13 @@ public class TurretSim extends Turret {
 
     @Override
     public void setAngle(Angle angle) {
-        double wrappedAngleDegrees = wrapAngleDegrees(angle.in(Degrees));
+        double wrappedAngleDegrees = -wrapAngleDegrees(angle.in(Degrees));
         super.degrees = wrappedAngleDegrees;
     }
 
     @Override
     public void goToAngleDegrees(Angle angle) {
-        double wrappedAngleDegrees = wrapAngleDegrees(angle.in(Degrees));
+        double wrappedAngleDegrees = -wrapAngleDegrees(angle.in(Degrees));
         super.degrees = wrappedAngleDegrees;
         super.targetDegrees = wrappedAngleDegrees;
     }
@@ -32,8 +31,8 @@ public class TurretSim extends Turret {
     @Override
     public void periodic() {
 
-        Log.log("Subsystems/Shooter/Turret/AngleDegrees", getAngleDegrees());
-        Log.log("Subsystems/Shooter/Turret/TargetDegrees", super.targetDegrees);
+        // Log.log("LOGGING/Subsystems/Shooter/Turret/AngleDegrees", getAngleDegrees());
+        // Log.log("LOGGING/Subsystems/Shooter/Turret/TargetDegrees", super.targetDegrees);
 
         isControlledThisCycle = false;
     }

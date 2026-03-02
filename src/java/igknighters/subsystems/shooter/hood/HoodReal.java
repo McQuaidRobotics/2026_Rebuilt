@@ -55,7 +55,7 @@ public class HoodReal extends Hood {
     }
 
     public HoodReal() {
-        Log.log("Subsystems/Shooter/Hood/Initialized", true);
+        Log.log("LOGGING/Subsystems/Shooter/Hood/Initialized", true);
         motor.getConfigurator().apply(flapConfiguration());
     }
 
@@ -71,7 +71,7 @@ public class HoodReal extends Hood {
     @Override
     public void goToAngle(Angle targetAngle) {
         if (!isLegalPosition(targetAngle.in(Degrees))) {
-            Log.log("Subsystems/Shooter/Hood/IllegalPosition", targetAngle.in(Degrees));
+            Log.log("LOGGING/Subsystems/Shooter/Hood/IllegalPosition", targetAngle.in(Degrees));
             return;
         }
         this.targetAngle = targetAngle;
@@ -100,10 +100,10 @@ public class HoodReal extends Hood {
     public void periodic() {
         BaseStatusSignal.refreshAll(motorRots);
         handleLimitSwitch();
-        Log.log("Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());
-        Log.log("Subsystems/Shooter/Hood/Homing", hasHomed);
-        Log.log("Subsystems/Shooter/Hood/TargetDegrees", super.targetDegrees);
-        Log.log("Subsystems/Shooter/Hood/ReverseLimitSwitch", reverseLimitSwitch.get());
+        Log.log("LOGGING/Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());
+        Log.log("LOGGING/Subsystems/Shooter/Hood/Homing", hasHomed);
+        Log.log("LOGGING/Subsystems/Shooter/Hood/TargetDegrees", super.targetDegrees);
+        Log.log("LOGGING/Subsystems/Shooter/Hood/ReverseLimitSwitch", reverseLimitSwitch.get());
     }
 
     @Override

@@ -48,7 +48,7 @@ public class TeleopSwerveHeadingCmd extends TeleopSwerveBaseCmd {
         Log.log(
                 "Robot/Commands/Swerve/TeleopSwerveHeadingCmd/error: ",
                 (swerve.getState().Pose.getRotation().getDegrees() - heading));
-        Log.log("Robot/Commands/Swerve/TeleopSwerveHeadingCmd/PID CALCULATION: ", omega);
+        Log.log("LOGGING/Robot/Commands/Swerve/TeleopSwerveHeadingCmd/PID CALCULATION: ", omega);
         Translation2d vt = translationStick();
 
         double allianceFlipper = 1.0;
