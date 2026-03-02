@@ -1,6 +1,7 @@
 package igknighters.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.indexer.IndexerState;
 import java.util.function.BooleanSupplier;
@@ -15,11 +16,12 @@ public class IndexerCommands {
 
     public static Command jorkIt(Indexer indexer) {
         return indexer.run(() -> indexer.goToState(IndexerState.JORK_BACKWARD))
-                .withTimeout(.5)
+                .withTimeout(.01)
                 .andThen(
                         indexer.run(() -> indexer.goToState(IndexerState.JORK_FORWARD))
-                                .withTimeout(.5))
-                .repeatedly();
+                                .withTimeout(.01))
+                .andThen(indexer.runOnce(() -> indexer.goToState(IndexerState.STOP)))
+                .andThen(Commands.waitSeconds(.25));
     }
 
     public static Command unBlock(Indexer indexer) {

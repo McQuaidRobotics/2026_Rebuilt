@@ -42,7 +42,7 @@ public class Subsystems {
         this.lockedResources =
                 new SubsystemBase[] {swerve, shooter, climber, indexer, intake, luma, vision, led};
 
-        this.indexer.setDefaultCommand(IndexerCommands.jorkIt(indexer));
+        this.indexer.setDefaultCommand(IndexerCommands.jorkIt(indexer).repeatedly());
 
         // CommandScheduler.getInstance().registerSubsystem(this.lockedResources);
     }

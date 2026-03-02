@@ -3,7 +3,6 @@ package igknighters.subsystems.LimeLightVision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
-import igknighters.constants.DrivingSharedState;
 import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.LimeLightVision.Cameras.LimeLightVisionReal;
 import igknighters.subsystems.LimeLightVision.Cameras.LimeLightVisionSim;
@@ -42,12 +41,7 @@ public class LimeLightVision extends SubsystemBase {
             double roll,
             double rollRate) {
         Log.log("LOGGING/Subsystems/Vison/Limelight/ENABLED", true);
-        if (DrivingSharedState.getInstance()
-                .onBump) { // this way if on bump it wont use vision because the robot is at a angle
-            // and heights of cameras change
-            return null;
-        } else {
-            return vision.getRobotPoseFromVision(yaw, yawRate, pitch, pitchRate, roll, rollRate);
-        }
+
+        return vision.getRobotPoseFromVision(yaw, yawRate, pitch, pitchRate, roll, rollRate);
     }
 }

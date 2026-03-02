@@ -89,7 +89,7 @@ public class HigherOrderCommands {
                         subsystems.shooter,
                         () -> subsystems.swerve.getState().Pose,
                         subsystems.swerve::getFieldRelativeSpeeds)
-                .alongWith(IndexerCommands.jorkIt(subsystems.indexer))
+                .alongWith(IndexerCommands.jorkIt(subsystems.indexer).repeatedly())
                 .alongWith(Commands.runOnce(() -> DrivingSharedState.getInstance().setDetune(1.0)))
                 .withName("IDLING THE SHOOTER");
     }
