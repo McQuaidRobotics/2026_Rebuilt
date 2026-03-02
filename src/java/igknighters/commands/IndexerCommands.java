@@ -13,6 +13,10 @@ public class IndexerCommands {
                 .withName("DISPENSE");
     }
 
+    public static Command jorkIt(Indexer indexer){
+        return indexer.run(() -> indexer.goToState(IndexerState.JORK_BACKWARD)).withTimeout(.5).andThen(indexer.run(() -> indexer.goToState(IndexerState.JORK_FORWARD)).withTimeout(.5)).repeatedly();
+    }
+
     public static Command unBlock(Indexer indexer) {
         return indexer.runOnce(() -> indexer.goToState(IndexerState.AGITATE));
     }
