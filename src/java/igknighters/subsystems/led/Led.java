@@ -11,7 +11,7 @@ public class Led extends SubsystemBase {
     public final PWMDriver pwm1;
 
     public Led(int length, int numberOfStrips) {
-        pwm1 = new PWMDriver(0, length, numberOfStrips);
+        pwm1 = new PWMDriver(0, length, numberOfStrips, 60);
     }
 
     public void animate(AddressableLEDBuffer buffer) {

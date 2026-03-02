@@ -189,7 +189,7 @@ public class Robot extends LoggedRobot {
                 new Subsystems(
                         new Swerve(false),
                         new LimeLightVision(),
-                        new Led(80, 1),
+                        new Led(80, 2),
                         new Shooter(),
                         new Indexer(),
                         new Intake(),

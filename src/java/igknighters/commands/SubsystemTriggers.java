@@ -6,9 +6,12 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import igknighters.commands.LEDCommands.LEDSection;
 import igknighters.commands.teleop.AutoRotateOnBump;
 import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.Conv;
@@ -55,6 +58,33 @@ public class SubsystemTriggers {
         double y = dashboardTable.getEntry(path + "Y").getDouble(0.0) * Conv.FEET_TO_METERS;
         double theta = dashboardTable.getEntry(path + "Theta").getDouble(0.0);
         return new Pose3d(x, y, 0, new Rotation3d(0, 0, theta));
+    }
+
+    public LEDSection[] runLEDBASEDONSTATE(Led led){
+        // should be 
+        
+        LEDSection possibleShot;
+        LEDSection atTarget;
+        LEDSection beingControlled;
+        LEDSection enabled = new LEDSection(1, 0, LEDPattern.solid(Color.kGreen), 40, "ENABLED");
+        if (AbleToShootSharedState.getInstance().getAtTarget()) {
+            atTarget = new LEDSection(0, 20, LEDPattern.solid(Color.kCyan), 20, "AT TARGET");
+        } else {
+            atTarget = new LEDSection(0, 20, LEDPattern.solid(Color.kBlack), 20, "NOT AT TARGET");
+        }
+        if (AbleToShootSharedState.getInstance().beingControlledTrigger().getAsBoolean()) {
+            beingControlled = new LEDSection(0, 40, LEDPattern.solid(Color.kBlue), 20, "BEING CONTROLLED");
+        } else {
+            beingControlled = new LEDSection(0, 40, LEDPattern.solid(Color.kBlack), 20, "NOT BEING CONTROLLED");
+        }
+        if (AbleToShootSharedState.getInstance().shotPosible().getAsBoolean()) {
+            possibleShot = new LEDSection(0, 0, LEDPattern.solid(Color.kMagenta), 20, "IS POSSIBLE SHOT");
+        } else {
+            possibleShot = new LEDSection(0, 0, LEDPattern.solid(Color.kBlack), 20, "IS NOT POSSIBLE SHOT");
+        }
+
+        
+        return new LEDSection[]{possibleShot, atTarget, beingControlled};
     }
 
     public void SetupOperatorController(Subsystems subsystems) {
