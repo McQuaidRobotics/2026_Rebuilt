@@ -42,6 +42,10 @@ public class AbleToShootSharedState {
         this.atTarget = newState;
     }
 
+    public Trigger canShoot() {
+        return atComandedStateTrigger.and(beingControlledTrigger).and(possibleShotTrigger);
+    }
+
     public void setPossibleShot(boolean newState) {
         Log.log("LOGGING/STATUS/POSSIBLE SHOT", newState);
         this.possibleShot = newState;

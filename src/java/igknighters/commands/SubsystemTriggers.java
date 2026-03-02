@@ -6,7 +6,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -53,38 +52,86 @@ public class SubsystemTriggers {
                 });
     }
 
+    public static Command runLEDBASEDONSTATE(Led led, boolean isDisabled, boolean isAutonomous) {
+        // should be Magenta, Cyan, Yellow if all three are lit then it should shoot
+
+        if (isDisabled) {
+            return LEDCommands.run(led, LEDPattern.solid(Color.kRed));
+        } else if (isAutonomous) {
+            LEDSection possibleShot;
+            LEDSection atTarget;
+            LEDSection beingControlled;
+            LEDSection autonomous =
+                    new LEDSection(1, 0, LedUtil.makeRainbow(255, 128), 20, "AUTONOMOUS RAINBOW");
+
+            if (AbleToShootSharedState.getInstance().shotPosible().getAsBoolean()) {
+                possibleShot =
+                        new LEDSection(
+                                0, 0, LEDPattern.solid(Color.kMagenta), 20, "IS POSSIBLE SHOT");
+            } else {
+                possibleShot =
+                        new LEDSection(
+                                0, 0, LEDPattern.solid(Color.kBlack), 20, "IS NOT POSSIBLE SHOT");
+            }
+
+            if (AbleToShootSharedState.getInstance().getAtTarget()) {
+                atTarget = new LEDSection(0, 20, LEDPattern.solid(Color.kCyan), 20, "AT TARGET");
+            } else {
+                atTarget =
+                        new LEDSection(0, 20, LEDPattern.solid(Color.kBlack), 20, "NOT AT TARGET");
+            }
+
+            if (AbleToShootSharedState.getInstance().beingControlledTrigger().getAsBoolean()) {
+                beingControlled =
+                        new LEDSection(
+                                0, 40, LEDPattern.solid(Color.kYellow), 20, "BEING CONTROLLED");
+            } else {
+                beingControlled =
+                        new LEDSection(
+                                0, 40, LEDPattern.solid(Color.kBlack), 20, "NOT BEING CONTROLLED");
+            }
+
+            return LEDCommands.run(led, autonomous, possibleShot, atTarget, beingControlled);
+        } else {
+            LEDSection possibleShot;
+            LEDSection atTarget;
+            LEDSection beingControlled;
+            LEDSection enabled =
+                    new LEDSection(1, 0, LEDPattern.solid(Color.kGreen), 40, "ENABLED");
+            if (AbleToShootSharedState.getInstance().getAtTarget()) {
+                atTarget = new LEDSection(0, 20, LEDPattern.solid(Color.kCyan), 20, "AT TARGET");
+            } else {
+                atTarget =
+                        new LEDSection(0, 20, LEDPattern.solid(Color.kBlack), 20, "NOT AT TARGET");
+            }
+            if (AbleToShootSharedState.getInstance().beingControlledTrigger().getAsBoolean()) {
+                beingControlled =
+                        new LEDSection(
+                                0, 40, LEDPattern.solid(Color.kYellow), 20, "BEING CONTROLLED");
+            } else {
+                beingControlled =
+                        new LEDSection(
+                                0, 40, LEDPattern.solid(Color.kBlack), 20, "NOT BEING CONTROLLED");
+            }
+            if (AbleToShootSharedState.getInstance().shotPosible().getAsBoolean()) {
+                possibleShot =
+                        new LEDSection(
+                                0, 0, LEDPattern.solid(Color.kMagenta), 20, "IS POSSIBLE SHOT");
+            } else {
+                possibleShot =
+                        new LEDSection(
+                                0, 0, LEDPattern.solid(Color.kBlack), 20, "IS NOT POSSIBLE SHOT");
+            }
+
+            return LEDCommands.run(led, enabled, possibleShot, atTarget, beingControlled);
+        }
+    }
+
     public Pose3d getPoseFromString(String path) {
         double x = dashboardTable.getEntry(path + "X").getDouble(0.0) * Conv.FEET_TO_METERS;
         double y = dashboardTable.getEntry(path + "Y").getDouble(0.0) * Conv.FEET_TO_METERS;
         double theta = dashboardTable.getEntry(path + "Theta").getDouble(0.0);
         return new Pose3d(x, y, 0, new Rotation3d(0, 0, theta));
-    }
-
-    public LEDSection[] runLEDBASEDONSTATE(Led led){
-        // should be 
-        
-        LEDSection possibleShot;
-        LEDSection atTarget;
-        LEDSection beingControlled;
-        LEDSection enabled = new LEDSection(1, 0, LEDPattern.solid(Color.kGreen), 40, "ENABLED");
-        if (AbleToShootSharedState.getInstance().getAtTarget()) {
-            atTarget = new LEDSection(0, 20, LEDPattern.solid(Color.kCyan), 20, "AT TARGET");
-        } else {
-            atTarget = new LEDSection(0, 20, LEDPattern.solid(Color.kBlack), 20, "NOT AT TARGET");
-        }
-        if (AbleToShootSharedState.getInstance().beingControlledTrigger().getAsBoolean()) {
-            beingControlled = new LEDSection(0, 40, LEDPattern.solid(Color.kBlue), 20, "BEING CONTROLLED");
-        } else {
-            beingControlled = new LEDSection(0, 40, LEDPattern.solid(Color.kBlack), 20, "NOT BEING CONTROLLED");
-        }
-        if (AbleToShootSharedState.getInstance().shotPosible().getAsBoolean()) {
-            possibleShot = new LEDSection(0, 0, LEDPattern.solid(Color.kMagenta), 20, "IS POSSIBLE SHOT");
-        } else {
-            possibleShot = new LEDSection(0, 0, LEDPattern.solid(Color.kBlack), 20, "IS NOT POSSIBLE SHOT");
-        }
-
-        
-        return new LEDSection[]{possibleShot, atTarget, beingControlled};
     }
 
     public void SetupOperatorController(Subsystems subsystems) {
@@ -135,7 +182,7 @@ public class SubsystemTriggers {
                                 .withName("DisabledRed"));
 
         autonomous.whileTrue(
-                LEDCommands.run(led, LedUtil.makeRainbow(255, 128))
+                LEDCommands.run(led, LedUtil.makeRainbow(255, 126))
                         .ignoringDisable(true)
                         .withName("AutoRainbow"));
 
@@ -150,12 +197,11 @@ public class SubsystemTriggers {
         // Bind LED commands to the canShootTrigger
 
         ableToShootState
-                .atCommandedStateTrigger()
-                .and(ableToShootState.beingControlledTrigger())
-                .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kYellow)));
-        ableToShootState
-                .atCommandedStateTrigger()
-                .and(ableToShootState.beingControlledTrigger().negate())
-                .whileFalse(LEDCommands.run(led, LEDPattern.solid(Color.kPurple)));
+                .canShoot()
+                .whileTrue(LEDCommands.run(led, LedUtil.makeBounce(Color.kCyan, .3)));
+        // ableToShootState
+        //         .atCommandedStateTrigger()
+        //         .and(ableToShootState.beingControlledTrigger().negate())
+        //         .whileFalse(LEDCommands.run(led, LEDPattern.solid(Color.kPurple)));
     }
 }

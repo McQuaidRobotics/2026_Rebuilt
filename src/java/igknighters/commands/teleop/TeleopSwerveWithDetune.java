@@ -11,6 +11,7 @@ import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
+import igknighters.util.log.Log;
 
 public class TeleopSwerveWithDetune extends TeleopSwerveBaseCmd {
     private double detune;
@@ -32,24 +33,19 @@ public class TeleopSwerveWithDetune extends TeleopSwerveBaseCmd {
         super.execute();
         detune = DrivingSharedState.getInstance().detune;
         Translation2d vt = translationStick();
-        double allianceFlipper = 1.0;
-        // if (Robot.isBlue()) {
-        //     allianceFlipper = 1.0;
-        // } else {
-        //     allianceFlipper = -1.0;
-        // }
+
+        Log.log("Logging/Subsystems/Swerve/DETUNE", detune);
+
         swerve.setControl(
                 m_driveRequest
                         .withVelocityX(
                                 vt.getX()
                                         * knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond)
-                                        * detune
-                                        * allianceFlipper)
+                                        * detune)
                         .withVelocityY(
                                 vt.getY()
                                         * knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond)
-                                        * detune
-                                        * allianceFlipper)
+                                        * detune)
                         .withRotationalRate(
                                 detune
                                         * RotationsPerSecond.of(0.75).in(RadiansPerSecond)

@@ -174,8 +174,6 @@ public class DriverController {
     public void bind(final Subsystems subsystems) {
         var swerve = subsystems.swerve;
         var intake = subsystems.intake;
-        var indexer = subsystems.indexer;
-        var shooter = subsystems.shooter;
 
         this.LB
                 .whileTrue(IntakeCommands.goToIntake(intake))
@@ -185,7 +183,7 @@ public class DriverController {
                 .onFalse(HigherOrderCommands.IdleShooter(subsystems));
         this.DPD.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
 
-        this.RT.whileTrue(IndexerCommands.dispense(indexer));
+        this.RT.whileTrue(HigherOrderCommands.forceDispense(subsystems));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
     }
 
