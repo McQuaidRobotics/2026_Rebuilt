@@ -7,6 +7,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
+import igknighters.commands.ShooterCommands.shotType;
 import igknighters.constants.AbleToShootSharedState;
 import igknighters.subsystems.shooter.flywheel.*;
 import igknighters.subsystems.shooter.hood.*;
@@ -23,6 +24,7 @@ public class Shooter extends SubsystemBase {
     private final Flywheel rollers;
     private final Turret turret;
     private final Hood hood;
+    public shotType currentShotType = shotType.SHOT;
     private Boolean beingControlled = false;
     private final ShooterVisualizer visualizer;
     private AbleToShootSharedState ableToShootState = AbleToShootSharedState.getInstance();
@@ -86,7 +88,7 @@ public class Shooter extends SubsystemBase {
         goToTurretAngle(turretAngle);
         hood.goToAngle(hoodAngle);
         goalRPM = velo.in(RPM);
-        goalTurretAngleDegrees = turretAngle.in(Degrees);
+        goalTurretAngleDegrees = turret.wrapAngleDegrees(turretAngle.in(Degrees));
         goalHoodAngleDegrees = hoodAngle.in(Degrees);
     }
 
@@ -158,7 +160,11 @@ public class Shooter extends SubsystemBase {
             visualizer.update(getCurrentState(), goalRPM, goalHoodAngleDegrees);
         }
         if (Robot.isReal()) {
-            ableToShootState.setAtTarget(atRealTarget(200, 5, 2.5));
+            if (currentShotType == shotType.SHOT) {
+                ableToShootState.setAtTarget(atRealTarget(200, 4, 2.5));
+            } else {
+                ableToShootState.setAtTarget(atRealTarget(600, 7, 5));
+            }
         } else {
             ableToShootState.setAtTarget(atSimTarget(600, 5, 1));
         }

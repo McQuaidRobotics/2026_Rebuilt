@@ -422,6 +422,8 @@ public class ShooterCommands {
                     Pose3d targetPose = getTargetPose(robotPose);
                     ChassisSpeeds robotVel = robotVeloSupplier.get();
 
+                    shooter.currentShotType = getShotType(robotPose);
+
                     Pose3d shooterPose =
                             new Pose3d(
                                     robotPose2d.getX(),
@@ -450,6 +452,18 @@ public class ShooterCommands {
                                 Degrees.of(kHood.MIN_ANGLE_DEGREES));
                     }
                 });
+    }
+
+    public static enum shotType {
+        PASS,
+        SHOT
+    }
+    public static shotType getShotType(Supplier<Pose2d> robotPoseSupplier){
+        if (shouldPass(robotPoseSupplier)){
+                return shotType.PASS;
+        } else{
+        return shotType.SHOT;
+        }
     }
 
     public static Command SHOOT_MAX_MIN_NO_AUTO_PICKED_TARGET(
