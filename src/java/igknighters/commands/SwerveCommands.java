@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
+import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import igknighters.util.log.Log;
@@ -84,9 +85,11 @@ public class SwerveCommands {
             boolean isAt =
                     positionError <= positionToleranceMeters && angleError <= angleToleranceRadians;
 
-            Log.log("Commands/Swerve/IsAt/PositionError", positionError);
-            Log.log("Commands/Swerve/IsAt/AngleError", angleError);
-            Log.log("Commands/Swerve/IsAt/Reached Target", isAt);
+            if (!SubsystemConstants.disableAllLogs) {
+                Log.log("Commands/Swerve/IsAt/PositionError", positionError);
+                Log.log("Commands/Swerve/IsAt/AngleError", angleError);
+                Log.log("Commands/Swerve/IsAt/Reached Target", isAt);
+            }
 
             return isAt;
         };
@@ -122,19 +125,21 @@ public class SwerveCommands {
                             thetaController.calculate(
                                     currentPose.getRotation().getRadians(),
                                     targetPose.getRotation().getRadians());
-                    Log.log("Commands/Swerve/MoveToSimple/VX", vx);
-                    Log.log("Commands/Swerve/MoveToSimple/VY", vy);
-                    Log.log("Commands/Swerve/MoveToSimple/Omega", omega);
-                    Log.log(
-                            "Commands/Swerve/MoveToSimple/dx",
-                            targetPose.getX() - currentPose.getX());
-                    Log.log(
-                            "Commands/Swerve/MoveToSimple/dy",
-                            targetPose.getY() - currentPose.getY());
-                    Log.log(
-                            "Commands/Swerve/MoveToSimple/dtheta",
-                            targetPose.getRotation().getRadians()
-                                    - currentPose.getRotation().getRadians());
+                    if (!SubsystemConstants.disableAllLogs) {
+                        Log.log("Commands/Swerve/MoveToSimple/VX", vx);
+                        Log.log("Commands/Swerve/MoveToSimple/VY", vy);
+                        Log.log("Commands/Swerve/MoveToSimple/Omega", omega);
+                        Log.log(
+                                "Commands/Swerve/MoveToSimple/dx",
+                                targetPose.getX() - currentPose.getX());
+                        Log.log(
+                                "Commands/Swerve/MoveToSimple/dy",
+                                targetPose.getY() - currentPose.getY());
+                        Log.log(
+                                "Commands/Swerve/MoveToSimple/dtheta",
+                                targetPose.getRotation().getRadians()
+                                        - currentPose.getRotation().getRadians());
+                    }
                     swerve.setControl(
                             m_driveRequest
                                     .withVelocityX(-vx)
@@ -180,26 +185,32 @@ public class SwerveCommands {
                             Math.max(
                                     Math.min(-omega, maxVelocities.getRotation().getRadians()),
                                     -maxVelocities.getRotation().getRadians());
+                    if (!SubsystemConstants.disableAllLogs) {
 
-                    Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedVX", clampedVx);
-                    Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedVY", clampedVy);
-                    Log.log(
-                            "Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedOmega",
-                            clampedOmega);
+                        Log.log(
+                                "Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedVX",
+                                clampedVx);
+                        Log.log(
+                                "Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedVY",
+                                clampedVy);
+                        Log.log(
+                                "Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedOmega",
+                                clampedOmega);
 
-                    Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/VX", vx);
-                    Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/VY", vy);
-                    Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/Omega", omega);
-                    Log.log(
-                            "Commands/Swerve/MoveToSimpleWithVelocityControl/dx",
-                            targetPose.getX() - currentPose.getX());
-                    Log.log(
-                            "Commands/Swerve/MoveToSimpleWithVelocityControl/dy",
-                            targetPose.getY() - currentPose.getY());
-                    Log.log(
-                            "Commands/Swerve/MoveToSimpleWithVelocityControl/dtheta",
-                            targetPose.getRotation().getRadians()
-                                    - currentPose.getRotation().getRadians());
+                        Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/VX", vx);
+                        Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/VY", vy);
+                        Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/Omega", omega);
+                        Log.log(
+                                "Commands/Swerve/MoveToSimpleWithVelocityControl/dx",
+                                targetPose.getX() - currentPose.getX());
+                        Log.log(
+                                "Commands/Swerve/MoveToSimpleWithVelocityControl/dy",
+                                targetPose.getY() - currentPose.getY());
+                        Log.log(
+                                "Commands/Swerve/MoveToSimpleWithVelocityControl/dtheta",
+                                targetPose.getRotation().getRadians()
+                                        - currentPose.getRotation().getRadians());
+                    }
 
                     swerve.setControl(
                             m_driveRequest

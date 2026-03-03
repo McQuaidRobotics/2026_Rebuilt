@@ -83,8 +83,10 @@ public class PivotSim extends Pivot {
         pivotSim.setInput(input);
         pivotSim.update(0.020);
 
-        Log.log("Subsystems/Intake/Pivot/AngleDegrees", getAngle().in(Degrees));
-        Log.log("Subsystems/Intake/Pivot/TargetDegrees", super.targetDegrees);
-        Log.log("Subsystems/Intake/Pivot/MotorVoltage", input);
+        if (!SubsystemConstants.kIntake.kPivot.disablePivotLogs) {
+            Log.log("Subsystems/Intake/Pivot/AngleDegrees", getAngle().in(Degrees));
+            Log.log("Subsystems/Intake/Pivot/TargetDegrees", super.targetDegrees);
+            Log.log("Subsystems/Intake/Pivot/MotorVoltage", input);
+        }
     }
 }

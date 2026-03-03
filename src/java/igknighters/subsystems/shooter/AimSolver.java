@@ -349,7 +349,11 @@ public class AimSolver {
 
             if (inside < 0) {
                 // Shot is physically impossible at this RPM
-                Log.log("Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM", currentRPM);
+                if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+                    Log.log(
+                            "Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM",
+                            currentRPM);
+                }
                 canShoot(false);
                 Logger.recordOutput(
                         "Shooter/ShotTrajectory",
@@ -370,11 +374,14 @@ public class AimSolver {
                                     / (G * d)); // this is the ball launch angle turretTheta is 90 -
             // theta if theta in degs
             double thetaHigh = Math.atan((v * v + root) / (G * d));
-            Log.log("Subsystems/Shooter/Aiming/Theta Low (deg)", Math.toDegrees(thetaLow));
-            Log.log("Subsystems/Shooter/Aiming/Theta High (deg)", Math.toDegrees(thetaHigh));
-            Log.log("Subsystems/Shooter/Aiming/Distance to Target (m)", d);
-            Log.log("Subsystems/Shooter/Aiming/Height to Target (m)", h);
-            Log.log("Subsystems/Shooter/Aiming/Launch Velocity", v);
+
+            if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+                Log.log("Subsystems/Shooter/Aiming/Theta Low (deg)", Math.toDegrees(thetaLow));
+                Log.log("Subsystems/Shooter/Aiming/Theta High (deg)", Math.toDegrees(thetaHigh));
+                Log.log("Subsystems/Shooter/Aiming/Distance to Target (m)", d);
+                Log.log("Subsystems/Shooter/Aiming/Height to Target (m)", h);
+                Log.log("Subsystems/Shooter/Aiming/Launch Velocity", v);
+            }
 
             // You want the HIGH arc
             double hoodAngle = Math.max(thetaLow, thetaHigh);
@@ -466,16 +473,22 @@ public class AimSolver {
             // -----------------------------
             double inside = v * v * v * v - G * (G * d * d + 2 * h * v * v);
 
-            Log.log("Subsystems/Shooter/Aiming/Distance", d);
-            Log.log("Subsystems/Shooter/Aiming/Height", h);
-            Log.log("Subsystems/Shooter/Aiming/Robot Velocity Projection", vRobotProj);
-            Log.log("Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
-            Log.log("Subsystems/Shooter/Aiming/Launch Velocity", v);
-            Log.log("Subsystems/Shooter/Aiming/RPM", currentRPM);
-            Log.log("Subsystems/Shooter/Aiming/Ballistic Discriminant", inside);
+            if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+                Log.log("Subsystems/Shooter/Aiming/Distance", d);
+                Log.log("Subsystems/Shooter/Aiming/Height", h);
+                Log.log("Subsystems/Shooter/Aiming/Robot Velocity Projection", vRobotProj);
+                Log.log("Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
+                Log.log("Subsystems/Shooter/Aiming/Launch Velocity", v);
+                Log.log("Subsystems/Shooter/Aiming/RPM", currentRPM);
+                Log.log("Subsystems/Shooter/Aiming/Ballistic Discriminant", inside);
+            }
 
             if (inside < 0) {
-                Log.log("Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM", currentRPM);
+                if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+                    Log.log(
+                            "Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM",
+                            currentRPM);
+                }
                 canShoot(false);
                 Logger.recordOutput(
                         "Shooter/ShotTrajectory",
@@ -485,22 +498,28 @@ public class AimSolver {
             }
             canShoot(true);
 
-            Log.log("Subsystems/Shooter/Aiming/SHOT IS POSSIBLE AT THIS RPM", currentRPM);
+            if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+                Log.log("Subsystems/Shooter/Aiming/SHOT IS POSSIBLE AT THIS RPM", currentRPM);
+            }
 
             double root = Math.sqrt(inside);
 
             double thetaLow = Math.atan((v * v - root) / (G * d));
             double thetaHigh = Math.atan((v * v + root) / (G * d));
 
-            Log.log("Subsystems/Shooter/Aiming/Theta Low", thetaLow);
-            Log.log("Subsystems/Shooter/Aiming/Theta High", thetaHigh);
-            Log.log("Subsystems/Shooter/Aiming/Predicted Turret Angle", turretAngle);
+            if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+                Log.log("Subsystems/Shooter/Aiming/Theta Low", thetaLow);
+                Log.log("Subsystems/Shooter/Aiming/Theta High", thetaHigh);
+                Log.log("Subsystems/Shooter/Aiming/Predicted Turret Angle", turretAngle);
+            }
             // High arc
             double hoodAngle = Math.max(thetaLow, thetaHigh);
 
             // Convert to your mechanical hood reference
             double hoodSetpoint = Math.PI / 2 - hoodAngle;
-            Log.log("Subsystems/Shooter/Aiming/Predicted Hood Angle", hoodSetpoint);
+            if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+                Log.log("Subsystems/Shooter/Aiming/Predicted Hood Angle", hoodSetpoint);
+            }
 
             // Pass the predicted pose so the trajectory starts from where the robot WILL be
             publishShotTrajectory(
@@ -580,12 +599,16 @@ public class AimSolver {
             boolean possible = false;
             double v_eff = 0.0;
 
-            Log.log("Subsystems/Shooter/Aiming/Distance", d);
-            Log.log("Subsystems/Shooter/Aiming/Height", h);
-            Log.log("Subsystems/Shooter/Aiming/TurretAngle", turretAngle * Conv.RADIANS_TO_DEGREES);
-            Log.log("Subsystems/Shooter/Aiming/Robot Velocity Lateral", vRobotLateral);
-            Log.log("Subsystems/Shooter/Aiming/Robot Velocity Radial", vRobotRadial);
-            Log.log("Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
+            if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+                Log.log("Subsystems/Shooter/Aiming/Distance", d);
+                Log.log("Subsystems/Shooter/Aiming/Height", h);
+                Log.log(
+                        "Subsystems/Shooter/Aiming/TurretAngle",
+                        turretAngle * Conv.RADIANS_TO_DEGREES);
+                Log.log("Subsystems/Shooter/Aiming/Robot Velocity Lateral", vRobotLateral);
+                Log.log("Subsystems/Shooter/Aiming/Robot Velocity Radial", vRobotRadial);
+                Log.log("Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
+            }
 
             for (int i = 0; i < 8; i++) {
                 double v_h = vFlywheel * Math.cos(currentGuessTheta) + vRobotRadial;
@@ -616,9 +639,12 @@ public class AimSolver {
 
             if (hoodSetpoint < kHood.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS
                     || hoodSetpoint > kHood.MAX_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS) {
-                Log.log(
-                        "Subsystems/Shooter/Aiming/Calculated hood angle out of bounds",
-                        Math.toDegrees(hoodSetpoint));
+
+                if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+                    Log.log(
+                            "Subsystems/Shooter/Aiming/Calculated hood angle out of bounds",
+                            Math.toDegrees(hoodSetpoint));
+                }
                 return new ShooterState(
                         RPM.of(0.0), Radians.of(turretAngle), Degrees.of(kHood.MIN_ANGLE_DEGREES));
             }

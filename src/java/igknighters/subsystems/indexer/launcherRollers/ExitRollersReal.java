@@ -64,8 +64,10 @@ public class ExitRollersReal extends ExitRollers {
 
     @Override
     public void setSpeedRPM(double speedRpm) {
-        Log.log("Subsystems/Indexer/ExitRollers/setSpeed", speedRpm);
-        exitRollerMotor.setControl(velocityControl.withVelocity(speedRpm / 60.0));
+        if (!SubsystemConstants.kIndexer.kExitRollers.disableExitRollersLogs) {
+            Log.log("Subsystems/Indexer/ExitRollers/setSpeed", speedRpm);
+            exitRollerMotor.setControl(velocityControl.withVelocity(speedRpm / 60.0));
+        }
     }
 
     @Override
@@ -88,14 +90,17 @@ public class ExitRollersReal extends ExitRollers {
     public void periodic() {
         BaseStatusSignal.refreshAll(
                 shooterVelocity, shooterCurrent, shooterVoltage, shooterTemperature);
-        Log.log(
-                "Subsystems/Indexer/ExitRollers/velocity",
-                shooterVelocity.getValueAsDouble() * 60.0);
-        Log.log("Subsystems/Indexer/ExitRollers/current", shooterCurrent.getValueAsDouble());
-        Log.log("Subsystems/Indexer/ExitRollers/voltage", shooterVoltage.getValueAsDouble());
-        Log.log(
-                "Subsystems/Indexer/ExitRollers/temperature",
-                shooterTemperature.getValueAsDouble());
-        Log.log("Subsystems/Indexer/ExitRollers/periodicing", true);
+
+        if (!SubsystemConstants.kIndexer.kExitRollers.disableExitRollersLogs) {
+            Log.log(
+                    "Subsystems/Indexer/ExitRollers/velocity",
+                    shooterVelocity.getValueAsDouble() * 60.0);
+            Log.log("Subsystems/Indexer/ExitRollers/current", shooterCurrent.getValueAsDouble());
+            Log.log("Subsystems/Indexer/ExitRollers/voltage", shooterVoltage.getValueAsDouble());
+            Log.log(
+                    "Subsystems/Indexer/ExitRollers/temperature",
+                    shooterTemperature.getValueAsDouble());
+            Log.log("Subsystems/Indexer/ExitRollers/periodicing", true);
+        }
     }
 }

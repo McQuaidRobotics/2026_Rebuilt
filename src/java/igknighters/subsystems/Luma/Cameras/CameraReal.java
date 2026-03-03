@@ -3,6 +3,7 @@ package igknighters.subsystems.Luma.Cameras;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import igknighters.constants.SubsystemConstants;
 import igknighters.util.log.Log;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -32,8 +33,10 @@ public class CameraReal extends Camera {
 
         camera.setPipelineIndex(0);
 
-        Log.log(cameraName, true);
-        Log.log("Subsystems/Vision/" + cameraName + "/Status", "ENABLED");
+        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+            Log.log(cameraName, true);
+            Log.log("Subsystems/Vision/" + cameraName + "/Status", "ENABLED");
+        }
     }
 
     public CameraReal(String cameraName) {
@@ -43,7 +46,9 @@ public class CameraReal extends Camera {
 
     @Override
     public void periodic() {
-        Log.log("Subsystems/Vision/" + name + "/Connected", camera.isConnected());
+        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+            Log.log("Subsystems/Vision/" + name + "/Connected", camera.isConnected());
+        }
 
         // Removed unnecessary new ArrayList<>() allocation
         List<PhotonPipelineResult> potentialResults = camera.getAllUnreadResults();
@@ -91,22 +96,32 @@ public class CameraReal extends Camera {
 
     @Override
     public Translation2d getGamePieceOffset() {
-        Log.log("Subsystems/Vision/Getting Offset", true);
+        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+            Log.log("Subsystems/Vision/Getting Offset", true);
+        }
 
         if (results.isEmpty()) {
-            Log.log("Subsystems/Vision/ObjectDetection/Camera Results", false);
+            if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+                Log.log("Subsystems/Vision/ObjectDetection/Camera Results", false);
+            }
             return new Translation2d();
         }
 
-        Log.log("Subsystems/Vision/ObjectDetection/Camera Results", true);
+        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+            Log.log("Subsystems/Vision/ObjectDetection/Camera Results", true);
+        }
         var result = results.get(results.size() - 1);
 
         if (!result.hasTargets()) {
-            Log.log("Subsystems/Vision/ObjectDetection/Camera Has Target", false);
+            if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+                Log.log("Subsystems/Vision/ObjectDetection/Camera Has Target", false);
+            }
             return new Translation2d();
         }
 
-        Log.log("Subsystems/Vision/ObjectDetection/Camera Has Target", true);
+        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+            Log.log("Subsystems/Vision/ObjectDetection/Camera Has Target", true);
+        }
 
         // Make a COPY of the targets list before sorting to avoid mutating PhotonVision's internal
         // data
@@ -141,7 +156,9 @@ public class CameraReal extends Camera {
             bestCluster = currentCluster;
         }
 
-        Log.log("Subsystems/Vision/ObjectDetection/Camera Cluster Size", bestCluster.size());
+        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+            Log.log("Subsystems/Vision/ObjectDetection/Camera Cluster Size", bestCluster.size());
+        }
 
         return getGamePieceOffsetFromTargetList(bestCluster);
     }
@@ -169,14 +186,18 @@ public class CameraReal extends Camera {
                     gamePieceNumber++) {
                 PhotonTrackedTarget gamePiece = gamePieces.getTargets().get(gamePieceNumber);
 
-                Log.log(
-                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/"
-                                + gamePieceNumber
-                                + "/pitch",
-                        gamePiece.pitch);
-                Log.log(
-                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/" + gamePieceNumber + "/yaw",
-                        gamePiece.yaw);
+                if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+                    Log.log(
+                            "Subsystems/Vision/ObjectDetection/GAMEPIECES/"
+                                    + gamePieceNumber
+                                    + "/pitch",
+                            gamePiece.pitch);
+                    Log.log(
+                            "Subsystems/Vision/ObjectDetection/GAMEPIECES/"
+                                    + gamePieceNumber
+                                    + "/yaw",
+                            gamePiece.yaw);
+                }
 
                 double distance =
                         PhotonUtils.calculateDistanceToTargetMeters(
@@ -191,11 +212,13 @@ public class CameraReal extends Camera {
                         new Translation2d(distance * Math.cos(yaw), distance * Math.sin(yaw))
                                 .plus(robotToCameraTranslation);
 
-                Log.log(
-                        "Subsystems/Vision/ObjectDetection/GAMEPIECES/"
-                                + gamePieceNumber
-                                + "/translation",
-                        gamePieceTranslation);
+                if (!SubsystemConstants.kIndexer.kExitRollers.disableExitRollersLogs) {
+                    Log.log(
+                            "Subsystems/Vision/ObjectDetection/GAMEPIECES/"
+                                    + gamePieceNumber
+                                    + "/translation",
+                            gamePieceTranslation);
+                }
 
                 gamePieceTranslations.add(gamePieceTranslation);
             }
