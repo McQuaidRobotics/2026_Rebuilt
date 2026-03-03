@@ -67,15 +67,15 @@ public class TeleopSwerveBaseCmd extends Command {
         double processedX = magnitude * Math.cos(angle);
         double processedY = magnitude * Math.sin(angle);
         if (Robot.isBlue()) {
-            
+
             if (!SubsystemConstants.disableAllLogs) {
-            Log.log("TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
+                Log.log("TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
             }
             return new Translation2d(processedY, -processedX);
         } else {
-            
+
             if (!SubsystemConstants.disableAllLogs) {
-            Log.log("TeleopSwerveBaseCmd", "Red Alliance - Inversion");
+                Log.log("TeleopSwerveBaseCmd", "Red Alliance - Inversion");
             }
             return new Translation2d(processedY, -processedX);
         }
@@ -102,9 +102,9 @@ public class TeleopSwerveBaseCmd extends Command {
 
     @Override
     public void end(boolean interrupted) {
-            if (!SubsystemConstants.disableAllLogs) {
-        Log.log("Commands/Teleop/teleopCommand", "ENDED");
-            }
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("Commands/Teleop/teleopCommand", "ENDED");
+        }
     }
 
     protected record TeleopSwerveCommandSummary(
@@ -136,16 +136,16 @@ public class TeleopSwerveBaseCmd extends Command {
         //         rotation.getX(),
         //         rawRotationYSup.getAsDouble(),
         //         rotation.getY());
-            if (!SubsystemConstants.disableAllLogs) {
-        Log.log("Commands/teleop/rawTranslationX", rawTranslationXSup.getAsDouble());
-        Log.log("Commands/teleop/translationX", translation.getX());
-        Log.log("Commands/teleop/rawTranslationY", rawTranslationYSup.getAsDouble());
-        Log.log("Commands/teleop/translationY", translation.getY());
-        Log.log("Commands/teleop/rawRotationX", rawRotationXSup.getAsDouble());
-        Log.log("Commands/teleop/rotationX", rotation.getX());
-        Log.log("Commands/teleop/rawRotationY", rawRotationYSup.getAsDouble());
-        Log.log("Commands/teleop/rotationY", rotation.getY());
-            }
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("Commands/teleop/rawTranslationX", rawTranslationXSup.getAsDouble());
+            Log.log("Commands/teleop/translationX", translation.getX());
+            Log.log("Commands/teleop/rawTranslationY", rawTranslationYSup.getAsDouble());
+            Log.log("Commands/teleop/translationY", translation.getY());
+            Log.log("Commands/teleop/rawRotationX", rawRotationXSup.getAsDouble());
+            Log.log("Commands/teleop/rotationX", rotation.getX());
+            Log.log("Commands/teleop/rawRotationY", rawRotationYSup.getAsDouble());
+            Log.log("Commands/teleop/rotationY", rotation.getY());
+        }
         return null;
     }
 }

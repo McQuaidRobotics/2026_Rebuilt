@@ -28,15 +28,15 @@ public class ServosReal extends Servos {
 
     @Override
     public void periodic() {
-        
-            if (!SubsystemConstants.kClimber.kChainsaw.disableChainsawLogs) {
-        Log.log("Subsystems/Climber/Servos/Deployed", deployed);
-        // Ensure the servo stays in position
-        if (deployed) {
-            servo.setAngle(SubsystemConstants.kClimber.kServos.MAX_ANGLE_DEGREES);
-        } else {
-            servo.setAngle(SubsystemConstants.kClimber.kServos.MIN_ANGLE_DEGREES);
+
+        if (!SubsystemConstants.kClimber.kChainsaw.disableChainsawLogs) {
+            Log.log("Subsystems/Climber/Servos/Deployed", deployed);
+            // Ensure the servo stays in position
+            if (deployed) {
+                servo.setAngle(SubsystemConstants.kClimber.kServos.MAX_ANGLE_DEGREES);
+            } else {
+                servo.setAngle(SubsystemConstants.kClimber.kServos.MIN_ANGLE_DEGREES);
+            }
         }
-    }
     }
 }

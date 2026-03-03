@@ -66,18 +66,17 @@ public class TeleopSwerveForwardTargetingCmd extends TeleopSwerveBaseCmd {
 
         double error = wrapAngleRadians(desiredAngleRad - currentAngleRad);
 
-        
-            if (!SubsystemConstants.disableAllLogs) {
-        Log.log(
-                "Robot/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Desired Angle (deg)",
-                Math.toDegrees(desiredAngleRad));
-        Log.log(
-                "Robot/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Current Angle (deg)",
-                Math.toDegrees(currentAngleRad));
-        Log.log(
-                "Robot/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Wrapped Error (deg)",
-                Math.toDegrees(error));
-            }
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log(
+                    "Robot/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Desired Angle (deg)",
+                    Math.toDegrees(desiredAngleRad));
+            Log.log(
+                    "Robot/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Current Angle (deg)",
+                    Math.toDegrees(currentAngleRad));
+            Log.log(
+                    "Robot/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Wrapped Error (deg)",
+                    Math.toDegrees(error));
+        }
 
         double omega = rotationController.calculate(currentAngleRad, desiredAngleRad);
 

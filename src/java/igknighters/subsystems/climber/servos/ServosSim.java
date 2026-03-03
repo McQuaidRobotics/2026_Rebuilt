@@ -20,7 +20,7 @@ public class ServosSim extends Servos {
     @Override
     public void periodic() {
         if (!SubsystemConstants.kClimber.kChainsaw.disableChainsawLogs) {
-        Log.log("Subsystems/Climber/Servos/Deployed", deployed);
+            Log.log("Subsystems/Climber/Servos/Deployed", deployed);
         }
     }
 }

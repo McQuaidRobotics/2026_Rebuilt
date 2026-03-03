@@ -49,12 +49,12 @@ public class RepulsorVisualizer {
 
     public static void update(
             double goalTheta, double repulseTheta, double goalStrength, double repulseStrength) {
-            if (!SubsystemConstants.disableAllLogs) {
-        Log.log("Commands/repulsor/repulse theta", repulseTheta);
-        Log.log("Commands/repulsor/goal theta", goalTheta);
-        Log.log("Commands/repulsor/repulse strength", repulseStrength);
-        Log.log("Commands/repulsor/goal strength", goalStrength);
-            }
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("Commands/repulsor/repulse theta", repulseTheta);
+            Log.log("Commands/repulsor/goal theta", goalTheta);
+            Log.log("Commands/repulsor/repulse strength", repulseStrength);
+            Log.log("Commands/repulsor/goal strength", goalStrength);
+        }
         goalLigament.setAngle(Math.toDegrees(goalTheta));
         repulseLigament.setAngle(Math.toDegrees(180) + Math.toDegrees(repulseTheta));
         goalLigament.setColor(getStrengthColor(goalStrength));

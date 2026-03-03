@@ -19,6 +19,7 @@ public class SubsystemConstants {
             public static final int MIN_HEIGHT_SENSOR_ID = 2;
             public static final int MIDDLE_HEIGHT_SENSOR_ID = 4;
             public static boolean disableChainsawLogs = false;
+
             static {
                 if (disableAllLogs) {
                     disableChainsawLogs = true;
@@ -86,6 +87,7 @@ public class SubsystemConstants {
             public static final double kV = 0.5;
             public static final double kA = 0;
             public static boolean disableSpindexerLogs = false;
+
             static {
                 if (disableAllLogs) {
                     disableSpindexerLogs = true;
@@ -110,6 +112,7 @@ public class SubsystemConstants {
             public static final double PEAK_CURRENT_LIMIT = 40;
             public static final double SUPPLY_CURRENT_LIMIT = 30;
             public static boolean disableExitRollersLogs = false;
+
             static {
                 if (disableAllLogs) {
                     disableExitRollersLogs = true;
@@ -142,6 +145,7 @@ public class SubsystemConstants {
             public static final double kV = 0.15;
             public static final double kA = 0.02;
             public static boolean disableRollersLogs = false;
+
             static {
                 if (disableAllLogs) {
                     disableRollersLogs = true;
@@ -171,6 +175,7 @@ public class SubsystemConstants {
             public static final double LENGTH_METERS =
                     .25; // distance from central shaft to edge of wrist
             public static boolean disablePivotLogs = false;
+
             static {
                 if (disableAllLogs) {
                     disablePivotLogs = true;
@@ -203,6 +208,7 @@ public class SubsystemConstants {
             public static final double PEAK_CURRENT_LIMIT = 40;
             public static final double SUPPLY_CURRENT_LIMIT = 30;
             public static boolean disableFlywheelsLogs = false;
+
             static {
                 if (disableAllLogs) {
                     disableFlywheelsLogs = true;
@@ -229,6 +235,7 @@ public class SubsystemConstants {
             public static final double kV = 0.0;
             public static final double kA = 0.0;
             public static boolean disableTurretLogs = false;
+
             static {
                 if (disableAllLogs) {
                     disableTurretLogs = true;
@@ -257,6 +264,7 @@ public class SubsystemConstants {
                     .25; // distance from central shaft to edge of flap
             public static final int REVERSE_LIMIT_SWITCH_ID = 9;
             public static boolean disableHoodLogs = false;
+
             static {
                 if (disableAllLogs) {
                     disableHoodLogs = true;
@@ -271,6 +279,7 @@ public class SubsystemConstants {
         public static final String backCam = "limelight-back";
         public static final String rightCam = "limelight-br";
         public static boolean disableVisionLogs = false;
+
         static {
             if (disableAllLogs) {
                 disableVisionLogs = true;

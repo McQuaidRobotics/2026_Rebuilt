@@ -12,10 +12,9 @@ public class HoodSim extends Hood {
     @Override
     public void periodic() {
 
-        if (!SubsystemConstants.kShooter.kHood.disableHoodLogs)
-        {
-        Log.log("Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());
-        Log.log("Subsystems/Shooter/Hood/TargetDegrees", super.targetDegrees);
+        if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+            Log.log("Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());
+            Log.log("Subsystems/Shooter/Hood/TargetDegrees", super.targetDegrees);
         }
     }
 

@@ -16,18 +16,16 @@ public class Led extends SubsystemBase {
     }
 
     public void animate(AddressableLEDBuffer buffer) {
-        if (!SubsystemConstants.disableAllLogs)
-        {
-        Log.log("Subsystems/LED/Animate", true);
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("Subsystems/LED/Animate", true);
         }
         pwm1.applyBuffer(buffer);
     }
 
     @Override
     public void periodic() {
-        if (!SubsystemConstants.disableAllLogs)
-        {
-        Log.log("Subsystems/LED/Periodic", true);
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("Subsystems/LED/Periodic", true);
         }
         Tracer.startTrace("LedPeriodic");
         pwm1.periodic();

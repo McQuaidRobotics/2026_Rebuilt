@@ -146,11 +146,10 @@ public class LedUtil {
             blue[i] = color.blue;
         }
 
-        if (!SubsystemConstants.disableAllLogs)
-        {
-        Log.log("Commands/" + name + "Led/Reds", red);
-        Log.log("Commands/" + name + "Led/Greens", green);
-        Log.log("Commands/" + name + "Led/Blues", blue);
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("Commands/" + name + "Led/Reds", red);
+            Log.log("Commands/" + name + "Led/Greens", green);
+            Log.log("Commands/" + name + "Led/Blues", blue);
         }
     }
 

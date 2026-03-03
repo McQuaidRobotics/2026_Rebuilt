@@ -74,12 +74,11 @@ public class SpindexerReal extends Spindexer {
 
     @Override
     public void goToRPM(double RPM) {
-        
-        if (!SubsystemConstants.kIndexer.kSpindexer.disableSpindexerLogs)
-        {
-        Log.log("Subsystems/Indexer/Spindexer/setSpeed", RPM);
-        spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
-        spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
+
+        if (!SubsystemConstants.kIndexer.kSpindexer.disableSpindexerLogs) {
+            Log.log("Subsystems/Indexer/Spindexer/setSpeed", RPM);
+            spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
+            spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
         }
     }
 
@@ -97,16 +96,15 @@ public class SpindexerReal extends Spindexer {
     public void periodic() {
         BaseStatusSignal.refreshAll(
                 spindexerVelocity, spindexerCurrent, spindexerVoltage, spindexerTemperature);
-        if (!SubsystemConstants.kIndexer.kSpindexer.disableSpindexerLogs)
-        {
-        Log.log(
-                "Subsystems/Indexer/Spindexer/velocity",
-                spindexerVelocity.getValueAsDouble() * 60.0);
-        Log.log("Subsystems/Indexer/Spindexer/current", spindexerCurrent.getValueAsDouble());
-        Log.log("Subsystems/Indexer/Spindexer/voltage", spindexerVoltage.getValueAsDouble());
-        Log.log(
-                "Subsystems/Indexer/Spindexer/temperature",
-                spindexerTemperature.getValueAsDouble());
+        if (!SubsystemConstants.kIndexer.kSpindexer.disableSpindexerLogs) {
+            Log.log(
+                    "Subsystems/Indexer/Spindexer/velocity",
+                    spindexerVelocity.getValueAsDouble() * 60.0);
+            Log.log("Subsystems/Indexer/Spindexer/current", spindexerCurrent.getValueAsDouble());
+            Log.log("Subsystems/Indexer/Spindexer/voltage", spindexerVoltage.getValueAsDouble());
+            Log.log(
+                    "Subsystems/Indexer/Spindexer/temperature",
+                    spindexerTemperature.getValueAsDouble());
         }
     }
 }

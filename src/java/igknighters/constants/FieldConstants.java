@@ -200,8 +200,8 @@ public class FieldConstants {
             double x = pose.getX();
             double y = pose.getY();
             if (!SubsystemConstants.disableAllLogs) {
-            Log.log("Commands/BumpProtection: x;", x);
-            Log.log("Commands/BumpProtection: y;", y);
+                Log.log("Commands/BumpProtection: x;", x);
+                Log.log("Commands/BumpProtection: y;", y);
             }
 
             // Bump 1
@@ -209,9 +209,9 @@ public class FieldConstants {
                     && x <= BUMP_1_X_METERS + HALF_Y_FIELD_METERS) {
                 if (y >= BUMP_1_Y_METERS - HALF_HEIGHT_METERS
                         && y <= BUMP_1_Y_METERS + HALF_HEIGHT_METERS) {
-            if (!SubsystemConstants.disableAllLogs) {
-                    Log.log("Commands/BumpProtection: inside bump 1", true);
-            }
+                    if (!SubsystemConstants.disableAllLogs) {
+                        Log.log("Commands/BumpProtection: inside bump 1", true);
+                    }
                     return true;
                 }
             }
@@ -221,16 +221,16 @@ public class FieldConstants {
                     && x <= BUMP_2_X_METERS + HALF_Y_FIELD_METERS) {
                 if (y >= BUMP_2_Y_METERS - HALF_HEIGHT_METERS
                         && y <= BUMP_2_Y_METERS + HALF_HEIGHT_METERS) {
-            if (!SubsystemConstants.disableAllLogs) {
-                    Log.log("Commands/BumpProtection: inside bump 2", true);
-            }
+                    if (!SubsystemConstants.disableAllLogs) {
+                        Log.log("Commands/BumpProtection: inside bump 2", true);
+                    }
                     return true;
                 }
             }
-            
+
             if (!SubsystemConstants.disableAllLogs) {
-            Log.log("Commands/BumpProtection: inside bump 2", false);
-            Log.log("Commands/BumpProtection: inside bump 1", false);
+                Log.log("Commands/BumpProtection: inside bump 2", false);
+                Log.log("Commands/BumpProtection: inside bump 1", false);
             }
 
             return false;

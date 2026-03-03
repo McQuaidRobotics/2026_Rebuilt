@@ -62,10 +62,9 @@ public class RollersReal extends Rollers {
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(intakeSpeed);
-        
-        if (!SubsystemConstants.kIntake.kRollers.disableRollersLogs)
-        {
-        Log.log("Subsystems/Intake/Rollers/SpeedRPS", getSpeed());
+
+        if (!SubsystemConstants.kIntake.kRollers.disableRollersLogs) {
+            Log.log("Subsystems/Intake/Rollers/SpeedRPS", getSpeed());
         }
     }
 }

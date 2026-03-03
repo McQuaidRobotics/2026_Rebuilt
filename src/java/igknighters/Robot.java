@@ -75,37 +75,43 @@ public class Robot extends LoggedRobot {
     TunableDouble targetingI = TunableValues.getDouble("Tunables/TargetingI", 0.00);
     TunableDouble targetingD = TunableValues.getDouble("Tunables/TargetingD", 0.00);
 
-    
     public void setUpCommandLogging() {
-    if (!SubsystemConstants.disableAllLogs) {
-        scheduler.onCommandInitialize(
-                command ->Log.log(
-                                "Commands/Tracking/" + command.getName() + "/ Command Running",
-                                "TRUE"));
+        if (!SubsystemConstants.disableAllLogs) {
+            scheduler.onCommandInitialize(
+                    command ->
+                            Log.log(
+                                    "Commands/Tracking/" + command.getName() + "/ Command Running",
+                                    "TRUE"));
 
-        scheduler.onCommandInitialize(
-                command ->
-                        Log.log(
-                                "Commands/Tracking/" + command.getName() + "/ Command Interrupted",
-                                "FALSE"));
+            scheduler.onCommandInitialize(
+                    command ->
+                            Log.log(
+                                    "Commands/Tracking/"
+                                            + command.getName()
+                                            + "/ Command Interrupted",
+                                    "FALSE"));
 
-        scheduler.onCommandInterrupt(
-                command ->
-                        Log.log(
-                                "Commands/Tracking/" + command.getName() + "/ Command Interrupted",
-                                "TRUE"));
-        scheduler.onCommandFinish(
-                command ->
-                        Log.log(
-                                "Commands/Tracking/" + command.getName() + "/ Command Running",
-                                "FALSE"));
-        scheduler.onCommandFinish(
-                command ->
-                        Log.log(
-                                "Commands/Tracking/" + command.getName() + "/ Command Interrupted",
-                                "FALSE"));
+            scheduler.onCommandInterrupt(
+                    command ->
+                            Log.log(
+                                    "Commands/Tracking/"
+                                            + command.getName()
+                                            + "/ Command Interrupted",
+                                    "TRUE"));
+            scheduler.onCommandFinish(
+                    command ->
+                            Log.log(
+                                    "Commands/Tracking/" + command.getName() + "/ Command Running",
+                                    "FALSE"));
+            scheduler.onCommandFinish(
+                    command ->
+                            Log.log(
+                                    "Commands/Tracking/"
+                                            + command.getName()
+                                            + "/ Command Interrupted",
+                                    "FALSE"));
+        }
     }
-}
 
     public void publishCommandsAndSubystems(Subsystems subsystems) {
         SmartDashboard.putData(CommandScheduler.getInstance());
@@ -301,11 +307,11 @@ public class Robot extends LoggedRobot {
                                 .getLastTimeStamp()); // trusts vision rotation less. Needs tuning
                 // increase the std devs to trust vision less
                 if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
-                Log.log("Subsystems/Vision/Null Pose", false);
+                    Log.log("Subsystems/Vision/Null Pose", false);
                 }
             } else {
                 if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
-                Log.log("Subsystems/Vision/Null Pose", true);
+                    Log.log("Subsystems/Vision/Null Pose", true);
                 }
             }
         }
@@ -411,7 +417,7 @@ public class Robot extends LoggedRobot {
 
                 lastShotTime = currentTime;
                 if (!SubsystemConstants.disableAllLogs) {
-                Log.log("Simulation/FuelLaunched", true);
+                    Log.log("Simulation/FuelLaunched", true);
                 }
             }
         }
@@ -465,7 +471,7 @@ public class Robot extends LoggedRobot {
             // Default to blue if alliance is unknown (e.g., in simulation without alliance set)
             // Log this so we know why things might be going to the blue side.
             if (!SubsystemConstants.disableAllLogs) {
-            Log.log("System/AllianceUnknown", true);
+                Log.log("System/AllianceUnknown", true);
             }
             return true;
         }

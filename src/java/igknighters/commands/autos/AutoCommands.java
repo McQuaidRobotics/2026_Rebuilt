@@ -36,11 +36,10 @@ public class AutoCommands {
         this.autoFactory = factory;
     }
 
-    
     protected void logAutoEvent(String message, String event) {
-            if (!SubsystemConstants.disableAllLogs) {
-        Log.log("Robot/Commands/Autos", message + " is " + event);
-            }
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("Robot/Commands/Autos", message + " is " + event);
+        }
     }
 
     protected Command loggedCmd(Command command) {
@@ -175,9 +174,9 @@ public class AutoCommands {
     }
 
     protected RebuiltAuto newRebuiltAuto(String name) {
-            if (!SubsystemConstants.disableAllLogs) {
-        Log.log("Robot/Commands/Autos/Creation", "Creating new rebuilt auto: " + name);
-            }
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("Robot/Commands/Autos/Creation", "Creating new rebuilt auto: " + name);
+        }
         return new RebuiltAuto(autoFactory.newRoutine(name));
     }
 }
