@@ -93,14 +93,20 @@ public class PivotReal extends Pivot {
     public void goToAngle(Angle angle) {
         targetDegrees = angle.in(Degrees);
         beingCommanded = true;
+        if (!SubsystemConstants.kIntake.kPivot.disablePivotLogs)
+        {
         Log.log("Subsystems/Intake/Pivot/Stopped", false);
         pivotMotor.setControl(motionMagicControl.withPosition(angle.in(Rotation)));
+        }
     }
 
     @Override
     public void stop() {
         beingCommanded = true;
+        if (!SubsystemConstants.kIntake.kPivot.disablePivotLogs)
+        {
         Log.log("Subsystems/Intake/Pivot/Stopped", true);
+        }
         pivotMotor.setVoltage(0.0);
     }
 
@@ -112,8 +118,12 @@ public class PivotReal extends Pivot {
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(rps, angleRotations);
+        
+        if (!SubsystemConstants.kIntake.kPivot.disablePivotLogs)
+        {
         Log.log("Subsystems/Intake/Pivot/Being Commanded Currently", beingCommanded);
         Log.logMotor("Subsystems/Intake/Pivot/Motor", pivotMotor);
         Log.log("Subsystems/Intake/Pivot/Target", targetDegrees);
+        }
     }
 }

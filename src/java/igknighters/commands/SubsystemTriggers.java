@@ -1,8 +1,6 @@
 package igknighters.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -74,10 +72,10 @@ public class SubsystemTriggers {
 
         passTrigger.whileTrue(
                 HigherOrderCommands.fireAtTarget(
-                        subsystems,
-                        getPoseFromString("robot/passWaypoint")));
+                        subsystems, getPoseFromString("robot/passWaypoint")));
         moveToTrigger.whileTrue(
-                Repulsor.moveWithRepulsor(swerve, getPoseFromString("robot/moveWaypoint").toPose2d(), 1));
+                Repulsor.moveWithRepulsor(
+                        swerve, getPoseFromString("robot/moveWaypoint").toPose2d(), 1));
     }
 
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {

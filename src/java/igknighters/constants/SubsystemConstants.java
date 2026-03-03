@@ -5,6 +5,7 @@ import com.ctre.phoenix6.CANBus;
 public class SubsystemConstants {
 
     public static final int firstMotorID = 15;
+    public static final boolean disableAllLogs = false;
     public static final CANBus superStructure = new CANBus("SuperStructureBus");
     public static final CANBus drive = new CANBus("DriveBus");
 
@@ -17,6 +18,12 @@ public class SubsystemConstants {
             public static final int MAX_HEIGHT_SENSOR_ID = 1;
             public static final int MIN_HEIGHT_SENSOR_ID = 2;
             public static final int MIDDLE_HEIGHT_SENSOR_ID = 4;
+            public static boolean disableChainsawLogs = false;
+            static {
+                if (disableAllLogs) {
+                    disableChainsawLogs = true;
+                }
+            }
 
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.05; // this is made up
             public static final double kP = 0.8;
@@ -78,6 +85,12 @@ public class SubsystemConstants {
             public static final double kS = 0.178;
             public static final double kV = 0.5;
             public static final double kA = 0;
+            public static boolean disableSpindexerLogs = false;
+            static {
+                if (disableAllLogs) {
+                    disableSpindexerLogs = true;
+                }
+            }
         }
 
         public static class kExitRollers {
@@ -96,6 +109,12 @@ public class SubsystemConstants {
             public static final double kA = 0.02;
             public static final double PEAK_CURRENT_LIMIT = 40;
             public static final double SUPPLY_CURRENT_LIMIT = 30;
+            public static boolean disableExitRollersLogs = false;
+            static {
+                if (disableAllLogs) {
+                    disableExitRollersLogs = true;
+                }
+            }
         }
     }
 
@@ -122,6 +141,12 @@ public class SubsystemConstants {
             public static final double kS = 0.6;
             public static final double kV = 0.15;
             public static final double kA = 0.02;
+            public static boolean disableRollersLogs = false;
+            static {
+                if (disableAllLogs) {
+                    disableRollersLogs = true;
+                }
+            }
         }
 
         public static class kPivot {
@@ -145,6 +170,12 @@ public class SubsystemConstants {
             public static final double JKG_M2 = 0.01;
             public static final double LENGTH_METERS =
                     .25; // distance from central shaft to edge of wrist
+            public static boolean disablePivotLogs = false;
+            static {
+                if (disableAllLogs) {
+                    disablePivotLogs = true;
+                }
+            }
         }
     }
 
@@ -171,6 +202,12 @@ public class SubsystemConstants {
                     .5; // 40 cm this is made up it will be off ground though
             public static final double PEAK_CURRENT_LIMIT = 40;
             public static final double SUPPLY_CURRENT_LIMIT = 30;
+            public static boolean disableFlywheelsLogs = false;
+            static {
+                if (disableAllLogs) {
+                    disableFlywheelsLogs = true;
+                }
+            }
         }
 
         public static class kTurret {
@@ -191,6 +228,12 @@ public class SubsystemConstants {
             public static final double kS = 0.0;
             public static final double kV = 0.0;
             public static final double kA = 0.0;
+            public static boolean disableTurretLogs = false;
+            static {
+                if (disableAllLogs) {
+                    disableTurretLogs = true;
+                }
+            }
         }
 
         public static class kHood {
@@ -213,6 +256,12 @@ public class SubsystemConstants {
             public static final double LENGTH_METERS =
                     .25; // distance from central shaft to edge of flap
             public static final int REVERSE_LIMIT_SWITCH_ID = 9;
+            public static boolean disableHoodLogs = false;
+            static {
+                if (disableAllLogs) {
+                    disableHoodLogs = true;
+                }
+            }
         }
     }
 
@@ -221,5 +270,11 @@ public class SubsystemConstants {
         public static final String intakeCam = "limelight-intake";
         public static final String backCam = "limelight-back";
         public static final String rightCam = "limelight-br";
+        public static boolean disableVisionLogs = false;
+        static {
+            if (disableAllLogs) {
+                disableVisionLogs = true;
+            }
+        }
     }
 }

@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
+import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import igknighters.util.log.Log;
@@ -49,7 +50,10 @@ public class Repulsor {
     // finds X repulsive force by summing all the forces of the obstacles
     public static double getXRepulse(Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
+        
+            if (!SubsystemConstants.disableAllLogs) {
         Log.log("Commands/repulsor/Time", currentTime);
+            }
         double xRepelForce = 0.0;
         for (Repulsor.obstacle obs : obstacles) {
             if (obs.type == obstacleType.CIRCLE) {
@@ -78,10 +82,16 @@ public class Repulsor {
             }
         }
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
+        
+            if (!SubsystemConstants.disableAllLogs) {
         Log.log("Commands/repulsor/DeltaTime", deltaTime);
+            }
         if (deltaTime > maxTime) {
             maxTime = deltaTime;
+            
+            if (!SubsystemConstants.disableAllLogs) {
             Log.log("Commands/repulsor/MaxDeltaTime", maxTime);
+            }
         }
         return -xRepelForce;
     }
@@ -89,7 +99,9 @@ public class Repulsor {
     // find attractive force to goal in the x
     public static double getXGoal(Pose2d currentPose, Pose2d target) {
         double xGoalDist = target.getX() - currentPose.getX();
+            if (!SubsystemConstants.disableAllLogs) {
         Log.log("Commands/repulsor/xGoalDist", target.getX() - currentPose.getX());
+            }
         return xGoalDist;
     }
 
@@ -98,7 +110,9 @@ public class Repulsor {
             Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles, Pose2d target) {
         double yRepelForce = 0.0;
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
+            if (!SubsystemConstants.disableAllLogs) {
         Log.log("Commands/repulsor/Time", currentTime);
+            }
         for (Repulsor.obstacle obs : obstacles) {
             if (obs.type == obstacleType.CIRCLE) {
                 double dist =
@@ -147,10 +161,14 @@ public class Repulsor {
             }
         }
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
+            if (!SubsystemConstants.disableAllLogs) {
         Log.log("Commands/repulsor/DeltaTime", deltaTime);
+            }
         if (deltaTime > maxTime) {
             maxTime = deltaTime;
+            if (!SubsystemConstants.disableAllLogs) {
             Log.log("Commands/repulsor/MaxDeltaTime", maxTime);
+            }
         }
         // if in front of the hubs, there will be a up/down force to get robot to move towards one
         // side
@@ -165,7 +183,9 @@ public class Repulsor {
 
     public static double getYGoal(Pose2d currentPose, Pose2d target) {
         double yGoalDist = target.getY() - currentPose.getY();
+            if (!SubsystemConstants.disableAllLogs) {
         Log.log("Commands/repulsor/yGoalDist", target.getY() - currentPose.getY());
+            }
         return yGoalDist;
     }
 
@@ -188,14 +208,18 @@ public class Repulsor {
                             10
                                     * -(getXGoal(currentPose, targetPose)
                                             + getXRepulse(currentPose, obstacles));
+            if (!SubsystemConstants.disableAllLogs) {
                     Log.log("Commands/repulsor/xRepel", getXRepulse(currentPose, obstacles));
+            }
                     double yVelo =
                             10
                                     * -(getYGoal(currentPose, targetPose)
                                             + getYRepulse(currentPose, obstacles, targetPose));
+            if (!SubsystemConstants.disableAllLogs) {
                     Log.log(
                             "Commands/repulsor/yRepel",
                             getYRepulse(currentPose, obstacles, targetPose));
+            }
                     double omega =
                             thetaController.calculate(
                                     currentPose.getRotation().getRadians(),
@@ -215,7 +239,9 @@ public class Repulsor {
                                     getXRepulse(currentPose, obstacles)));
 
                     omega *= 20.0;
+            if (!SubsystemConstants.disableAllLogs) {
                     Log.log("Commands/repulsor/Omega", omega);
+            }
                     swerve.setControl(
                             m_driveRequest
                                     .withVelocityX(xVelo)

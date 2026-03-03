@@ -27,6 +27,7 @@ import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
+import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
@@ -74,10 +75,11 @@ public class Robot extends LoggedRobot {
     TunableDouble targetingI = TunableValues.getDouble("Tunables/TargetingI", 0.00);
     TunableDouble targetingD = TunableValues.getDouble("Tunables/TargetingD", 0.00);
 
+    
     public void setUpCommandLogging() {
+    if (!SubsystemConstants.disableAllLogs) {
         scheduler.onCommandInitialize(
-                command ->
-                        Log.log(
+                command ->Log.log(
                                 "Commands/Tracking/" + command.getName() + "/ Command Running",
                                 "TRUE"));
 
@@ -103,6 +105,7 @@ public class Robot extends LoggedRobot {
                                 "Commands/Tracking/" + command.getName() + "/ Command Interrupted",
                                 "FALSE"));
     }
+}
 
     public void publishCommandsAndSubystems(Subsystems subsystems) {
         SmartDashboard.putData(CommandScheduler.getInstance());
@@ -297,9 +300,13 @@ public class Robot extends LoggedRobot {
                         subsytems.vision
                                 .getLastTimeStamp()); // trusts vision rotation less. Needs tuning
                 // increase the std devs to trust vision less
+                if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
                 Log.log("Subsystems/Vision/Null Pose", false);
+                }
             } else {
+                if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
                 Log.log("Subsystems/Vision/Null Pose", true);
+                }
             }
         }
     }
@@ -403,7 +410,9 @@ public class Robot extends LoggedRobot {
                         );
 
                 lastShotTime = currentTime;
+                if (!SubsystemConstants.disableAllLogs) {
                 Log.log("Simulation/FuelLaunched", true);
+                }
             }
         }
     }
@@ -455,7 +464,9 @@ public class Robot extends LoggedRobot {
         } else {
             // Default to blue if alliance is unknown (e.g., in simulation without alliance set)
             // Log this so we know why things might be going to the blue side.
+            if (!SubsystemConstants.disableAllLogs) {
             Log.log("System/AllianceUnknown", true);
+            }
             return true;
         }
     }

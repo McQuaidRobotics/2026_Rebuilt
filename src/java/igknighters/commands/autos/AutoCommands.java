@@ -18,6 +18,7 @@ import igknighters.Robot;
 import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.constants.FieldConstants;
+import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.log.Log;
@@ -35,8 +36,11 @@ public class AutoCommands {
         this.autoFactory = factory;
     }
 
+    
     protected void logAutoEvent(String message, String event) {
+            if (!SubsystemConstants.disableAllLogs) {
         Log.log("Robot/Commands/Autos", message + " is " + event);
+            }
     }
 
     protected Command loggedCmd(Command command) {
@@ -171,7 +175,9 @@ public class AutoCommands {
     }
 
     protected RebuiltAuto newRebuiltAuto(String name) {
+            if (!SubsystemConstants.disableAllLogs) {
         Log.log("Robot/Commands/Autos/Creation", "Creating new rebuilt auto: " + name);
+            }
         return new RebuiltAuto(autoFactory.newRoutine(name));
     }
 }

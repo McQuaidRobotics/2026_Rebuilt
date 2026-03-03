@@ -88,6 +88,8 @@ public class SpindexerSim extends Spindexer {
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
 
         // Logging
+        if (!SubsystemConstants.kIndexer.kSpindexer.disableSpindexerLogs)
+        {
         Log.log("Subsystems/Indexer/Spindexer/SimVoltage", voltage);
         Log.log("Subsystems/Indexer/Spindexer/SimSpeedRPM", currentRPM);
         Log.log("Subsystems/Indexer/Spindexer/GoalSpeedRPM", goalRPS * 60.0);
@@ -96,6 +98,7 @@ public class SpindexerSim extends Spindexer {
                 profiledPIDController.getPositionError());
         Log.log("Subsystems/Indexer/Spindexer/PIDVolts", pidOutput);
         Log.log("Subsystems/Indexer/Spindexer/FFVolts", ffOutput);
+        }
 
         // Apply to sim
         indexerSim.setInputVoltage(voltage);

@@ -133,6 +133,7 @@ public class ChainsawReal extends Chainsaw {
 
         leftMotor.setControl(dutyCycleControl.withOutput(output));
 
+            if (!SubsystemConstants.kClimber.kChainsaw.disableChainsawLogs) {
         Log.log(
                 "Subsystems/Climber/Inches",
                 armPosition.getValueAsDouble()
@@ -143,5 +144,6 @@ public class ChainsawReal extends Chainsaw {
         Log.log("Subsystems/Climber/Sensor Hit", isSensorHit());
         Log.log("Subsystems/Climber/State", state.toString());
         Log.log("Subsystems/Climber/Current", armCurrent.getValueAsDouble());
+            }
     }
 }
