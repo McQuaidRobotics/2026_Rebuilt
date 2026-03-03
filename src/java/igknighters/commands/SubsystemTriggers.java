@@ -160,9 +160,12 @@ public class SubsystemTriggers {
         Trigger passTrigger =
                 new Trigger(() -> dashboardTable.getEntry("robot/passTrigger").getBoolean(false));
 
-        passTrigger.whileTrue(
-                HigherOrderCommands.fireAtTarget(
-                        subsystems, getPoseFromString("robot/passWaypoint")));
+        passTrigger.onTrue(
+                Commands.runOnce(
+                        () -> ShootInformation.getInstance().useOperatorControlLocation(true)));
+        passTrigger.onFalse(
+                Commands.runOnce(
+                        () -> ShootInformation.getInstance().useOperatorControlLocation(false)));
         moveToTrigger.whileTrue(
                 Repulsor.moveWithRepulsor(
                         swerve, getPoseFromString("robot/moveWaypoint").toPose2d(), 1));

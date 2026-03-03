@@ -2,6 +2,9 @@ package igknighters.constants;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.Robot;
 import igknighters.util.log.Log;
@@ -14,6 +17,9 @@ import java.util.function.Supplier;
  */
 public class ShootInformation {
     private static ShootInformation instance;
+
+    private final NetworkTable dashboardTable =
+            NetworkTableInstance.getDefault().getTable("dashboard");
 
     private boolean atTarget = false;
     private boolean beingControlled = false;
@@ -32,6 +38,13 @@ public class ShootInformation {
         this.useOperatorControlLocationTrigger = new Trigger(this::isUsingOperatorControlLocation);
     }
 
+    public Pose3d getDashboardPose(String path) {
+        double x = dashboardTable.getEntry(path + "X").getDouble(0.0) * Conv.FEET_TO_METERS;
+        double y = dashboardTable.getEntry(path + "Y").getDouble(0.0) * Conv.FEET_TO_METERS;
+        double theta = dashboardTable.getEntry(path + "Theta").getDouble(0.0);
+        return new Pose3d(x, y, 0, new Rotation3d(0, 0, theta));
+    }
+
     public static ShootInformation getInstance() {
         if (instance == null) {
             instance = new ShootInformation();
@@ -39,12 +52,8 @@ public class ShootInformation {
         return instance;
     }
 
-    public void updateOperatorControlLocation(Pose3d newLocation) {
-        this.operatorControlLocation = newLocation;
-    }
-
     public Pose3d getOperatorControlLocation() {
-        return operatorControlLocation;
+        return getDashboardPose("robot/passWaypoint");
     }
 
     public Pose3d getHubTarget() {
@@ -83,7 +92,7 @@ public class ShootInformation {
 
     public Pose3d getShotLocation(Supplier<Pose2d> robotPose) {
         if (useOperatorControlLocation) {
-            return operatorControlLocation;
+            return getDashboardPose("robot/passWaypoint");
         }
         if (shouldPass(robotPose)) {
             return getPassTarget(robotPose);
