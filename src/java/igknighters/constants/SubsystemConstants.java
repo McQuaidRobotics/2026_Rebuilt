@@ -1,6 +1,8 @@
 package igknighters.constants;
 
 import com.ctre.phoenix6.CANBus;
+import igknighters.util.TunableValues;
+import igknighters.util.TunableValues.TunableBoolean;
 
 public class SubsystemConstants {
 
@@ -150,6 +152,11 @@ public class SubsystemConstants {
 
     public static class kShooter {
         public static final CANBus CANBUS = SubsystemConstants.superStructure;
+
+        public static class kAuto {
+            public static final TunableBoolean enableAutoShoot =
+                    TunableValues.getBoolean("Shooter/Auto/Enabled", true);
+        }
 
         public static class kFlywheels {
             public static final int LEADER_MOTOR_ID = 23;

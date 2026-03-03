@@ -221,6 +221,9 @@ public class ShooterCommands {
             Shooter shooter, Supplier<Pose2d> robotPose) {
         return shooter.run(
                         () -> {
+                            if (!SubsystemConstants.kShooter.kAuto.enableAutoShoot.value()) {
+                                return;
+                            }
                             Pose2d robotPose2d = robotPose.get();
                             Pose3d targetPose = getTargetPose(robotPose);
                             double velocity = getRPM(robotPose, () -> targetPose, shooter);
@@ -271,6 +274,9 @@ public class ShooterCommands {
             Shooter shooter, Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotVelocity) {
         return shooter.run(
                         () -> {
+                            if (!SubsystemConstants.kShooter.kAuto.enableAutoShoot.value()) {
+                                return;
+                            }
                             Pose2d robotPose2d = robotPose.get();
                             AbleToShootSharedState.getInstance().setBeingControlled(true);
                             Pose3d targetPose = getTargetPose(robotPose);
@@ -327,7 +333,12 @@ public class ShooterCommands {
             Supplier<ChassisSpeeds> robotVelocitySupplier) {
         return Commands.sequence(
                 Commands.runOnce(
-                        () -> AbleToShootSharedState.getInstance().setBeingControlled(true)),
+                        () -> {
+                            if (!SubsystemConstants.kShooter.kAuto.enableAutoShoot.value()) {
+                                return;
+                            }
+                            AbleToShootSharedState.getInstance().setBeingControlled(true);
+                        }),
                 SHOOT_MAX_MIN(
                         shooter,
                         robotPoseSupplier,
