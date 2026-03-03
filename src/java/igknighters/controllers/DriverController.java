@@ -10,11 +10,12 @@ import igknighters.commands.ClimberCommands;
 import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.IntakeCommands;
+import igknighters.commands.Repulsor;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
-import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
+import igknighters.constants.FieldConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.ClimberState;
@@ -122,14 +123,13 @@ public class DriverController {
             this.B.whileTrue(
                     new TeleopSwerveHeadingCmd(swerve, this, 180.0, state.kP, state.kI, state.kD));
             this.Y.whileTrue(
-                    new TeleopSwerveTargetingFutureCmd(
+                    Repulsor.moveWithRepulsor(
                             swerve,
-                            this,
-                            new Pose2d(13, 4, new Rotation2d(0)),
-                            .5,
-                            state.kP,
-                            state.kI,
-                            (state.kD)));
+                            new Pose2d(
+                                    FieldConstants.X_FIELD / 2,
+                                    FieldConstants.Y_FIELD / 2,
+                                    new Rotation2d()),
+                            1));
         } else if (debugType == DebugType.SHOOTER) {
             this.A.whileTrue(
                     ShooterCommands.targetState(shooter, 5000, 90, kHood.MIN_ANGLE_DEGREES));

@@ -1,5 +1,8 @@
 package igknighters.commands.autos;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
@@ -16,6 +19,7 @@ import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IntakeCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.constants.FieldConstants;
+import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.Subsystems;
 import java.util.function.Supplier;
 
@@ -214,7 +218,20 @@ public class AutoRoutines extends AutoCommands {
                                         HigherOrderCommands.shootTillEmpty(subsystems, 6),
                                         Commands.parallel(
                                                 IntakeCommands.goToIntake(subsystems.intake),
-                                                HigherOrderCommands.rapidFireStream(subsystems),
+                                                Commands.sequence(
+                                                        Commands.runOnce(
+                                                                () ->
+                                                                        subsystems.shooter
+                                                                                .targetState(
+                                                                                        RPM.of(
+                                                                                                2000),
+                                                                                        Degrees.of(
+                                                                                                0.0),
+                                                                                        Degrees.of(
+                                                                                                kHood.MIN_ANGLE_DEGREES))),
+                                                        Commands.waitSeconds(1.0),
+                                                        HigherOrderCommands.rapidFireStream(
+                                                                subsystems)),
                                                 moveTraj.cmd()))
                                 .withName("RIGHT NUETRAL HIPPO"));
         moveTraj.atTimeBeforeEnd(0.0).onTrue(SwerveCommands.stopDriving(swerve));
@@ -233,7 +250,20 @@ public class AutoRoutines extends AutoCommands {
                                         HigherOrderCommands.shootTillEmpty(subsystems, 6),
                                         Commands.parallel(
                                                 IntakeCommands.goToIntake(subsystems.intake),
-                                                HigherOrderCommands.rapidFireStream(subsystems),
+                                                Commands.sequence(
+                                                        Commands.runOnce(
+                                                                () ->
+                                                                        subsystems.shooter
+                                                                                .targetState(
+                                                                                        RPM.of(
+                                                                                                2000),
+                                                                                        Degrees.of(
+                                                                                                0.0),
+                                                                                        Degrees.of(
+                                                                                                kHood.MIN_ANGLE_DEGREES))),
+                                                        Commands.waitSeconds(1.0),
+                                                        HigherOrderCommands.rapidFireStream(
+                                                                subsystems)),
                                                 moveTraj.cmd()))
                                 .withName("LEFT NUETRAL HIPPO"));
         moveTraj.atTimeBeforeEnd(0.0).onTrue(SwerveCommands.stopDriving(swerve));

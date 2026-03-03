@@ -458,11 +458,12 @@ public class ShooterCommands {
         PASS,
         SHOT
     }
-    public static shotType getShotType(Supplier<Pose2d> robotPoseSupplier){
-        if (shouldPass(robotPoseSupplier)){
-                return shotType.PASS;
-        } else{
-        return shotType.SHOT;
+
+    public static shotType getShotType(Supplier<Pose2d> robotPoseSupplier) {
+        if (shouldPass(robotPoseSupplier)) {
+            return shotType.PASS;
+        } else {
+            return shotType.SHOT;
         }
     }
 
