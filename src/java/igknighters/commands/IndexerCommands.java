@@ -16,10 +16,10 @@ public class IndexerCommands {
 
     public static Command jorkIt(Indexer indexer) {
         return indexer.run(() -> indexer.goToState(IndexerState.JORK_BACKWARD))
-                .withTimeout(.01)
+                .withTimeout(.05)
                 .andThen(
                         indexer.run(() -> indexer.goToState(IndexerState.JORK_FORWARD))
-                                .withTimeout(.01))
+                                .withTimeout(.05))
                 .andThen(indexer.runOnce(() -> indexer.goToState(IndexerState.STOP)))
                 .andThen(Commands.waitSeconds(.25));
     }

@@ -6,9 +6,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
-import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
+import igknighters.constants.ShootInformation;
 import igknighters.subsystems.Subsystems;
 
 public class HigherOrderCommands {
@@ -26,9 +26,7 @@ public class HigherOrderCommands {
                                 .repeatedly()
                                 .withName("SHOOTING WHILE DOING OTHER STUFF"),
                         IndexerCommands.dispense(subsystems.indexer)
-                                .onlyIf(
-                                        AbleToShootSharedState.getInstance()
-                                                .atCommandedStateTrigger()))
+                                .onlyIf(ShootInformation.getInstance().atCommandedStateTrigger()))
                 .withName("DISPENSING")
                 .alongWith(Commands.print("DISPENSING"))
                 .withName("SHOOT NO STOP");
@@ -49,10 +47,10 @@ public class HigherOrderCommands {
                 Commands.either(
                         IndexerCommands.dispense(subsystems.indexer),
                         IndexerCommands.justStop(subsystems.indexer),
-                        AbleToShootSharedState.getInstance()
+                        ShootInformation.getInstance()
                                 .atCommandedStateTrigger()
-                                .and(AbleToShootSharedState.getInstance().beingControlledTrigger())
-                                .and(AbleToShootSharedState.getInstance().shotPosible()));
+                                .and(ShootInformation.getInstance().beingControlledTrigger())
+                                .and(ShootInformation.getInstance().shotPosible()));
 
         return Commands.parallel(shooterCommand, smartFeed.repeatedly()).withName("SMART STREAM");
     }
@@ -73,10 +71,10 @@ public class HigherOrderCommands {
                 Commands.either(
                         IndexerCommands.dispense(subsystems.indexer),
                         IndexerCommands.justStop(subsystems.indexer),
-                        AbleToShootSharedState.getInstance()
+                        ShootInformation.getInstance()
                                 .atCommandedStateTrigger()
-                                .and(AbleToShootSharedState.getInstance().beingControlledTrigger())
-                                .and(AbleToShootSharedState.getInstance().shotPosible()));
+                                .and(ShootInformation.getInstance().beingControlledTrigger())
+                                .and(ShootInformation.getInstance().shotPosible()));
 
         return Commands.runOnce(() -> DrivingSharedState.getInstance().setDetune(.5))
                 .andThen(

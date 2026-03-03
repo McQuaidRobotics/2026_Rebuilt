@@ -8,7 +8,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.commands.ShooterCommands.shotType;
-import igknighters.constants.AbleToShootSharedState;
+import igknighters.constants.ShootInformation;
 import igknighters.subsystems.shooter.flywheel.*;
 import igknighters.subsystems.shooter.hood.*;
 import igknighters.subsystems.shooter.hood.Hood;
@@ -27,7 +27,7 @@ public class Shooter extends SubsystemBase {
     public shotType currentShotType = shotType.SHOT;
     private Boolean beingControlled = false;
     private final ShooterVisualizer visualizer;
-    private AbleToShootSharedState ableToShootState = AbleToShootSharedState.getInstance();
+    private ShootInformation ableToShootState = ShootInformation.getInstance();
     private double goalRPM = 100.0;
     private double goalTurretAngleDegrees = 10.0;
     private double goalHoodAngleDegrees = 10.0;

@@ -10,9 +10,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import igknighters.Robot;
-import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.FieldConstants;
+import igknighters.constants.ShootInformation;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
@@ -125,40 +124,6 @@ public class ShooterCommands {
                 });
     }
 
-    public static Pose3d getHubTarget() {
-        return Robot.isBlue() ? FieldConstants.HUB.POSE3D_BLUE : FieldConstants.HUB.POSE3D_RED;
-    }
-
-    public static Pose3d getPassTarget(Supplier<Pose2d> robotPoSupplier) {
-        if (Robot.isBlue()) {
-            Pose2d robotPose2d = robotPoSupplier.get();
-            return robotPose2d.getY() > FieldConstants.Y_FIELD / 2
-                    ? FieldConstants.PASS.POSITION_LEFT_BLUE
-                    : FieldConstants.PASS.POSITION_RIGHT_BLUE;
-        } else {
-            Pose2d robotPose2d = robotPoSupplier.get();
-            return robotPose2d.getY() > FieldConstants.Y_FIELD / 2
-                    ? FieldConstants.PASS.POSITION_LEFT_RED
-                    : FieldConstants.PASS.POSITION_RIGHT_RED;
-        }
-    }
-
-    public static boolean shouldPass(Supplier<Pose2d> robotPoseSupplier) {
-        if (Robot.isBlue()) {
-            return robotPoseSupplier.get().getX() > FieldConstants.ALIANCE_ZONE_BLUE;
-        } else {
-            return robotPoseSupplier.get().getX() < FieldConstants.ALIANCE_ZONE_RED;
-        }
-    }
-
-    public static Pose3d getTargetPose(Supplier<Pose2d> robotPoseSupplier) {
-        if (shouldPass(robotPoseSupplier)) {
-            return getPassTarget(robotPoseSupplier);
-        } else {
-            return getHubTarget();
-        }
-    }
-
     public static double getRPM(
             Supplier<Pose2d> robotPoseSupplier,
             Supplier<Pose3d> targetPoseSupplier,
@@ -178,7 +143,7 @@ public class ShooterCommands {
             double velocity) {
         return shooter.run(
                         () -> {
-                            AbleToShootSharedState.getInstance().setBeingControlled(true);
+                            ShootInformation.getInstance().setBeingControlled(true);
                             Pose2d robotPose = robotPoseSupplier.get();
                             Pose3d targetPose = targetPoseSupplier.get();
                             ShooterState targetingData =
@@ -219,12 +184,13 @@ public class ShooterCommands {
 
     public static Command shootIChoseTargetNoLookAhead(
             Shooter shooter, Supplier<Pose2d> robotPose) {
+        ShootInformation info = ShootInformation.getInstance();
         return shooter.run(
                         () -> {
                             Pose2d robotPose2d = robotPose.get();
-                            Pose3d targetPose = getTargetPose(robotPose);
+                            Pose3d targetPose = info.getShotLocation(robotPose);
                             double velocity = getRPM(robotPose, () -> targetPose, shooter);
-                            AbleToShootSharedState.getInstance().setBeingControlled(true);
+                            info.setBeingControlled(true);
 
                             ShooterState targetingData =
                                     AimSolver.Solvers.solve_simple_no_AR_or_FutureTiming(
@@ -269,11 +235,12 @@ public class ShooterCommands {
 
     public static Command shootIChoseTargetWithLookAhead(
             Shooter shooter, Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotVelocity) {
+        ShootInformation info = ShootInformation.getInstance();
         return shooter.run(
                         () -> {
                             Pose2d robotPose2d = robotPose.get();
-                            AbleToShootSharedState.getInstance().setBeingControlled(true);
-                            Pose3d targetPose = getTargetPose(robotPose);
+                            info.setBeingControlled(true);
+                            Pose3d targetPose = info.getShotLocation(robotPose);
                             double velocity = getRPM(robotPose, () -> targetPose, shooter);
 
                             ShooterState targetingData =
@@ -326,8 +293,7 @@ public class ShooterCommands {
             Supplier<Pose2d> robotPoseSupplier,
             Supplier<ChassisSpeeds> robotVelocitySupplier) {
         return Commands.sequence(
-                Commands.runOnce(
-                        () -> AbleToShootSharedState.getInstance().setBeingControlled(true)),
+                Commands.runOnce(() -> ShootInformation.getInstance().setBeingControlled(true)),
                 SHOOT_MAX_MIN(
                         shooter,
                         robotPoseSupplier,
@@ -340,11 +306,12 @@ public class ShooterCommands {
             Shooter shooter,
             Supplier<Pose2d> robotPoseSupplier,
             Supplier<ChassisSpeeds> robotVelocitySupplier) {
+        ShootInformation info = ShootInformation.getInstance();
         return shooter.run(
                 () -> {
-                    AbleToShootSharedState.getInstance().setBeingControlled(false);
+                    info.setBeingControlled(false);
                     Pose2d robotPose2d = robotPoseSupplier.get();
-                    Pose3d targetPose = getTargetPose(robotPoseSupplier);
+                    Pose3d targetPose = info.getShotLocation(robotPoseSupplier);
                     ChassisSpeeds robotVel = robotVelocitySupplier.get();
 
                     Pose3d shooterPose =
@@ -375,10 +342,12 @@ public class ShooterCommands {
             Supplier<Pose2d> robotPose,
             Supplier<ChassisSpeeds> robotVeloSupplier,
             double maxHeightMeters) {
+        ShootInformation info = ShootInformation.getInstance();
         return shooter.run(
                 () -> {
                     Pose2d robotPose2d = robotPose.get();
-                    Pose3d targetPose = getTargetPose(robotPose);
+                    Pose3d targetPose = info.getShotLocation(robotPose);
+                    info.setBeingControlled(true);
                     ChassisSpeeds robotVel = robotVeloSupplier.get();
 
                     Pose3d shooterPose =
@@ -416,10 +385,12 @@ public class ShooterCommands {
             Supplier<ChassisSpeeds> robotVeloSupplier,
             double maxHeightMeters,
             double minHeightMeters) {
+        ShootInformation info = ShootInformation.getInstance();
         return shooter.run(
                 () -> {
                     Pose2d robotPose2d = robotPose.get();
-                    Pose3d targetPose = getTargetPose(robotPose);
+                    Pose3d targetPose = info.getShotLocation(robotPose);
+                    info.setBeingControlled(true);
                     ChassisSpeeds robotVel = robotVeloSupplier.get();
 
                     shooter.currentShotType = getShotType(robotPose);
@@ -460,7 +431,8 @@ public class ShooterCommands {
     }
 
     public static shotType getShotType(Supplier<Pose2d> robotPoseSupplier) {
-        if (shouldPass(robotPoseSupplier)) {
+        ShootInformation info = ShootInformation.getInstance();
+        if (info.shouldPass(robotPoseSupplier)) {
             return shotType.PASS;
         } else {
             return shotType.SHOT;
@@ -514,10 +486,12 @@ public class ShooterCommands {
             Supplier<Pose2d> robotPoseSupplier,
             Supplier<ChassisSpeeds> robotVelocitySupplier,
             double maxHeightMeters) {
+        ShootInformation info = ShootInformation.getInstance();
         return shooter.run(
                         () -> {
                             Pose2d robotPose = robotPoseSupplier.get();
-                            Pose3d targetPose = getTargetPose(robotPoseSupplier);
+                            Pose3d targetPose = info.getShotLocation(robotPoseSupplier);
+                            info.setBeingControlled(true);
                             ChassisSpeeds robotVel = robotVelocitySupplier.get();
 
                             // Define where the shooter is physically located on the robot

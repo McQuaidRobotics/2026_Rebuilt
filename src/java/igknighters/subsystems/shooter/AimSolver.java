@@ -17,8 +17,8 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import igknighters.FieldVisualizer;
 import igknighters.Robot;
-import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.Conv;
+import igknighters.constants.ShootInformation;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
@@ -144,7 +144,7 @@ public class AimSolver {
             if (bestRPM != 0 && bestThetaHoodDegrees != 0) {
                 canShoot(true);
                 // We pass absoluteFieldAngle so the trajectory line points at the target
-                AbleToShootSharedState.getInstance().setPossibleShot(true);
+                ShootInformation.getInstance().setPossibleShot(true);
                 publishShotTrajectory(
                         bestV,
                         Math.toRadians(90 - bestThetaHoodDegrees),
@@ -153,7 +153,7 @@ public class AimSolver {
                         targetPose);
             } else {
                 canShoot(false);
-                AbleToShootSharedState.getInstance().setPossibleShot(false);
+                ShootInformation.getInstance().setPossibleShot(false);
             }
 
             if (Robot.isBlue()) {
@@ -275,7 +275,7 @@ public class AimSolver {
             if (bestRPM != 0 && bestThetaHoodDegrees != 0) {
                 canShoot(true);
                 // We pass absoluteFieldAngle so the trajectory line points at the target
-                AbleToShootSharedState.getInstance().setPossibleShot(true);
+                ShootInformation.getInstance().setPossibleShot(true);
                 publishShotTrajectory(
                         bestV,
                         Math.toRadians(90 - bestThetaHoodDegrees),
@@ -284,7 +284,7 @@ public class AimSolver {
                         targetPose);
             } else {
                 canShoot(false);
-                AbleToShootSharedState.getInstance().setPossibleShot(false);
+                ShootInformation.getInstance().setPossibleShot(false);
             }
 
             return new ShooterState(
