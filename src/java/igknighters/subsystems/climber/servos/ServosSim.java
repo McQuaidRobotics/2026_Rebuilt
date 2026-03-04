@@ -1,5 +1,6 @@
 package igknighters.subsystems.climber.servos;
 
+import igknighters.constants.SubsystemConstants;
 import igknighters.util.log.Log;
 
 public class ServosSim extends Servos {
@@ -18,6 +19,8 @@ public class ServosSim extends Servos {
 
     @Override
     public void periodic() {
-        Log.log("Subsystems/Climber/Servos/Deployed", deployed);
+        if (!SubsystemConstants.kClimber.kChainsaw.disableChainsawLogs) {
+            Log.log("Subsystems/Climber/Servos/Deployed", deployed);
+        }
     }
 }

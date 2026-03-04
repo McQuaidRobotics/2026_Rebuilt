@@ -38,17 +38,23 @@ public class AbleToShootSharedState {
      * @param newState The new boolean state for canShoot.
      */
     public void setAtTarget(boolean newState) {
-        Log.log("STATUS/CAN SHOOT", newState);
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("STATUS/CAN SHOOT", newState);
+        }
         this.atTarget = newState;
     }
 
     public void setPossibleShot(boolean newState) {
-        Log.log("STATUS/POSSIBLE SHOT", newState);
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("STATUS/POSSIBLE SHOT", newState);
+        }
         this.possibleShot = newState;
     }
 
     public void setBeingControlled(boolean newState) {
-        Log.log("Subsystems/Shooter/BeingControlled", newState);
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("Subsystems/Shooter/BeingControlled", newState);
+        }
         this.beingControlled = newState;
     }
 
