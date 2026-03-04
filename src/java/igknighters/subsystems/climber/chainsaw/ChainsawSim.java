@@ -5,6 +5,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
+import igknighters.util.log.Log;
 
 public class ChainsawSim extends Chainsaw {
 
@@ -111,15 +112,18 @@ public class ChainsawSim extends Chainsaw {
         double currentRot = chainsawSim.getPositionMeters() * METERS_TO_ROT;
 
         // Logging
-        // Log.log("ROBOT/Subsystems/Climber/Chainsaw/SimVoltage", voltage);
-        // Log.log("ROBOT/Subsystems/Climber/Chainsaw/SimPositionRot", currentRot);
-        // Log.log(
-        //         "Subsystems/Climber/Inches",
-        //         currentRot * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES);
-        // Log.log("ROBOT/Subsystems/Climber/Is Up", isUp());
-        // Log.log("ROBOT/Subsystems/Climber/Is Middle", isMiddle());
-        // Log.log("ROBOT/Subsystems/Climber/Is Down", isDown());
-        // Log.log("ROBOT/Subsystems/Climber/State", state.toString());
+
+        if (!SubsystemConstants.kClimber.kChainsaw.disableChainsawLogs) {
+            Log.log("ROBOT/Subsystems/Climber/Chainsaw/SimVoltage", voltage);
+            Log.log("ROBOT/Subsystems/Climber/Chainsaw/SimPositionRot", currentRot);
+            Log.log(
+                    "Subsystems/Climber/Inches",
+                    currentRot * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES);
+            Log.log("ROBOT/Subsystems/Climber/Is Up", isUp());
+            Log.log("ROBOT/Subsystems/Climber/Is Middle", isMiddle());
+            Log.log("ROBOT/Subsystems/Climber/Is Down", isDown());
+            Log.log("ROBOT/Subsystems/Climber/State", state.toString());
+        }
 
         // Update sim
         chainsawSim.setInputVoltage(voltage);

@@ -199,15 +199,19 @@ public class FieldConstants {
         public static boolean isInside(Pose2d pose) {
             double x = pose.getX();
             double y = pose.getY();
-            Log.log("ROBOT/Commands/BumpProtection: x;", x);
-            Log.log("ROBOT/Commands/BumpProtection: y;", y);
+            if (!SubsystemConstants.disableAllLogs) {
+                Log.log("ROBOT/Commands/BumpProtection: x;", x);
+                Log.log("ROBOT/Commands/BumpProtection: y;", y);
+            }
 
             // Bump 1
             if (x >= BUMP_1_X_METERS - HALF_Y_FIELD_METERS
                     && x <= BUMP_1_X_METERS + HALF_Y_FIELD_METERS) {
                 if (y >= BUMP_1_Y_METERS - HALF_HEIGHT_METERS
                         && y <= BUMP_1_Y_METERS + HALF_HEIGHT_METERS) {
-                    Log.log("ROBOT/Commands/BumpProtection: inside bump 1", true);
+                    if (!SubsystemConstants.disableAllLogs) {
+                        Log.log("ROBOT/Commands/BumpProtection: inside bump 1", true);
+                    }
                     return true;
                 }
             }
@@ -217,12 +221,17 @@ public class FieldConstants {
                     && x <= BUMP_2_X_METERS + HALF_Y_FIELD_METERS) {
                 if (y >= BUMP_2_Y_METERS - HALF_HEIGHT_METERS
                         && y <= BUMP_2_Y_METERS + HALF_HEIGHT_METERS) {
-                    Log.log("ROBOT/Commands/BumpProtection: inside bump 2", true);
+                    if (!SubsystemConstants.disableAllLogs) {
+                        Log.log("ROBOT/Commands/BumpProtection: inside bump 2", true);
+                    }
                     return true;
                 }
             }
-            Log.log("ROBOT/Commands/BumpProtection: inside bump 2", false);
-            Log.log("ROBOT/Commands/BumpProtection: inside bump 1", false);
+
+            if (!SubsystemConstants.disableAllLogs) {
+                Log.log("ROBOT/Commands/BumpProtection: inside bump 2", false);
+                Log.log("ROBOT/Commands/BumpProtection: inside bump 1", false);
+            }
 
             return false;
         }

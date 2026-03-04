@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.units.measure.AngularVelocity;
+import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIntake;
 import igknighters.util.log.Log;
 
@@ -61,6 +62,9 @@ public class RollersReal extends Rollers {
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(intakeSpeed);
-        Log.log("ROBOT/Subsystems/Intake/Rollers/SpeedRPS", getSpeed());
+
+        if (!SubsystemConstants.kIntake.kRollers.disableRollersLogs) {
+            Log.log("ROBOT/Subsystems/Intake/Rollers/SpeedRPS", getSpeed());
+        }
     }
 }

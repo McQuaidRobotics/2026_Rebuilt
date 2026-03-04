@@ -9,6 +9,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.constants.DrivingSharedState;
+import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
@@ -53,10 +54,12 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
 
         double rotationRate = thetaController.calculate(currentAngle, targetAngle);
 
-        Log.log("ROBOT/Commands/AutoRotateOnBump/Active", true);
-        Log.log("ROBOT/Commands/AutoRotateOnBump/CurrentAngle", currentAngle);
-        Log.log("ROBOT/Commands/AutoRotateOnBump/TargetAngle", targetAngle);
-        Log.log("ROBOT/Commands/AutoRotateOnBump/RotationRate", rotationRate);
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("ROBOT/Commands/AutoRotateOnBump/Active", true);
+            Log.log("ROBOT/Commands/AutoRotateOnBump/CurrentAngle", currentAngle);
+            Log.log("ROBOT/Commands/AutoRotateOnBump/TargetAngle", targetAngle);
+            Log.log("ROBOT/Commands/AutoRotateOnBump/RotationRate", rotationRate);
+        }
 
         // Force a smaller speed on the bump as requested
         double bumpSpeedMultiplier = 0.5;
@@ -75,6 +78,8 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
-        Log.log("ROBOT/Commands/AutoRotateOnBump/Active", false);
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("ROBOT/Commands/AutoRotateOnBump/Active", false);
+        }
     }
 }

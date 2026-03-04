@@ -2,6 +2,7 @@ package igknighters.subsystems.LimeLightVision.Cameras;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.LimeLightVision.Helpers.LimelightHelpers;
 import igknighters.util.log.Log;
 import java.util.ArrayList;
@@ -71,9 +72,23 @@ public class LimeLightVisionReal extends LimeLights {
                 }
 
                 // Optional: log rotation source
+                if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+                    Log.log(
+                            "Subsystems/Vision/LimeLightVision/Source_" + cameraName,
+                            (mt1Estimate.tagCount >= 2) ? "VISION_CORRECTION" : "ROBOT_GYRO_ONLY");
+                }
+            }
+
+            double timestamp = !poses.isEmpty() ? timestampSum / poses.size() : 0.0;
+            lastTimeStamp = timestamp;
+
+            if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
                 Log.log(
-                        "Subsystems/Vision/LimeLightVision/Source_" + cameraName,
-                        (mt1Estimate.tagCount >= 2) ? "VISION_CORRECTION" : "ROBOT_GYRO_ONLY");
+                        "ROBOT/Subsystems/Vision/LimeLightVision/TimeStampOfMeasurements",
+                        timestamp);
+                Log.log(
+                        "ROBOT/Subsystems/Vision/LimeLightVision/NumberOfTagsSeen",
+                        visibleTagIds.size());
             }
         }
 
@@ -99,7 +114,9 @@ public class LimeLightVisionReal extends LimeLights {
     /** Averages a list of Pose2d objects (translation + rotation). */
     public Pose2d averagePose2ds(List<Pose2d> poses) {
         if (poses.isEmpty()) {
-            Log.log("ROBOT/Subsystems/Vision/LimeLightVision/TagsSeen", "NO TAGS SEEN");
+            if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+                Log.log("ROBOT/Subsystems/Vision/LimeLightVision/TagsSeen", "NO TAGS SEEN");
+            }
             return null;
         }
 
@@ -120,11 +137,15 @@ public class LimeLightVisionReal extends LimeLights {
         double avgY = ySum / count;
         Rotation2d avgRot = new Rotation2d(Math.atan2(sinSum / count, cosSum / count));
 
-        Log.log("ROBOT/Subsystems/Vision/LimeLightVision/RotationList", rotations.toString());
-        Log.log("ROBOT/Subsystems/Vision/LimeLightVision/Rotation", avgRot.getDegrees());
+        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+            Log.log("ROBOT/Subsystems/Vision/LimeLightVision/RotationList", rotations.toString());
+            Log.log("ROBOT/Subsystems/Vision/LimeLightVision/Rotation", avgRot.getDegrees());
+        }
 
         Pose2d averaged = new Pose2d(avgX, avgY, avgRot);
-        Log.log("ROBOT/Subsystems/Vision/LimeLightVision/TagsSeen", averaged);
+        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+            Log.log("ROBOT/Subsystems/Vision/LimeLightVision/TagsSeen", averaged);
+        }
 
         return averaged;
     }

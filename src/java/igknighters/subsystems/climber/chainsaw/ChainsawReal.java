@@ -133,15 +133,17 @@ public class ChainsawReal extends Chainsaw {
 
         leftMotor.setControl(dutyCycleControl.withOutput(output));
 
-        Log.log(
-                "Subsystems/Climber/Inches",
-                armPosition.getValueAsDouble()
-                        * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES);
-        Log.log("ROBOT/Subsystems/Climber/Is Up", isUp());
-        Log.log("ROBOT/Subsystems/Climber/Is Middle", isMiddle());
-        Log.log("ROBOT/Subsystems/Climber/Is Down", isDown());
-        Log.log("ROBOT/Subsystems/Climber/Sensor Hit", isSensorHit());
-        Log.log("ROBOT/Subsystems/Climber/State", state.toString());
-        Log.log("ROBOT/Subsystems/Climber/Current", armCurrent.getValueAsDouble());
+        if (!SubsystemConstants.kClimber.kChainsaw.disableChainsawLogs) {
+            Log.log(
+                    "Subsystems/Climber/Inches",
+                    armPosition.getValueAsDouble()
+                            * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES);
+            Log.log("ROBOT/Subsystems/Climber/Is Up", isUp());
+            Log.log("ROBOT/Subsystems/Climber/Is Middle", isMiddle());
+            Log.log("ROBOT/Subsystems/Climber/Is Down", isDown());
+            Log.log("ROBOT/Subsystems/Climber/Sensor Hit", isSensorHit());
+            Log.log("ROBOT/Subsystems/Climber/State", state.toString());
+            Log.log("ROBOT/Subsystems/Climber/Current", armCurrent.getValueAsDouble());
+        }
     }
 }

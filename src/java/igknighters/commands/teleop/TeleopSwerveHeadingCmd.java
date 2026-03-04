@@ -8,6 +8,7 @@ import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
+import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
@@ -42,13 +43,15 @@ public class TeleopSwerveHeadingCmd extends TeleopSwerveBaseCmd {
         double omega =
                 rotationController.calculate(
                         swerve.getState().Pose.getRotation().getDegrees(), heading);
-        Log.log(
-                "Robot/Commands/Swerve/TeleopSwerveHeadingCmd/Swerve Heading: ",
-                (swerve.getState().Pose.getRotation().getDegrees()));
-        Log.log(
-                "Robot/Commands/Swerve/TeleopSwerveHeadingCmd/error: ",
-                (swerve.getState().Pose.getRotation().getDegrees() - heading));
-        Log.log("ROBOT/Robot/Commands/Swerve/TeleopSwerveHeadingCmd/PID CALCULATION: ", omega);
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log(
+                    "Robot/Commands/Swerve/TeleopSwerveHeadingCmd/Swerve Heading: ",
+                    (swerve.getState().Pose.getRotation().getDegrees()));
+            Log.log(
+                    "Robot/Commands/Swerve/TeleopSwerveHeadingCmd/error: ",
+                    (swerve.getState().Pose.getRotation().getDegrees() - heading));
+            Log.log("ROBOT/Robot/Commands/Swerve/TeleopSwerveHeadingCmd/PID CALCULATION: ", omega);
+        }
         Translation2d vt = translationStick();
 
         double allianceFlipper = 1.0;

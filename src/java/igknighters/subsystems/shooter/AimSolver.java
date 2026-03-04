@@ -22,12 +22,144 @@ import igknighters.constants.ShootInformation;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
+import igknighters.util.LerpTable;
+import igknighters.util.LerpTable.LerpTableEntry;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import igknighters.util.log.Log;
 import org.littletonrobotics.junction.Logger;
 
 public class AimSolver {
+
+    public static class LERP_SOLVERS {
+        static enum SHOT_TYPE {
+            HUB,
+            PASS
+        }
+
+        // distance to RPM mapping
+        static LerpTable hubRPMTable =
+                new LerpTable(
+                        new LerpTableEntry[] {
+                            new LerpTableEntry(1.0, 2800.0),
+                            new LerpTableEntry(3.0, 3000.0),
+                            new LerpTableEntry(5.0, 4000.0),
+                            new LerpTableEntry(10.0, 4500.0),
+                            new LerpTableEntry(15.0, 5500.0),
+                            new LerpTableEntry(20.0, 6000.0),
+                        });
+        // distance to hood angle mapping
+        static LerpTable hubHoodTable =
+                new LerpTable(
+                        new LerpTableEntry[] {
+                            new LerpTableEntry(1.0, 10.0),
+                            new LerpTableEntry(3.0, 20.0),
+                            new LerpTableEntry(5.0, 30.0),
+                            new LerpTableEntry(10.0, 40.0),
+                            new LerpTableEntry(15.0, 50.0),
+                            new LerpTableEntry(20.0, 60.0),
+                        });
+
+        static LerpTable hubTofTable =
+                new LerpTable(
+                        new LerpTableEntry[] {
+                            new LerpTableEntry(1.0, 1.0), new LerpTableEntry(2.0, 2.0)
+                        });
+
+        static LerpTable passRPMTable =
+                new LerpTable(
+                        new LerpTableEntry[] {
+                            new LerpTableEntry(1.0, 2800.0),
+                            new LerpTableEntry(3.0, 3000.0),
+                            new LerpTableEntry(5.0, 4000.0),
+                            new LerpTableEntry(10.0, 4500.0),
+                            new LerpTableEntry(15.0, 5500.0),
+                            new LerpTableEntry(20.0, 6000.0),
+                        });
+        // distance to hood angle mapping
+        static LerpTable passHoodTable =
+                new LerpTable(
+                        new LerpTableEntry[] {
+                            new LerpTableEntry(1.0, 10.0),
+                            new LerpTableEntry(3.0, 20.0),
+                            new LerpTableEntry(5.0, 30.0),
+                            new LerpTableEntry(10.0, 40.0),
+                            new LerpTableEntry(15.0, 50.0),
+                            new LerpTableEntry(20.0, 60.0),
+                        });
+
+        static LerpTable passTofTable =
+                new LerpTable(
+                        new LerpTableEntry[] {
+                            new LerpTableEntry(1.0, 1.0), new LerpTableEntry(2.0, 2.0)
+                        });
+
+        public static ShooterState solve(
+                Pose3d shooterPose, Pose3d targetPose, ChassisSpeeds speeds, SHOT_TYPE shotType) {
+            double sx = shooterPose.getX();
+            double sy = shooterPose.getY();
+
+            double tx = targetPose.getX();
+            double ty = targetPose.getY();
+
+            // CRITICAL: These MUST be field-relative speeds, not robot-relative!
+            double vx = speeds.vxMetersPerSecond;
+            double vy = speeds.vyMetersPerSecond;
+
+            // 1. Get initial distance
+            double initialDistance = Math.hypot(tx - sx, ty - sy);
+
+            double px = tx;
+            double py = ty;
+            double predictedDistance = initialDistance;
+
+            // 2. Iterate to find the true Virtual Target
+            // t changes based on distance but at some point it will start to become 0
+            for (int i = 0; i < 3; i++) {
+                double t;
+                if (shotType == SHOT_TYPE.HUB) {
+                    t = hubTofTable.lerp(predictedDistance);
+                } else {
+                    t = passTofTable.lerp(predictedDistance);
+                }
+
+                // SUBTRACT velocity to shift the target in the opposite direction of movement
+                px = tx - (vx * t);
+                py = ty - (vy * t);
+
+                // Recalculate distance to the new virtual target
+                predictedDistance = Math.hypot(px - sx, py - sy);
+            }
+
+            // 3. Find delta to Virtual Target (Destination - Start)
+            double dx = px - sx;
+            double dy = py - sy;
+
+            // 4. Calculate Absolute Angle using atan2
+            double absoluteFieldAngle = Math.atan2(dy, dx);
+            double robotTheta = shooterPose.getRotation().getZ();
+
+            // Wrap the angle safely using atan2(sin, cos) so the turret takes the shortest path
+            double turretTheta =
+                    Math.atan2(
+                            Math.sin(absoluteFieldAngle - robotTheta),
+                            Math.cos(absoluteFieldAngle - robotTheta));
+
+            // 5. Get hardware setpoints using the fully-calculated Virtual Distance
+            double predictedRPM;
+            double predictedHoodAngle;
+            if (shotType == SHOT_TYPE.HUB) {
+                predictedRPM = hubRPMTable.lerp(predictedDistance);
+                predictedHoodAngle = hubHoodTable.lerp(predictedDistance);
+            } else {
+                predictedRPM = passRPMTable.lerp(predictedDistance);
+                predictedHoodAngle = passHoodTable.lerp(predictedDistance);
+            }
+
+            return new ShooterState(
+                    RPM.of(predictedRPM), Radians.of(-turretTheta), Degrees.of(predictedHoodAngle));
+        }
+    }
 
     public static class Solvers {
         static Mechanism2d canSHOOTMECH = new Mechanism2d(20, 20);
@@ -342,9 +474,11 @@ public class AimSolver {
 
             if (inside < 0) {
                 // Shot is physically impossible at this RPM
-                Log.log(
-                        "LOGGING/Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM",
-                        currentRPM);
+                if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+                    Log.log(
+                            "Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM",
+                            currentRPM);
+                }
                 canShoot(false);
                 Logger.recordOutput(
                         "Shooter/ShotTrajectory",
@@ -365,13 +499,18 @@ public class AimSolver {
                                     / (G * d)); // this is the ball launch angle turretTheta is 90 -
             // theta if theta in degs
             double thetaHigh = Math.atan((v * v + root) / (G * d));
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Theta Low (deg)", Math.toDegrees(thetaLow));
-            Log.log(
-                    "LOGGING/Subsystems/Shooter/Aiming/Theta High (deg)",
-                    Math.toDegrees(thetaHigh));
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Distance to Target (m)", d);
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Height to Target (m)", h);
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Launch Velocity", v);
+
+            if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+                Log.log(
+                        "ROBOT/Subsystems/Shooter/Aiming/Theta Low (deg)",
+                        Math.toDegrees(thetaLow));
+                Log.log(
+                        "ROBOT/Subsystems/Shooter/Aiming/Theta High (deg)",
+                        Math.toDegrees(thetaHigh));
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Distance to Target (m)", d);
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Height to Target (m)", h);
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Launch Velocity", v);
+            }
 
             // You want the HIGH arc
             double hoodAngle = Math.max(thetaLow, thetaHigh);
@@ -463,18 +602,22 @@ public class AimSolver {
             // -----------------------------
             double inside = v * v * v * v - G * (G * d * d + 2 * h * v * v);
 
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Distance", d);
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Height", h);
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Robot Velocity Projection", vRobotProj);
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Launch Velocity", v);
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/RPM", currentRPM);
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Ballistic Discriminant", inside);
+            if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Distance", d);
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Height", h);
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Robot Velocity Projection", vRobotProj);
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Launch Velocity", v);
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/RPM", currentRPM);
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Ballistic Discriminant", inside);
+            }
 
             if (inside < 0) {
-                Log.log(
-                        "LOGGING/Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM",
-                        currentRPM);
+                if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+                    Log.log(
+                            "Subsystems/Shooter/Aiming/SHOT IS NOT POSSIBLE AT THIS RPM",
+                            currentRPM);
+                }
                 canShoot(false);
                 Logger.recordOutput(
                         "Shooter/ShotTrajectory",
@@ -484,22 +627,28 @@ public class AimSolver {
             }
             canShoot(true);
 
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/SHOT IS POSSIBLE AT THIS RPM", currentRPM);
+            if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/SHOT IS POSSIBLE AT THIS RPM", currentRPM);
+            }
 
             double root = Math.sqrt(inside);
 
             double thetaLow = Math.atan((v * v - root) / (G * d));
             double thetaHigh = Math.atan((v * v + root) / (G * d));
 
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Theta Low", thetaLow);
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Theta High", thetaHigh);
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Predicted Turret Angle", turretAngle);
+            if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Theta Low", thetaLow);
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Theta High", thetaHigh);
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Predicted Turret Angle", turretAngle);
+            }
             // High arc
             double hoodAngle = Math.max(thetaLow, thetaHigh);
 
             // Convert to your mechanical hood reference
             double hoodSetpoint = Math.PI / 2 - hoodAngle;
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Predicted Hood Angle", hoodSetpoint);
+            if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Predicted Hood Angle", hoodSetpoint);
+            }
 
             // Pass the predicted pose so the trajectory starts from where the robot WILL be
             publishShotTrajectory(
@@ -579,14 +728,16 @@ public class AimSolver {
             boolean possible = false;
             double v_eff = 0.0;
 
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Distance", d);
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Height", h);
-            Log.log(
-                    "LOGGING/Subsystems/Shooter/Aiming/TurretAngle",
-                    turretAngle * Conv.RADIANS_TO_DEGREES);
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Robot Velocity Lateral", vRobotLateral);
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Robot Velocity Radial", vRobotRadial);
-            Log.log("ROBOT/Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
+            if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Distance", d);
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Height", h);
+                Log.log(
+                        "Subsystems/Shooter/Aiming/TurretAngle",
+                        turretAngle * Conv.RADIANS_TO_DEGREES);
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Robot Velocity Lateral", vRobotLateral);
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Robot Velocity Radial", vRobotRadial);
+                Log.log("ROBOT/Subsystems/Shooter/Aiming/Flywheel Velocity", vFlywheel);
+            }
 
             for (int i = 0; i < 8; i++) {
                 double v_h = vFlywheel * Math.cos(currentGuessTheta) + vRobotRadial;
@@ -617,9 +768,12 @@ public class AimSolver {
 
             if (hoodSetpoint < kHood.MIN_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS
                     || hoodSetpoint > kHood.MAX_ANGLE_DEGREES * Conv.DEGREES_TO_RADIANS) {
-                Log.log(
-                        "Subsystems/Shooter/Aiming/Calculated hood angle out of bounds",
-                        Math.toDegrees(hoodSetpoint));
+
+                if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+                    Log.log(
+                            "Subsystems/Shooter/Aiming/Calculated hood angle out of bounds",
+                            Math.toDegrees(hoodSetpoint));
+                }
                 return new ShooterState(
                         RPM.of(0.0), Radians.of(turretAngle), Degrees.of(kHood.MIN_ANGLE_DEGREES));
             }
