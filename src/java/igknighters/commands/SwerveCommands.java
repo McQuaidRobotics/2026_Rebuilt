@@ -6,11 +6,13 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import igknighters.FieldVisualizer;
 import igknighters.Robot;
 import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.swerve.Swerve;
@@ -69,18 +71,23 @@ public class SwerveCommands {
             double angleToleranceRadians) {
         return () -> {
             Pose2d currentPose = swerve.getState().Pose;
+            if (!SubsystemConstants.disableAllLogs) {
+                FieldVisualizer.getInstance().updateDrivingTarget(targetPose);
+            }
 
             // 1. Calculate linear distance (Hypotenuse)
             double positionError =
                     currentPose.getTranslation().getDistance(targetPose.getTranslation());
 
             // 2. Calculate angular difference
-            double angleError =
-                    Math.atan2(
-                            Math.sin(currentPose.getRotation().getRadians())
-                                    - Math.sin(targetPose.getRotation().getRadians()),
-                            Math.cos(currentPose.getRotation().getRadians())
-                                    - Math.cos(targetPose.getRotation().getRadians()));
+            double currentHeading = currentPose.getRotation().getRadians();
+            double targetHeading = targetPose.getRotation().getRadians();
+
+            // Calculate raw error (Target - Current is the standard way to calculate error)
+            double rawError = targetHeading - currentHeading;
+
+            // Wrap the error to be within -PI to PI
+            double angleError = Math.atan2(Math.sin(rawError), Math.cos(rawError));
 
             boolean isAt =
                     positionError <= positionToleranceMeters && angleError <= angleToleranceRadians;
@@ -95,6 +102,7 @@ public class SwerveCommands {
         };
     }
 
+    @SuppressWarnings("resource")
     public static Command moveToSimple(Swerve swerve, Pose2d targetPose) {
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
@@ -103,28 +111,23 @@ public class SwerveCommands {
                         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                         .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
         final PIDController xController =
-                new PIDController(0.5, 0.2, 0.0); // Adjust gains as necessary
+                new PIDController(1, 0.2, 0.0); // Adjust gains as necessary
         xController.setTolerance(0.0);
-        final PIDController yController = new PIDController(0.5, 0.02, 0.0);
+        final PIDController yController = new PIDController(2, 0.02, 0.0);
         yController.setTolerance(0.0);
-        final PIDController thetaController = new PIDController(0.2, 0.01, 0.0);
+        final PIDController thetaController = new PIDController(1, 0.01, 0.0);
         thetaController.setTolerance(0.0);
-        thetaController.enableContinuousInput(0, 2 * Math.PI);
+        thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
         return swerve.run(
                 () -> {
-                    // System.out.println(
-                    //         "STARTING AUTO ALIGNMENT TO POSE: X: "
-                    //                 + targetPose.getX()
-                    //                 + " Y: "
-                    //                 + targetPose.getY());
                     Pose2d currentPose = swerve.getState().Pose;
                     final double vx = xController.calculate(currentPose.getX(), targetPose.getX());
                     final double vy = yController.calculate(currentPose.getY(), targetPose.getY());
                     final double omega =
                             thetaController.calculate(
-                                    currentPose.getRotation().getRadians(),
-                                    targetPose.getRotation().getRadians());
+                                    MathUtil.angleModulus(currentPose.getRotation().getRadians()),
+                                    MathUtil.angleModulus(targetPose.getRotation().getRadians()));
                     if (!SubsystemConstants.disableAllLogs) {
                         Log.log("ROBOT/Commands/Swerve/MoveToSimple/VX", vx);
                         Log.log("ROBOT/Commands/Swerve/MoveToSimple/VY", vy);

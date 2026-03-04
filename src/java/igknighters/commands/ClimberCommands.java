@@ -49,7 +49,6 @@ public class ClimberCommands {
      * @return A command that goes through the unclimb sequence: Pull Up -> Latch On -> Climb Prep
      *     -> Stow. Ends when climber reaches state of climb prep
      */
-    
 
     /**
      * Chainsaw up until the climber is up, then stops the climber

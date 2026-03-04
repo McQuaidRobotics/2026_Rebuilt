@@ -2,14 +2,12 @@ package igknighters.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
 import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.climber.Climber;
 import igknighters.subsystems.climber.ClimberState;
 
 public class HigherOrderCommands {
@@ -125,6 +123,13 @@ public class HigherOrderCommands {
                 IntakeCommands.goToIntake(subsystems.intake));
     }
 
+    public static Command unClimbCommand(Subsystems subsystems) {
+        return Commands.sequence(
+                ClimberCommands.goToState(subsystems.climber, ClimberState.LATCH_ON),
+                Repulsor.moveWithRepulsor(subsystems.swerve, getClimbStartPose()),
+                ClimberCommands.goToState(subsystems.climber, ClimberState.STOW));
+    }
+
     public static Command prepToClimbFirstRung(Subsystems subsystems) {
         return Commands.defer(
                         () -> {
@@ -133,19 +138,48 @@ public class HigherOrderCommands {
                             return Commands.parallel(
                                     IntakeCommands.goToStow(subsystems.intake),
                                     Commands.sequence(
-                                        Commands.parallel(
-                                            ClimberCommands.holdAtState(subsystems.climber, ClimberState.LATCH_ON),
-                                            Repulsor.moveWithRepulsor(subsystems.swerve, startPose)
-                                        ).until(SwerveCommands.isAt(subsystems.swerve, startPose, .1, .1)),
-                                        Commands.parallel(
-                                            ClimberCommands.holdAtState(subsystems.climber, ClimberState.PULL_UP),
-                                            Repulsor.moveWithRepulsor(subsystems.swerve, endPose)
-                                        ).until(SwerveCommands.isAt(subsystems.swerve, endPose, .1, .1))
-
-                                        
-                                    )
-                            );
-
+                                            Commands.parallel(
+                                                            ClimberCommands.holdAtState(
+                                                                    subsystems.climber,
+                                                                    ClimberState.LATCH_ON),
+                                                            Repulsor.moveWithRepulsor(
+                                                                    subsystems.swerve, startPose))
+                                                    .until(
+                                                            SwerveCommands.isAt(
+                                                                    subsystems.swerve,
+                                                                    startPose,
+                                                                    3,
+                                                                    2)),
+                                            Commands.parallel(
+                                                            ClimberCommands.holdAtState(
+                                                                    subsystems.climber,
+                                                                    ClimberState.LATCH_ON),
+                                                            SwerveCommands.moveToSimple(
+                                                                    subsystems.swerve, startPose))
+                                                    .until(
+                                                            SwerveCommands.isAt(
+                                                                    subsystems.swerve,
+                                                                    startPose,
+                                                                    .1,
+                                                                    .1)),
+                                            Commands.parallel(
+                                                            ClimberCommands.holdAtState(
+                                                                    subsystems.climber,
+                                                                    ClimberState.LATCH_ON),
+                                                            SwerveCommands.moveToSimple(
+                                                                    subsystems.swerve, endPose))
+                                                    .until(
+                                                            () ->
+                                                                    SwerveCommands.isAt(
+                                                                                            subsystems
+                                                                                                    .swerve,
+                                                                                            endPose,
+                                                                                            .1,
+                                                                                            .1)
+                                                                                    .getAsBoolean()
+                                                                            || subsystems.climber
+                                                                                    .isSensorHit()),
+                                            SwerveCommands.stopDriving(subsystems.swerve)));
                         },
                         java.util.Set.of(subsystems.swerve, subsystems.climber))
                 .withName("Moving to Climber and raising to max height");

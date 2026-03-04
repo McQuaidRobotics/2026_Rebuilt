@@ -250,6 +250,7 @@ public class Repulsor {
 
     public static Command moveWithRepulsor(Swerve swerve, Pose2d targetPose) {
         ArrayList<obstacle> obstacles = FieldConstants.OBSTACLES.ALL_OBSTACLES;
+        // FieldVisualizer.getInstance().updateDrivingTarget(targetPose);
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
                         .withDeadband(knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.05)
