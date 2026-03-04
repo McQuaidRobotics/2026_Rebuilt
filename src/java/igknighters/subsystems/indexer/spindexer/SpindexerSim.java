@@ -89,14 +89,14 @@ public class SpindexerSim extends Spindexer {
 
         // Logging
         if (!SubsystemConstants.kIndexer.kSpindexer.disableSpindexerLogs) {
-            Log.log("Subsystems/Indexer/Spindexer/SimVoltage", voltage);
-            Log.log("Subsystems/Indexer/Spindexer/SimSpeedRPM", currentRPM);
-            Log.log("Subsystems/Indexer/Spindexer/GoalSpeedRPM", goalRPS * 60.0);
+            Log.log("ROBOT/Subsystems/Indexer/Spindexer/SimVoltage", voltage);
+            Log.log("ROBOT/Subsystems/Indexer/Spindexer/SimSpeedRPM", currentRPM);
+            Log.log("ROBOT/Subsystems/Indexer/Spindexer/GoalSpeedRPM", goalRPS * 60.0);
             Log.log(
                     "Subsystems/Indexer/Spindexer/PIDOutputRPM",
                     profiledPIDController.getPositionError());
-            Log.log("Subsystems/Indexer/Spindexer/PIDVolts", pidOutput);
-            Log.log("Subsystems/Indexer/Spindexer/FFVolts", ffOutput);
+            Log.log("ROBOT/Subsystems/Indexer/Spindexer/PIDVolts", pidOutput);
+            Log.log("ROBOT/Subsystems/Indexer/Spindexer/FFVolts", ffOutput);
         }
 
         // Apply to sim

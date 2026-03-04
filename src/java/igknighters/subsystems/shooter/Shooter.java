@@ -73,16 +73,16 @@ public class Shooter extends SubsystemBase {
     private void goToTurretAngle(Angle angle) {
         beingControlled = true;
         if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
-            Log.log("Subsystems/Shooter/TARGETING", angle.in(Degrees));
+            Log.log("ROBOT/Subsystems/Shooter/TARGETING", angle.in(Degrees));
         }
         turret.goToAngleDegrees(angle);
     }
 
     public void targetState(AngularVelocity velo, Angle turretAngle, Angle hoodAngle) {
         if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
-            Log.log("Subsystems/Shooter/TARGETING/RPM", velo.in(RPM));
-            Log.log("Subsystems/Shooter/TARGETING/ANGLE", turretAngle.in(Degrees));
-            Log.log("Subsystems/Shooter/TARGETING/HoodAngle", hoodAngle.in(Degrees));
+            Log.log("ROBOT/Subsystems/Shooter/TARGETING/RPM", velo.in(RPM));
+            Log.log("ROBOT/Subsystems/Shooter/TARGETING/ANGLE", turretAngle.in(Degrees));
+            Log.log("ROBOT/Subsystems/Shooter/TARGETING/HoodAngle", hoodAngle.in(Degrees));
         }
         beingControlled = true;
         targetSpeed(velo);
@@ -105,16 +105,16 @@ public class Shooter extends SubsystemBase {
         boolean atHoodAngle =
                 Math.abs(hood.getAngleDegrees() - goalHoodAngleDegrees) < toleranceHoodDegrees;
         if (!SubsystemConstants.kIndexer.kExitRollers.disableExitRollersLogs) {
-            Log.log("Subsystems/Shooter/AT TARGET/AT SPEED", atSpeed);
-            Log.log("Subsystems/Shooter/AT TARGET/AT TURRET ANGLE", atTurretAngle);
-            Log.log("Subsystems/Shooter/AT TARGET/AT HOOD ANGLE", atHoodAngle);
+            Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT SPEED", atSpeed);
+            Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT TURRET ANGLE", atTurretAngle);
+            Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT HOOD ANGLE", atHoodAngle);
         }
         return atSpeed && atTurretAngle && atHoodAngle;
     }
 
     public void setTurretPosition(Angle angle) {
         if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
-            Log.log("Subsystems/Shooter/SETSTATE/ANGLE", angle.in(Degrees));
+            Log.log("ROBOT/Subsystems/Shooter/SETSTATE/ANGLE", angle.in(Degrees));
         }
         turret.setAngle(angle);
     }
@@ -137,7 +137,7 @@ public class Shooter extends SubsystemBase {
 
     public void setHoodAngleDegrees(double angleDegrees) {
         if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
-            Log.log("Subsystems/Shooter/SETSTATE/HoodAngle", angleDegrees);
+            Log.log("ROBOT/Subsystems/Shooter/SETSTATE/HoodAngle", angleDegrees);
         }
         beingControlled = true;
         hood.setAngle(angleDegrees);
@@ -150,7 +150,7 @@ public class Shooter extends SubsystemBase {
         hood.periodic();
 
         if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
-            Log.log("Subsystems/Shooter/BEING CONTROLLED", beingControlled);
+            Log.log("ROBOT/Subsystems/Shooter/BEING CONTROLLED", beingControlled);
         }
         if (!Robot.isReal()) {
             visualizer.update(getCurrentState(), goalRPM, goalHoodAngleDegrees);

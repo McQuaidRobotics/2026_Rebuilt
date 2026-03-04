@@ -55,10 +55,10 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
         double rotationRate = thetaController.calculate(currentAngle, targetAngle);
 
         if (!SubsystemConstants.disableAllLogs) {
-            Log.log("Commands/AutoRotateOnBump/Active", true);
-            Log.log("Commands/AutoRotateOnBump/CurrentAngle", currentAngle);
-            Log.log("Commands/AutoRotateOnBump/TargetAngle", targetAngle);
-            Log.log("Commands/AutoRotateOnBump/RotationRate", rotationRate);
+            Log.log("ROBOT/Commands/AutoRotateOnBump/Active", true);
+            Log.log("ROBOT/Commands/AutoRotateOnBump/CurrentAngle", currentAngle);
+            Log.log("ROBOT/Commands/AutoRotateOnBump/TargetAngle", targetAngle);
+            Log.log("ROBOT/Commands/AutoRotateOnBump/RotationRate", rotationRate);
         }
 
         // Force a smaller speed on the bump as requested
@@ -79,7 +79,7 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
     public void end(boolean interrupted) {
         super.end(interrupted);
         if (!SubsystemConstants.disableAllLogs) {
-            Log.log("Commands/AutoRotateOnBump/Active", false);
+            Log.log("ROBOT/Commands/AutoRotateOnBump/Active", false);
         }
     }
 }

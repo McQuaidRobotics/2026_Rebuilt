@@ -76,7 +76,7 @@ public class SpindexerReal extends Spindexer {
     public void goToRPM(double RPM) {
 
         if (!SubsystemConstants.kIndexer.kSpindexer.disableSpindexerLogs) {
-            Log.log("Subsystems/Indexer/Spindexer/setSpeed", RPM);
+            Log.log("ROBOT/Subsystems/Indexer/Spindexer/setSpeed", RPM);
             spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
             spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
         }
@@ -100,8 +100,12 @@ public class SpindexerReal extends Spindexer {
             Log.log(
                     "Subsystems/Indexer/Spindexer/velocity",
                     spindexerVelocity.getValueAsDouble() * 60.0);
-            Log.log("Subsystems/Indexer/Spindexer/current", spindexerCurrent.getValueAsDouble());
-            Log.log("Subsystems/Indexer/Spindexer/voltage", spindexerVoltage.getValueAsDouble());
+            Log.log(
+                    "ROBOT/Subsystems/Indexer/Spindexer/current",
+                    spindexerCurrent.getValueAsDouble());
+            Log.log(
+                    "ROBOT/Subsystems/Indexer/Spindexer/voltage",
+                    spindexerVoltage.getValueAsDouble());
             Log.log(
                     "Subsystems/Indexer/Spindexer/temperature",
                     spindexerTemperature.getValueAsDouble());
