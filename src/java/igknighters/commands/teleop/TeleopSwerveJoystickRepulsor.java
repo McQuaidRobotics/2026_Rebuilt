@@ -10,11 +10,14 @@ import igknighters.Robot;
 import igknighters.commands.Repulsor;
 import igknighters.commands.Repulsor.obstacle;
 import igknighters.constants.FieldConstants;
+import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.ControllerConstants;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
+import igknighters.util.log.Log;
+
 import java.util.ArrayList;
 import java.util.function.DoubleSupplier;
 import monologue.ProceduralStructGenerator;
@@ -80,17 +83,23 @@ public class TeleopSwerveJoystickRepulsor extends Command {
         if (YRepulse != 0) {
             repulseProcessedY += YRepulse;
         }
-        DogLog.log("Commands/repulsor/Teleop/TeleopXRepulse", XRepulse);
-        DogLog.log("Commands/repulsor/Teleop/XForce", repulseProcessedX);
-        DogLog.log("Commands/repulsor/Teleop/TeleopYRepulse", YRepulse);
-        DogLog.log("Commands/repulsor/Teleop/YForce", repulseProcessedY);
+        if (!SubsystemConstants.disableAllLogs) {
+        Log.log("Commands/repulsor/Teleop/TeleopXRepulse", XRepulse);
+        Log.log("Commands/repulsor/Teleop/XForce", repulseProcessedX);
+        Log.log("Commands/repulsor/Teleop/TeleopYRepulse", YRepulse);
+        Log.log("Commands/repulsor/Teleop/YForce", repulseProcessedY);
+        }
         if (Robot.isBlue()) {
-            DogLog.log("TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
+        }
             return new Translation2d(-repulseProcessedY, repulseProcessedX);
         } else {
-            DogLog.log("TeleopSwerveBaseCmd", "Red Alliance - Inversion");
-            return new Translation2d(repulseProcessedY, -repulseProcessedX);
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("TeleopSwerveBaseCmd", "Red Alliance - Inversion");
         }
+            return new Translation2d(repulseProcessedY, -repulseProcessedX);
+    }
     }
 
     protected Translation2d rotationStick() {
@@ -114,7 +123,9 @@ public class TeleopSwerveJoystickRepulsor extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        DogLog.log("Commands/Teleop/teleopCommand", "ENDED");
+        if (!SubsystemConstants.disableAllLogs) {
+        Log.log("Commands/Teleop/teleopCommand", "ENDED");
+        }
     }
 
     protected record TeleopSwerveJoystickRepulsorCommandSummary(
@@ -147,14 +158,16 @@ public class TeleopSwerveJoystickRepulsor extends Command {
         //         rotation.getX(),
         //         rawRotationYSup.getAsDouble(),
         //         rotation.getY());
-        DogLog.log("Commands/teleop/repulsor/rawTranslationX", rawTranslationXSup.getAsDouble());
-        DogLog.log("Commands/teleop/repulsor/translationX", translation.getX());
-        DogLog.log("Commands/teleop/repulsor/rawTranslationY", rawTranslationYSup.getAsDouble());
-        DogLog.log("Commands/teleop/repulsor/translationY", translation.getY());
-        DogLog.log("Commands/teleop/repulsor/rawRotationX", rawRotationXSup.getAsDouble());
-        DogLog.log("Commands/teleop/repulsor/rotationX", rotation.getX());
-        DogLog.log("Commands/teleop/repulsor/rawRotationY", rawRotationYSup.getAsDouble());
-        DogLog.log("Commands/teleop/repulsor/rotationY", rotation.getY());
+        if (!SubsystemConstants.disableAllLogs) {
+        Log.log("Commands/teleop/repulsor/rawTranslationX", rawTranslationXSup.getAsDouble());
+        Log.log("Commands/teleop/repulsor/translationX", translation.getX());
+        Log.log("Commands/teleop/repulsor/rawTranslationY", rawTranslationYSup.getAsDouble());
+        Log.log("Commands/teleop/repulsor/translationY", translation.getY());
+        Log.log("Commands/teleop/repulsor/rawRotationX", rawRotationXSup.getAsDouble());
+        Log.log("Commands/teleop/repulsor/rotationX", rotation.getX());
+        Log.log("Commands/teleop/repulsor/rawRotationY", rawRotationYSup.getAsDouble());
+        Log.log("Commands/teleop/repulsor/rotationY", rotation.getY());
+        }
         return null;
     }
 }
