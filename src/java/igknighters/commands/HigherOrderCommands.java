@@ -9,6 +9,8 @@ import igknighters.Robot;
 import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.climber.Climber;
+import igknighters.subsystems.climber.ClimberState;
 
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
@@ -128,24 +130,22 @@ public class HigherOrderCommands {
                         () -> {
                             Pose2d startPose = getClimbStartPose();
                             Pose2d endPose = getClimbEndPose();
-                            return Commands.sequence(
-                                    Commands.print("STARTING AUTO ALIGNMENT TO CLIMB"),
-                                    SwerveCommands.moveToSimple(subsystems.swerve, startPose)
-                                            .until(
-                                                    SwerveCommands.isAt(
-                                                            subsystems.swerve,
-                                                            startPose,
-                                                            0.03,
-                                                            0.1)),
-                                    Commands.print("REACHED STARTING POSE FOR CLIMB LINEUP"),
-                                    SwerveCommands.moveToSimpleWithVelocityControl(
-                                                    subsystems.swerve,
-                                                    endPose,
-                                                    new Pose2d(.5, .5, new Rotation2d(1)))
-                                            .until(subsystems.climber::isSensorHit),
-                                    Commands.print("REACHED CLIMBING POSITION"),
-                                    ClimberCommands.goUp(subsystems.climber),
-                                    Commands.print("CLIMBER IS PREPED TO RUN"));
+                            return Commands.parallel(
+                                    IntakeCommands.goToStow(subsystems.intake),
+                                    Commands.sequence(
+                                        Commands.parallel(
+                                            ClimberCommands.holdAtState(subsystems.climber, ClimberState.LATCH_ON),
+                                            Repulsor.moveWithRepulsor(subsystems.swerve, startPose)
+                                        ).until(SwerveCommands.isAt(subsystems.swerve, startPose, .1, .1)),
+                                        Commands.parallel(
+                                            ClimberCommands.holdAtState(subsystems.climber, ClimberState.PULL_UP),
+                                            Repulsor.moveWithRepulsor(subsystems.swerve, endPose)
+                                        ).until(SwerveCommands.isAt(subsystems.swerve, endPose, .1, .1))
+
+                                        
+                                    )
+                            );
+
                         },
                         java.util.Set.of(subsystems.swerve, subsystems.climber))
                 .withName("Moving to Climber and raising to max height");

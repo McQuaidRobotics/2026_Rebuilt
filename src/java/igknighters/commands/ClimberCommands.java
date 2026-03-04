@@ -49,12 +49,7 @@ public class ClimberCommands {
      * @return A command that goes through the unclimb sequence: Pull Up -> Latch On -> Climb Prep
      *     -> Stow. Ends when climber reaches state of climb prep
      */
-    public static Command unClimb(Climber climber) {
-        return goToState(climber, ClimberState.LATCH_ON)
-                .andThen(goToState(climber, ClimberState.CLIMB_PREP))
-                .andThen(goToState(climber, ClimberState.STOW))
-                .withName("UNCLIMB SEQUENCE");
-    }
+    
 
     /**
      * Chainsaw up until the climber is up, then stops the climber
@@ -95,7 +90,6 @@ public class ClimberCommands {
                 .until(
                         () -> {
                             switch (state) {
-                                case CLIMB_PREP:
                                 case LATCH_ON:
                                     return climber.isUp();
                                 case STOW:
