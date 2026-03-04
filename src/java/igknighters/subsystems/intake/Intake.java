@@ -71,8 +71,8 @@ public class Intake extends SubsystemBase {
 
         if (!SubsystemConstants.kIntake.kPivot.disablePivotLogs) {
 
-            Log.log("Subsystems/Intake/AT STATE/Is At Speed", isAtSpeed);
-            Log.log("Subsystems/Intake/AT STATE/Is At Angle", isAtAngle);
+            Log.log("ROBOT/Subsystems/Intake/AT STATE/Is At Speed", isAtSpeed);
+            Log.log("ROBOT/Subsystems/Intake/AT STATE/Is At Angle", isAtAngle);
             Log.log(
                     "Subsystems/Intake/AT STATE/DELTA THETA",
                     pivot.getAngle().in(Degrees) - angleDegrees.in(Degrees));

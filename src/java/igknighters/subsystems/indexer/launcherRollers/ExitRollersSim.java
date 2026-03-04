@@ -97,14 +97,14 @@ public class ExitRollersSim extends ExitRollers {
 
         // Logging
         if (!SubsystemConstants.kIndexer.kExitRollers.disableExitRollersLogs) {
-            Log.log("Subsystems/Indexer/ExitRollers/SimVoltage", voltage);
-            Log.log("Subsystems/Indexer/ExitRollers/SimSpeedRPM", currentRPM);
-            Log.log("Subsystems/Indexer/ExitRollers/GoalSpeedRPM", goalRPM);
+            Log.log("ROBOT/Subsystems/Indexer/ExitRollers/SimVoltage", voltage);
+            Log.log("ROBOT/Subsystems/Indexer/ExitRollers/SimSpeedRPM", currentRPM);
+            Log.log("ROBOT/Subsystems/Indexer/ExitRollers/GoalSpeedRPM", goalRPM);
             Log.log(
                     "Subsystems/Indexer/ExitRollers/PIDOutputRPM",
                     profiledPIDController.getPositionError());
-            Log.log("Subsystems/Indexer/ExitRollers/PIDVolts", pidOutput);
-            Log.log("Subsystems/Indexer/ExitRollers/FFVolts", ffOutput);
+            Log.log("ROBOT/Subsystems/Indexer/ExitRollers/PIDVolts", pidOutput);
+            Log.log("ROBOT/Subsystems/Indexer/ExitRollers/FFVolts", ffOutput);
         }
 
         // Apply to sim

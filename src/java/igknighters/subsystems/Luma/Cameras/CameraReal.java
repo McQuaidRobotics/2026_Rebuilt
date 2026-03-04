@@ -35,7 +35,7 @@ public class CameraReal extends Camera {
 
         if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
             Log.log(cameraName, true);
-            Log.log("Subsystems/Vision/" + cameraName + "/Status", "ENABLED");
+            Log.log("ROBOT/Subsystems/Vision/" + cameraName + "/Status", "ENABLED");
         }
     }
 
@@ -47,7 +47,7 @@ public class CameraReal extends Camera {
     @Override
     public void periodic() {
         if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
-            Log.log("Subsystems/Vision/" + name + "/Connected", camera.isConnected());
+            Log.log("ROBOT/Subsystems/Vision/" + name + "/Connected", camera.isConnected());
         }
 
         // Removed unnecessary new ArrayList<>() allocation
@@ -97,30 +97,30 @@ public class CameraReal extends Camera {
     @Override
     public Translation2d getGamePieceOffset() {
         if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
-            Log.log("Subsystems/Vision/Getting Offset", true);
+            Log.log("ROBOT/Subsystems/Vision/Getting Offset", true);
         }
 
         if (results.isEmpty()) {
             if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
-                Log.log("Subsystems/Vision/ObjectDetection/Camera Results", false);
+                Log.log("ROBOT/Subsystems/Vision/ObjectDetection/Camera Results", false);
             }
             return new Translation2d();
         }
 
         if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
-            Log.log("Subsystems/Vision/ObjectDetection/Camera Results", true);
+            Log.log("ROBOT/Subsystems/Vision/ObjectDetection/Camera Results", true);
         }
         var result = results.get(results.size() - 1);
 
         if (!result.hasTargets()) {
             if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
-                Log.log("Subsystems/Vision/ObjectDetection/Camera Has Target", false);
+                Log.log("ROBOT/Subsystems/Vision/ObjectDetection/Camera Has Target", false);
             }
             return new Translation2d();
         }
 
         if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
-            Log.log("Subsystems/Vision/ObjectDetection/Camera Has Target", true);
+            Log.log("ROBOT/Subsystems/Vision/ObjectDetection/Camera Has Target", true);
         }
 
         // Make a COPY of the targets list before sorting to avoid mutating PhotonVision's internal
@@ -157,7 +157,9 @@ public class CameraReal extends Camera {
         }
 
         if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
-            Log.log("Subsystems/Vision/ObjectDetection/Camera Cluster Size", bestCluster.size());
+            Log.log(
+                    "ROBOT/Subsystems/Vision/ObjectDetection/Camera Cluster Size",
+                    bestCluster.size());
         }
 
         return getGamePieceOffsetFromTargetList(bestCluster);

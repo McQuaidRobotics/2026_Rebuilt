@@ -41,7 +41,7 @@ public class LimeLightVision extends SubsystemBase {
             double roll,
             double rollRate) {
         if (!SubsystemConstants.disableAllLogs) {
-            Log.log("Subsystems/Vison/Limelight/ENABLED", true);
+            Log.log("ROBOT/Subsystems/Vison/Limelight/ENABLED", true);
         }
         return vision.getRobotPoseFromVision(yaw, yawRate, pitch, pitchRate, roll, rollRate);
     }

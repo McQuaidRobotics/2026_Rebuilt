@@ -138,12 +138,12 @@ public class ChainsawReal extends Chainsaw {
                     "Subsystems/Climber/Inches",
                     armPosition.getValueAsDouble()
                             * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES);
-            Log.log("Subsystems/Climber/Is Up", isUp());
-            Log.log("Subsystems/Climber/Is Middle", isMiddle());
-            Log.log("Subsystems/Climber/Is Down", isDown());
-            Log.log("Subsystems/Climber/Sensor Hit", isSensorHit());
-            Log.log("Subsystems/Climber/State", state.toString());
-            Log.log("Subsystems/Climber/Current", armCurrent.getValueAsDouble());
+            Log.log("ROBOT/Subsystems/Climber/Is Up", isUp());
+            Log.log("ROBOT/Subsystems/Climber/Is Middle", isMiddle());
+            Log.log("ROBOT/Subsystems/Climber/Is Down", isDown());
+            Log.log("ROBOT/Subsystems/Climber/Sensor Hit", isSensorHit());
+            Log.log("ROBOT/Subsystems/Climber/State", state.toString());
+            Log.log("ROBOT/Subsystems/Climber/Current", armCurrent.getValueAsDouble());
         }
     }
 }

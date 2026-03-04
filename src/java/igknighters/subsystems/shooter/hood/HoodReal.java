@@ -56,7 +56,7 @@ public class HoodReal extends Hood {
 
     public HoodReal() {
         if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
-            Log.log("Subsystems/Shooter/Hood/Initialized", true);
+            Log.log("ROBOT/Subsystems/Shooter/Hood/Initialized", true);
         }
         motor.getConfigurator().apply(flapConfiguration());
     }
@@ -74,7 +74,7 @@ public class HoodReal extends Hood {
     public void goToAngle(Angle targetAngle) {
         if (!isLegalPosition(targetAngle.in(Degrees))) {
             if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
-                Log.log("Subsystems/Shooter/Hood/IllegalPosition", targetAngle.in(Degrees));
+                Log.log("ROBOT/Subsystems/Shooter/Hood/IllegalPosition", targetAngle.in(Degrees));
             }
             return;
         }
@@ -105,10 +105,10 @@ public class HoodReal extends Hood {
         BaseStatusSignal.refreshAll(motorRots);
         handleLimitSwitch();
         if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
-            Log.log("Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());
-            Log.log("Subsystems/Shooter/Hood/Homing", hasHomed);
-            Log.log("Subsystems/Shooter/Hood/TargetDegrees", super.targetDegrees);
-            Log.log("Subsystems/Shooter/Hood/ReverseLimitSwitch", reverseLimitSwitch.get());
+            Log.log("ROBOT/Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());
+            Log.log("ROBOT/Subsystems/Shooter/Hood/Homing", hasHomed);
+            Log.log("ROBOT/Subsystems/Shooter/Hood/TargetDegrees", super.targetDegrees);
+            Log.log("ROBOT/Subsystems/Shooter/Hood/ReverseLimitSwitch", reverseLimitSwitch.get());
         }
     }
 

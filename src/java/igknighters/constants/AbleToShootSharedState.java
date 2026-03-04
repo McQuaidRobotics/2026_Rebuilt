@@ -39,21 +39,21 @@ public class AbleToShootSharedState {
      */
     public void setAtTarget(boolean newState) {
         if (!SubsystemConstants.disableAllLogs) {
-            Log.log("STATUS/CAN SHOOT", newState);
+            Log.log("ROBOT/STATUS/CAN SHOOT", newState);
         }
         this.atTarget = newState;
     }
 
     public void setPossibleShot(boolean newState) {
         if (!SubsystemConstants.disableAllLogs) {
-            Log.log("STATUS/POSSIBLE SHOT", newState);
+            Log.log("ROBOT/STATUS/POSSIBLE SHOT", newState);
         }
         this.possibleShot = newState;
     }
 
     public void setBeingControlled(boolean newState) {
         if (!SubsystemConstants.disableAllLogs) {
-            Log.log("Subsystems/Shooter/BeingControlled", newState);
+            Log.log("ROBOT/Subsystems/Shooter/BeingControlled", newState);
         }
         this.beingControlled = newState;
     }

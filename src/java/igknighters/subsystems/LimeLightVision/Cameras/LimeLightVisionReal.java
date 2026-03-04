@@ -83,8 +83,12 @@ public class LimeLightVisionReal extends LimeLights {
             lastTimeStamp = timestamp;
 
             if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
-                Log.log("Subsystems/Vision/LimeLightVision/TimeStampOfMeasurements", timestamp);
-                Log.log("Subsystems/Vision/LimeLightVision/NumberOfTagsSeen", visibleTagIds.size());
+                Log.log(
+                        "ROBOT/Subsystems/Vision/LimeLightVision/TimeStampOfMeasurements",
+                        timestamp);
+                Log.log(
+                        "ROBOT/Subsystems/Vision/LimeLightVision/NumberOfTagsSeen",
+                        visibleTagIds.size());
             }
         }
 
@@ -105,7 +109,7 @@ public class LimeLightVisionReal extends LimeLights {
     public Pose2d averagePose2ds(List<Pose2d> poses) {
         if (poses.isEmpty()) {
             if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
-                Log.log("Subsystems/Vision/LimeLightVision/TagsSeen", "NO TAGS SEEN");
+                Log.log("ROBOT/Subsystems/Vision/LimeLightVision/TagsSeen", "NO TAGS SEEN");
             }
             return null;
         }
@@ -128,13 +132,13 @@ public class LimeLightVisionReal extends LimeLights {
         Rotation2d avgRot = new Rotation2d(Math.atan2(sinSum / count, cosSum / count));
 
         if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
-            Log.log("Subsystems/Vision/LimeLightVision/RotationList", rotations.toString());
-            Log.log("Subsystems/Vision/LimeLightVision/Rotation", avgRot.getDegrees());
+            Log.log("ROBOT/Subsystems/Vision/LimeLightVision/RotationList", rotations.toString());
+            Log.log("ROBOT/Subsystems/Vision/LimeLightVision/Rotation", avgRot.getDegrees());
         }
 
         Pose2d averaged = new Pose2d(avgX, avgY, avgRot);
         if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
-            Log.log("Subsystems/Vision/LimeLightVision/TagsSeen", averaged);
+            Log.log("ROBOT/Subsystems/Vision/LimeLightVision/TagsSeen", averaged);
         }
 
         return averaged;

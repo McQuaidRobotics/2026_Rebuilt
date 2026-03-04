@@ -30,7 +30,7 @@ public class ServosReal extends Servos {
     public void periodic() {
 
         if (!SubsystemConstants.kClimber.kChainsaw.disableChainsawLogs) {
-            Log.log("Subsystems/Climber/Servos/Deployed", deployed);
+            Log.log("ROBOT/Subsystems/Climber/Servos/Deployed", deployed);
             // Ensure the servo stays in position
             if (deployed) {
                 servo.setAngle(SubsystemConstants.kClimber.kServos.MAX_ANGLE_DEGREES);

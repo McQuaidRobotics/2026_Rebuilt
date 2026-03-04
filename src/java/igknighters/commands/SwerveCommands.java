@@ -86,9 +86,9 @@ public class SwerveCommands {
                     positionError <= positionToleranceMeters && angleError <= angleToleranceRadians;
 
             if (!SubsystemConstants.disableAllLogs) {
-                Log.log("Commands/Swerve/IsAt/PositionError", positionError);
-                Log.log("Commands/Swerve/IsAt/AngleError", angleError);
-                Log.log("Commands/Swerve/IsAt/Reached Target", isAt);
+                Log.log("ROBOT/Commands/Swerve/IsAt/PositionError", positionError);
+                Log.log("ROBOT/Commands/Swerve/IsAt/AngleError", angleError);
+                Log.log("ROBOT/Commands/Swerve/IsAt/Reached Target", isAt);
             }
 
             return isAt;
@@ -126,9 +126,9 @@ public class SwerveCommands {
                                     currentPose.getRotation().getRadians(),
                                     targetPose.getRotation().getRadians());
                     if (!SubsystemConstants.disableAllLogs) {
-                        Log.log("Commands/Swerve/MoveToSimple/VX", vx);
-                        Log.log("Commands/Swerve/MoveToSimple/VY", vy);
-                        Log.log("Commands/Swerve/MoveToSimple/Omega", omega);
+                        Log.log("ROBOT/Commands/Swerve/MoveToSimple/VX", vx);
+                        Log.log("ROBOT/Commands/Swerve/MoveToSimple/VY", vy);
+                        Log.log("ROBOT/Commands/Swerve/MoveToSimple/Omega", omega);
                         Log.log(
                                 "Commands/Swerve/MoveToSimple/dx",
                                 targetPose.getX() - currentPose.getX());
@@ -197,9 +197,11 @@ public class SwerveCommands {
                                 "Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedOmega",
                                 clampedOmega);
 
-                        Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/VX", vx);
-                        Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/VY", vy);
-                        Log.log("Commands/Swerve/MoveToSimpleWithVelocityControl/Omega", omega);
+                        Log.log("ROBOT/Commands/Swerve/MoveToSimpleWithVelocityControl/VX", vx);
+                        Log.log("ROBOT/Commands/Swerve/MoveToSimpleWithVelocityControl/VY", vy);
+                        Log.log(
+                                "ROBOT/Commands/Swerve/MoveToSimpleWithVelocityControl/Omega",
+                                omega);
                         Log.log(
                                 "Commands/Swerve/MoveToSimpleWithVelocityControl/dx",
                                 targetPose.getX() - currentPose.getX());

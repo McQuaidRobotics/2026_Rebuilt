@@ -64,7 +64,7 @@ public class RollersReal extends Rollers {
         BaseStatusSignal.refreshAll(intakeSpeed);
 
         if (!SubsystemConstants.kIntake.kRollers.disableRollersLogs) {
-            Log.log("Subsystems/Intake/Rollers/SpeedRPS", getSpeed());
+            Log.log("ROBOT/Subsystems/Intake/Rollers/SpeedRPS", getSpeed());
         }
     }
 }
