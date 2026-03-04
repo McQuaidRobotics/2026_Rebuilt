@@ -73,7 +73,6 @@ public class SubsystemTriggers {
         passTrigger.whileTrue(
                 HigherOrderCommands.fireAtTarget(
                         subsystems, getPoseFromString("robot/passWaypoint")));
-                        subsystems, getPoseFromString("robot/passWaypoint")));
         moveToTrigger.whileTrue(
                 Repulsor.moveWithRepulsor(
                         swerve, getPoseFromString("robot/moveWaypoint").toPose2d()));
