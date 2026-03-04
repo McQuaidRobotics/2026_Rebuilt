@@ -18,6 +18,7 @@ import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
 import igknighters.commands.teleop.TeleopSwerveJoystickHeadingCmd;
 import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
+import igknighters.constants.FieldConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.ClimberState;
@@ -125,14 +126,12 @@ public class DriverController {
             this.B.whileTrue(
                     new TeleopSwerveHeadingCmd(swerve, this, 180.0, state.kP, state.kI, state.kD));
             this.Y.whileTrue(
-                    new TeleopSwerveTargetingFutureCmd(
+                    Repulsor.moveWithRepulsor(
                             swerve,
-                            this,
-                            new Pose2d(13, 4, new Rotation2d(0)),
-                            .5,
-                            state.kP,
-                            state.kI,
-                            (state.kD)));
+                            new Pose2d(
+                                    FieldConstants.X_FIELD / 2,
+                                    FieldConstants.Y_FIELD / 2,
+                                    new Rotation2d())));
         } else if (debugType == DebugType.SHOOTER) {
             this.A.whileTrue(
                     ShooterCommands.targetState(shooter, 5000, 90, kHood.MIN_ANGLE_DEGREES));
@@ -157,7 +156,7 @@ public class DriverController {
 
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));
-            this.B.onTrue(IndexerCommands.stopDispensing(indexer));
+            this.B.onTrue(IndexerCommands.justStop(indexer));
 
         } else if (debugType == DebugType.CLIMBER) {
             this.A.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.CLIMB_PREP));
@@ -177,36 +176,16 @@ public class DriverController {
     public void bind(final Subsystems subsystems) {
         var swerve = subsystems.swerve;
         var intake = subsystems.intake;
-        var indexer = subsystems.indexer;
-        var shooter = subsystems.shooter;
-        var luma = subsystems.luma;
-        DrivingSharedState state = DrivingSharedState.getInstance();
-
-        this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
-        this.X.whileTrue(
-                new TeleopSwerveJoystickHeadingCmd(
-                        swerve, this, 45.0, state.kP, state.kI, state.kD));
-        this.A.whileTrue(
-                Repulsor.moveWithRepulsor(
-                        swerve,
-                        new Pose2d(
-                                Units.inchesToMeters(651.22 / 2),
-                                Units.inchesToMeters(317.69 / 2),
-                                new Rotation2d())));
 
         this.LB
                 .whileTrue(IntakeCommands.goToIntake(intake))
                 .onFalse(IntakeCommands.goToStow(intake));
         this.LT
                 .whileTrue(HigherOrderCommands.rapidFireStream(subsystems))
-                .onFalse(
-                        ShooterCommands.idleCommand(
-                                shooter,
-                                () -> swerve.getState().Pose,
-                                swerve::getFieldRelativeSpeeds));
+                .onFalse(HigherOrderCommands.IdleShooter(subsystems));
+        this.DPD.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
 
-        this.RT.whileTrue(IndexerCommands.dispense(indexer));
-        this.RT.onFalse(IndexerCommands.stopDispensing(indexer));
+        this.RT.whileTrue(HigherOrderCommands.forceDispense(subsystems));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
     }
 

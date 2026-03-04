@@ -17,8 +17,8 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import igknighters.FieldVisualizer;
 import igknighters.Robot;
-import igknighters.constants.AbleToShootSharedState;
 import igknighters.constants.Conv;
+import igknighters.constants.ShootInformation;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
@@ -276,7 +276,7 @@ public class AimSolver {
             if (bestRPM != 0 && bestThetaHoodDegrees != 0) {
                 canShoot(true);
                 // We pass absoluteFieldAngle so the trajectory line points at the target
-                AbleToShootSharedState.getInstance().setPossibleShot(true);
+                ShootInformation.getInstance().setPossibleShot(true);
                 publishShotTrajectory(
                         bestV,
                         Math.toRadians(90 - bestThetaHoodDegrees),
@@ -285,7 +285,7 @@ public class AimSolver {
                         targetPose);
             } else {
                 canShoot(false);
-                AbleToShootSharedState.getInstance().setPossibleShot(false);
+                ShootInformation.getInstance().setPossibleShot(false);
             }
 
             if (Robot.isBlue()) {
@@ -328,7 +328,7 @@ public class AimSolver {
 
             double initialDist =
                     shooterPose.getTranslation().getDistance(targetPose.getTranslation());
-            double estimatedToF = initialDist / 5.0; // Assume 5m/s avg horizontal velocity
+            double estimatedToF = initialDist / 2.0; // Assume 5m/s avg horizontal velocity
 
             // 3. TARGET PROJECTION: Scale the target lead by (ToF + Latency)
             // We subtract the robot's velocity because from the ball's perspective,
@@ -355,7 +355,7 @@ public class AimSolver {
             double bestRPM = 0.0;
             double bestThetaHoodDegrees = SubsystemConstants.kShooter.kHood.MIN_ANGLE_DEGREES;
             double bestV = 0.0;
-            double minRPMDiff = Double.MAX_VALUE;
+            double highestArc = 0.0;
 
             // 2. Iterative Arc Search
             for (int i = 0; i < 5; i++) {
@@ -385,10 +385,10 @@ public class AimSolver {
                 if (hoodAngleDegrees < kHood.MIN_ANGLE_DEGREES
                         || hoodAngleDegrees > kHood.MAX_ANGLE_DEGREES) continue;
 
-                // Choose the shot closest to our current flywheel speed for faster spin-up
-                double dRPM = Math.abs(currentRPM - RPM);
-                if (dRPM < minRPMDiff) {
-                    minRPMDiff = dRPM;
+                // Choose the shot with the highest arc
+                double arc = launchAngleDegrees;
+                if (arc > highestArc) {
+                    highestArc = arc;
                     bestRPM = RPM;
                     bestThetaHoodDegrees = hoodAngleDegrees;
                     bestV = v_total;
@@ -404,9 +404,10 @@ public class AimSolver {
                             Math.sin(absoluteFieldAngle - robotYawFuture),
                             Math.cos(absoluteFieldAngle - robotYawFuture));
 
-            if (bestRPM != 0) {
+            if (bestRPM != 0 && bestThetaHoodDegrees != 0) {
                 canShoot(true);
                 // We pass absoluteFieldAngle so the trajectory line points at the target
+                ShootInformation.getInstance().setPossibleShot(true);
                 publishShotTrajectory(
                         bestV,
                         Math.toRadians(90 - bestThetaHoodDegrees),
@@ -415,19 +416,11 @@ public class AimSolver {
                         targetPose);
             } else {
                 canShoot(false);
+                ShootInformation.getInstance().setPossibleShot(false);
             }
 
-            if (Robot.isBlue()) {
-                return new ShooterState(
-                        RPM.of(bestRPM),
-                        Radians.of(-turretAngle),
-                        Degrees.of(bestThetaHoodDegrees));
-            } else {
-                return new ShooterState(
-                        RPM.of(bestRPM),
-                        Radians.of(-turretAngle),
-                        Degrees.of(bestThetaHoodDegrees));
-            }
+            return new ShooterState(
+                    RPM.of(bestRPM), Radians.of(-turretAngle), Degrees.of(bestThetaHoodDegrees));
         }
 
         private static final double FLYWHEEL_RADIUS =

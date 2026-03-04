@@ -71,7 +71,7 @@ public class Robot extends LoggedRobot {
     private final boolean kUseLimelight = true;
 
     private Telemetry logger;
-    TunableDouble detune = TunableValues.getDouble("Tunables/Detune", 0.6);
+    TunableDouble detune = TunableValues.getDouble("Tunables/Detune", 1.0);
     TunableDouble targetingP = TunableValues.getDouble("Tunables/TargetingP", 0.07);
     TunableDouble targetingI = TunableValues.getDouble("Tunables/TargetingI", 0.00);
     TunableDouble targetingD = TunableValues.getDouble("Tunables/TargetingD", 0.00);
@@ -143,7 +143,7 @@ public class Robot extends LoggedRobot {
     public void setUpTest(Subsystems subsystems) {
         SmartDashboard.putData(
                 "Commands/Spindexer/Spindexer - STOP",
-                IndexerCommands.stopDispensing(subsystems.indexer));
+                IndexerCommands.justStop(subsystems.indexer));
         SmartDashboard.putData(
                 "Commands/Spindexer/Spindexer - DISPENSE BALLS",
                 IndexerCommands.dispense(subsystems.indexer));
@@ -180,7 +180,7 @@ public class Robot extends LoggedRobot {
                                 System.getProperty("os.arch")));
         if (Robot.isReal()) {
             Logger.addDataReceiver(new WPILOGWriter());
-            Logger.addDataReceiver(new NT4Publisher());
+            // Logger.addDataReceiver(new NT4Publisher());
         } else {
             Logger.addDataReceiver(new NT4Publisher());
         }
@@ -199,7 +199,7 @@ public class Robot extends LoggedRobot {
                 new Subsystems(
                         new Swerve(false),
                         new LimeLightVision(),
-                        new Led(80, 1),
+                        new Led(80, 2),
                         new Shooter(),
                         new Indexer(),
                         new Intake(),

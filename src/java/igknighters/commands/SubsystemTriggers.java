@@ -6,10 +6,16 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import igknighters.constants.AbleToShootSharedState;
+import igknighters.commands.LEDCommands.LEDSection;
+import igknighters.commands.teleop.AutoRotateOnBump;
 import igknighters.constants.Conv;
+import igknighters.constants.DrivingSharedState;
+import igknighters.constants.FieldConstants;
+import igknighters.constants.ShootInformation;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.Climber;
@@ -26,6 +32,15 @@ public class SubsystemTriggers {
     private final Trigger teleop = RobotModeTriggers.teleop();
     private final NetworkTable dashboardTable =
             NetworkTableInstance.getDefault().getTable("dashboard");
+    private boolean shotPossible = false;
+    private boolean atState = false;
+    private boolean beingCommanded = false;
+
+    Command disabledLED;
+
+    Command autoLED;
+
+    Command teleopLED;
 
     public static Trigger falseOnce() {
         return new Trigger(
@@ -41,6 +56,81 @@ public class SubsystemTriggers {
                     }
                     ;
                 });
+    }
+
+    public static Command runLEDBASEDONSTATE(Led led, boolean isDisabled, boolean isAutonomous) {
+        // should be Magenta, Cyan, Yellow if all three are lit then it should shoot
+
+        if (isDisabled) {
+            return LEDCommands.run(led, LEDPattern.solid(Color.kRed));
+        } else if (isAutonomous) {
+            LEDSection possibleShot;
+            LEDSection atTarget;
+            LEDSection beingControlled;
+            LEDSection autonomous =
+                    new LEDSection(1, 0, LedUtil.makeRainbow(255, 128), 20, "AUTONOMOUS RAINBOW");
+
+            if (ShootInformation.getInstance().shotPosible().getAsBoolean()) {
+                possibleShot =
+                        new LEDSection(
+                                0, 0, LEDPattern.solid(Color.kMagenta), 20, "IS POSSIBLE SHOT");
+            } else {
+                possibleShot =
+                        new LEDSection(
+                                0, 0, LEDPattern.solid(Color.kBlack), 20, "IS NOT POSSIBLE SHOT");
+            }
+
+            if (ShootInformation.getInstance().getAtTarget()) {
+                atTarget = new LEDSection(0, 20, LEDPattern.solid(Color.kCyan), 20, "AT TARGET");
+            } else {
+                atTarget =
+                        new LEDSection(0, 20, LEDPattern.solid(Color.kBlack), 20, "NOT AT TARGET");
+            }
+
+            if (ShootInformation.getInstance().beingControlledTrigger().getAsBoolean()) {
+                beingControlled =
+                        new LEDSection(
+                                0, 40, LEDPattern.solid(Color.kYellow), 20, "BEING CONTROLLED");
+            } else {
+                beingControlled =
+                        new LEDSection(
+                                0, 40, LEDPattern.solid(Color.kBlack), 20, "NOT BEING CONTROLLED");
+            }
+
+            return LEDCommands.run(led, autonomous, possibleShot, atTarget, beingControlled);
+        } else {
+            LEDSection possibleShot;
+            LEDSection atTarget;
+            LEDSection beingControlled;
+            LEDSection enabled =
+                    new LEDSection(1, 0, LEDPattern.solid(Color.kGreen), 40, "ENABLED");
+            if (ShootInformation.getInstance().getAtTarget()) {
+                atTarget = new LEDSection(0, 20, LEDPattern.solid(Color.kCyan), 20, "AT TARGET");
+            } else {
+                atTarget =
+                        new LEDSection(0, 20, LEDPattern.solid(Color.kBlack), 20, "NOT AT TARGET");
+            }
+            if (ShootInformation.getInstance().beingControlledTrigger().getAsBoolean()) {
+                beingControlled =
+                        new LEDSection(
+                                0, 40, LEDPattern.solid(Color.kYellow), 20, "BEING CONTROLLED");
+            } else {
+                beingControlled =
+                        new LEDSection(
+                                0, 40, LEDPattern.solid(Color.kBlack), 20, "NOT BEING CONTROLLED");
+            }
+            if (ShootInformation.getInstance().shotPosible().getAsBoolean()) {
+                possibleShot =
+                        new LEDSection(
+                                0, 0, LEDPattern.solid(Color.kMagenta), 20, "IS POSSIBLE SHOT");
+            } else {
+                possibleShot =
+                        new LEDSection(
+                                0, 0, LEDPattern.solid(Color.kBlack), 20, "IS NOT POSSIBLE SHOT");
+            }
+
+            return LEDCommands.run(led, enabled, possibleShot, atTarget, beingControlled);
+        }
     }
 
     public Pose3d getPoseFromString(String path) {
@@ -70,52 +160,64 @@ public class SubsystemTriggers {
         Trigger passTrigger =
                 new Trigger(() -> dashboardTable.getEntry("robot/passTrigger").getBoolean(false));
 
-        passTrigger.whileTrue(
-                HigherOrderCommands.fireAtTarget(
-                        subsystems, getPoseFromString("robot/passWaypoint")));
+        passTrigger.onTrue(
+                Commands.runOnce(
+                        () -> ShootInformation.getInstance().useOperatorControlLocation(true)));
+        passTrigger.onFalse(
+                Commands.runOnce(
+                        () -> ShootInformation.getInstance().useOperatorControlLocation(false)));
         moveToTrigger.whileTrue(
                 Repulsor.moveWithRepulsor(
                         swerve, getPoseFromString("robot/moveWaypoint").toPose2d()));
     }
 
+    public Command getLEDCommandByMode() {
+        return Commands.either(teleopLED, autoLED, teleop);
+    }
+
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
         Led led = subsystems.led;
         Swerve swerve = subsystems.swerve;
-        // Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
+        Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
+
+        teleopLED =
+                LEDCommands.run(led, LEDPattern.solid(Color.kGreen))
+                        .ignoringDisable(true)
+                        .withName("TeleopGreen");
+        autoLED =
+                LEDCommands.run(led, LedUtil.makeRainbow(255, 126))
+                        .ignoringDisable(true)
+                        .withName("AutoRainbow");
+        disabledLED =
+                LEDCommands.run(led, LEDPattern.solid(Color.kRed))
+                        .ignoringDisable(true)
+                        .withName("DisabledRed");
 
         SetupOperatorController(subsystems);
 
-        // onBump.whileTrue(new AutoRotateOnBump(swerve, driverController));
+        onBump.whileTrue(
+                Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true))
+                        .andThen(new AutoRotateOnBump(swerve, driverController)));
+        onBump.onFalse(Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(false)));
 
-        falseOnce()
-                .and(disabled)
-                .whileTrue(
-                        LEDCommands.run(led, LEDPattern.solid(Color.kRed))
-                                .ignoringDisable(true)
-                                .withName("DisabledRed"));
+        falseOnce().and(disabled).whileTrue(disabledLED);
 
-        autonomous.whileTrue(
-                LEDCommands.run(led, LedUtil.makeRainbow(255, 128))
-                        .ignoringDisable(true)
-                        .withName("AutoRainbow"));
+        autonomous.whileTrue(autoLED);
 
-        teleop.whileTrue(
-                LEDCommands.run(led, LEDPattern.solid(Color.kGreen))
-                        .ignoringDisable(true)
-                        .withName("TeleopGreen"));
+        teleop.onTrue(teleopLED);
 
         // Get the AbleToShootSharedState singleton
-        AbleToShootSharedState ableToShootState = AbleToShootSharedState.getInstance();
+        ShootInformation ableToShootState = ShootInformation.getInstance();
 
         // Bind LED commands to the canShootTrigger
 
         ableToShootState
-                .atCommandedStateTrigger()
-                .and(ableToShootState.beingControlledTrigger())
-                .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kYellow)));
-        ableToShootState
-                .atCommandedStateTrigger()
-                .and(ableToShootState.beingControlledTrigger().negate())
-                .whileFalse(LEDCommands.run(led, LEDPattern.solid(Color.kPurple)));
+                .canShoot()
+                .whileTrue(LEDCommands.run(led, LedUtil.makeBounce(Color.kCyan, .3)))
+                .onFalse(getLEDCommandByMode());
+        // ableToShootState
+        //         .atCommandedStateTrigger()
+        //         .and(ableToShootState.beingControlledTrigger().negate())
+        //         .whileFalse(LEDCommands.run(led, LEDPattern.solid(Color.kPurple)));
     }
 }
