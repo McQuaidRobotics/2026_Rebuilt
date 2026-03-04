@@ -308,11 +308,11 @@ public class Robot extends LoggedRobot {
                                 .getLastTimeStamp()); // trusts vision rotation less. Needs tuning
                 // increase the std devs to trust vision less
                 if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
-                    Log.log("ROBOT/ROBOT/Subsystems/Vision/Null Pose", false);
+                    Log.log("ROBOT/Subsystems/Vision/Null Pose", false);
                 }
             } else {
                 if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
-                    Log.log("ROBOT/ROBOT/Subsystems/Vision/Null Pose", true);
+                    Log.log("ROBOT/Subsystems/Vision/Null Pose", true);
                 }
             }
         }
@@ -418,7 +418,7 @@ public class Robot extends LoggedRobot {
 
                 lastShotTime = currentTime;
                 if (!SubsystemConstants.disableAllLogs) {
-                    Log.log("ROBOT/ROBOT/Simulation/FuelLaunched", true);
+                    Log.log("ROBOT/Simulation/FuelLaunched", true);
                 }
             }
         }
@@ -472,7 +472,7 @@ public class Robot extends LoggedRobot {
             // Default to blue if alliance is unknown (e.g., in simulation without alliance set)
             // Log this so we know why things might be going to the blue side.
             if (!SubsystemConstants.disableAllLogs) {
-                Log.log("ROBOT/ROBOT/System/AllianceUnknown", true);
+                Log.log("ROBOT/System/AllianceUnknown", true);
             }
             return true;
         }
