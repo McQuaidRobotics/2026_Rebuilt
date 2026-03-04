@@ -75,7 +75,7 @@ public class SubsystemTriggers {
                         subsystems, getPoseFromString("robot/passWaypoint")));
         moveToTrigger.whileTrue(
                 Repulsor.moveWithRepulsor(
-                        swerve, getPoseFromString("robot/moveWaypoint").toPose2d(), 1));
+                        swerve, getPoseFromString("robot/moveWaypoint").toPose2d()));
     }
 
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {

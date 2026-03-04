@@ -2,6 +2,7 @@ package igknighters.controllers;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -10,9 +11,11 @@ import igknighters.commands.ClimberCommands;
 import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.IntakeCommands;
+import igknighters.commands.Repulsor;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
+import igknighters.commands.teleop.TeleopSwerveJoystickHeadingCmd;
 import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
@@ -176,6 +179,20 @@ public class DriverController {
         var intake = subsystems.intake;
         var indexer = subsystems.indexer;
         var shooter = subsystems.shooter;
+        var luma = subsystems.luma;
+        DrivingSharedState state = DrivingSharedState.getInstance();
+
+        this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
+        this.X.whileTrue(
+                new TeleopSwerveJoystickHeadingCmd(
+                        swerve, this, 45.0, state.kP, state.kI, state.kD));
+        this.A.whileTrue(
+                Repulsor.moveWithRepulsor(
+                        swerve,
+                        new Pose2d(
+                                Units.inchesToMeters(651.22 / 2),
+                                Units.inchesToMeters(317.69 / 2),
+                                new Rotation2d())));
 
         this.LB
                 .whileTrue(IntakeCommands.goToIntake(intake))
