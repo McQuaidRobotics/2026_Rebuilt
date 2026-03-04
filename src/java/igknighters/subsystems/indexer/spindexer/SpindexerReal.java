@@ -74,7 +74,7 @@ public class SpindexerReal extends Spindexer {
 
     @Override
     public void goToRPM(double RPM) {
-        Log.log("LOGGING/Subsystems/Indexer/Spindexer/setSpeed", RPM);
+        Log.log("ROBOT/Subsystems/Indexer/Spindexer/setSpeed", RPM);
         spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
         spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
     }

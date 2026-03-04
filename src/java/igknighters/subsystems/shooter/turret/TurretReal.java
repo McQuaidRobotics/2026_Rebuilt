@@ -128,7 +128,7 @@ public class TurretReal extends Turret {
     public void periodic() {
         BaseStatusSignal.refreshAll(turretAngle, turretCurrent);
         Log.logMotor("Subsystems/Shooter/Turret/Motor", motor);
-        Log.log("LOGGING/Subsystems/Shooter/Turret/Target Degrees", super.targetDegrees);
+        Log.log("ROBOT/Subsystems/Shooter/Turret/Target Degrees", super.targetDegrees);
 
         super.degrees = turretAngle.getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
     }

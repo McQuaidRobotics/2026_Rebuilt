@@ -109,19 +109,19 @@ public class FlywheelSimulator extends Flywheel {
 
         // Logging
 
-        Log.log("LOGGING/Subsystems/Shooter/Rollers/SimVoltage", voltage);
+        Log.log("ROBOT/Subsystems/Shooter/Rollers/SimVoltage", voltage);
 
-        Log.log("LOGGING/Subsystems/Shooter/Rollers/SimSpeedRPM", currentRPM);
+        Log.log("ROBOT/Subsystems/Shooter/Rollers/SimSpeedRPM", currentRPM);
 
-        Log.log("LOGGING/Subsystems/Shooter/Rollers/GoalSpeedRPM", goalRPM);
+        Log.log("ROBOT/Subsystems/Shooter/Rollers/GoalSpeedRPM", goalRPM);
 
         Log.log(
                 "Subsystems/Shooter/Rollers/PIDOutputRPM",
                 profiledPIDController.getPositionError());
 
-        Log.log("LOGGING/Subsystems/Shooter/Rollers/PIDVolts", pidOutput);
+        Log.log("ROBOT/Subsystems/Shooter/Rollers/PIDVolts", pidOutput);
 
-        Log.log("LOGGING/Subsystems/Shooter/Rollers/FFVolts", ffOutput);
+        Log.log("ROBOT/Subsystems/Shooter/Rollers/FFVolts", ffOutput);
 
         // Apply to sim
 

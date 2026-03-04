@@ -64,7 +64,7 @@ public class ExitRollersReal extends ExitRollers {
 
     @Override
     public void setSpeedRPM(double speedRpm) {
-        Log.log("LOGGING/Subsystems/Indexer/ExitRollers/setSpeed", speedRpm);
+        Log.log("ROBOT/Subsystems/Indexer/ExitRollers/setSpeed", speedRpm);
         exitRollerMotor.setControl(velocityControl.withVelocity(speedRpm / 60.0));
     }
 
@@ -100,6 +100,6 @@ public class ExitRollersReal extends ExitRollers {
         Log.log(
                 "Subsystems/Indexer/ExitRollers/temperature",
                 shooterTemperature.getValueAsDouble());
-        Log.log("LOGGING/Subsystems/Indexer/ExitRollers/periodicing", true);
+        Log.log("ROBOT/Subsystems/Indexer/ExitRollers/periodicing", true);
     }
 }

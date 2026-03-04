@@ -145,9 +145,9 @@ public class LedUtil {
             blue[i] = color.blue;
         }
 
-        Log.log("LOGGING/Commands/" + name + "Led/Reds", red);
-        Log.log("LOGGING/Commands/" + name + "Led/Greens", green);
-        Log.log("LOGGING/Commands/" + name + "Led/Blues", blue);
+        Log.log("ROBOT/Commands/" + name + "Led/Reds", red);
+        Log.log("ROBOT/Commands/" + name + "Led/Greens", green);
+        Log.log("ROBOT/Commands/" + name + "Led/Blues", blue);
     }
 
     public static class NamedLEDPattern implements LEDPattern {

@@ -36,7 +36,7 @@ public class AutoCommands {
     }
 
     protected void logAutoEvent(String message, String event) {
-        Log.log("LOGGING/Robot/Commands/Autos", message + " is " + event);
+        Log.log("ROBOT/Robot/Commands/Autos", message + " is " + event);
     }
 
     protected Command loggedCmd(Command command) {
@@ -88,7 +88,7 @@ public class AutoCommands {
             final AtomicBoolean flag = new AtomicBoolean(false);
             headCommand.addCommands(Commands.print(bodyCommand.getRequirements().toString()));
             bodyCommand.addCommands(
-                    Commands.runOnce(() -> Log.log("LOGGING/Robot/Autos/ending the auto", true)),
+                    Commands.runOnce(() -> Log.log("ROBOT/Robot/Autos/ending the auto", true)),
                     new ScheduleCommand(Commands.runOnce(() -> flag.set(true))));
             routine.active()
                     .onTrue(
@@ -171,7 +171,7 @@ public class AutoCommands {
     }
 
     protected RebuiltAuto newRebuiltAuto(String name) {
-        Log.log("LOGGING/Robot/Commands/Autos/Creation", "Creating new rebuilt auto: " + name);
+        Log.log("ROBOT/Robot/Commands/Autos/Creation", "Creating new rebuilt auto: " + name);
         return new RebuiltAuto(autoFactory.newRoutine(name));
     }
 }

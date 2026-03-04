@@ -68,8 +68,8 @@ public class Intake extends SubsystemBase {
         boolean isAtSpeed =
                 Math.abs(rollers.getSpeed().in(RPM) - speedRPM.in(RPM)) < speedTolerance.in(RPM);
 
-        Log.log("LOGGING/Subsystems/Intake/AT STATE/Is At Speed", isAtSpeed);
-        Log.log("LOGGING/Subsystems/Intake/AT STATE/Is At Angle", isAtAngle);
+        Log.log("ROBOT/Subsystems/Intake/AT STATE/Is At Speed", isAtSpeed);
+        Log.log("ROBOT/Subsystems/Intake/AT STATE/Is At Angle", isAtAngle);
         Log.log(
                 "Subsystems/Intake/AT STATE/DELTA THETA",
                 pivot.getAngle().in(Degrees) - angleDegrees.in(Degrees));

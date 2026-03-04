@@ -111,15 +111,15 @@ public class ChainsawSim extends Chainsaw {
         double currentRot = chainsawSim.getPositionMeters() * METERS_TO_ROT;
 
         // Logging
-        // Log.log("LOGGING/Subsystems/Climber/Chainsaw/SimVoltage", voltage);
-        // Log.log("LOGGING/Subsystems/Climber/Chainsaw/SimPositionRot", currentRot);
+        // Log.log("ROBOT/Subsystems/Climber/Chainsaw/SimVoltage", voltage);
+        // Log.log("ROBOT/Subsystems/Climber/Chainsaw/SimPositionRot", currentRot);
         // Log.log(
         //         "Subsystems/Climber/Inches",
         //         currentRot * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES);
-        // Log.log("LOGGING/Subsystems/Climber/Is Up", isUp());
-        // Log.log("LOGGING/Subsystems/Climber/Is Middle", isMiddle());
-        // Log.log("LOGGING/Subsystems/Climber/Is Down", isDown());
-        // Log.log("LOGGING/Subsystems/Climber/State", state.toString());
+        // Log.log("ROBOT/Subsystems/Climber/Is Up", isUp());
+        // Log.log("ROBOT/Subsystems/Climber/Is Middle", isMiddle());
+        // Log.log("ROBOT/Subsystems/Climber/Is Down", isDown());
+        // Log.log("ROBOT/Subsystems/Climber/State", state.toString());
 
         // Update sim
         chainsawSim.setInputVoltage(voltage);

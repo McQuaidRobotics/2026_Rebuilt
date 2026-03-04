@@ -34,7 +34,7 @@ public class TeleopSwerveWithDetune extends TeleopSwerveBaseCmd {
         detune = DrivingSharedState.getInstance().detune;
         Translation2d vt = translationStick();
 
-        Log.log("Logging/Subsystems/Swerve/DETUNE", detune);
+        Log.log("ROBOT/Subsystems/Swerve/DETUNE", detune);
 
         swerve.setControl(
                 m_driveRequest

@@ -80,8 +80,8 @@ public class LimeLightVisionReal extends LimeLights {
         double timestamp = !poses.isEmpty() ? timestampSum / poses.size() : 0.0;
         lastTimeStamp = timestamp;
 
-        Log.log("LOGGING/Subsystems/Vision/LimeLightVision/TimeStampOfMeasurements", timestamp);
-        Log.log("LOGGING/Subsystems/Vision/LimeLightVision/NumberOfTagsSeen", visibleTagIds.size());
+        Log.log("ROBOT/Subsystems/Vision/LimeLightVision/TimeStampOfMeasurements", timestamp);
+        Log.log("ROBOT/Subsystems/Vision/LimeLightVision/NumberOfTagsSeen", visibleTagIds.size());
 
         return averagePose2ds(poses);
     }
@@ -99,7 +99,7 @@ public class LimeLightVisionReal extends LimeLights {
     /** Averages a list of Pose2d objects (translation + rotation). */
     public Pose2d averagePose2ds(List<Pose2d> poses) {
         if (poses.isEmpty()) {
-            Log.log("LOGGING/Subsystems/Vision/LimeLightVision/TagsSeen", "NO TAGS SEEN");
+            Log.log("ROBOT/Subsystems/Vision/LimeLightVision/TagsSeen", "NO TAGS SEEN");
             return null;
         }
 
@@ -120,11 +120,11 @@ public class LimeLightVisionReal extends LimeLights {
         double avgY = ySum / count;
         Rotation2d avgRot = new Rotation2d(Math.atan2(sinSum / count, cosSum / count));
 
-        Log.log("LOGGING/Subsystems/Vision/LimeLightVision/RotationList", rotations.toString());
-        Log.log("LOGGING/Subsystems/Vision/LimeLightVision/Rotation", avgRot.getDegrees());
+        Log.log("ROBOT/Subsystems/Vision/LimeLightVision/RotationList", rotations.toString());
+        Log.log("ROBOT/Subsystems/Vision/LimeLightVision/Rotation", avgRot.getDegrees());
 
         Pose2d averaged = new Pose2d(avgX, avgY, avgRot);
-        Log.log("LOGGING/Subsystems/Vision/LimeLightVision/TagsSeen", averaged);
+        Log.log("ROBOT/Subsystems/Vision/LimeLightVision/TagsSeen", averaged);
 
         return averaged;
     }

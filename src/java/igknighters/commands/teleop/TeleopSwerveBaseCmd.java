@@ -65,10 +65,10 @@ public class TeleopSwerveBaseCmd extends Command {
         double processedX = magnitude * Math.cos(angle);
         double processedY = magnitude * Math.sin(angle);
         if (Robot.isBlue()) {
-            Log.log("LOGGING/TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
+            Log.log("ROBOT/TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
             return new Translation2d(processedY, -processedX);
         } else {
-            Log.log("LOGGING/TeleopSwerveBaseCmd", "Red Alliance - Inversion");
+            Log.log("ROBOT/TeleopSwerveBaseCmd", "Red Alliance - Inversion");
             return new Translation2d(processedY, -processedX);
         }
     }
@@ -94,7 +94,7 @@ public class TeleopSwerveBaseCmd extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        Log.log("LOGGING/Commands/Teleop/teleopCommand", "ENDED");
+        Log.log("ROBOT/Commands/Teleop/teleopCommand", "ENDED");
     }
 
     protected record TeleopSwerveCommandSummary(
@@ -126,14 +126,14 @@ public class TeleopSwerveBaseCmd extends Command {
         //         rotation.getX(),
         //         rawRotationYSup.getAsDouble(),
         //         rotation.getY());
-        Log.log("LOGGING/Commands/teleop/rawTranslationX", rawTranslationXSup.getAsDouble());
-        Log.log("LOGGING/Commands/teleop/translationX", translation.getX());
-        Log.log("LOGGING/Commands/teleop/rawTranslationY", rawTranslationYSup.getAsDouble());
-        Log.log("LOGGING/Commands/teleop/translationY", translation.getY());
-        Log.log("LOGGING/Commands/teleop/rawRotationX", rawRotationXSup.getAsDouble());
-        Log.log("LOGGING/Commands/teleop/rotationX", rotation.getX());
-        Log.log("LOGGING/Commands/teleop/rawRotationY", rawRotationYSup.getAsDouble());
-        Log.log("LOGGING/Commands/teleop/rotationY", rotation.getY());
+        Log.log("ROBOT/Commands/teleop/rawTranslationX", rawTranslationXSup.getAsDouble());
+        Log.log("ROBOT/Commands/teleop/translationX", translation.getX());
+        Log.log("ROBOT/Commands/teleop/rawTranslationY", rawTranslationYSup.getAsDouble());
+        Log.log("ROBOT/Commands/teleop/translationY", translation.getY());
+        Log.log("ROBOT/Commands/teleop/rawRotationX", rawRotationXSup.getAsDouble());
+        Log.log("ROBOT/Commands/teleop/rotationX", rotation.getX());
+        Log.log("ROBOT/Commands/teleop/rawRotationY", rawRotationYSup.getAsDouble());
+        Log.log("ROBOT/Commands/teleop/rotationY", rotation.getY());
         return null;
     }
 }

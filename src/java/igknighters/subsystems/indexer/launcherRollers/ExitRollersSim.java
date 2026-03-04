@@ -96,14 +96,14 @@ public class ExitRollersSim extends ExitRollers {
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
 
         // Logging
-        Log.log("LOGGING/Subsystems/Indexer/ExitRollers/SimVoltage", voltage);
-        Log.log("LOGGING/Subsystems/Indexer/ExitRollers/SimSpeedRPM", currentRPM);
-        Log.log("LOGGING/Subsystems/Indexer/ExitRollers/GoalSpeedRPM", goalRPM);
+        Log.log("ROBOT/Subsystems/Indexer/ExitRollers/SimVoltage", voltage);
+        Log.log("ROBOT/Subsystems/Indexer/ExitRollers/SimSpeedRPM", currentRPM);
+        Log.log("ROBOT/Subsystems/Indexer/ExitRollers/GoalSpeedRPM", goalRPM);
         Log.log(
                 "Subsystems/Indexer/ExitRollers/PIDOutputRPM",
                 profiledPIDController.getPositionError());
-        Log.log("LOGGING/Subsystems/Indexer/ExitRollers/PIDVolts", pidOutput);
-        Log.log("LOGGING/Subsystems/Indexer/ExitRollers/FFVolts", ffOutput);
+        Log.log("ROBOT/Subsystems/Indexer/ExitRollers/PIDVolts", pidOutput);
+        Log.log("ROBOT/Subsystems/Indexer/ExitRollers/FFVolts", ffOutput);
 
         // Apply to sim
         leaderflywheelSim.setInputVoltage(voltage);

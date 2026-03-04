@@ -28,7 +28,7 @@ public class ServosReal extends Servos {
 
     @Override
     public void periodic() {
-        Log.log("LOGGING/Subsystems/Climber/Servos/Deployed", deployed);
+        Log.log("ROBOT/Subsystems/Climber/Servos/Deployed", deployed);
         // Ensure the servo stays in position
         if (deployed) {
             servo.setAngle(SubsystemConstants.kClimber.kServos.MAX_ANGLE_DEGREES);

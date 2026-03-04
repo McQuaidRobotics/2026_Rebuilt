@@ -75,14 +75,14 @@ public class Shooter extends SubsystemBase {
 
     private void goToTurretAngle(Angle angle) {
         beingControlled = true;
-        Log.log("LOGGING/Subsystems/Shooter/TARGETING", angle.in(Degrees));
+        Log.log("ROBOT/Subsystems/Shooter/TARGETING", angle.in(Degrees));
         turret.goToAngleDegrees(angle);
     }
 
     public void targetState(AngularVelocity velo, Angle turretAngle, Angle hoodAngle) {
-        Log.log("LOGGING/Subsystems/Shooter/TARGETING/RPM", velo.in(RPM));
-        Log.log("LOGGING/Subsystems/Shooter/TARGETING/ANGLE", turretAngle.in(Degrees));
-        Log.log("LOGGING/Subsystems/Shooter/TARGETING/HoodAngle", hoodAngle.in(Degrees));
+        Log.log("ROBOT/Subsystems/Shooter/TARGETING/RPM", velo.in(RPM));
+        Log.log("ROBOT/Subsystems/Shooter/TARGETING/ANGLE", turretAngle.in(Degrees));
+        Log.log("ROBOT/Subsystems/Shooter/TARGETING/HoodAngle", hoodAngle.in(Degrees));
         beingControlled = true;
         targetSpeed(velo);
         goToTurretAngle(turretAngle);
@@ -103,9 +103,9 @@ public class Shooter extends SubsystemBase {
                 Math.abs(-getTurretAngleDegrees() - goalTurretAngleDegrees) < toleranceDegrees;
         boolean atHoodAngle =
                 Math.abs(hood.getAngleDegrees() - goalHoodAngleDegrees) < toleranceHoodDegrees;
-        Log.log("LOGGING/Subsystems/Shooter/AT TARGET/AT SPEED", atSpeed);
-        Log.log("LOGGING/Subsystems/Shooter/AT TARGET/AT TURRET ANGLE", atTurretAngle);
-        Log.log("LOGGING/Subsystems/Shooter/AT TARGET/AT HOOD ANGLE", atHoodAngle);
+        Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT SPEED", atSpeed);
+        Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT TURRET ANGLE", atTurretAngle);
+        Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT HOOD ANGLE", atHoodAngle);
         return atSpeed && atTurretAngle && atHoodAngle;
     }
 
@@ -116,14 +116,14 @@ public class Shooter extends SubsystemBase {
                 Math.abs(getTurretAngleDegrees() - goalTurretAngleDegrees) < toleranceDegrees;
         boolean atHoodAngle =
                 Math.abs(hood.getAngleDegrees() - goalHoodAngleDegrees) < toleranceHoodDegrees;
-        Log.log("LOGGING/Subsystems/Shooter/AT TARGET/AT SPEED", atSpeed);
-        Log.log("LOGGING/Subsystems/Shooter/AT TARGET/AT TURRET ANGLE", atTurretAngle);
-        Log.log("LOGGING/Subsystems/Shooter/AT TARGET/AT HOOD ANGLE", atHoodAngle);
+        Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT SPEED", atSpeed);
+        Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT TURRET ANGLE", atTurretAngle);
+        Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT HOOD ANGLE", atHoodAngle);
         return atSpeed && atTurretAngle && atHoodAngle;
     }
 
     public void setTurretPosition(Angle angle) {
-        Log.log("LOGGING/Subsystems/Shooter/SETSTATE/ANGLE", angle.in(Degrees));
+        Log.log("ROBOT/Subsystems/Shooter/SETSTATE/ANGLE", angle.in(Degrees));
         turret.setAngle(angle);
     }
 
@@ -144,7 +144,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setHoodAngleDegrees(double angleDegrees) {
-        Log.log("LOGGING/Subsystems/Shooter/SETSTATE/HoodAngle", angleDegrees);
+        Log.log("ROBOT/Subsystems/Shooter/SETSTATE/HoodAngle", angleDegrees);
         beingControlled = true;
         hood.setAngle(angleDegrees);
     }
@@ -155,7 +155,7 @@ public class Shooter extends SubsystemBase {
         turret.periodic();
         hood.periodic();
 
-        Log.log("LOGGING/Subsystems/Shooter/BEING CONTROLLED", beingControlled);
+        Log.log("ROBOT/Subsystems/Shooter/BEING CONTROLLED", beingControlled);
         if (!Robot.isReal()) {
             visualizer.update(getCurrentState(), goalRPM, goalHoodAngleDegrees);
         }

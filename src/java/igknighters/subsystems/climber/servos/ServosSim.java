@@ -18,6 +18,6 @@ public class ServosSim extends Servos {
 
     @Override
     public void periodic() {
-        Log.log("LOGGING/Subsystems/Climber/Servos/Deployed", deployed);
+        Log.log("ROBOT/Subsystems/Climber/Servos/Deployed", deployed);
     }
 }

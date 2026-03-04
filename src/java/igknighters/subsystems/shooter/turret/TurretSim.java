@@ -31,8 +31,8 @@ public class TurretSim extends Turret {
     @Override
     public void periodic() {
 
-        // Log.log("LOGGING/Subsystems/Shooter/Turret/AngleDegrees", getAngleDegrees());
-        // Log.log("LOGGING/Subsystems/Shooter/Turret/TargetDegrees", super.targetDegrees);
+        // Log.log("ROBOT/Subsystems/Shooter/Turret/AngleDegrees", getAngleDegrees());
+        // Log.log("ROBOT/Subsystems/Shooter/Turret/TargetDegrees", super.targetDegrees);
 
         isControlledThisCycle = false;
     }

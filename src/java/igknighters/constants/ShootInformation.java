@@ -119,7 +119,7 @@ public class ShootInformation {
      * @param newState The new boolean state for canShoot.
      */
     public void setAtTarget(boolean newState) {
-        Log.log("LOGGING/STATUS/CAN SHOOT", newState);
+        Log.log("ROBOT/STATUS/CAN SHOOT", newState);
         this.atTarget = newState;
     }
 
@@ -128,12 +128,12 @@ public class ShootInformation {
     }
 
     public void setPossibleShot(boolean newState) {
-        Log.log("LOGGING/STATUS/POSSIBLE SHOT", newState);
+        Log.log("ROBOT/STATUS/POSSIBLE SHOT", newState);
         this.possibleShot = newState;
     }
 
     public void setBeingControlled(boolean newState) {
-        Log.log("LOGGING/Subsystems/Shooter/BeingControlled", newState);
+        Log.log("ROBOT/Subsystems/Shooter/BeingControlled", newState);
         this.beingControlled = newState;
     }
 

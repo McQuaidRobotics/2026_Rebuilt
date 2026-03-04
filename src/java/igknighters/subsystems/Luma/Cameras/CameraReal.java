@@ -33,7 +33,7 @@ public class CameraReal extends Camera {
         camera.setPipelineIndex(0);
 
         Log.log(cameraName, true);
-        Log.log("LOGGING/Subsystems/Vision/" + cameraName + "/Status", "ENABLED");
+        Log.log("ROBOT/Subsystems/Vision/" + cameraName + "/Status", "ENABLED");
     }
 
     public CameraReal(String cameraName) {
@@ -43,7 +43,7 @@ public class CameraReal extends Camera {
 
     @Override
     public void periodic() {
-        Log.log("LOGGING/Subsystems/Vision/" + name + "/Connected", camera.isConnected());
+        Log.log("ROBOT/Subsystems/Vision/" + name + "/Connected", camera.isConnected());
 
         // Removed unnecessary new ArrayList<>() allocation
         List<PhotonPipelineResult> potentialResults = camera.getAllUnreadResults();
@@ -91,22 +91,22 @@ public class CameraReal extends Camera {
 
     @Override
     public Translation2d getGamePieceOffset() {
-        Log.log("LOGGING/Subsystems/Vision/Getting Offset", true);
+        Log.log("ROBOT/Subsystems/Vision/Getting Offset", true);
 
         if (results.isEmpty()) {
-            Log.log("LOGGING/Subsystems/Vision/ObjectDetection/Camera Results", false);
+            Log.log("ROBOT/Subsystems/Vision/ObjectDetection/Camera Results", false);
             return new Translation2d();
         }
 
-        Log.log("LOGGING/Subsystems/Vision/ObjectDetection/Camera Results", true);
+        Log.log("ROBOT/Subsystems/Vision/ObjectDetection/Camera Results", true);
         var result = results.get(results.size() - 1);
 
         if (!result.hasTargets()) {
-            Log.log("LOGGING/Subsystems/Vision/ObjectDetection/Camera Has Target", false);
+            Log.log("ROBOT/Subsystems/Vision/ObjectDetection/Camera Has Target", false);
             return new Translation2d();
         }
 
-        Log.log("LOGGING/Subsystems/Vision/ObjectDetection/Camera Has Target", true);
+        Log.log("ROBOT/Subsystems/Vision/ObjectDetection/Camera Has Target", true);
 
         // Make a COPY of the targets list before sorting to avoid mutating PhotonVision's internal
         // data

@@ -85,7 +85,7 @@ public class FlywheelReal extends Flywheel {
 
     @Override
     public void setSpeed(AngularVelocity speedRPM) {
-        Log.log("LOGGING/Subsystems/Shooter/Rollers/setSpeed", speedRPM);
+        Log.log("ROBOT/Subsystems/Shooter/Rollers/setSpeed", speedRPM);
         isBeingControlledActivly = true;
         // mainShooter.setControl(velocityControl.withVelocity(speedRPM / 60.0));
         mainShooter.setControl(velocityControl.withVelocity(speedRPM.in(RotationsPerSecond)));
@@ -106,7 +106,7 @@ public class FlywheelReal extends Flywheel {
     public void periodic() {
         BaseStatusSignal.refreshAll(
                 shooterVelocity, shooterCurrent, shooterVoltage, shooterTemperature);
-        Log.log("LOGGING/Subsystems/Shooter/Rollers/being controlled", isBeingControlledActivly);
+        Log.log("ROBOT/Subsystems/Shooter/Rollers/being controlled", isBeingControlledActivly);
         Log.logMotor("Subsystems/Shooter/Rollers/Motor", mainShooter);
 
         isBeingControlledActivly = false;
