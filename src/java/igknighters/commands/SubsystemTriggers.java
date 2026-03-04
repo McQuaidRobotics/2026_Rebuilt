@@ -168,7 +168,7 @@ public class SubsystemTriggers {
                         () -> ShootInformation.getInstance().useOperatorControlLocation(false)));
         moveToTrigger.whileTrue(
                 Repulsor.moveWithRepulsor(
-                        swerve, getPoseFromString("robot/moveWaypoint").toPose2d(), 1));
+                        swerve, getPoseFromString("robot/moveWaypoint").toPose2d()));
     }
 
     public Command getLEDCommandByMode() {

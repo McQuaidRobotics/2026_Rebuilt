@@ -2,6 +2,7 @@ package igknighters.controllers;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -14,6 +15,8 @@ import igknighters.commands.Repulsor;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
+import igknighters.commands.teleop.TeleopSwerveJoystickHeadingCmd;
+import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
@@ -128,8 +131,7 @@ public class DriverController {
                             new Pose2d(
                                     FieldConstants.X_FIELD / 2,
                                     FieldConstants.Y_FIELD / 2,
-                                    new Rotation2d()),
-                            1));
+                                    new Rotation2d())));
         } else if (debugType == DebugType.SHOOTER) {
             this.A.whileTrue(
                     ShooterCommands.targetState(shooter, 5000, 90, kHood.MIN_ANGLE_DEGREES));

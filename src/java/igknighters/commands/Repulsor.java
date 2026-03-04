@@ -96,7 +96,6 @@ public class Repulsor {
         return -xRepelForce;
     }
 
-    // find attractive force to goal in the x
     public static double getXGoal(Pose2d currentPose, Pose2d target) {
         double xGoalDist = target.getX() - currentPose.getX();
         if (!SubsystemConstants.disableAllLogs) {
@@ -181,6 +180,66 @@ public class Repulsor {
         return -yRepelForce;
     }
 
+    // overloaded method for y repulsion that doesn't take target, used for teleop where we just
+    // want to repel from obstacles and not be attracted to a target
+    public static double getYRepulse(Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
+        double yRepelForce = 0.0;
+        double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
+        Log.log("Commands/repulsor/Time", currentTime);
+        for (Repulsor.obstacle obs : obstacles) {
+            if (obs.type == obstacleType.CIRCLE) {
+                double dist =
+                        Math.hypot(
+                                obs.obstaclePose.getX() - currentPose.getX(),
+                                obs.obstaclePose.getY() - currentPose.getY());
+                // determine if obstacle X is above or below robot position to add or subtract force
+                if (obs.obstaclePose.getY() - currentPose.getY() > 0) {
+                    yRepelForce +=
+                            (Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist))
+                                    * (obs.obstaclePose.getY() - currentPose.getY())
+                                    / 3;
+                    // }
+                } else {
+                    yRepelForce -=
+                            (Math.pow(Math.E, obs.strength) * Math.pow(Math.E, 2 - dist))
+                                    * (currentPose.getY() - obs.obstaclePose.getY())
+                                    / 3;
+                }
+            }
+            // if directly aligned in the y with a obstacle, it will push up/down to avoid getting
+            // stuck
+            if (obs.type != obstacleType.SAFE_ZONE
+                    && Math.abs(currentPose.getY() - obs.obstaclePose.getY()) < .3) {
+                yRepelForce = 0;
+                if ((currentPose.getX() < 182.11 * Conv.INCHES_TO_METERS
+                                || currentPose.getX()
+                                        > FieldConstants.X_FIELD - 182.11 * Conv.INCHES_TO_METERS)
+                        && Math.abs(currentPose.getX() - obs.obstaclePose.getX()) > 1) {
+                    if (currentPose.getY() < FieldConstants.Y_FIELD / 2) {
+                        yRepelForce += Math.abs(currentPose.getX() - obs.obstaclePose.getX()) * 2;
+                    } else if (currentPose.getY() > FieldConstants.Y_FIELD / 2) {
+                        yRepelForce -= Math.abs(currentPose.getX() - obs.obstaclePose.getX()) * 2;
+                    }
+                }
+            }
+        }
+        double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
+        Log.log("Commands/repulsor/DeltaTime", deltaTime);
+        if (deltaTime > maxTime) {
+            maxTime = deltaTime;
+            Log.log("Commands/repulsor/MaxDeltaTime", maxTime);
+        }
+        // if in front of the hubs, there will be a up/down force to get robot to move towards one
+        // side
+        if (currentPose.getY() < FieldConstants.Y_FIELD / 2 && currentPose.getY() > 50.35) {
+            yRepelForce += .5;
+        } else if (currentPose.getY() > FieldConstants.Y_FIELD / 2
+                && currentPose.getY() < FieldConstants.Y_FIELD - 50.59 * Conv.INCHES_TO_METERS) {
+            yRepelForce -= .5;
+        }
+        return -yRepelForce;
+    }
+
     public static double getYGoal(Pose2d currentPose, Pose2d target) {
         double yGoalDist = target.getY() - currentPose.getY();
         if (!SubsystemConstants.disableAllLogs) {
@@ -189,7 +248,7 @@ public class Repulsor {
         return yGoalDist;
     }
 
-    public static Command moveWithRepulsor(Swerve swerve, Pose2d targetPose, double strength) {
+    public static Command moveWithRepulsor(Swerve swerve, Pose2d targetPose) {
         ArrayList<obstacle> obstacles = FieldConstants.OBSTACLES.ALL_OBSTACLES;
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
