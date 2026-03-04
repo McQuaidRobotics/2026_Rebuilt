@@ -54,12 +54,12 @@ public class SubsystemConstants {
         }
 
         public static class kServos {
-            public static final int SERVO_PORT_1 = 7;
+            public static final int SERVO_PORT_1 = 9;
             public static final int SERVO_PORT_2 = 3;
             public static final int SERVO_PORT_3 = 4;
             public static final int SERVO_PORT_4 = 5;
-            public static final double MAX_ANGLE_DEGREES = 180.0;
-            public static final double MIN_ANGLE_DEGREES = 0.0;
+            public static final double MAX_ANGLE_DEGREES = 135.0;
+            public static final double MIN_ANGLE_DEGREES = 45.0;
         }
     }
 

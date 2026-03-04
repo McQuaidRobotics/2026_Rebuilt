@@ -29,7 +29,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public Swerve(boolean isSwerveDisabled) {
-        this.isSwerveDisabled = isSwerveDisabled;
+        this.isSwerveDisabled = isSwerveDisabled; 
         if (!isSwerveDisabled) {
             drivetrain = swerveConsts.getSwerveConsts().createDrivetrain(this);
         }

@@ -7,6 +7,7 @@ import igknighters.subsystems.climber.chainsaw.ChainsawDisabled;
 import igknighters.subsystems.climber.chainsaw.ChainsawSim;
 import igknighters.subsystems.climber.servos.Servos;
 import igknighters.subsystems.climber.servos.ServosDisabled;
+import igknighters.subsystems.climber.servos.ServosReal;
 import igknighters.subsystems.climber.servos.ServosSim;
 
 public class Climber extends SubsystemBase {
@@ -16,7 +17,7 @@ public class Climber extends SubsystemBase {
     public Climber() {
         if (Robot.isReal()) {
             chainsaw = new ChainsawDisabled();
-            servos = new ServosDisabled();
+            servos = new ServosReal();
         } else {
             chainsaw = new ChainsawSim();
             servos = new ServosSim();
