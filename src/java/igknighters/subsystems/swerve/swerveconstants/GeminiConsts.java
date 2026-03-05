@@ -332,4 +332,28 @@ public class GeminiConsts extends CommonSwerveConsts {
                     modules);
         }
     }
+
+    @Override
+    public SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
+            getBackLeftModule() {
+        return BackLeft;
+    }
+
+    @Override
+    public SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
+            getBackRightModule() {
+        return BackRight;
+    }
+
+    @Override
+    public SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
+            getFrontLeftModule() {
+        return FrontLeft;
+    }
+
+    @Override
+    public SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>
+            getFrontRightModule() {
+        return FrontRight;
+    }
 }
