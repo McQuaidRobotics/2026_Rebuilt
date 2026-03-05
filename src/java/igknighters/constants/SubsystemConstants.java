@@ -14,10 +14,10 @@ public class SubsystemConstants {
 
         public static class kChainsaw {
             public static final int LEFT_MOTOR_ID = 15;
-            public static final int BUMPER_SENSOR_ID = 3;
-            public static final int MAX_HEIGHT_SENSOR_ID = 1;
-            public static final int MIN_HEIGHT_SENSOR_ID = 2;
-            public static final int MIDDLE_HEIGHT_SENSOR_ID = 4;
+            public static final int BUMPER_SENSOR_ID = 5;
+            public static final int MAX_HEIGHT_SENSOR_ID = 8;
+            public static final int MIN_HEIGHT_SENSOR_ID = 6;
+            public static final int MIDDLE_HEIGHT_SENSOR_ID = 7;
             public static boolean disableChainsawLogs = false;
 
             static {
@@ -54,12 +54,12 @@ public class SubsystemConstants {
         }
 
         public static class kServos {
-            public static final int SERVO_PORT_1 = 7;
+            public static final int SERVO_PORT_1 = 9;
             public static final int SERVO_PORT_2 = 3;
             public static final int SERVO_PORT_3 = 4;
             public static final int SERVO_PORT_4 = 5;
-            public static final double MAX_ANGLE_DEGREES = 180.0;
-            public static final double MIN_ANGLE_DEGREES = 0.0;
+            public static final double MAX_ANGLE_DEGREES = 160.0;
+            public static final double MIN_ANGLE_DEGREES = 75.0;
         }
     }
 

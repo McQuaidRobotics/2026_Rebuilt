@@ -87,7 +87,7 @@ public class SwerveCommands {
             double rawError = targetHeading - currentHeading;
 
             // Wrap the error to be within -PI to PI
-            double angleError = Math.atan2(Math.sin(rawError), Math.cos(rawError));
+            double angleError = Math.abs(Math.atan2(Math.sin(rawError), Math.cos(rawError)));
 
             boolean isAt =
                     positionError <= positionToleranceMeters && angleError <= angleToleranceRadians;
@@ -117,7 +117,7 @@ public class SwerveCommands {
         yController.setTolerance(0.0);
         final PIDController thetaController = new PIDController(1, 0.01, 0.0);
         thetaController.setTolerance(0.0);
-        thetaController.enableContinuousInput(-Math.PI, Math.PI);
+        thetaController.enableContinuousInput(Math.PI, -Math.PI);
 
         return swerve.run(
                 () -> {
@@ -147,7 +147,7 @@ public class SwerveCommands {
                             m_driveRequest
                                     .withVelocityX(-vx)
                                     .withVelocityY(-vy)
-                                    .withRotationalRate(-omega));
+                                    .withRotationalRate(omega));
                 });
     }
 

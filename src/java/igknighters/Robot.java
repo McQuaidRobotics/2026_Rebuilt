@@ -30,7 +30,6 @@ import igknighters.constants.DrivingSharedState;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.controllers.DriverController;
-import igknighters.controllers.DriverController.DebugType;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
@@ -319,7 +318,7 @@ public class Robot extends LoggedRobot {
     }
 
     public void bindDriverController() {
-        driverController.bind(subsytems, DebugType.CLIMBER);
+        driverController.bind(subsytems);
     }
 
     @Override
@@ -407,7 +406,7 @@ public class Robot extends LoggedRobot {
                 // AimSolver)
                 double flywheelRadius = 0.0508; // 2 inches
                 double launchVelocity =
-                        (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.2;
+                        (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.0;
 
                 fuelSim.launchFuel(
                         MetersPerSecond.of(launchVelocity),
