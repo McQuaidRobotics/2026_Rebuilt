@@ -179,7 +179,7 @@ public class Robot extends LoggedRobot {
                                 System.getProperty("os.arch")));
         if (Robot.isReal()) {
             Logger.addDataReceiver(new WPILOGWriter());
-            // Logger.addDataReceiver(new NT4Publisher());
+            Logger.addDataReceiver(new NT4Publisher());
         } else {
             Logger.addDataReceiver(new NT4Publisher());
         }
@@ -324,7 +324,6 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledInit() {
         CommandScheduler.getInstance().cancelAll();
-        // CommandScheduler.getInstance().getActiveButtonLoop().clear();
         CommandScheduler.getInstance().clearComposedCommands();
         subsytems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsytems.swerve, driverController, detune.value()));

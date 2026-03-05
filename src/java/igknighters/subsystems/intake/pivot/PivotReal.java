@@ -95,8 +95,8 @@ public class PivotReal extends Pivot {
         beingCommanded = true;
         if (!SubsystemConstants.kIntake.kPivot.disablePivotLogs) {
             Log.log("ROBOT/Subsystems/Intake/Pivot/Stopped", false);
-            pivotMotor.setControl(motionMagicControl.withPosition(angle.in(Rotation)));
         }
+        pivotMotor.setControl(motionMagicControl.withPosition(angle.in(Rotation)));
     }
 
     @Override
