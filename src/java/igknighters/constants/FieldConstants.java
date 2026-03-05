@@ -41,7 +41,7 @@ public class FieldConstants {
         public static final Pose2d POSITION_RED =
                 new Pose2d(
                         X_FIELD - POSITION_BLUE.getX(),
-                        POSITION_BLUE.getY(),
+                        Y_FIELD - POSITION_BLUE.getY(),
                         new Rotation2d(-Math.PI / 2));
     }
 

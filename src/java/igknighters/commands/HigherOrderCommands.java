@@ -2,6 +2,7 @@ package igknighters.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
@@ -10,6 +11,7 @@ import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.ClimberState;
+import java.util.Set;
 
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
@@ -189,11 +191,25 @@ public class HigherOrderCommands {
                                                                                             .1,
                                                                                             .1)
                                                                                     .getAsBoolean()
-                                                                            || subsystems.climber
-                                                                                    .isSensorHit()),
+                                                                            || SwerveCommands
+                                                                                    .isAtVelocityAndNotAtStart(
+                                                                                            subsystems
+                                                                                                    .swerve,
+                                                                                            new ChassisSpeeds(
+                                                                                                    0,
+                                                                                                    0,
+                                                                                                    0),
+                                                                                            new ChassisSpeeds(
+                                                                                                    0.1,
+                                                                                                    0.1,
+                                                                                                    0.1),
+                                                                                            endPose,
+                                                                                            .2,
+                                                                                            .1)
+                                                                                    .getAsBoolean()),
                                             SwerveCommands.stopDriving(subsystems.swerve)));
                         },
-                        java.util.Set.of(subsystems.swerve, subsystems.climber))
+                        Set.of(subsystems.swerve, subsystems.climber, subsystems.intake))
                 .withName("Moving to Climber and raising to max height");
     }
 }

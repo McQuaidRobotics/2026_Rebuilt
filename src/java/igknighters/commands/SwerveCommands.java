@@ -10,6 +10,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.FieldVisualizer;
@@ -43,6 +44,55 @@ public class SwerveCommands {
 
     public static Pose2d getPose(Swerve swerve) {
         return swerve.getState().Pose;
+    }
+
+    /**
+     * Checks if the swerve is at the target velocity and not at the start pose. This was made so
+     * that we can see if velocity is 0 but not when we start. Because at the start of climb
+     * sequence velocity is 0.
+     *
+     * @param swerve The swerve subsystem
+     * @param targetSpeeds The target chassis speeds
+     * @param tolerance The tolerance for each chassis speed component
+     * @param startPose The starting pose to compare against
+     * @param positionToleranceMeters The position away from start in meters
+     * @param angleToleranceRadians The angle difference in radians
+     * @return A BooleanSupplier that returns true if the swerve is at the target velocity and not
+     *     at the start pose
+     */
+    public static BooleanSupplier isAtVelocityAndNotAtStart(
+            Swerve swerve,
+            ChassisSpeeds targetSpeeds,
+            ChassisSpeeds tolerance,
+            Pose2d startPose,
+            double positionToleranceMeters,
+            double angleToleranceRadians) {
+        return () -> {
+            boolean isAtVel = isAtVelocity(swerve, targetSpeeds, tolerance).getAsBoolean();
+            boolean isNotAtStart =
+                    !isAt(swerve, startPose, positionToleranceMeters, angleToleranceRadians)
+                            .getAsBoolean();
+            return isAtVel && isNotAtStart;
+        };
+    }
+
+    public static BooleanSupplier isAtVelocity(
+            Swerve swerve, ChassisSpeeds targetSpeeds, ChassisSpeeds tolerance) {
+        return () -> {
+            ChassisSpeeds currentSpeeds = swerve.getFieldRelativeSpeeds();
+            boolean isAt =
+                    Math.abs(currentSpeeds.vxMetersPerSecond - targetSpeeds.vxMetersPerSecond)
+                                    <= tolerance.vxMetersPerSecond
+                            && Math.abs(
+                                            currentSpeeds.vyMetersPerSecond
+                                                    - targetSpeeds.vyMetersPerSecond)
+                                    <= tolerance.vyMetersPerSecond
+                            && Math.abs(
+                                            currentSpeeds.omegaRadiansPerSecond
+                                                    - targetSpeeds.omegaRadiansPerSecond)
+                                    <= tolerance.omegaRadiansPerSecond;
+            return isAt;
+        };
     }
 
     public static Command stopDriving(Swerve swerve) {
