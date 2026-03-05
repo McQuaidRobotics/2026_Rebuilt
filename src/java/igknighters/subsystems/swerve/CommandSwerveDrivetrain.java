@@ -333,8 +333,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain {
                 new MapleSimSwerveDrivetrain(
                         Seconds.of(kSimLoopPeriod),
                         Pounds.of(115), // robot weight
-                        Inches.of(30), // bumper length
-                        Inches.of(30), // bumper width
+                        Inches.of(28), // bumper length
+                        Inches.of(28), // bumper width
                         DCMotor.getKrakenX60(1), // drive motor type
                         DCMotor.getFalcon500(1), // steer motor type
                         1.2, // wheel COF
@@ -389,9 +389,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain {
 
     @Override
     public void resetPose(Pose2d pose) {
-        if (this.mapleSimSwerveDrivetrain != null)
+        if (this.mapleSimSwerveDrivetrain != null) {
             mapleSimSwerveDrivetrain.mapleSimDrive.setSimulationWorldPose(pose);
-        Timer.delay(0.1); // wait for simulation to update
+            Timer.delay(0.1); // wait for simulation to update
+        }
         super.resetPose(pose);
     }
 }
