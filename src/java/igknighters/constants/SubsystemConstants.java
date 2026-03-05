@@ -72,8 +72,8 @@ public class SubsystemConstants {
             public static final double GEAR_RATIO = 4.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
             public static final double MAX_SPEED_RPM = 5000.0;
-            public static final double MAX_ACCELERATION_RPM = 70.0;
-            public static final double MOTION_MAGIC_JERK = 17.0;
+            public static final double MAX_ACCELERATION_RPM = 1500.0;
+            public static final double MOTION_MAGIC_JERK = 600.0;
             public static final int BEAM_BREAK_SENSOR_CHANNEL = 0;
             public static final int FORWARD_CURRENT_LIMIT = 40;
             public static final int REVERSE_CURRENT_LIMIT = 30;
@@ -100,8 +100,8 @@ public class SubsystemConstants {
             public static final double GEAR_RATIO = 5.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
             public static final double MAX_SPEED_RPM = 5000.0;
-            public static final double MAX_ACCELERATION_RPM = 70.0;
-            public static final double MOTION_MAGIC_JERK = 17.0;
+            public static final double MAX_ACCELERATION_RPM = 1500.0;
+            public static final double MOTION_MAGIC_JERK = 5000.0;
             public static final int BEAM_BREAK_SENSOR_CHANNEL = 0;
             public static final double kP = 0.3; // .5 max
             public static final double kI = 0.1;
@@ -131,8 +131,8 @@ public class SubsystemConstants {
             public static final double GEAR_RATIO = 1.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
             public static final double MAX_SPEED_RPM = 5000.0;
-            public static final double MAX_ACCELERATION_RPM = 70.0;
-            public static final double MOTION_MAGIC_JERK = 17.0;
+            public static final double MAX_ACCELERATION_RPM = 1500.0;
+            public static final double MOTION_MAGIC_JERK = 500.0;
             public static final int BEAM_BREAK_SENSOR_CHANNEL = 0;
             public static final int FORWARD_CURRENT_LIMIT = 40;
             public static final int REVERSE_CURRENT_LIMIT = 30;
@@ -223,9 +223,9 @@ public class SubsystemConstants {
             public static final double GEAR_RATIO = 16.2;
             public static final double MAX_ANGLE_DEGREES = 270.0;
             public static final double MIN_ANGLE_DEGREES = -90.0;
-            public static final double MAX_SPEED_RPM = 200.0;
-            public static final double MAX_ACCELERATION_RPM = 300.0;
-            public static final double MAX_JERK = 10;
+            public static final double MAX_SPEED_RPM = 400.0;
+            public static final double MAX_ACCELERATION_RPM = 600.0;
+            public static final double MAX_JERK = 60;
             public static final int STATOR_CURRENT_LIMIT = 40;
             public static final int SUPPLY_CURRENT_LIMIT = 30;
             public static final double kP = 45.0; // tuned

@@ -92,6 +92,12 @@ public class LimeLightVisionReal extends LimeLights {
             }
         }
 
+        double timestamp = !poses.isEmpty() ? timestampSum / poses.size() : 0.0;
+        lastTimeStamp = timestamp;
+
+        Log.log("ROBOT/Subsystems/Vision/LimeLightVision/TimeStampOfMeasurements", timestamp);
+        Log.log("ROBOT/Subsystems/Vision/LimeLightVision/NumberOfTagsSeen", visibleTagIds.size());
+
         return averagePose2ds(poses);
     }
 

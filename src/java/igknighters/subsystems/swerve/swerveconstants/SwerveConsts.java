@@ -35,7 +35,7 @@ public class SwerveConsts {
         } else {
             if (!SubsystemConstants.disableAllLogs) {
                 Log.log(
-                        "ROBOT_INFO/ROBOT TYPE",
+                        "ROBOT/ROBOT_INFO/ROBOT TYPE",
                         "UNKNOWN: geminknight is: " + GEMINKNIGHT_SERIAL_NUMBER);
             }
             return Robots.UNKNOWN;
@@ -46,17 +46,17 @@ public class SwerveConsts {
         Robots robot = getRobot();
         if (robot.equals(Robots.DEMO_BOT)) {
             if (!SubsystemConstants.disableAllLogs) {
-                Log.log("ROBOT/SWERVE CONSTS", "Using DemoBotConsts");
+                Log.log("ROBOT/ROBOT_INFO/SWERVE CONSTS", "Using DemoBotConsts");
             }
             return new DemoBotConsts();
         } else if (robot.equals(Robots.GEMINKNIGHT)) {
             if (!SubsystemConstants.disableAllLogs) {
-                Log.log("ROBOT/SWERVE CONSTS", "Using GeminiConsts");
+                Log.log("ROBOT/ROBOT_INFO/SWERVE CONSTS", "Using GeminiConsts");
             }
             return new GeminiConsts();
         } else {
             if (!SubsystemConstants.disableAllLogs) {
-                Log.log("ROBOT/SWERVE CONSTS", "Using DemoBotConsts (default)");
+                Log.log("ROBOT/ROBOT_INFO/SWERVE CONSTS", "Using DemoBotConsts (default)");
             }
             return new DemoBotConsts();
         }
