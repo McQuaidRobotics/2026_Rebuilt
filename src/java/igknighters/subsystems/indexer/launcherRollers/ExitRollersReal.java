@@ -66,8 +66,8 @@ public class ExitRollersReal extends ExitRollers {
     public void setSpeedRPM(double speedRpm) {
         if (!SubsystemConstants.kIndexer.kExitRollers.disableExitRollersLogs) {
             Log.log("ROBOT/Subsystems/Indexer/ExitRollers/setSpeed", speedRpm);
-            exitRollerMotor.setControl(velocityControl.withVelocity(speedRpm / 60.0));
         }
+            exitRollerMotor.setControl(velocityControl.withVelocity(speedRpm / 60.0));
     }
 
     @Override

@@ -489,7 +489,9 @@ public class AimSolver {
                         Degrees.of(kHood.MIN_ANGLE_DEGREES));
             }
             canShoot(true);
+        if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
             Log.log("ROBOT/Subsystems/Shooter/Aiming/SHOT IS POSSIBLE AT THIS RPM", currentRPM);
+        } 
 
             double root = Math.sqrt(inside);
 
