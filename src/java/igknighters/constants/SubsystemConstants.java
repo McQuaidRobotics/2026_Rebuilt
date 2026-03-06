@@ -18,7 +18,7 @@ public class SubsystemConstants {
             public static final int MAX_HEIGHT_SENSOR_ID = 8;
             public static final int MIN_HEIGHT_SENSOR_ID = 6;
             public static final int MIDDLE_HEIGHT_SENSOR_ID = 7;
-            public static boolean disableChainsawLogs = false;
+            public static boolean disableChainsawLogs = true;
 
             static {
                 if (disableAllLogs) {
@@ -83,7 +83,7 @@ public class SubsystemConstants {
             public static final double kS = 0.178;
             public static final double kV = 0.5;
             public static final double kA = 0;
-            public static boolean disableSpindexerLogs = false;
+            public static boolean disableSpindexerLogs = true;
 
             static {
                 if (disableAllLogs) {
@@ -108,7 +108,7 @@ public class SubsystemConstants {
             public static final double kA = 0.02;
             public static final double PEAK_CURRENT_LIMIT = 40;
             public static final double SUPPLY_CURRENT_LIMIT = 30;
-            public static boolean disableExitRollersLogs = false;
+            public static boolean disableExitRollersLogs = true;
 
             static {
                 if (disableAllLogs) {
@@ -275,7 +275,7 @@ public class SubsystemConstants {
         public static final String intakeCam = "limelight-intake";
         public static final String backCam = "limelight-back";
         public static final String rightCam = "limelight-left";
-        public static boolean disableVisionLogs = false;
+        public static boolean disableVisionLogs = true;
 
         static {
             if (disableAllLogs) {
