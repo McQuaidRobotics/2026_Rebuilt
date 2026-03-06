@@ -1,7 +1,9 @@
 package igknighters.subsystems;
 
+import static edu.wpi.first.units.Units.RPM;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import igknighters.commands.IndexerCommands;
+import igknighters.commands.IntakeCommands;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.climber.Climber;
@@ -40,20 +42,20 @@ public class Subsystems {
         this.climber = climber;
         this.indexer = indexer;
         this.lockedResources =
-                new SubsystemBase[] {swerve, shooter, climber, indexer, intake, luma, vision, led};
+                new SubsystemBase[] {
+                    swerve,
+                    shooter,
+                    climber,
+                    indexer.exitRollers,
+                    indexer.spindexer,
+                    intake,
+                    luma,
+                    vision,
+                    led
+                };
 
-        this.indexer.setDefaultCommand(IndexerCommands.jorkIt(indexer).repeatedly());
-
-        // CommandScheduler.getInstance().registerSubsystem(this.lockedResources);
+        this.indexer.spindexer.setDefaultCommand(indexer.spindexer.jorkRepeating());
+        this.indexer.exitRollers.setDefaultCommand(indexer.exitRollers.holdSpeed(RPM.of(0.0)));
+        this.intake.setDefaultCommand(IntakeCommands.goToStow(intake));
     }
-
-    // public static interface SharedSubsystem {
-    //     default void periodic() {}
-
-    //     default void simulationPeriodic() {}
-
-    //     default String getName() {
-    //         return this.getClass().getSimpleName();
-    //     }
-    // }
 }

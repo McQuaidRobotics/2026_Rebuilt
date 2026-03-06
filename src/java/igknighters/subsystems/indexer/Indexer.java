@@ -1,54 +1,28 @@
 package igknighters.subsystems.indexer;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import igknighters.Robot;
-import igknighters.subsystems.indexer.launcherRollers.*;
+import static edu.wpi.first.units.Units.RPM;
+
+import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.subsystems.indexer.launcherRollers.ExitRollers;
-import igknighters.subsystems.indexer.spindexer.*;
 import igknighters.subsystems.indexer.spindexer.Spindexer;
-import igknighters.subsystems.indexer.spindexer.SpindexerSim;
 
-public class Indexer extends SubsystemBase {
-    private Spindexer spindexer;
-    private ExitRollers exitRollers;
-    private final IndexerVisualizer visualizer = new IndexerVisualizer();
+public class Indexer {
+    public ExitRollers exitRollers = new ExitRollers();
+    public Spindexer spindexer = new Spindexer();
 
-    public Indexer() {
-        if (Robot.isReal()) {
-            spindexer = new SpindexerReal();
-            exitRollers = new ExitRollersReal();
+    public Indexer() {}
 
-        } else {
-            spindexer = new SpindexerSim();
-            exitRollers = new ExitRollersSim();
-        }
+    public Command idle() {
+        return spindexer
+                .jorkRepeating()
+                .alongWith(exitRollers.holdSpeed(RPM.of(0.0)))
+                .withName("INDEXER IDLE");
     }
 
-    public void setRPM(double RPM) {
-        spindexer.goToRPM(RPM);
-    }
-
-    public double getSpindexerRPM() {
-        return spindexer.getRPM();
-    }
-
-    public double getExitRollerRPM() {
-        return exitRollers.getSpeedRPM();
-    }
-
-    public void goToState(IndexerState state) {
-        spindexer.goToRPM(state.spindexerRPM);
-        exitRollers.setSpeedRPM(state.exitRollerRPM);
-    }
-
-    public void stop() {
-        spindexer.stop();
-    }
-
-    @Override
-    public void periodic() {
-        spindexer.periodic();
-        exitRollers.periodic();
-        visualizer.update(spindexer.getRPM(), exitRollers.getSpeedRPM());
+    public Command dispense() {
+        return spindexer
+                .holdAtState(IndexerState.DISPENSE_BALL)
+                .alongWith(exitRollers.holdAtState(IndexerState.DISPENSE_BALL))
+                .withName("INDEXER DISPENSE");
     }
 }

@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import igknighters.commands.IndexerCommands;
 import igknighters.commands.SubsystemTriggers;
 import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
@@ -139,15 +138,6 @@ public class Robot extends LoggedRobot {
         subsytems.swerve.registerTelemetry(logger::telemeterize);
     }
 
-    public void setUpTest(Subsystems subsystems) {
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - STOP",
-                IndexerCommands.justStop(subsystems.indexer));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - DISPENSE BALLS",
-                IndexerCommands.dispense(subsystems.indexer));
-    }
-
     public void setUpAdvantageScope() {
 
         // Record metadata
@@ -207,7 +197,6 @@ public class Robot extends LoggedRobot {
         setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
-        setUpTest(subsytems);
         bindDriverController();
 
         subsystemTriggers.SetupTriggers(subsytems, driverController);
@@ -233,7 +222,6 @@ public class Robot extends LoggedRobot {
         setUpSwerve(subsytems);
         publishCommandsAndSubystems(subsytems);
         setUpAutos(subsytems);
-        setUpTest(subsytems);
         bindDriverController();
 
         subsystemTriggers.SetupTriggers(subsytems, driverController);
@@ -393,9 +381,9 @@ public class Robot extends LoggedRobot {
 
             // Logic to launch fuel when dispensing and shooter is ready
             double currentTime = RobotController.getFPGATime() / 1.0e6;
-            if (subsytems.indexer.getExitRollerRPM() > 50.0
+            if (subsytems.indexer.exitRollers.getSpeed().in(RPM) > 50.0
                     && subsytems.shooter.getCurrentState().flywheelSpeed.in(RPM) > 500.0
-                    && subsytems.indexer.getSpindexerRPM() > 50.0
+                    && subsytems.indexer.spindexer.getSpeed().in(RPM) > 50.0
                     && (currentTime - lastShotTime) > 0.1) { // 0.1s cooldown
 
                 var shooterState = subsytems.shooter.getCurrentState();

@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.ClimberCommands;
 import igknighters.commands.HigherOrderCommands;
-import igknighters.commands.IndexerCommands;
 import igknighters.commands.IntakeCommands;
 import igknighters.commands.Repulsor;
 import igknighters.commands.ShooterCommands;
@@ -143,7 +142,7 @@ public class DriverController {
                             () -> swerve.getState().Pose,
                             swerve::getFieldRelativeSpeeds,
                             5.0));
-            this.LT.whileTrue(IndexerCommands.dispense(indexer));
+            this.LT.whileTrue(subsystems.indexer.dispense());
 
             // this.DPD.whileTrue(ShooterCommands.targetState(shooter, 0, 0,
             // kHood.MAX_ANGLE_DEGREES));
@@ -152,8 +151,8 @@ public class DriverController {
             // kHood.MIN_ANGLE_DEGREES));
 
         } else if (debugType == DebugType.INDEXER) {
-            this.A.onTrue(IndexerCommands.dispense(indexer));
-            this.B.onTrue(IndexerCommands.justStop(indexer));
+            this.A.onTrue(subsystems.indexer.dispense());
+            this.B.onTrue(subsystems.indexer.idle());
 
         } else if (debugType == DebugType.CLIMBER) {
             this.B.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.LATCH_ON));
@@ -180,14 +179,9 @@ public class DriverController {
         this.LT
                 .whileTrue(HigherOrderCommands.rapidFireStream(subsystems))
                 .onFalse(HigherOrderCommands.IdleShooter(subsystems));
-        this.DPD.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
 
         this.RT.whileTrue(HigherOrderCommands.forceDispense(subsystems));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
-        this.DPR.whileTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
-        this.X.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.LATCH_ON));
-        this.DPL.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.STOW));
-        this.DPU.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.PULL_UP));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

@@ -26,7 +26,9 @@ public class HigherOrderCommands {
                                         subsystems.swerve::getFieldRelativeSpeeds)
                                 .repeatedly()
                                 .withName("SHOOTING WHILE DOING OTHER STUFF"),
-                        IndexerCommands.dispense(subsystems.indexer)
+                        subsystems
+                                .indexer
+                                .dispense()
                                 .onlyIf(ShootInformation.getInstance().atCommandedStateTrigger()))
                 .withName("DISPENSING")
                 .alongWith(Commands.print("DISPENSING"))
@@ -46,8 +48,8 @@ public class HigherOrderCommands {
         // 2. The Smart Hopper/Indexer Feed
         Command smartFeed =
                 Commands.either(
-                        IndexerCommands.dispense(subsystems.indexer),
-                        IndexerCommands.justStop(subsystems.indexer),
+                        subsystems.indexer.dispense(),
+                        subsystems.indexer.idle(),
                         ShootInformation.getInstance()
                                 .atCommandedStateTrigger()
                                 .and(ShootInformation.getInstance().beingControlledTrigger())
@@ -70,8 +72,8 @@ public class HigherOrderCommands {
         // 2. The Smart Hopper/Indexer Feed
         Command smartFeed =
                 Commands.either(
-                        IndexerCommands.dispense(subsystems.indexer),
-                        IndexerCommands.justStop(subsystems.indexer),
+                        subsystems.indexer.dispense(),
+                        subsystems.indexer.idle(),
                         ShootInformation.getInstance()
                                 .atCommandedStateTrigger()
                                 .and(ShootInformation.getInstance().beingControlledTrigger())
@@ -88,7 +90,7 @@ public class HigherOrderCommands {
                         subsystems.shooter,
                         () -> subsystems.swerve.getState().Pose,
                         subsystems.swerve::getFieldRelativeSpeeds)
-                .alongWith(IndexerCommands.jorkIt(subsystems.indexer).repeatedly())
+                .alongWith(subsystems.indexer.idle())
                 .alongWith(Commands.runOnce(() -> DrivingSharedState.getInstance().setDetune(1.0)))
                 .withName("IDLING THE SHOOTER");
     }
@@ -102,8 +104,8 @@ public class HigherOrderCommands {
                                 subsystems.swerve::getFieldRelativeSpeeds)
                         .withName("Active Spool & Aim");
 
-        return Commands.parallel(
-                        shooterCommand, IndexerCommands.dispense(subsystems.indexer).repeatedly())
+        return Commands.parallel(shooterCommand, subsystems.indexer.dispense())
+                .repeatedly()
                 .withName("SMART STREAM");
     }
 
