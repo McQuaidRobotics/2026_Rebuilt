@@ -5,7 +5,7 @@ import com.ctre.phoenix6.CANBus;
 public class SubsystemConstants {
 
     public static final int firstMotorID = 15;
-    public static final boolean disableAllLogs = false;
+    public static final boolean disableAllLogs = true;
     public static final CANBus superStructure = new CANBus("SuperStructureBus");
     public static final CANBus drive = new CANBus("DriveBus");
 
@@ -18,7 +18,7 @@ public class SubsystemConstants {
             public static final int MAX_HEIGHT_SENSOR_ID = 1;
             public static final int MIN_HEIGHT_SENSOR_ID = 2;
             public static final int MIDDLE_HEIGHT_SENSOR_ID = 4;
-            public static boolean disableChainsawLogs = false;
+            public static boolean disableChainsawLogs = true;
 
             static {
                 if (disableAllLogs) {
@@ -86,7 +86,7 @@ public class SubsystemConstants {
             public static final double kS = 0.178;
             public static final double kV = 0.5;
             public static final double kA = 0;
-            public static boolean disableSpindexerLogs = false;
+            public static boolean disableSpindexerLogs = true;
 
             static {
                 if (disableAllLogs) {
@@ -111,7 +111,7 @@ public class SubsystemConstants {
             public static final double kA = 0.02;
             public static final double PEAK_CURRENT_LIMIT = 40;
             public static final double SUPPLY_CURRENT_LIMIT = 30;
-            public static boolean disableExitRollersLogs = false;
+            public static boolean disableExitRollersLogs = true;
 
             static {
                 if (disableAllLogs) {
@@ -144,7 +144,7 @@ public class SubsystemConstants {
             public static final double kS = 0.6;
             public static final double kV = 0.15;
             public static final double kA = 0.02;
-            public static boolean disableRollersLogs = false;
+            public static boolean disableRollersLogs = true;
 
             static {
                 if (disableAllLogs) {
@@ -174,7 +174,7 @@ public class SubsystemConstants {
             public static final double JKG_M2 = 0.01;
             public static final double LENGTH_METERS =
                     .25; // distance from central shaft to edge of wrist
-            public static boolean disablePivotLogs = false;
+            public static boolean disablePivotLogs = true;
 
             static {
                 if (disableAllLogs) {
@@ -277,7 +277,7 @@ public class SubsystemConstants {
         public static final String turretCam = "limelight-turret";
         public static final String intakeCam = "limelight-intake";
         public static final String backCam = "limelight-back";
-        public static final String rightCam = "limelight-br";
+        public static final String rightCam = "limelight-left";
         public static boolean disableVisionLogs = false;
 
         static {
