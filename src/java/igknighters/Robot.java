@@ -319,7 +319,7 @@ public class Robot extends LoggedRobot {
     }
 
     public void bindDriverController() {
-        driverController.bind(subsytems, DebugType.CLIMBER);
+        driverController.bind(subsytems);
     }
 
     @Override
