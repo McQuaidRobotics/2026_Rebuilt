@@ -78,8 +78,8 @@ public class SpindexerReal extends Spindexer {
         if (!SubsystemConstants.kIndexer.kSpindexer.disableSpindexerLogs) {
             Log.log("ROBOT/Subsystems/Indexer/Spindexer/setSpeed", RPM);
         }
-            spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
-            spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
+        spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
+        spindexer.setControl(velocityControl.withVelocity(RPM / 60.0));
     }
 
     @Override
