@@ -5,7 +5,7 @@ import com.ctre.phoenix6.CANBus;
 public class SubsystemConstants {
 
     public static final int firstMotorID = 15;
-    public static final boolean disableAllLogs = false;
+    public static final boolean disableAllLogs = true;
     public static final CANBus superStructure = new CANBus("SuperStructureBus");
     public static final CANBus drive = new CANBus("DriveBus");
 
@@ -86,7 +86,7 @@ public class SubsystemConstants {
             public static final double kS = 0.178;
             public static final double kV = 0.5;
             public static final double kA = 0;
-            public static boolean disableSpindexerLogs = false;
+            public static boolean disableSpindexerLogs = true;
 
             static {
                 if (disableAllLogs) {
@@ -111,7 +111,7 @@ public class SubsystemConstants {
             public static final double kA = 0.02;
             public static final double PEAK_CURRENT_LIMIT = 40;
             public static final double SUPPLY_CURRENT_LIMIT = 30;
-            public static boolean disableExitRollersLogs = false;
+            public static boolean disableExitRollersLogs = true;
 
             static {
                 if (disableAllLogs) {
@@ -219,7 +219,7 @@ public class SubsystemConstants {
         public static class kTurret {
             public static final int MOTOR_ID = 24;
             public static final int CANCODER_ID = 25;
-            public static final double CANCODER_OFFSET_ROTATIONS = 0.469482 + 0.064209;
+            public static final double CANCODER_OFFSET_ROTATIONS = -0.723388671875 + 1.0;
             public static final double GEAR_RATIO = 16.2;
             public static final double MAX_ANGLE_DEGREES = 270.0;
             public static final double MIN_ANGLE_DEGREES = -90.0;
@@ -277,7 +277,7 @@ public class SubsystemConstants {
         public static final String turretCam = "limelight-turret";
         public static final String intakeCam = "limelight-intake";
         public static final String backCam = "limelight-back";
-        public static final String rightCam = "limelight-br";
+        public static final String rightCam = "limelight-left";
         public static boolean disableVisionLogs = false;
 
         static {
