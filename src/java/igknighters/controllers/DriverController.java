@@ -2,7 +2,6 @@ package igknighters.controllers;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -15,8 +14,6 @@ import igknighters.commands.Repulsor;
 import igknighters.commands.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
-import igknighters.commands.teleop.TeleopSwerveJoystickHeadingCmd;
-import igknighters.commands.teleop.TeleopSwerveTargetingFutureCmd;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
@@ -159,11 +156,11 @@ public class DriverController {
             this.B.onTrue(IndexerCommands.justStop(indexer));
 
         } else if (debugType == DebugType.CLIMBER) {
-            this.A.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.CLIMB_PREP));
-            this.B.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.PULL_UP));
+            this.B.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.LATCH_ON));
             this.X.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.STOW));
             this.Y.whileTrue(ClimberCommands.climbSequence(climber));
             this.LT.whileTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
+            this.RT.whileTrue(HigherOrderCommands.unClimbCommand(subsystems));
         } else if (debugType == DebugType.INTAKE) {
             this.A.whileTrue(IntakeCommands.goToIntake(subsystems.intake));
             this.B.whileTrue(IntakeCommands.goToStow(subsystems.intake));

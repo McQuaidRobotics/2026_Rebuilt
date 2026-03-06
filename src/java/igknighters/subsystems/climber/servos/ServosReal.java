@@ -2,7 +2,6 @@ package igknighters.subsystems.climber.servos;
 
 import edu.wpi.first.wpilibj.Servo;
 import igknighters.constants.SubsystemConstants;
-import igknighters.util.log.Log;
 
 public class ServosReal extends Servos {
 
@@ -27,16 +26,5 @@ public class ServosReal extends Servos {
     }
 
     @Override
-    public void periodic() {
-
-        if (!SubsystemConstants.kClimber.kChainsaw.disableChainsawLogs) {
-            Log.log("ROBOT/Subsystems/Climber/Servos/Deployed", deployed);
-            // Ensure the servo stays in position
-            if (deployed) {
-                servo.setAngle(SubsystemConstants.kClimber.kServos.MAX_ANGLE_DEGREES);
-            } else {
-                servo.setAngle(SubsystemConstants.kClimber.kServos.MIN_ANGLE_DEGREES);
-            }
-        }
-    }
+    public void periodic() {}
 }

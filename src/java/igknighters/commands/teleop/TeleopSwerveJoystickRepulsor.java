@@ -1,6 +1,5 @@
 package igknighters.commands.teleop;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.struct.Struct;
@@ -17,7 +16,6 @@ import igknighters.subsystems.swerve.swerveconstants.ControllerConstants;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import igknighters.util.log.Log;
-
 import java.util.ArrayList;
 import java.util.function.DoubleSupplier;
 import monologue.ProceduralStructGenerator;
@@ -84,22 +82,22 @@ public class TeleopSwerveJoystickRepulsor extends Command {
             repulseProcessedY += YRepulse;
         }
         if (!SubsystemConstants.disableAllLogs) {
-        Log.log("Commands/repulsor/Teleop/TeleopXRepulse", XRepulse);
-        Log.log("Commands/repulsor/Teleop/XForce", repulseProcessedX);
-        Log.log("Commands/repulsor/Teleop/TeleopYRepulse", YRepulse);
-        Log.log("Commands/repulsor/Teleop/YForce", repulseProcessedY);
+            Log.log("Commands/repulsor/Teleop/TeleopXRepulse", XRepulse);
+            Log.log("Commands/repulsor/Teleop/XForce", repulseProcessedX);
+            Log.log("Commands/repulsor/Teleop/TeleopYRepulse", YRepulse);
+            Log.log("Commands/repulsor/Teleop/YForce", repulseProcessedY);
         }
         if (Robot.isBlue()) {
-        if (!SubsystemConstants.disableAllLogs) {
-            Log.log("TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
-        }
+            if (!SubsystemConstants.disableAllLogs) {
+                Log.log("TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
+            }
             return new Translation2d(-repulseProcessedY, repulseProcessedX);
         } else {
-        if (!SubsystemConstants.disableAllLogs) {
-            Log.log("TeleopSwerveBaseCmd", "Red Alliance - Inversion");
-        }
+            if (!SubsystemConstants.disableAllLogs) {
+                Log.log("TeleopSwerveBaseCmd", "Red Alliance - Inversion");
+            }
             return new Translation2d(repulseProcessedY, -repulseProcessedX);
-    }
+        }
     }
 
     protected Translation2d rotationStick() {
@@ -124,7 +122,7 @@ public class TeleopSwerveJoystickRepulsor extends Command {
     @Override
     public void end(boolean interrupted) {
         if (!SubsystemConstants.disableAllLogs) {
-        Log.log("Commands/Teleop/teleopCommand", "ENDED");
+            Log.log("Commands/Teleop/teleopCommand", "ENDED");
         }
     }
 
@@ -159,14 +157,14 @@ public class TeleopSwerveJoystickRepulsor extends Command {
         //         rawRotationYSup.getAsDouble(),
         //         rotation.getY());
         if (!SubsystemConstants.disableAllLogs) {
-        Log.log("Commands/teleop/repulsor/rawTranslationX", rawTranslationXSup.getAsDouble());
-        Log.log("Commands/teleop/repulsor/translationX", translation.getX());
-        Log.log("Commands/teleop/repulsor/rawTranslationY", rawTranslationYSup.getAsDouble());
-        Log.log("Commands/teleop/repulsor/translationY", translation.getY());
-        Log.log("Commands/teleop/repulsor/rawRotationX", rawRotationXSup.getAsDouble());
-        Log.log("Commands/teleop/repulsor/rotationX", rotation.getX());
-        Log.log("Commands/teleop/repulsor/rawRotationY", rawRotationYSup.getAsDouble());
-        Log.log("Commands/teleop/repulsor/rotationY", rotation.getY());
+            Log.log("Commands/teleop/repulsor/rawTranslationX", rawTranslationXSup.getAsDouble());
+            Log.log("Commands/teleop/repulsor/translationX", translation.getX());
+            Log.log("Commands/teleop/repulsor/rawTranslationY", rawTranslationYSup.getAsDouble());
+            Log.log("Commands/teleop/repulsor/translationY", translation.getY());
+            Log.log("Commands/teleop/repulsor/rawRotationX", rawRotationXSup.getAsDouble());
+            Log.log("Commands/teleop/repulsor/rotationX", rotation.getX());
+            Log.log("Commands/teleop/repulsor/rawRotationY", rawRotationYSup.getAsDouble());
+            Log.log("Commands/teleop/repulsor/rotationY", rotation.getY());
         }
         return null;
     }

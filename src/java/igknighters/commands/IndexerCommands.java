@@ -16,12 +16,14 @@ public class IndexerCommands {
 
     public static Command jorkIt(Indexer indexer) {
         return indexer.run(() -> indexer.goToState(IndexerState.JORK_BACKWARD))
-                .withTimeout(.05)
+                .withTimeout(.1)
+                .andThen(() -> indexer.goToState(IndexerState.STOP))
+                .withTimeout(.1)
                 .andThen(
                         indexer.run(() -> indexer.goToState(IndexerState.JORK_FORWARD))
-                                .withTimeout(.05))
+                                .withTimeout(.1))
                 .andThen(indexer.runOnce(() -> indexer.goToState(IndexerState.STOP)))
-                .andThen(Commands.waitSeconds(.25));
+                .andThen(Commands.waitSeconds(.1));
     }
 
     public static Command unBlock(Indexer indexer) {

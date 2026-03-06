@@ -14,10 +14,10 @@ public class SubsystemConstants {
 
         public static class kChainsaw {
             public static final int LEFT_MOTOR_ID = 15;
-            public static final int BUMPER_SENSOR_ID = 3;
-            public static final int MAX_HEIGHT_SENSOR_ID = 1;
-            public static final int MIN_HEIGHT_SENSOR_ID = 2;
-            public static final int MIDDLE_HEIGHT_SENSOR_ID = 4;
+            public static final int BUMPER_SENSOR_ID = 5;
+            public static final int MAX_HEIGHT_SENSOR_ID = 8;
+            public static final int MIN_HEIGHT_SENSOR_ID = 6;
+            public static final int MIDDLE_HEIGHT_SENSOR_ID = 7;
             public static boolean disableChainsawLogs = false;
 
             static {
@@ -54,12 +54,12 @@ public class SubsystemConstants {
         }
 
         public static class kServos {
-            public static final int SERVO_PORT_1 = 7;
+            public static final int SERVO_PORT_1 = 9;
             public static final int SERVO_PORT_2 = 3;
             public static final int SERVO_PORT_3 = 4;
             public static final int SERVO_PORT_4 = 5;
-            public static final double MAX_ANGLE_DEGREES = 180.0;
-            public static final double MIN_ANGLE_DEGREES = 0.0;
+            public static final double MAX_ANGLE_DEGREES = 160.0;
+            public static final double MIN_ANGLE_DEGREES = 75.0;
         }
     }
 
@@ -144,7 +144,7 @@ public class SubsystemConstants {
             public static final double kS = 0.6;
             public static final double kV = 0.15;
             public static final double kA = 0.02;
-            public static boolean disableRollersLogs = false;
+            public static boolean disableRollersLogs = true;
 
             static {
                 if (disableAllLogs) {
@@ -174,7 +174,7 @@ public class SubsystemConstants {
             public static final double JKG_M2 = 0.01;
             public static final double LENGTH_METERS =
                     .25; // distance from central shaft to edge of wrist
-            public static boolean disablePivotLogs = false;
+            public static boolean disablePivotLogs = true;
 
             static {
                 if (disableAllLogs) {
@@ -194,8 +194,8 @@ public class SubsystemConstants {
             public static final double GEAR_RATIO = 1.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
             public static final double MAX_SPEED_RPM = 5000.0;
-            public static final double MAX_ACCELERATION_RPM = 120.0;
-            public static final double MOTION_MAGIC_JERK = 17.0;
+            public static final double MAX_ACCELERATION_RPM = 3000.0;
+            public static final double MOTION_MAGIC_JERK = 100.0;
             public static final int BEAM_BREAK_SENSOR_CHANNEL = 0;
             public static final double kP = 0.3; // .5 max
             public static final double kI = 0.1;
@@ -234,7 +234,7 @@ public class SubsystemConstants {
             public static final double kS = 0.0;
             public static final double kV = 0.0;
             public static final double kA = 0.0;
-            public static boolean disableTurretLogs = false;
+            public static boolean disableTurretLogs = true;
 
             static {
                 if (disableAllLogs) {
@@ -263,7 +263,7 @@ public class SubsystemConstants {
             public static final double LENGTH_METERS =
                     .25; // distance from central shaft to edge of flap
             public static final int REVERSE_LIMIT_SWITCH_ID = 9;
-            public static boolean disableHoodLogs = false;
+            public static boolean disableHoodLogs = true;
 
             static {
                 if (disableAllLogs) {

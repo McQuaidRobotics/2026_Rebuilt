@@ -4,7 +4,6 @@ import igknighters.subsystems.climber.chainsaw.Chainsaw.ChainsawState;
 
 public enum ClimberState {
     STOW(ChainsawState.GOING_DOWN, false),
-    CLIMB_PREP(ChainsawState.GOING_UP, false),
     LATCH_ON(
             ChainsawState.GOING_UP,
             true), // Latching on means chainsaw goes up and servo is deployed
