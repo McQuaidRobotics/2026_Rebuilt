@@ -5,8 +5,8 @@ public enum IndexerState {
     DISPENSE_BALL(4800.0, 4800.0),
     PREP_TO_STOP(0.0, 4800.0),
     AGITATE(-500, -500),
-    JORK_FORWARD(500, 0),
-    JORK_BACKWARD(-500, 0);
+    JORK_FORWARD(100, 0),
+    JORK_BACKWARD(-100, 0);
 
     public final double spindexerRPM;
     public final double exitRollerRPM;

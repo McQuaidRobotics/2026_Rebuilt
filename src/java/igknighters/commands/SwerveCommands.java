@@ -6,11 +6,14 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import igknighters.FieldVisualizer;
 import igknighters.Robot;
 import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.swerve.Swerve;
@@ -43,6 +46,55 @@ public class SwerveCommands {
         return swerve.getState().Pose;
     }
 
+    /**
+     * Checks if the swerve is at the target velocity and not at the start pose. This was made so
+     * that we can see if velocity is 0 but not when we start. Because at the start of climb
+     * sequence velocity is 0.
+     *
+     * @param swerve The swerve subsystem
+     * @param targetSpeeds The target chassis speeds
+     * @param tolerance The tolerance for each chassis speed component
+     * @param startPose The starting pose to compare against
+     * @param positionToleranceMeters The position away from start in meters
+     * @param angleToleranceRadians The angle difference in radians
+     * @return A BooleanSupplier that returns true if the swerve is at the target velocity and not
+     *     at the start pose
+     */
+    public static BooleanSupplier isAtVelocityAndNotAtStart(
+            Swerve swerve,
+            ChassisSpeeds targetSpeeds,
+            ChassisSpeeds tolerance,
+            Pose2d startPose,
+            double positionToleranceMeters,
+            double angleToleranceRadians) {
+        return () -> {
+            boolean isAtVel = isAtVelocity(swerve, targetSpeeds, tolerance).getAsBoolean();
+            boolean isNotAtStart =
+                    !isAt(swerve, startPose, positionToleranceMeters, angleToleranceRadians)
+                            .getAsBoolean();
+            return isAtVel && isNotAtStart;
+        };
+    }
+
+    public static BooleanSupplier isAtVelocity(
+            Swerve swerve, ChassisSpeeds targetSpeeds, ChassisSpeeds tolerance) {
+        return () -> {
+            ChassisSpeeds currentSpeeds = swerve.getFieldRelativeSpeeds();
+            boolean isAt =
+                    Math.abs(currentSpeeds.vxMetersPerSecond - targetSpeeds.vxMetersPerSecond)
+                                    <= tolerance.vxMetersPerSecond
+                            && Math.abs(
+                                            currentSpeeds.vyMetersPerSecond
+                                                    - targetSpeeds.vyMetersPerSecond)
+                                    <= tolerance.vyMetersPerSecond
+                            && Math.abs(
+                                            currentSpeeds.omegaRadiansPerSecond
+                                                    - targetSpeeds.omegaRadiansPerSecond)
+                                    <= tolerance.omegaRadiansPerSecond;
+            return isAt;
+        };
+    }
+
     public static Command stopDriving(Swerve swerve) {
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
@@ -69,18 +121,23 @@ public class SwerveCommands {
             double angleToleranceRadians) {
         return () -> {
             Pose2d currentPose = swerve.getState().Pose;
+            if (!SubsystemConstants.disableAllLogs) {
+                FieldVisualizer.getInstance().updateDrivingTarget(targetPose);
+            }
 
             // 1. Calculate linear distance (Hypotenuse)
             double positionError =
                     currentPose.getTranslation().getDistance(targetPose.getTranslation());
 
             // 2. Calculate angular difference
-            double angleError =
-                    Math.atan2(
-                            Math.sin(currentPose.getRotation().getRadians())
-                                    - Math.sin(targetPose.getRotation().getRadians()),
-                            Math.cos(currentPose.getRotation().getRadians())
-                                    - Math.cos(targetPose.getRotation().getRadians()));
+            double currentHeading = currentPose.getRotation().getRadians();
+            double targetHeading = targetPose.getRotation().getRadians();
+
+            // Calculate raw error (Target - Current is the standard way to calculate error)
+            double rawError = targetHeading - currentHeading;
+
+            // Wrap the error to be within -PI to PI
+            double angleError = Math.abs(Math.atan2(Math.sin(rawError), Math.cos(rawError)));
 
             boolean isAt =
                     positionError <= positionToleranceMeters && angleError <= angleToleranceRadians;
@@ -95,6 +152,7 @@ public class SwerveCommands {
         };
     }
 
+    @SuppressWarnings("resource")
     public static Command moveToSimple(Swerve swerve, Pose2d targetPose) {
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
@@ -103,28 +161,23 @@ public class SwerveCommands {
                         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                         .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
         final PIDController xController =
-                new PIDController(0.5, 0.2, 0.0); // Adjust gains as necessary
+                new PIDController(1, 0.2, 0.0); // Adjust gains as necessary
         xController.setTolerance(0.0);
-        final PIDController yController = new PIDController(0.5, 0.02, 0.0);
+        final PIDController yController = new PIDController(2, 0.02, 0.0);
         yController.setTolerance(0.0);
-        final PIDController thetaController = new PIDController(0.2, 0.01, 0.0);
+        final PIDController thetaController = new PIDController(1, 0.01, 0.0);
         thetaController.setTolerance(0.0);
-        thetaController.enableContinuousInput(0, 2 * Math.PI);
+        thetaController.enableContinuousInput(Math.PI, -Math.PI);
 
         return swerve.run(
                 () -> {
-                    // System.out.println(
-                    //         "STARTING AUTO ALIGNMENT TO POSE: X: "
-                    //                 + targetPose.getX()
-                    //                 + " Y: "
-                    //                 + targetPose.getY());
                     Pose2d currentPose = swerve.getState().Pose;
                     final double vx = xController.calculate(currentPose.getX(), targetPose.getX());
                     final double vy = yController.calculate(currentPose.getY(), targetPose.getY());
                     final double omega =
                             thetaController.calculate(
-                                    currentPose.getRotation().getRadians(),
-                                    targetPose.getRotation().getRadians());
+                                    MathUtil.angleModulus(currentPose.getRotation().getRadians()),
+                                    MathUtil.angleModulus(targetPose.getRotation().getRadians()));
                     if (!SubsystemConstants.disableAllLogs) {
                         Log.log("ROBOT/Commands/Swerve/MoveToSimple/VX", vx);
                         Log.log("ROBOT/Commands/Swerve/MoveToSimple/VY", vy);
@@ -144,7 +197,7 @@ public class SwerveCommands {
                             m_driveRequest
                                     .withVelocityX(-vx)
                                     .withVelocityY(-vy)
-                                    .withRotationalRate(-omega));
+                                    .withRotationalRate(omega));
                 });
     }
 
