@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
 import igknighters.constants.Conv;
@@ -22,7 +23,7 @@ public class PivotReal extends Pivot {
     private TalonFX pivotMotor;
     private CANcoder pivotEncoder;
     private PositionVoltage motionMagicControl;
-    private BaseStatusSignal rps, angleRotations;
+    private BaseStatusSignal angleRotations;
     private double targetDegrees = 0.0;
     private boolean beingCommanded = false;
 
@@ -35,7 +36,6 @@ public class PivotReal extends Pivot {
 
         motionMagicControl = new PositionVoltage(0.0).withSlot(0);
 
-        rps = pivotMotor.getVelocity();
         angleRotations = pivotMotor.getPosition();
     }
 
@@ -73,6 +73,7 @@ public class PivotReal extends Pivot {
         config.MotionMagic.MotionMagicJerk = SubsystemConstants.kIntake.kPivot.MAX_JERK;
         config.Feedback.RotorToSensorRatio = 1.0;
         config.Feedback.SensorToMechanismRatio = 1.0;
+        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
@@ -115,7 +116,7 @@ public class PivotReal extends Pivot {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(rps, angleRotations);
+        BaseStatusSignal.refreshAll(angleRotations);
 
         if (!SubsystemConstants.kIntake.kPivot.disablePivotLogs) {
             Log.log("ROBOT/Subsystems/Intake/Pivot/Being Commanded Currently", beingCommanded);

@@ -5,7 +5,7 @@ import com.ctre.phoenix6.CANBus;
 public class SubsystemConstants {
 
     public static final int firstMotorID = 15;
-    public static final boolean disableAllLogs = true;
+    public static final boolean disableAllLogs = false;
     public static final CANBus superStructure = new CANBus("SuperStructureBus");
     public static final CANBus drive = new CANBus("DriveBus");
 
@@ -49,17 +49,14 @@ public class SubsystemConstants {
             public static final double MASS = 4.0;
             public static final double PEAK_FORWARD_CURRENT_LIMIT = 40;
             public static final double PEAK_REVERSE_CURRENT_LIMIT = 30;
-            public static final double STATOR_CURRENT_LIMIT = 35;
-            public static final double SUPPLY_CURRENT_LIMIT = 25;
+            public static final double STATOR_CURRENT_LIMIT = 50;
+            public static final double SUPPLY_CURRENT_LIMIT = 50;
         }
 
         public static class kServos {
             public static final int SERVO_PORT_1 = 9;
-            public static final int SERVO_PORT_2 = 3;
-            public static final int SERVO_PORT_3 = 4;
-            public static final int SERVO_PORT_4 = 5;
-            public static final double MAX_ANGLE_DEGREES = 160.0;
-            public static final double MIN_ANGLE_DEGREES = 75.0;
+            public static final double MAX_ANGLE_DEGREES = 90.0;
+            public static final double MIN_ANGLE_DEGREES = 0.0;
         }
     }
 
@@ -86,7 +83,7 @@ public class SubsystemConstants {
             public static final double kS = 0.178;
             public static final double kV = 0.5;
             public static final double kA = 0;
-            public static boolean disableSpindexerLogs = true;
+            public static boolean disableSpindexerLogs = false;
 
             static {
                 if (disableAllLogs) {
@@ -111,7 +108,7 @@ public class SubsystemConstants {
             public static final double kA = 0.02;
             public static final double PEAK_CURRENT_LIMIT = 40;
             public static final double SUPPLY_CURRENT_LIMIT = 30;
-            public static boolean disableExitRollersLogs = true;
+            public static boolean disableExitRollersLogs = false;
 
             static {
                 if (disableAllLogs) {

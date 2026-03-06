@@ -184,6 +184,10 @@ public class DriverController {
 
         this.RT.whileTrue(HigherOrderCommands.forceDispense(subsystems));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
+        this.DPR.whileTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
+        this.X.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.LATCH_ON));
+        this.DPL.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.STOW));
+        this.DPU.whileTrue(ClimberCommands.goToState(subsystems.climber, ClimberState.PULL_UP));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

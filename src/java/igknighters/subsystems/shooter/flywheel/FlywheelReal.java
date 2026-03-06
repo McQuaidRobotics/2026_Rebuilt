@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
@@ -35,9 +36,6 @@ public class FlywheelReal extends Flywheel {
     // DigitalInput(SubsystemConstants.Shooter.BEAM_BREAK_SENSOR_CHANNEL);
 
     private BaseStatusSignal shooterVelocity;
-    private BaseStatusSignal shooterCurrent;
-    private BaseStatusSignal shooterVoltage;
-    private BaseStatusSignal shooterTemperature;
 
     // private BaseStatusSignal isBeamBreakTripped;
 
@@ -52,6 +50,8 @@ public class FlywheelReal extends Flywheel {
         config.Feedback.SensorToMechanismRatio = SubsystemConstants.kShooter.kFlywheels.GEAR_RATIO;
 
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
         config.MotionMagic.MotionMagicJerk =
                 SubsystemConstants.kShooter.kFlywheels.MOTION_MAGIC_JERK;
@@ -78,9 +78,6 @@ public class FlywheelReal extends Flywheel {
         velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(0);
 
         shooterVelocity = mainShooter.getVelocity();
-        shooterCurrent = mainShooter.getSupplyCurrent();
-        shooterVoltage = mainShooter.getSupplyVoltage();
-        shooterTemperature = mainShooter.getDeviceTemp();
     }
 
     @Override
@@ -106,8 +103,7 @@ public class FlywheelReal extends Flywheel {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(
-                shooterVelocity, shooterCurrent, shooterVoltage, shooterTemperature);
+        BaseStatusSignal.refreshAll(shooterVelocity);
         if (!SubsystemConstants.kIndexer.kExitRollers.disableExitRollersLogs) {
             Log.log("ROBOT/Subsystems/Shooter/Rollers/being controlled", isBeingControlledActivly);
         }
