@@ -185,7 +185,9 @@ public class Repulsor {
     public static double getYRepulse(Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
         double yRepelForce = 0.0;
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
-        Log.log("Commands/repulsor/Time", currentTime);
+        if (!SubsystemConstants.disableAllLogs) {
+            Log.log("Commands/repulsor/Time", currentTime);
+        }
         for (Repulsor.obstacle obs : obstacles) {
             if (obs.type == obstacleType.CIRCLE) {
                 double dist =
@@ -224,10 +226,14 @@ public class Repulsor {
             }
         }
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
+        if (!SubsystemConstants.disableAllLogs) {
         Log.log("Commands/repulsor/DeltaTime", deltaTime);
+        }
         if (deltaTime > maxTime) {
             maxTime = deltaTime;
+            if (!SubsystemConstants.disableAllLogs) {
             Log.log("Commands/repulsor/MaxDeltaTime", maxTime);
+            }
         }
         // if in front of the hubs, there will be a up/down force to get robot to move towards one
         // side
