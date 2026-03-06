@@ -584,6 +584,16 @@ public class AimSolver {
             return new ShooterState(
                     RPM.of(requiredRPM), Radians.of(turretAngle), Radians.of(clampedHoodSetpoint));
         }
+
+        public static ShooterState solve_iteratively_with_max_height (Pose3d targetPose,
+                Pose3d shooterPose,
+                double currentRPM, // Now used for the "Ready" check
+                ChassisSpeeds robotVel,
+                double delaySeconds,
+                double maxHeightMeters) {
+                        
+                        return new ShooterState(null, null, null);
+                };
     }
 
     public static double getShotTime(
