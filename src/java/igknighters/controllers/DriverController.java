@@ -162,8 +162,8 @@ public class DriverController {
             this.LT.whileTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
             this.RT.whileTrue(HigherOrderCommands.unClimbCommand(subsystems));
         } else if (debugType == DebugType.INTAKE) {
-            this.A.whileTrue(IntakeCommands.goToIntake(subsystems.intake));
-            this.B.whileTrue(IntakeCommands.goToStow(subsystems.intake));
+            this.A.whileTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+            this.B.whileTrue(IntakeCommands.holdAtStow(subsystems.intake));
         } else {
             System.out.println("UNKNOWN DEBUG TYPE: " + debugType);
             throw new IllegalArgumentException("UNKNOWN DEBUG TYPE: " + debugType);
@@ -174,20 +174,15 @@ public class DriverController {
         var swerve = subsystems.swerve;
         var intake = subsystems.intake;
 
-        this.LB
-                .whileTrue(IntakeCommands.goToIntake(intake))
-                .onFalse(IntakeCommands.goToStow(intake));
         this.LT
+                .whileTrue(IntakeCommands.holdAtIntake(intake))
+                .onFalse(IntakeCommands.holdAtStow(intake));
+        this.RT
                 .whileTrue(HigherOrderCommands.rapidFireStream(subsystems))
                 .onFalse(HigherOrderCommands.IdleShooter(subsystems));
         this.DPD.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
-
-        this.RT.whileTrue(HigherOrderCommands.forceDispense(subsystems));
+        this.RB.whileTrue(HigherOrderCommands.forceDispense(subsystems));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
-        this.DPR.whileTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
-        this.X.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.LATCH_ON));
-        this.DPL.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.STOW));
-        this.DPU.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.PULL_UP));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

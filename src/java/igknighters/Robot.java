@@ -196,7 +196,7 @@ public class Robot extends LoggedRobot {
         setUpCommandLogging();
         subsytems =
                 new Subsystems(
-                        new Swerve(true),
+                        new Swerve(false),
                         new LimeLightVision(),
                         new Led(80, 2),
                         new Shooter(),
