@@ -173,8 +173,8 @@ public class HigherOrderCommands {
                                                             SwerveCommands.isAt(
                                                                     subsystems.swerve,
                                                                     startPose,
-                                                                    .1,
-                                                                    .1)),
+                                                                    .02,
+                                                                    .05)),
                                             Commands.parallel(
                                                             ClimberCommands.holdAtState(
                                                                     subsystems.climber,
@@ -187,8 +187,8 @@ public class HigherOrderCommands {
                                                                                     subsystems
                                                                                             .swerve,
                                                                                     endPose,
-                                                                                    .1,
-                                                                                    .1)
+                                                                                    .02,
+                                                                                    .05)
                                                                             .getAsBoolean()),
                                             SwerveCommands.stopDriving(subsystems.swerve)));
                         },

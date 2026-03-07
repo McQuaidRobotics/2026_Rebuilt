@@ -5,11 +5,14 @@ import static edu.wpi.first.units.Units.RPM;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
 import igknighters.constants.SubsystemConstants;
@@ -141,15 +144,27 @@ public class ShooterCommands {
                                 + targetPoseSupplier.get().getY());
     }
 
+    public static Supplier<Pose2d> getShooterPoseWithOffset(Supplier<Pose2d> robotPose) {
+        return () ->
+                robotPose
+                        .get()
+                        .plus(
+                                new Transform2d(
+                                        -5 * Conv.INCHES_TO_METERS,
+                                        -5 * Conv.INCHES_TO_METERS,
+                                        new Rotation2d()));
+    }
+
     public static Command shoot(
             Shooter shooter,
             Supplier<Pose2d> robotPoseSupplier,
             Supplier<ChassisSpeeds> robotVelocitySupplier) {
+        Supplier<Pose2d> shooterPose = getShooterPoseWithOffset(robotPoseSupplier);
         return Commands.sequence(
                 Commands.runOnce(() -> ShootInformation.getInstance().setBeingControlled(true)),
                 SHOOT_MAX_MIN(
                         shooter,
-                        robotPoseSupplier,
+                        shooterPose,
                         robotVelocitySupplier,
                         4,
                         FieldConstants.HUB.HEIGHT_METERS + .5));
