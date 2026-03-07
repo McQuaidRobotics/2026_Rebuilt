@@ -173,7 +173,7 @@ public class SubsystemTriggers {
     }
 
     public Command getLEDCommandByMode() {
-        return Commands.either(teleopLED, autoLED, teleop);
+        return Commands.either(teleopLED, Commands.either(disabledLED, autoLED, disabled), teleop);
     }
 
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
