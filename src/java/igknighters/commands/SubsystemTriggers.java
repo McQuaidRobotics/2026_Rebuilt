@@ -203,7 +203,7 @@ public class SubsystemTriggers {
 
         falseOnce().and(disabled).whileTrue(disabledLED);
 
-        autonomous.whileTrue(autoLED);
+        autonomous.onTrue(autoLED);
 
         teleop.onTrue(teleopLED);
 
