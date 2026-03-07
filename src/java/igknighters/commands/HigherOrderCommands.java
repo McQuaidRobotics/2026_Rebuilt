@@ -15,6 +15,7 @@ import java.util.Set;
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
         return rapidFireStream(subsystems)
+                .alongWith(IntakeCommands.jorkIt(subsystems.intake))
                 .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
     }
 
@@ -27,7 +28,8 @@ public class HigherOrderCommands {
                                 .repeatedly()
                                 .withName("SHOOTING WHILE DOING OTHER STUFF"),
                         IndexerCommands.dispense(subsystems.indexer)
-                                .onlyIf(ShootInformation.getInstance().atCommandedStateTrigger()))
+                                .onlyIf(ShootInformation.getInstance().atCommandedStateTrigger()),
+                        IntakeCommands.jorkIt(subsystems.intake))
                 .withName("DISPENSING")
                 .alongWith(Commands.print("DISPENSING"))
                 .withName("SHOOT NO STOP");

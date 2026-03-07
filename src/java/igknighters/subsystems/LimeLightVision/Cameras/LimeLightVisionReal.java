@@ -51,7 +51,7 @@ public class LimeLightVisionReal extends LimeLights {
 
                 // --- ROTATION SELECTION LOGIC ---
                 Rotation2d rotationToUse;
-                if (mt1Estimate.tagCount >= 3) {
+                if (mt1Estimate.tagCount >= 2) {
                     rotationToUse = mt1Estimate.pose.getRotation(); // vision rotation
                 } else {
                     rotationToUse = mt2Estimate.pose.getRotation(); // fallback gyro-based

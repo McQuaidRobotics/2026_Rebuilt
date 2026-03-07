@@ -215,7 +215,7 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                         moveTraj.resetOdometry(),
-                                        HigherOrderCommands.shootTillEmpty(subsystems, 6),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 5),
                                         Commands.parallel(
                                                 IntakeCommands.holdAtIntake(subsystems.intake),
                                                 Commands.sequence(
@@ -247,7 +247,7 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                         moveTraj.resetOdometry(),
-                                        HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 5),
                                         Commands.print("FINISHED EMPTYING HOPPER"),
                                         Commands.parallel(
                                                 IntakeCommands.holdAtIntake(subsystems.intake),

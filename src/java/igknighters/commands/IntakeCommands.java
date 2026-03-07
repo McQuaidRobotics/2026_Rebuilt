@@ -18,6 +18,14 @@ public class IntakeCommands {
         return intake.run(() -> intake.goTo(IntakeState.Stowed)).withName("Stow Intake");
     }
 
+    public static Command jorkIt(Intake intake) {
+        return holdAtIntake(intake)
+                .withTimeout(.5)
+                .andThen(holdAtStow(intake))
+                .withTimeout(.5)
+                .withName("JORK INTAKE");
+    }
+
     public static Command holdAt(Intake intake, Angle angle, AngularVelocity speed) {
         return intake.run(() -> intake.goTo(angle, speed)).withName("Go to");
     }
