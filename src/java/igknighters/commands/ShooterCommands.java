@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
@@ -116,8 +115,10 @@ public class ShooterCommands {
                                             targetPose,
                                             robotVelocitySupplier.get(),
                                             shooter.getCurrentState().flywheelSpeed.in(RPM),
-                                            4,
-                                            2,
+                                            ShootInformation.getInstance()
+                                                    .getPassMinAndMax(robotPoseSupplier)[1],
+                                            ShootInformation.getInstance()
+                                                    .getPassMinAndMax(robotPoseSupplier)[0],
                                             0.02);
 
                             if (targetingData.flywheelSpeed.in(RPM) != 0.0) {
@@ -145,14 +146,16 @@ public class ShooterCommands {
             Shooter shooter,
             Supplier<Pose2d> robotPoseSupplier,
             Supplier<ChassisSpeeds> robotVelocitySupplier) {
+        ShootInformation info = ShootInformation.getInstance();
+        double[] passHeights = info.getPassMinAndMax(robotPoseSupplier);
         return Commands.sequence(
                 Commands.runOnce(() -> ShootInformation.getInstance().setBeingControlled(true)),
                 SHOOT_MAX_MIN(
                         shooter,
                         robotPoseSupplier,
                         robotVelocitySupplier,
-                        4,
-                        FieldConstants.HUB.HEIGHT_METERS + .5));
+                        passHeights[1],
+                        passHeights[0]));
     }
 
     /**
@@ -188,7 +191,7 @@ public class ShooterCommands {
                                     targetPose,
                                     robotVel,
                                     shooter.getCurrentState().flywheelSpeed.in(RPM),
-                                    5,
+                                    info.passMaxHeight.value(),
                                     0.02);
 
                     shooter.targetState(
@@ -365,7 +368,7 @@ public class ShooterCommands {
                                             targetPose3d,
                                             robotVelocitySupplier.get(),
                                             shooter.getCurrentState().flywheelSpeed.in(RPM),
-                                            5,
+                                            ShootInformation.getInstance().passMaxHeight.value(),
                                             0.02);
 
                             if (targetingData.flywheelSpeed.in(RPM) > 0.1) {

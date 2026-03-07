@@ -12,6 +12,7 @@ import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import igknighters.commands.ShooterCommands;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.intake.IntakeState;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
@@ -67,9 +68,14 @@ public class IntegrationTest {
                         + ", RPM: "
                         + targetRPM);
 
+        ShooterCommands.targetState(
+                        subsystems.shooter, targetRPM, targetTurretAngle, targetHoodAngle)
+                .schedule();
+
         for (int i = 0; i < 500; i++) {
-            subsystems.shooter.targetState(
-                    RPM.of(targetRPM), Degrees.of(targetTurretAngle), Degrees.of(targetHoodAngle));
+            DriverStationSim.notifyNewData();
+            robot.robotPeriodic();
+            robot.autonomousPeriodic();
 
             if (i % 100 == 0) {
                 System.out.println(
@@ -96,7 +102,7 @@ public class IntegrationTest {
                         + ", RPM: "
                         + currentRPM);
 
-        assertTrue(Math.abs(-currentTurret - targetTurretAngle) < 2.0, "Turret should move");
+        assertTrue(Math.abs(currentTurret - (-targetTurretAngle)) < 2.0, "Turret should move");
         assertTrue(Math.abs(currentHood - targetHoodAngle) < 10.0, "Hood should move");
         assertTrue(currentRPM > 1000, "Flywheel should spin");
 

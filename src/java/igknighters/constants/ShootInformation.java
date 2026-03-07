@@ -7,6 +7,8 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.Robot;
+import igknighters.util.TunableValues;
+import igknighters.util.TunableValues.TunableDouble;
 import igknighters.util.log.Log;
 import java.util.function.Supplier;
 
@@ -31,6 +33,11 @@ public class ShootInformation {
     private boolean useOperatorControlLocation = false;
     private Pose3d operatorControlLocation;
 
+    public TunableDouble passMaxHeight =
+            TunableValues.getDouble("Shooter/PassMaxHeight", 15.0 * Conv.FEET_TO_METERS);
+    public TunableDouble passMinHeight =
+            TunableValues.getDouble("Shooter/PassMinHeight", 0.0 * Conv.FEET_TO_METERS);
+
     private ShootInformation() {
         this.atComandedStateTrigger = new Trigger(this::getAtTarget);
         this.beingControlledTrigger = new Trigger(this::isBeingControlled);
@@ -41,8 +48,9 @@ public class ShootInformation {
     public Pose3d getDashboardPose(String path) {
         double x = dashboardTable.getEntry(path + "X").getDouble(0.0) * Conv.FEET_TO_METERS;
         double y = dashboardTable.getEntry(path + "Y").getDouble(0.0) * Conv.FEET_TO_METERS;
+        double z = dashboardTable.getEntry(path + "Z").getDouble(0.0) * Conv.FEET_TO_METERS;
         double theta = dashboardTable.getEntry(path + "Theta").getDouble(0.0);
-        return new Pose3d(x, y, 0, new Rotation3d(0, 0, theta));
+        return new Pose3d(x, y, z, new Rotation3d(0, 0, theta));
     }
 
     public static ShootInformation getInstance() {
@@ -88,6 +96,12 @@ public class ShootInformation {
         } else {
             return getHubTarget();
         }
+    }
+
+    public double[] getPassMinAndMax(Supplier<Pose2d> robotPoseSupplier) {
+        Log.log("ROBOT/STATUS/PASS MIN HEIGHT", passMinHeight.value());
+        Log.log("ROBOT/STATUS/PASS MAX HEIGHT", passMaxHeight.value());
+        return new double[] {passMinHeight.value(), passMaxHeight.value()};
     }
 
     public Pose3d getShotLocation(Supplier<Pose2d> robotPose) {
