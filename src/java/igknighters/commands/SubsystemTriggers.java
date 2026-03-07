@@ -223,6 +223,7 @@ public class SubsystemTriggers {
 
         ableToShootState
                 .beingControlledTrigger()
+                .and(teleop)
                 .whileTrue(new SlowedDownDrivingWhileShooting(swerve, driverController));
     }
 }
