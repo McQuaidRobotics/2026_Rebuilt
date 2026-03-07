@@ -131,14 +131,14 @@ public class ShootInformation {
 
     public void setPossibleShot(boolean newState) {
         if (!SubsystemConstants.disableAllLogs) {
-        Log.log("ROBOT/STATUS/POSSIBLE SHOT", newState);
+            Log.log("ROBOT/STATUS/POSSIBLE SHOT", newState);
         }
         this.possibleShot = newState;
     }
 
     public void setBeingControlled(boolean newState) {
         if (!SubsystemConstants.disableAllLogs) {
-        Log.log("ROBOT/Subsystems/Shooter/BeingControlled", newState);
+            Log.log("ROBOT/Subsystems/Shooter/BeingControlled", newState);
         }
         this.beingControlled = newState;
     }
