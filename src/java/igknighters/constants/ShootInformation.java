@@ -91,11 +91,12 @@ public class ShootInformation {
     }
 
     public Pose3d getShotLocation(Supplier<Pose2d> robotPose) {
-        if (useOperatorControlLocation) {
-            return getDashboardPose("robot/passWaypoint");
-        }
         if (shouldPass(robotPose)) {
-            return getPassTarget(robotPose);
+            if (useOperatorControlLocation) {
+                return getDashboardPose("robot/passWaypoint");
+            } else {
+                return getPassTarget(robotPose);
+            }
         }
         return getHubTarget();
     }
