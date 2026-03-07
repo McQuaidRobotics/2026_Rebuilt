@@ -160,13 +160,12 @@ public class ShooterCommands {
             Supplier<Pose2d> robotPoseSupplier,
             Supplier<ChassisSpeeds> robotVelocitySupplier) {
         Supplier<Pose2d> shooterPose = getShooterPoseWithOffset(robotPoseSupplier);
-        return 
-                SHOOT_MAX_MIN(
-                        shooter,
-                        shooterPose,
-                        robotVelocitySupplier,
-                        4,
-                        FieldConstants.HUB.HEIGHT_METERS + .5);
+        return SHOOT_MAX_MIN(
+                shooter,
+                shooterPose,
+                robotVelocitySupplier,
+                4,
+                FieldConstants.HUB.HEIGHT_METERS + .5);
     }
 
     /**
