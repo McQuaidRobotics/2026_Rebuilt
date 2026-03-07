@@ -113,7 +113,7 @@ public class AutoRoutines extends AutoCommands {
                         Commands.sequence(
                                 Commands.print("INTAKE BALLS"),
                                 Commands.parallel(
-                                        IntakeCommands.goToIntake(subsystems.intake),
+                                        IntakeCommands.holdAtIntake(subsystems.intake),
                                         HigherOrderCommands.rapidFireStream(subsystems))));
 
         return routine;
@@ -129,7 +129,7 @@ public class AutoRoutines extends AutoCommands {
                                         outpostTraj.resetOdometry(),
                                         HigherOrderCommands.shootTillEmpty(subsystems, 6),
                                         Commands.parallel(
-                                                IntakeCommands.goToIntake(subsystems.intake),
+                                                IntakeCommands.holdAtIntake(subsystems.intake),
                                                 HigherOrderCommands.rapidFireStream(subsystems),
                                                 outpostTraj.cmd()))
                                 .withName("Right Outpost Climb"));
@@ -152,7 +152,7 @@ public class AutoRoutines extends AutoCommands {
                                         outpostTraj.resetOdometry(),
                                         HigherOrderCommands.shootTillEmpty(subsystems, 6),
                                         Commands.parallel(
-                                                IntakeCommands.goToIntake(subsystems.intake),
+                                                IntakeCommands.holdAtIntake(subsystems.intake),
                                                 HigherOrderCommands.rapidFireStream(subsystems),
                                                 outpostTraj.cmd()))
                                 .withName("Left Outpost Climb"));
@@ -174,7 +174,7 @@ public class AutoRoutines extends AutoCommands {
                                         depoTraj.resetOdometry(),
                                         HigherOrderCommands.shootTillEmpty(subsystems, 6),
                                         Commands.parallel(
-                                                IntakeCommands.goToIntake(subsystems.intake),
+                                                IntakeCommands.holdAtIntake(subsystems.intake),
                                                 HigherOrderCommands.rapidFireStream(subsystems),
                                                 depoTraj.cmd()))
                                 .withName("Left Depo Climb"));
@@ -217,7 +217,7 @@ public class AutoRoutines extends AutoCommands {
                                         moveTraj.resetOdometry(),
                                         HigherOrderCommands.shootTillEmpty(subsystems, 6),
                                         Commands.parallel(
-                                                IntakeCommands.goToIntake(subsystems.intake),
+                                                IntakeCommands.holdAtIntake(subsystems.intake),
                                                 Commands.sequence(
                                                         Commands.runOnce(
                                                                 () ->
@@ -249,7 +249,7 @@ public class AutoRoutines extends AutoCommands {
                                         moveTraj.resetOdometry(),
                                         HigherOrderCommands.shootTillEmpty(subsystems, 6),
                                         Commands.parallel(
-                                                IntakeCommands.goToIntake(subsystems.intake),
+                                                IntakeCommands.holdAtIntake(subsystems.intake),
                                                 Commands.sequence(
                                                         Commands.runOnce(
                                                                 () ->

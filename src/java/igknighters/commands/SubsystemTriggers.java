@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.LEDCommands.LEDSection;
 import igknighters.commands.teleop.AutoRotateOnBump;
+import igknighters.commands.teleop.SlowedDownDrivingWhileShooting;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
@@ -219,5 +220,9 @@ public class SubsystemTriggers {
         //         .atCommandedStateTrigger()
         //         .and(ableToShootState.beingControlledTrigger().negate())
         //         .whileFalse(LEDCommands.run(led, LEDPattern.solid(Color.kPurple)));
+
+        ableToShootState
+                .beingControlledTrigger()
+                .whileTrue(new SlowedDownDrivingWhileShooting(swerve, driverController));
     }
 }

@@ -78,52 +78,6 @@ public class ShooterCommands {
                 .withName("Target Shooter State");
     }
 
-    public static Command aimAt(
-            Shooter shooter,
-            Supplier<Pose2d> robotPoseSupplier,
-            Supplier<Pose3d> targetPoseSupplier) {
-        return shooter.run(
-                () -> {
-                    Pose2d robotPose = robotPoseSupplier.get();
-                    Pose3d targetPose = targetPoseSupplier.get();
-                    double estimatedRPM =
-                            shooter.getEstimatedRPM(
-                                    Math.sqrt(
-                                            Math.pow(targetPose.getX() - robotPose.getX(), 2)
-                                                    + Math.pow(
-                                                            targetPose.getY() - robotPose.getY(),
-                                                            2)));
-                    ShooterState targetingData =
-                            AimSolver.Solvers.solve_simple_no_AR_or_FutureTiming(
-                                    targetPose,
-                                    new Pose3d(
-                                            robotPose.getX(),
-                                            robotPose.getY(),
-                                            SubsystemConstants.kShooter
-                                                    .kFlywheels
-                                                    .ShooterHeightMeters,
-                                            new Rotation3d(
-                                                    0.0,
-                                                    0.0,
-                                                    robotPose.getRotation().getRadians())),
-                                    shooter.getCurrentState().flywheelSpeed.in(RPM));
-
-                    if (targetingData.flywheelSpeed.in(RPM) != 0.0) {
-                        shooter.targetState(
-                                targetingData.flywheelSpeed,
-                                targetingData.turretAngle,
-                                targetingData.hoodAngle);
-                    } else {
-                        shooter.targetState(
-                                shooter.getCurrentState().flywheelSpeed.plus(RPM.of(100.0)),
-                                targetingData.turretAngle,
-                                targetingData.hoodAngle); // keep trying to
-                        // increase RPM
-                        // to reach shot
-                    }
-                });
-    }
-
     public static double getRPM(
             Supplier<Pose2d> robotPoseSupplier,
             Supplier<Pose3d> targetPoseSupplier,
@@ -140,6 +94,7 @@ public class ShooterCommands {
             Shooter shooter,
             Supplier<Pose2d> robotPoseSupplier,
             Supplier<Pose3d> targetPoseSupplier,
+            Supplier<ChassisSpeeds> robotVelocitySupplier,
             double velocity) {
         return shooter.run(
                         () -> {
@@ -147,8 +102,7 @@ public class ShooterCommands {
                             Pose2d robotPose = robotPoseSupplier.get();
                             Pose3d targetPose = targetPoseSupplier.get();
                             ShooterState targetingData =
-                                    AimSolver.Solvers.solve_simple_no_AR_or_FutureTiming(
-                                            targetPose,
+                                    AimSolver.Solvers.solve_max_and_min_iterative(
                                             new Pose3d(
                                                     robotPose.getX(),
                                                     robotPose.getY(),
@@ -159,7 +113,12 @@ public class ShooterCommands {
                                                             0.0,
                                                             0.0,
                                                             robotPose.getRotation().getRadians())),
-                                            shooter.getCurrentState().flywheelSpeed.in(RPM));
+                                            targetPose,
+                                            robotVelocitySupplier.get(),
+                                            shooter.getCurrentState().flywheelSpeed.in(RPM),
+                                            4,
+                                            2,
+                                            0.02);
 
                             if (targetingData.flywheelSpeed.in(RPM) != 0.0) {
                                 shooter.targetState(
@@ -182,112 +141,6 @@ public class ShooterCommands {
                                 + targetPoseSupplier.get().getY());
     }
 
-    public static Command shootIChoseTargetNoLookAhead(
-            Shooter shooter, Supplier<Pose2d> robotPose) {
-        ShootInformation info = ShootInformation.getInstance();
-        return shooter.run(
-                        () -> {
-                            Pose2d robotPose2d = robotPose.get();
-                            Pose3d targetPose = info.getShotLocation(robotPose);
-                            double velocity = getRPM(robotPose, () -> targetPose, shooter);
-                            info.setBeingControlled(true);
-
-                            ShooterState targetingData =
-                                    AimSolver.Solvers.solve_simple_no_AR_or_FutureTiming(
-                                            targetPose,
-                                            new Pose3d(
-                                                    robotPose2d.getX(),
-                                                    robotPose2d.getY(),
-                                                    SubsystemConstants.kShooter
-                                                            .kFlywheels
-                                                            .ShooterHeightMeters,
-                                                    new Rotation3d(
-                                                            0.0,
-                                                            0.0,
-                                                            robotPose2d
-                                                                    .getRotation()
-                                                                    .getRadians())),
-                                            shooter.getCurrentState().flywheelSpeed.in(RPM));
-                            if (targetingData.flywheelSpeed.in(RPM) != 0.0) {
-                                shooter.targetState(
-                                        RPM.of(velocity),
-                                        targetingData.turretAngle,
-                                        targetingData.hoodAngle);
-                            } else {
-                                if (shooter.getCurrentState().flywheelSpeed.in(RPM) < velocity) {
-                                    shooter.targetState(
-                                            RPM.of(velocity),
-                                            targetingData.turretAngle,
-                                            targetingData.hoodAngle); // keep trying to
-
-                                } else {
-                                    shooter.targetState(
-                                            shooter.getCurrentState()
-                                                    .flywheelSpeed
-                                                    .plus(RPM.of(300.0)),
-                                            targetingData.turretAngle,
-                                            targetingData.hoodAngle);
-                                } // increase RPM to reach shot
-                            }
-                        })
-                .withName("Aiming at auto chosen target");
-    }
-
-    public static Command shootIChoseTargetWithLookAhead(
-            Shooter shooter, Supplier<Pose2d> robotPose, Supplier<ChassisSpeeds> robotVelocity) {
-        ShootInformation info = ShootInformation.getInstance();
-        return shooter.run(
-                        () -> {
-                            Pose2d robotPose2d = robotPose.get();
-                            info.setBeingControlled(true);
-                            Pose3d targetPose = info.getShotLocation(robotPose);
-                            double velocity = getRPM(robotPose, () -> targetPose, shooter);
-
-                            ShooterState targetingData =
-                                    AimSolver.Solvers.solve_with_project(
-                                            targetPose,
-                                            new Pose3d(
-                                                    robotPose2d.getX(),
-                                                    robotPose2d.getY(),
-                                                    SubsystemConstants.kShooter
-                                                            .kFlywheels
-                                                            .ShooterHeightMeters,
-                                                    new Rotation3d(
-                                                            0.0,
-                                                            0.0,
-                                                            robotPose2d
-                                                                    .getRotation()
-                                                                    .getRadians())),
-                                            shooter.getCurrentState().flywheelSpeed.in(RPM),
-                                            robotVelocity.get(),
-                                            0.02);
-
-                            if (targetingData.flywheelSpeed.in(RPM) != 0.0) {
-                                shooter.targetState(
-                                        RPM.of(velocity),
-                                        targetingData.turretAngle,
-                                        targetingData.hoodAngle);
-                            } else {
-                                if (shooter.getCurrentState().flywheelSpeed.in(RPM)
-                                        < (velocity - 500)) {
-                                    shooter.targetState(
-                                            RPM.of(velocity),
-                                            targetingData.turretAngle,
-                                            targetingData.hoodAngle); // keep trying to
-
-                                } else {
-                                    shooter.targetState(
-                                            shooter.getCurrentState()
-                                                    .flywheelSpeed
-                                                    .plus(RPM.of(300.0)),
-                                            targetingData.turretAngle,
-                                            targetingData.hoodAngle);
-                                } // increase RPM to reach shot
-                            }
-                        })
-                .withName("Aiming at auto chosen target with look ahead");
-    }
-
     public static Command shoot(
             Shooter shooter,
             Supplier<Pose2d> robotPoseSupplier,
@@ -302,6 +155,14 @@ public class ShooterCommands {
                         FieldConstants.HUB.HEIGHT_METERS + .5));
     }
 
+    /**
+     * aims without changing hood or rpm so that the shooter can go under bump
+     *
+     * @param shooter
+     * @param robotPoseSupplier
+     * @param robotVelocitySupplier
+     * @return
+     */
     public static Command idleCommand(
             Shooter shooter,
             Supplier<Pose2d> robotPoseSupplier,
@@ -479,63 +340,6 @@ public class ShooterCommands {
                                 Degrees.of(kHood.MIN_ANGLE_DEGREES));
                     }
                 });
-    }
-
-    public static Command shootWithMaxHeight(
-            Shooter shooter,
-            Supplier<Pose2d> robotPoseSupplier,
-            Supplier<ChassisSpeeds> robotVelocitySupplier,
-            double maxHeightMeters) {
-        ShootInformation info = ShootInformation.getInstance();
-        return shooter.run(
-                        () -> {
-                            Pose2d robotPose = robotPoseSupplier.get();
-                            Pose3d targetPose = info.getShotLocation(robotPoseSupplier);
-                            info.setBeingControlled(true);
-                            ChassisSpeeds robotVel = robotVelocitySupplier.get();
-
-                            // Define where the shooter is physically located on the robot
-                            Pose3d shooterPose =
-                                    new Pose3d(
-                                            robotPose.getX(),
-                                            robotPose.getY(),
-                                            SubsystemConstants.kShooter
-                                                    .kFlywheels
-                                                    .ShooterHeightMeters,
-                                            new Rotation3d(
-                                                    0.0,
-                                                    0.0,
-                                                    robotPose.getRotation().getRadians()));
-
-                            // Solve for the state.
-                            // Note: currentRPM is passed but effectively overridden by the solver
-                            // logic
-                            ShooterState targetingData =
-                                    AimSolver.Solvers.solve_with_max_height(
-                                            targetPose,
-                                            shooterPose,
-                                            shooter.getCurrentState().flywheelSpeed.in(RPM),
-                                            robotVel,
-                                            0.02, // 20ms lookahead for robot movement
-                                            maxHeightMeters);
-
-                            // if targetingData.rpm is 0, the solver couldn't find a solution
-                            // (physically impossible)
-                            if (targetingData.flywheelSpeed.in(RPM) > 0.1) {
-                                shooter.targetState(
-                                        targetingData.flywheelSpeed,
-                                        targetingData.turretAngle,
-                                        targetingData.hoodAngle);
-                            } else {
-                                // Fallback: Spin up to a safe mid-range RPM and keep turret pointed
-                                // at target
-                                shooter.targetState(
-                                        RPM.of(3000.0),
-                                        targetingData.turretAngle,
-                                        Degrees.of(kHood.MIN_ANGLE_DEGREES));
-                            }
-                        })
-                .withName("Shoot With Max Height: " + maxHeightMeters + "m");
     }
 
     public static Command shootAt(

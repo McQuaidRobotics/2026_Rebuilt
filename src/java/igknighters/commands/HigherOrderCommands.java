@@ -133,7 +133,7 @@ public class HigherOrderCommands {
         return Commands.parallel(
                 shootNoStop(subsystems),
                 Commands.print("IM HIPPPOING TILL I HIPPO").repeatedly(),
-                IntakeCommands.goToIntake(subsystems.intake));
+                IntakeCommands.holdAtIntake(subsystems.intake));
     }
 
     public static Command unClimbCommand(Subsystems subsystems) {
@@ -149,7 +149,7 @@ public class HigherOrderCommands {
                             Pose2d startPose = getClimbStartPose();
                             Pose2d endPose = getClimbEndPose();
                             return Commands.parallel(
-                                    IntakeCommands.goToStow(subsystems.intake),
+                                    IntakeCommands.holdAtStow(subsystems.intake),
                                     Commands.sequence(
                                             Commands.parallel(
                                                             ClimberCommands.holdAtState(
