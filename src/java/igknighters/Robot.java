@@ -276,7 +276,20 @@ public class Robot extends LoggedRobot {
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsytems.luma.getClosestGamePiece());
-        FieldVisualizer.getInstance()
+        if(Robot.isReal() && !SubsystemConstants.disableAllLogs){
+            FieldVisualizer.getInstance()
+                .updateTurret(
+                        -subsytems.shooter.getTurretAngleDegrees(),
+                        subsytems.swerve.getState().Pose);
+        Logger.recordOutput(
+                "componentPoses",
+                new Pose3d[] {
+                    getTurretPose(-subsytems.shooter.getTurretAngleDegrees()),
+                    getHoodPose(subsytems.shooter.getHoodAngleDegrees())
+                });
+        }
+        else {
+            FieldVisualizer.getInstance()
                 .updateTurret(
                         subsytems.shooter.getTurretAngleDegrees(),
                         subsytems.swerve.getState().Pose);
@@ -286,6 +299,8 @@ public class Robot extends LoggedRobot {
                     getTurretPose(subsytems.shooter.getTurretAngleDegrees()),
                     getHoodPose(subsytems.shooter.getHoodAngleDegrees())
                 });
+        }
+        
         Logger.recordOutput(
                 "zeroedPoses",
                 new Pose3d[] {
