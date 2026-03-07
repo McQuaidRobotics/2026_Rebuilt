@@ -292,14 +292,12 @@ public class ShooterCommands {
             Shooter shooter,
             Supplier<Pose2d> robotPoseSupplier,
             Supplier<ChassisSpeeds> robotVelocitySupplier) {
-        return Commands.sequence(
-                Commands.runOnce(() -> ShootInformation.getInstance().setBeingControlled(true)),
-                SHOOT_MAX_MIN(
-                        shooter,
-                        robotPoseSupplier,
-                        robotVelocitySupplier,
-                        4,
-                        FieldConstants.HUB.HEIGHT_METERS + .5));
+        return SHOOT_MAX_MIN(
+                shooter,
+                robotPoseSupplier,
+                robotVelocitySupplier,
+                4,
+                FieldConstants.HUB.HEIGHT_METERS + .5);
     }
 
     public static Command idleCommand(
@@ -414,6 +412,9 @@ public class ShooterCommands {
 
                     if (targetingData.flywheelSpeed.in(RPM) != 0) {
                         shooter.targetState(targetingData);
+
+                        Commands.runOnce(
+                                () -> ShootInformation.getInstance().setBeingControlled(true));
                     } else {
                         // shot is imposible so we should idle the shooter rpm at like 4000 so it
                         // spins up faster
@@ -421,6 +422,9 @@ public class ShooterCommands {
                                 RPM.of(4000),
                                 targetingData.turretAngle,
                                 Degrees.of(kHood.MIN_ANGLE_DEGREES));
+
+                        Commands.runOnce(
+                                () -> ShootInformation.getInstance().setBeingControlled(true));
                     }
                 });
     }
