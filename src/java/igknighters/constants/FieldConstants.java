@@ -135,8 +135,8 @@ public class FieldConstants {
                                 25.175 * Conv.INCHES_TO_METERS,
                                 new Rotation2d()),
                         1,
-                        (22.2+10) * Conv.INCHES_TO_METERS,
-                        (25.175+10) * Conv.INCHES_TO_METERS,
+                        (22.2 + 10) * Conv.INCHES_TO_METERS,
+                        (25.175 + 10) * Conv.INCHES_TO_METERS,
                         obstacleType.SAFE_ZONE);
         public static final obstacle BELOW_RED_BUMP =
                 new obstacle(
@@ -146,7 +146,7 @@ public class FieldConstants {
                                 new Rotation2d()),
                         1,
                         (22.2 + 10) * Conv.INCHES_TO_METERS,
-                        (25.175+10) / 4 * Conv.INCHES_TO_METERS,
+                        (25.175 + 10) / 4 * Conv.INCHES_TO_METERS,
                         obstacleType.SAFE_ZONE);
         public static final obstacle ABOVE_BLUE_BUMP =
                 new obstacle(
@@ -156,7 +156,7 @@ public class FieldConstants {
                                 new Rotation2d()),
                         1,
                         (22.2 + 10) * Conv.INCHES_TO_METERS,
-                        (25.295+10) / 4 * Conv.INCHES_TO_METERS,
+                        (25.295 + 10) / 4 * Conv.INCHES_TO_METERS,
                         obstacleType.SAFE_ZONE);
         public static final obstacle ABOVE_RED_BUMP =
                 new obstacle(
@@ -165,8 +165,8 @@ public class FieldConstants {
                                 Y_FIELD - 25.295 * Conv.INCHES_TO_METERS,
                                 new Rotation2d()),
                         1,
-                        (22.2+10) * Conv.INCHES_TO_METERS,
-                        (25.295+10) * Conv.INCHES_TO_METERS,
+                        (22.2 + 10) * Conv.INCHES_TO_METERS,
+                        (25.295 + 10) * Conv.INCHES_TO_METERS,
                         obstacleType.SAFE_ZONE);
         public static final ArrayList<obstacle> ALL_OBSTACLES =
                 new ArrayList<>(

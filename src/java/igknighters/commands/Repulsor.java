@@ -8,9 +8,11 @@ import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import igknighters.Robot;
 import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.SubsystemConstants;
@@ -101,7 +103,7 @@ public class Repulsor {
         if (!SubsystemConstants.disableAllLogs) {
             Log.log("ROBOT/Commands/repulsor/xGoalDist", target.getX() - currentPose.getX());
         }
-        return xGoalDist;
+        return 10*xGoalDist;
     }
 
     // finds X repulsive force by summing all the forces of the obstacles
@@ -251,7 +253,7 @@ public class Repulsor {
         if (!SubsystemConstants.disableAllLogs) {
             Log.log("ROBOT/Commands/repulsor/yGoalDist", target.getY() - currentPose.getY());
         }
-        return yGoalDist;
+        return 10*yGoalDist;
     }
 
     public static Command moveWithRepulsor(Swerve swerve, Pose2d targetPose) {
@@ -274,11 +276,12 @@ public class Repulsor {
                             10
                                     * -(getXGoal(currentPose, targetPose)
                                             + getXRepulse(currentPose, obstacles));
-                    // if (DriverStation.isAutonomous() && Robot.isBlue()) {
-                    //     if (currentPose.getX() + xVelo > FieldConstants.X_FIELD / 2) {
-                    //         xVelo = FieldConstants.X_FIELD / 2 - currentPose.getX();
-                    //     }
-                    // }
+                    // CHANGE TO AUTNOMOUS
+                    if (DriverStation.isTeleop() && Robot.isBlue()) {
+                        if (currentPose.getX() + xVelo > FieldConstants.X_FIELD / 2) {
+                            xVelo = FieldConstants.X_FIELD / 2 - currentPose.getX();
+                        }
+                    }
                     if (!SubsystemConstants.disableAllLogs) {
                         Log.log(
                                 "ROBOT/Commands/repulsor/xRepel",

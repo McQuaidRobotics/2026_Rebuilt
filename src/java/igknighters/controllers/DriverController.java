@@ -126,7 +126,7 @@ public class DriverController {
                     Repulsor.moveWithRepulsor(
                             swerve,
                             new Pose2d(
-                                    FieldConstants.X_FIELD / 2,
+                                    (FieldConstants.X_FIELD / 2) - 2,
                                     FieldConstants.Y_FIELD / 2,
                                     new Rotation2d())));
         } else if (debugType == DebugType.SHOOTER) {
