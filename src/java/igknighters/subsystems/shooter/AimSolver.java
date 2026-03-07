@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import igknighters.FieldVisualizer;
 import igknighters.Robot;
-import igknighters.constants.Conv;
 import igknighters.constants.ShootInformation;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
@@ -167,12 +166,12 @@ public class AimSolver {
                         new LerpTableEntry[] {
                             new LerpTableEntry(1.0, 2.5),
                             new LerpTableEntry(3.0, 2.3),
-                            new LerpTableEntry(5.0, 2.1), // past 5 m we pass so if d set to far imposible shot
+                            new LerpTableEntry(
+                                    5.0, 2.1), // past 5 m we pass so if d set to far imposible shot
                             new LerpTableEntry(10.0, 1.8),
                             new LerpTableEntry(15.0, 1.2),
                             new LerpTableEntry(20.0, 1.0),
                         });
-
 
         static Mechanism2d canSHOOTMECH = new Mechanism2d(20, 20);
         static boolean hasBeenAdded = false;
@@ -540,8 +539,6 @@ public class AimSolver {
             return vx * Math.cos(turretAngle) + vy * Math.sin(turretAngle);
         }
 
-        
-
         public static Translation2d addDToTargetWithAirResistance(
                 Pose3d targetPose, Pose3d shooterPose, double launchAngleRads) {
 
@@ -578,7 +575,11 @@ public class AimSolver {
                     Math.atan2(
                             targetPose.getY() - shooterPose.getY(),
                             targetPose.getX() - shooterPose.getX());
-            double p = d / airResistanceDTodistancedivider.lerp(d); // account for shots being close to missing when far. P icrease as distance increases
+            double p =
+                    d
+                            / airResistanceDTodistancedivider.lerp(
+                                    d); // account for shots being close to missing when far. P
+            // icrease as distance increases
 
             double px = Math.cos(angleToTarget) * p;
             double py = Math.sin(angleToTarget) * p;
