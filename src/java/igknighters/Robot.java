@@ -128,6 +128,7 @@ public class Robot extends LoggedRobot {
         autoChooser.addRoutine("CENTER OUTPOST CLIMB", routines::centerOutpostClimb);
         autoChooser.addRoutine("Center Depot climb", routines::centerDepotClimb);
         autoChooser.addRoutine("Right Depo Climb", routines::rightDepoClimb);
+        autoChooser.addRoutine("Right Orbit", routines::orbitRight);
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
     }
 
@@ -276,37 +277,29 @@ public class Robot extends LoggedRobot {
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsytems.luma.getClosestGamePiece());
-        if(Robot.isReal() && !SubsystemConstants.disableAllLogs){
+        if (Robot.isReal() && !SubsystemConstants.disableAllLogs) {
             FieldVisualizer.getInstance()
-                .updateTurret(
-                        -subsytems.shooter.getTurretAngleDegrees(),
-                        subsytems.swerve.getState().Pose);
-        Logger.recordOutput(
-                "componentPoses",
-                new Pose3d[] {
-                    getTurretPose(-subsytems.shooter.getTurretAngleDegrees()),
-                    getHoodPose(subsytems.shooter.getHoodAngleDegrees())
-                });
-        }
-        else {
+                    .updateTurret(
+                            -subsytems.shooter.getTurretAngleDegrees(),
+                            subsytems.swerve.getState().Pose);
+            Logger.recordOutput(
+                    "componentPoses",
+                    new Pose3d[] {
+                        getTurretPose(-subsytems.shooter.getTurretAngleDegrees()),
+                        getHoodPose(subsytems.shooter.getHoodAngleDegrees())
+                    });
+        } else {
             FieldVisualizer.getInstance()
-                .updateTurret(
-                        subsytems.shooter.getTurretAngleDegrees(),
-                        subsytems.swerve.getState().Pose);
-        Logger.recordOutput(
-                "componentPoses",
-                new Pose3d[] {
-                    getTurretPose(subsytems.shooter.getTurretAngleDegrees()),
-                    getHoodPose(subsytems.shooter.getHoodAngleDegrees())
-                });
+                    .updateTurret(
+                            subsytems.shooter.getTurretAngleDegrees(),
+                            subsytems.swerve.getState().Pose);
+            Logger.recordOutput(
+                    "componentPoses",
+                    new Pose3d[] {
+                        getTurretPose(subsytems.shooter.getTurretAngleDegrees()),
+                        getHoodPose(subsytems.shooter.getHoodAngleDegrees())
+                    });
         }
-        
-        Logger.recordOutput(
-                "zeroedPoses",
-                new Pose3d[] {
-                    new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0)),
-                    new Pose3d(0, 0, 0, new Rotation3d(0, 0.0, 0))
-                });
 
         if (kUseLimelight) {
             var driveState = subsytems.swerve.getState();

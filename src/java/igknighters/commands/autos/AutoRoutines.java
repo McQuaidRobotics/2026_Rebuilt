@@ -238,6 +238,37 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine orbitRight() {
+        AutoRoutine routine = autoFactory.newRoutine("Orbit Right");
+
+        AutoTrajectory orbitTraj = routine.trajectory("ORBIT_RIGHT_1.traj");
+        AutoTrajectory orbitTraj2 = routine.trajectory("ORBIT_RIGHT_2.traj");
+        // shoot grab return
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                orbitTraj.resetOdometry(),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                Commands.parallel(
+                                        orbitTraj.cmd(),
+                                        IntakeCommands.holdAtIntake(subsystems.intake))));
+        // shoot grab and hippo
+        orbitTraj
+                .atTimeBeforeEnd(0.0)
+                .onTrue(
+                        Commands.sequence(
+                                SwerveCommands.stopDriving(swerve),
+                                IntakeCommands.holdAtStow(subsystems.intake).withTimeout(.2),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 3.0),
+                                Commands.parallel(
+                                        IntakeCommands.holdAtIntake(subsystems.intake),
+                                        orbitTraj2.cmd(),
+                                        HigherOrderCommands.rapidFireStream(subsystems))));
+
+        orbitTraj2.done().onTrue(SwerveCommands.stopDriving(swerve));
+        return routine;
+    }
+
     public AutoRoutine leftNuetralHippo() {
         AutoRoutine routine = autoFactory.newRoutine("New Left Neutral Hippo");
 
