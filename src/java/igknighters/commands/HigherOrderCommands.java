@@ -2,15 +2,27 @@ package igknighters.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
+import igknighters.constants.SubsystemConstants;
+import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.ClimberState;
+import igknighters.subsystems.shooter.AimSolver;
+import igknighters.subsystems.shooter.Shooter;
+import igknighters.subsystems.shooter.ShooterState;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
@@ -18,6 +30,61 @@ public class HigherOrderCommands {
                 .alongWith(IntakeCommands.jorkIt(subsystems.intake))
                 .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
     }
+
+    
+    public static Command AIM_WITH_SWERVE(
+            Shooter shooter,
+            Supplier<Pose2d> robotPose,
+            Supplier<ChassisSpeeds> robotVeloSupplier,
+            double maxHeightMeters,
+            double minHeightMeters) {
+        ShootInformation info = ShootInformation.getInstance();
+        return shooter.run(
+                () -> {
+                    Pose2d robotPose2d = robotPose.get();
+                    Pose3d targetPose = info.getShotLocation(robotPose);
+                    info.setBeingControlled(true);
+                    ChassisSpeeds robotVel = robotVeloSupplier.get();
+
+                    shooter.currentShotType = ShooterCommands.getShotType(robotPose);
+
+                    Pose3d shooterPose =
+                            new Pose3d(
+                                    robotPose2d.getX(),
+                                    robotPose2d.getY(),
+                                    SubsystemConstants.kShooter.kFlywheels.ShooterHeightMeters,
+                                    new Rotation3d(
+                                            0.0, 0.0, robotPose2d.getRotation().getRadians()));
+                    ShooterState targetingData =
+                            AimSolver.Solvers.solve_max_and_min_iterative(
+                                    shooterPose,
+                                    targetPose,
+                                    robotVel,
+                                    shooter.getCurrentState().flywheelSpeed.in(RPM),
+                                    maxHeightMeters,
+                                    minHeightMeters,
+                                    0.02);
+                        targetingData.turretAngle = targetingData.turretAngle.toDegrees() + robotPose2d.getRotation().getDegrees();
+
+                    if (targetingData.flywheelSpeed.in(RPM) != 0) {
+                        shooter.targetState(targetingData);/
+
+                        Commands.runOnce(
+                                () -> ShootInformation.getInstance().setBeingControlled(true));
+                    } else {
+                        // shot is imposible so we should idle the shooter rpm at like 4000 so it
+                        // spins up faster
+                        shooter.targetState(
+                                RPM.of(4000),
+                                targetingData.turretAngle,
+                                Degrees.of(kHood.MIN_ANGLE_DEGREES));
+
+                        Commands.runOnce(
+                                () -> ShootInformation.getInstance().setBeingControlled(true));
+                    }
+                });
+    }
+
 
     public static Command shootNoStop(Subsystems subsystems) {
         return Commands.parallel(
