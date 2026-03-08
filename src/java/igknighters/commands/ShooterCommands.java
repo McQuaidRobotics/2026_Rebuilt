@@ -164,7 +164,7 @@ public class ShooterCommands {
                 shooter,
                 shooterPose,
                 robotVelocitySupplier,
-                4,
+                5,
                 FieldConstants.HUB.HEIGHT_METERS + .5);
     }
 
