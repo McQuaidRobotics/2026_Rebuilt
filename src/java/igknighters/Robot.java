@@ -301,6 +301,13 @@ public class Robot extends LoggedRobot {
                     });
         }
 
+        Logger.recordOutput(
+                "zeroedPoses",
+                new Pose3d[] {
+                    new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0)),
+                    new Pose3d(0, 0, 0, new Rotation3d(0, 0.0, 0))
+                });
+
         if (kUseLimelight) {
             var driveState = subsytems.swerve.getState();
             double headingDeg = driveState.Pose.getRotation().getDegrees();

@@ -202,8 +202,8 @@ public class AimSolver {
                 double maxHeightMeters,
                 double periodTime) {
             // 1. Position and Target setup
-            double sx = shooterPose.getX() + speeds.vxMetersPerSecond * periodTime;
-            double sy = shooterPose.getY() + speeds.vyMetersPerSecond * periodTime;
+            double sx = shooterPose.getX();
+            double sy = shooterPose.getY();
             double sz = shooterPose.getZ();
 
             double initialDist =
@@ -277,7 +277,7 @@ public class AimSolver {
             // 3. Final Angles
             double absoluteFieldAngle = Math.atan2(dy, dx);
             double robotYawFuture =
-                    shooterPose.getRotation().getZ() + speeds.omegaRadiansPerSecond * 0.05;
+                    shooterPose.getRotation().getZ();
             double turretAngle =
                     Math.atan2(
                             Math.sin(absoluteFieldAngle - robotYawFuture),
