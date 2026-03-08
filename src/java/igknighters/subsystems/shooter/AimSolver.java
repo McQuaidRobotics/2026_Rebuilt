@@ -22,6 +22,7 @@ import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.util.LerpTable;
 import igknighters.util.LerpTable.LerpTableEntry;
+import igknighters.util.RobotPosePredictor;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import org.littletonrobotics.junction.Logger;
@@ -202,8 +203,10 @@ public class AimSolver {
                 double maxHeightMeters,
                 double periodTime) {
             // 1. Position and Target setup
-            double sx = shooterPose.getX() + speeds.vxMetersPerSecond * periodTime;
-            double sy = shooterPose.getY() + speeds.vyMetersPerSecond * periodTime;
+            RobotPosePredictor predictor = new RobotPosePredictor(.4, .6);
+            Pose2d predictedPose = predictor.getPredictedPose(shooterPose.toPose2d());
+            double sx = predictedPose.getX();
+            double sy = predictedPose.getY();
             double sz = shooterPose.getZ();
 
             double initialDist =
