@@ -96,8 +96,10 @@ public class LimeLightVisionReal extends LimeLights {
         lastTimeStamp = timestamp;
 
         if (!SubsystemConstants.disableAllLogs) {
-        Log.log("ROBOT/Subsystems/Vision/LimeLightVision/TimeStampOfMeasurements", timestamp);
-        Log.log("ROBOT/Subsystems/Vision/LimeLightVision/NumberOfTagsSeen", visibleTagIds.size());
+            Log.log("ROBOT/Subsystems/Vision/LimeLightVision/TimeStampOfMeasurements", timestamp);
+            Log.log(
+                    "ROBOT/Subsystems/Vision/LimeLightVision/NumberOfTagsSeen",
+                    visibleTagIds.size());
         }
 
         return averagePose2ds(poses);

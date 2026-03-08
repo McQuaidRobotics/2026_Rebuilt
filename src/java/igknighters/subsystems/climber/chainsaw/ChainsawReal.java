@@ -125,7 +125,7 @@ public class ChainsawReal extends Chainsaw {
                 } else if (isUp()) {
                     goUpToMiddle = false;
                 }
-                output = goUpToMiddle ? 0.3 : -0.5;
+                output = goUpToMiddle ? 0.3 : -12;
             }
         } else {
             output = 0.0;

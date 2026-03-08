@@ -227,12 +227,12 @@ public class Repulsor {
         }
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
         if (!SubsystemConstants.disableAllLogs) {
-        Log.log("Commands/repulsor/DeltaTime", deltaTime);
+            Log.log("Commands/repulsor/DeltaTime", deltaTime);
         }
         if (deltaTime > maxTime) {
             maxTime = deltaTime;
             if (!SubsystemConstants.disableAllLogs) {
-            Log.log("Commands/repulsor/MaxDeltaTime", maxTime);
+                Log.log("Commands/repulsor/MaxDeltaTime", maxTime);
             }
         }
         // if in front of the hubs, there will be a up/down force to get robot to move towards one

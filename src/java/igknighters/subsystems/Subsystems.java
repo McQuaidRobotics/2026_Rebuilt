@@ -2,6 +2,8 @@ package igknighters.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.commands.IndexerCommands;
+import igknighters.commands.IntakeCommands;
+import igknighters.commands.ShooterCommands;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.climber.Climber;
@@ -43,6 +45,10 @@ public class Subsystems {
                 new SubsystemBase[] {swerve, shooter, climber, indexer, intake, luma, vision, led};
 
         this.indexer.setDefaultCommand(IndexerCommands.jorkIt(indexer).repeatedly());
+        this.intake.setDefaultCommand(IntakeCommands.holdAtStow(intake));
+        this.shooter.setDefaultCommand(
+                ShooterCommands.idleCommand(
+                        shooter, () -> swerve.getState().Pose, swerve::getFieldRelativeSpeeds));
 
         // CommandScheduler.getInstance().registerSubsystem(this.lockedResources);
     }

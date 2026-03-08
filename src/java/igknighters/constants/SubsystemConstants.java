@@ -5,7 +5,7 @@ import com.ctre.phoenix6.CANBus;
 public class SubsystemConstants {
 
     public static final int firstMotorID = 15;
-    public static final boolean disableAllLogs = true;
+    public static final boolean disableAllLogs = false;
     public static final CANBus superStructure = new CANBus("SuperStructureBus");
     public static final CANBus drive = new CANBus("DriveBus");
 
@@ -18,7 +18,7 @@ public class SubsystemConstants {
             public static final int MAX_HEIGHT_SENSOR_ID = 8;
             public static final int MIN_HEIGHT_SENSOR_ID = 6;
             public static final int MIDDLE_HEIGHT_SENSOR_ID = 7;
-            public static boolean disableChainsawLogs = false;
+            public static boolean disableChainsawLogs = true;
 
             static {
                 if (disableAllLogs) {
@@ -49,17 +49,14 @@ public class SubsystemConstants {
             public static final double MASS = 4.0;
             public static final double PEAK_FORWARD_CURRENT_LIMIT = 40;
             public static final double PEAK_REVERSE_CURRENT_LIMIT = 30;
-            public static final double STATOR_CURRENT_LIMIT = 35;
-            public static final double SUPPLY_CURRENT_LIMIT = 25;
+            public static final double STATOR_CURRENT_LIMIT = 50;
+            public static final double SUPPLY_CURRENT_LIMIT = 50;
         }
 
         public static class kServos {
             public static final int SERVO_PORT_1 = 9;
-            public static final int SERVO_PORT_2 = 3;
-            public static final int SERVO_PORT_3 = 4;
-            public static final int SERVO_PORT_4 = 5;
-            public static final double MAX_ANGLE_DEGREES = 160.0;
-            public static final double MIN_ANGLE_DEGREES = 75.0;
+            public static final double MAX_ANGLE_DEGREES = 90.0;
+            public static final double MIN_ANGLE_DEGREES = 0.0;
         }
     }
 
@@ -219,13 +216,13 @@ public class SubsystemConstants {
         public static class kTurret {
             public static final int MOTOR_ID = 24;
             public static final int CANCODER_ID = 25;
-            public static final double CANCODER_OFFSET_ROTATIONS = -0.723388671875 + 1.0;
+            public static final double CANCODER_OFFSET_ROTATIONS = -0.72314453125 + 1.0;
             public static final double GEAR_RATIO = 16.2;
             public static final double MAX_ANGLE_DEGREES = 270.0;
             public static final double MIN_ANGLE_DEGREES = -90.0;
             public static final double MAX_SPEED_RPM = 400.0;
             public static final double MAX_ACCELERATION_RPM = 600.0;
-            public static final double MAX_JERK = 60;
+            public static final double MAX_JERK = 100;
             public static final int STATOR_CURRENT_LIMIT = 40;
             public static final int SUPPLY_CURRENT_LIMIT = 30;
             public static final double kP = 45.0; // tuned
@@ -278,7 +275,7 @@ public class SubsystemConstants {
         public static final String intakeCam = "limelight-intake";
         public static final String backCam = "limelight-back";
         public static final String rightCam = "limelight-left";
-        public static boolean disableVisionLogs = false;
+        public static boolean disableVisionLogs = true;
 
         static {
             if (disableAllLogs) {

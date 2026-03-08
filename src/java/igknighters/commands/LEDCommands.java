@@ -67,7 +67,8 @@ public class LEDCommands {
 
                             led.animate(slate);
                             LedUtil.logBuffer("fullPattern", led, slate);
-                        })
+                        },
+                        led)
                 .withName("SplitLed(" + sections.length + ", " + names + ")");
     }
 

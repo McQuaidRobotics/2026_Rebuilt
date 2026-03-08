@@ -10,15 +10,23 @@ import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.intake.IntakeState;
 
 public class IntakeCommands {
-    public static Command goToIntake(Intake intake) {
+    public static Command holdAtIntake(Intake intake) {
         return intake.run(() -> intake.goTo(IntakeState.Intake)).withName("Intake Balls");
     }
 
-    public static Command goToStow(Intake intake) {
+    public static Command holdAtStow(Intake intake) {
         return intake.run(() -> intake.goTo(IntakeState.Stowed)).withName("Stow Intake");
     }
 
-    public static Command goTo(Intake intake, Angle angle, AngularVelocity speed) {
+    public static Command jorkIt(Intake intake) {
+        return holdAtIntake(intake)
+                .withTimeout(.5)
+                .andThen(holdAtStow(intake))
+                .withTimeout(.5)
+                .withName("JORK INTAKE");
+    }
+
+    public static Command holdAt(Intake intake, Angle angle, AngularVelocity speed) {
         return intake.run(() -> intake.goTo(angle, speed)).withName("Go to");
     }
 

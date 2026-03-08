@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.LEDCommands.LEDSection;
 import igknighters.commands.teleop.AutoRotateOnBump;
+import igknighters.commands.teleop.SlowedDownDrivingWhileShooting;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
@@ -172,7 +173,7 @@ public class SubsystemTriggers {
     }
 
     public Command getLEDCommandByMode() {
-        return Commands.either(teleopLED, autoLED, teleop);
+        return Commands.either(teleopLED, Commands.either(disabledLED, autoLED, disabled), teleop);
     }
 
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
@@ -202,7 +203,7 @@ public class SubsystemTriggers {
 
         falseOnce().and(disabled).whileTrue(disabledLED);
 
-        autonomous.whileTrue(autoLED);
+        autonomous.onTrue(autoLED);
 
         teleop.onTrue(teleopLED);
 
@@ -219,5 +220,10 @@ public class SubsystemTriggers {
         //         .atCommandedStateTrigger()
         //         .and(ableToShootState.beingControlledTrigger().negate())
         //         .whileFalse(LEDCommands.run(led, LEDPattern.solid(Color.kPurple)));
+
+        ableToShootState
+                .beingControlledTrigger()
+                .and(teleop)
+                .whileTrue(new SlowedDownDrivingWhileShooting(swerve, driverController));
     }
 }

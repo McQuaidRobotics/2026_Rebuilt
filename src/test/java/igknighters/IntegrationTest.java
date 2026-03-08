@@ -39,6 +39,7 @@ public class IntegrationTest {
         DriverStationSim.notifyNewData();
 
         robot = new Robot(false);
+        CommandScheduler.getInstance().removeDefaultCommand(robot.subsytems.shooter);
         robot.robotInit();
     }
 

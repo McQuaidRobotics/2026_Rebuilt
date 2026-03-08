@@ -91,11 +91,12 @@ public class ShootInformation {
     }
 
     public Pose3d getShotLocation(Supplier<Pose2d> robotPose) {
-        if (useOperatorControlLocation) {
-            return getDashboardPose("robot/passWaypoint");
-        }
         if (shouldPass(robotPose)) {
-            return getPassTarget(robotPose);
+            if (useOperatorControlLocation) {
+                return getDashboardPose("robot/passWaypoint");
+            } else {
+                return getPassTarget(robotPose);
+            }
         }
         return getHubTarget();
     }
@@ -131,14 +132,14 @@ public class ShootInformation {
 
     public void setPossibleShot(boolean newState) {
         if (!SubsystemConstants.disableAllLogs) {
-        Log.log("ROBOT/STATUS/POSSIBLE SHOT", newState);
+            Log.log("ROBOT/STATUS/POSSIBLE SHOT", newState);
         }
         this.possibleShot = newState;
     }
 
     public void setBeingControlled(boolean newState) {
         if (!SubsystemConstants.disableAllLogs) {
-        Log.log("ROBOT/Subsystems/Shooter/BeingControlled", newState);
+            Log.log("ROBOT/Subsystems/Shooter/BeingControlled", newState);
         }
         this.beingControlled = newState;
     }

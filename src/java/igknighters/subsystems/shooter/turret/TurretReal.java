@@ -30,7 +30,6 @@ public class TurretReal extends Turret {
             new CANcoder(SubsystemConstants.kShooter.kTurret.CANCODER_ID, kShooter.CANBUS);
 
     private final BaseStatusSignal turretAngle = motor.getPosition();
-    private final BaseStatusSignal turretCurrent = motor.getStatorCurrent();
 
     private final TalonFXConfiguration turretConfiguration() {
         var cfg = new TalonFXConfiguration();
@@ -126,9 +125,9 @@ public class TurretReal extends Turret {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(turretAngle, turretCurrent);
-        Log.logMotor("Subsystems/Shooter/Turret/Motor", motor);
+        BaseStatusSignal.refreshAll(turretAngle);
         if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+            Log.logMotor("Subsystems/Shooter/Turret/Motor", motor);
             Log.log("ROBOT/Subsystems/Shooter/Turret/Target Degrees", super.targetDegrees);
         }
 

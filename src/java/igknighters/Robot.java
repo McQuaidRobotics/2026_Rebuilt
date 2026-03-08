@@ -30,7 +30,6 @@ import igknighters.constants.DrivingSharedState;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.controllers.DriverController;
-import igknighters.controllers.DriverController.DebugType;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
@@ -277,16 +276,30 @@ public class Robot extends LoggedRobot {
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsytems.luma.getClosestGamePiece());
-        FieldVisualizer.getInstance()
-                .updateTurret(
-                        subsytems.shooter.getTurretAngleDegrees(),
-                        subsytems.swerve.getState().Pose);
-        Logger.recordOutput(
-                "componentPoses",
-                new Pose3d[] {
-                    getTurretPose(subsytems.shooter.getTurretAngleDegrees()),
-                    getHoodPose(subsytems.shooter.getHoodAngleDegrees())
-                });
+        if (Robot.isReal() && !SubsystemConstants.disableAllLogs) {
+            FieldVisualizer.getInstance()
+                    .updateTurret(
+                            -subsytems.shooter.getTurretAngleDegrees(),
+                            subsytems.swerve.getState().Pose);
+            Logger.recordOutput(
+                    "componentPoses",
+                    new Pose3d[] {
+                        getTurretPose(-subsytems.shooter.getTurretAngleDegrees()),
+                        getHoodPose(subsytems.shooter.getHoodAngleDegrees())
+                    });
+        } else {
+            FieldVisualizer.getInstance()
+                    .updateTurret(
+                            subsytems.shooter.getTurretAngleDegrees(),
+                            subsytems.swerve.getState().Pose);
+            Logger.recordOutput(
+                    "componentPoses",
+                    new Pose3d[] {
+                        getTurretPose(subsytems.shooter.getTurretAngleDegrees()),
+                        getHoodPose(subsytems.shooter.getHoodAngleDegrees())
+                    });
+        }
+
         Logger.recordOutput(
                 "zeroedPoses",
                 new Pose3d[] {
@@ -319,7 +332,7 @@ public class Robot extends LoggedRobot {
     }
 
     public void bindDriverController() {
-        driverController.bind(subsytems, DebugType.CLIMBER);
+        driverController.bind(subsytems);
     }
 
     @Override

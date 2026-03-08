@@ -2,7 +2,6 @@ package igknighters.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
@@ -16,6 +15,7 @@ import java.util.Set;
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
         return rapidFireStream(subsystems)
+                .alongWith(IntakeCommands.jorkIt(subsystems.intake))
                 .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
     }
 
@@ -28,7 +28,8 @@ public class HigherOrderCommands {
                                 .repeatedly()
                                 .withName("SHOOTING WHILE DOING OTHER STUFF"),
                         IndexerCommands.dispense(subsystems.indexer)
-                                .onlyIf(ShootInformation.getInstance().atCommandedStateTrigger()))
+                                .onlyIf(ShootInformation.getInstance().atCommandedStateTrigger()),
+                        IntakeCommands.jorkIt(subsystems.intake))
                 .withName("DISPENSING")
                 .alongWith(Commands.print("DISPENSING"))
                 .withName("SHOOT NO STOP");
@@ -134,7 +135,7 @@ public class HigherOrderCommands {
         return Commands.parallel(
                 shootNoStop(subsystems),
                 Commands.print("IM HIPPPOING TILL I HIPPO").repeatedly(),
-                IntakeCommands.goToIntake(subsystems.intake));
+                IntakeCommands.holdAtIntake(subsystems.intake));
     }
 
     public static Command unClimbCommand(Subsystems subsystems) {
@@ -150,7 +151,7 @@ public class HigherOrderCommands {
                             Pose2d startPose = getClimbStartPose();
                             Pose2d endPose = getClimbEndPose();
                             return Commands.parallel(
-                                    IntakeCommands.goToStow(subsystems.intake),
+                                    IntakeCommands.holdAtStow(subsystems.intake),
                                     Commands.sequence(
                                             Commands.parallel(
                                                             ClimberCommands.holdAtState(
@@ -174,8 +175,8 @@ public class HigherOrderCommands {
                                                             SwerveCommands.isAt(
                                                                     subsystems.swerve,
                                                                     startPose,
-                                                                    .1,
-                                                                    .1)),
+                                                                    .02,
+                                                                    .05)),
                                             Commands.parallel(
                                                             ClimberCommands.holdAtState(
                                                                     subsystems.climber,
@@ -185,28 +186,12 @@ public class HigherOrderCommands {
                                                     .until(
                                                             () ->
                                                                     SwerveCommands.isAt(
-                                                                                            subsystems
-                                                                                                    .swerve,
-                                                                                            endPose,
-                                                                                            .1,
-                                                                                            .1)
-                                                                                    .getAsBoolean()
-                                                                            || SwerveCommands
-                                                                                    .isAtVelocityAndNotAtStart(
-                                                                                            subsystems
-                                                                                                    .swerve,
-                                                                                            new ChassisSpeeds(
-                                                                                                    0,
-                                                                                                    0,
-                                                                                                    0),
-                                                                                            new ChassisSpeeds(
-                                                                                                    0.1,
-                                                                                                    0.1,
-                                                                                                    0.1),
-                                                                                            endPose,
-                                                                                            .2,
-                                                                                            .1)
-                                                                                    .getAsBoolean()),
+                                                                                    subsystems
+                                                                                            .swerve,
+                                                                                    endPose,
+                                                                                    .02,
+                                                                                    .05)
+                                                                            .getAsBoolean()),
                                             SwerveCommands.stopDriving(subsystems.swerve)));
                         },
                         Set.of(subsystems.swerve, subsystems.climber, subsystems.intake))
