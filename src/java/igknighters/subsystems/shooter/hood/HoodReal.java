@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -100,7 +99,7 @@ public class HoodReal extends Hood {
 
     @Override
     public void periodic() {
-    
+
         handleLimitSwitch();
         if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
             Log.log("ROBOT/Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());

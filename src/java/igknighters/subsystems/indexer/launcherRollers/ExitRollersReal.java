@@ -6,7 +6,6 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIndexer;
@@ -86,9 +85,7 @@ public class ExitRollersReal extends ExitRollers {
     public void periodic() {
 
         if (!SubsystemConstants.kIndexer.kExitRollers.disableExitRollersLogs) {
-            Log.log(
-                    "Subsystems/Indexer/ExitRollers/velocity",
-                    getSpeedRPM());
+            Log.log("Subsystems/Indexer/ExitRollers/velocity", getSpeedRPM());
         }
     }
 }

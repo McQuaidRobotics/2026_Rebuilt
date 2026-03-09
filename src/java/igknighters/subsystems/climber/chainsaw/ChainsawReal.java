@@ -1,6 +1,5 @@
 package igknighters.subsystems.climber.chainsaw;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -29,7 +28,6 @@ public class ChainsawReal extends Chainsaw {
             new DigitalInput(SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_SENSOR_ID);
     private final DigitalInput middleLimitSwitch =
             new DigitalInput(SubsystemConstants.kClimber.kChainsaw.MIDDLE_HEIGHT_SENSOR_ID);
-
 
     private final TalonFX leftMotor;
 

@@ -175,8 +175,8 @@ public class DriverController {
         var intake = subsystems.intake;
 
         this.LT
-                .whileTrue(IntakeCommands.protectedIntake(intake, () -> swerve.getState().Pose))
-                .onFalse(IntakeCommands.holdAtStow(intake));
+                .whileTrue(IntakeCommands.holdAtIntake(subsystems.intake))
+                .onFalse(IntakeCommands.holdAtStow(subsystems.intake));
         this.RT
                 .whileTrue(HigherOrderCommands.rapidFireStream(subsystems))
                 .onFalse(HigherOrderCommands.IdleShooter(subsystems));

@@ -3,7 +3,6 @@ package igknighters.subsystems.intake.pivot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotation;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -113,7 +112,7 @@ public class PivotReal extends Pivot {
 
     @Override
     public void periodic() {
-        
+
         Log.log("ROBOT/Subsystems/Intake/Pivot/POSITION", getAngle().in(Degrees));
 
         if (!SubsystemConstants.kIntake.kPivot.disablePivotLogs) {

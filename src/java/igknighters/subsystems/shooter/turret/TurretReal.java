@@ -3,7 +3,6 @@ package igknighters.subsystems.shooter.turret;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotations;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -123,7 +122,7 @@ public class TurretReal extends Turret {
 
     @Override
     public void periodic() {
-        
+
         if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
             Log.logMotor("Subsystems/Shooter/Turret/Motor", motor);
             Log.log("ROBOT/Subsystems/Shooter/Turret/Target Degrees", super.targetDegrees);

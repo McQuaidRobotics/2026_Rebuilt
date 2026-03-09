@@ -2,7 +2,6 @@ package igknighters.subsystems.shooter.flywheel;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
@@ -74,7 +73,6 @@ public class FlywheelReal extends Flywheel {
                 new Follower(mainShooter.getDeviceID(), MotorAlignmentValue.Opposed));
 
         velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(0);
-
     }
 
     @Override
@@ -100,7 +98,9 @@ public class FlywheelReal extends Flywheel {
     @Override
     public void periodic() {
         if (!SubsystemConstants.kShooter.kFlywheels.disableFlywheelsLogs) {
-            Log.log("ROBOT/Subsystems/Shooter/Flywheels/being controlled", isBeingControlledActivly);
+            Log.log(
+                    "ROBOT/Subsystems/Shooter/Flywheels/being controlled",
+                    isBeingControlledActivly);
             Log.logMotor("ROBOT/Subsystems/Shooter/Flywheels/Motor", mainShooter);
         }
 
