@@ -112,9 +112,7 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                 Commands.print("INTAKE BALLS"),
-                                Commands.parallel(
-                                        IntakeCommands.holdAtIntake(subsystems.intake),
-                                        HigherOrderCommands.rapidFireStream(subsystems))));
+                                HigherOrderCommands.hippoShoot(subsystems)));
 
         return routine;
     }
@@ -127,10 +125,9 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                         outpostTraj.resetOdometry(),
-                                        HigherOrderCommands.shootTillEmpty(subsystems, 6),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 3),
                                         Commands.parallel(
-                                                IntakeCommands.holdAtIntake(subsystems.intake),
-                                                HigherOrderCommands.rapidFireStream(subsystems),
+                                                HigherOrderCommands.hippoShoot(subsystems),
                                                 outpostTraj.cmd()))
                                 .withName("Right Outpost Climb"));
         outpostTraj
@@ -150,7 +147,7 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                         outpostTraj.resetOdometry(),
-                                        HigherOrderCommands.shootTillEmpty(subsystems, 6),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 3),
                                         Commands.parallel(
                                                 IntakeCommands.holdAtIntake(subsystems.intake),
                                                 HigherOrderCommands.rapidFireStream(subsystems),
@@ -172,7 +169,7 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                         depoTraj.resetOdometry(),
-                                        HigherOrderCommands.shootTillEmpty(subsystems, 6),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 3),
                                         Commands.parallel(
                                                 IntakeCommands.holdAtIntake(subsystems.intake),
                                                 HigherOrderCommands.rapidFireStream(subsystems),
@@ -193,7 +190,7 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                         depoTraj.resetOdometry(),
-                                        HigherOrderCommands.shootTillEmpty(subsystems, 6),
+                                        HigherOrderCommands.shootTillEmpty(subsystems, 3),
                                         Commands.parallel(
                                                 HigherOrderCommands.hippoShoot(subsystems),
                                                 depoTraj.cmd()))
@@ -245,16 +242,14 @@ public class AutoRoutines extends AutoCommands {
         AutoTrajectory swipe1In = routine.trajectory("ORBIT_RIGHT_2.traj");
         AutoTrajectory swipe2Out = routine.trajectory("ORBIT_RIGHT_3.traj");
         AutoTrajectory swipe2In = routine.trajectory("ORBIT_RIGHT_4.traj");
-        // shoot grab return
         routine.active()
                 .onTrue(
                         Commands.sequence(
                                 swipe1Out.resetOdometry(),
                                 HigherOrderCommands.shootTillEmpty(subsystems, 3),
-                                Commands.parallel(
-                                        swipe1Out.cmd(),
-                                        IntakeCommands.holdAtIntake(subsystems.intake))));
-        // shoot grab and hippo
+                                swipe1Out.cmd()));
+
+        swipe1Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
         swipe1Out
                 .done()
                 .onTrue(Commands.sequence(SwerveCommands.stopDriving(swerve), swipe1In.cmd()));
@@ -265,16 +260,15 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
                                 .alongWith(HigherOrderCommands.shootTillEmpty(subsystems, 3))
-                                .andThen(swipe2In.cmd()));
+                                .andThen(swipe2Out.cmd()));
 
-        swipe2In.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+        swipe2Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
 
-        swipe2In.done().onTrue(SwerveCommands.stopDriving(swerve).andThen(swipe2Out.cmd()));
+        swipe2Out.done().onTrue(SwerveCommands.stopDriving(swerve).andThen(swipe2In.cmd()));
 
-        swipe2Out.active().onTrue(IntakeCommands.holdAtStow(subsystems.intake));
+        swipe2In.active().onTrue(IntakeCommands.holdAtStow(subsystems.intake));
 
-        swipe2Out
-                .done()
+        swipe2In.done()
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
                                 .andThen(HigherOrderCommands.rapidFireStream(subsystems)));
