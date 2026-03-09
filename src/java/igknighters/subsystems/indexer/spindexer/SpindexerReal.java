@@ -14,23 +14,11 @@ public class SpindexerReal extends Spindexer {
     private final TalonFX spindexer =
             new TalonFX(SubsystemConstants.kIndexer.kSpindexer.LEADER_MOTOR_ID, kIndexer.CANBUS);
 
-    // private final MotionMagicVelocityVoltage velocityControl = new
-    // MotionMagicVelocityVoltage(0.0);
+
 
     private final MotionMagicVelocityVoltage velocityControl;
-    // private final MotionMagicVelocityTorqueCurrentFOC velocityTorqueCurrentFOC =
-    //         new MotionMagicVelocityTorqueCurrentFOC(0.0).withSlot(0);
     private final DutyCycleOut dutyCycleControl = new DutyCycleOut(0.0);
 
-    // private final DigitalInput beamBreakSensor = new
-    // DigitalInput(SubsystemConstants.Shooter.BEAM_BREAK_SENSOR_CHANNEL);
-
-    private BaseStatusSignal spindexerVelocity;
-    private BaseStatusSignal spindexerCurrent;
-    private BaseStatusSignal spindexerVoltage;
-    private BaseStatusSignal spindexerTemperature;
-
-    // private BaseStatusSignal isBeamBreakTripped;
 
     public TalonFXConfiguration getLeaderConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -66,10 +54,7 @@ public class SpindexerReal extends Spindexer {
 
         velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(0);
 
-        spindexerVelocity = spindexer.getVelocity();
-        spindexerCurrent = spindexer.getSupplyCurrent();
-        spindexerVoltage = spindexer.getSupplyVoltage();
-        spindexerTemperature = spindexer.getDeviceTemp();
+        
     }
 
     @Override
@@ -89,26 +74,15 @@ public class SpindexerReal extends Spindexer {
 
     @Override
     public double getRPM() {
-        return spindexerVelocity.getValueAsDouble() * 60;
+        return spindexer.getVelocity().getValueAsDouble() * 60;
     }
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(
-                spindexerVelocity, spindexerCurrent, spindexerVoltage, spindexerTemperature);
         if (!SubsystemConstants.kIndexer.kSpindexer.disableSpindexerLogs) {
             Log.log(
                     "Subsystems/Indexer/Spindexer/velocity",
-                    spindexerVelocity.getValueAsDouble() * 60.0);
-            Log.log(
-                    "ROBOT/Subsystems/Indexer/Spindexer/current",
-                    spindexerCurrent.getValueAsDouble());
-            Log.log(
-                    "ROBOT/Subsystems/Indexer/Spindexer/voltage",
-                    spindexerVoltage.getValueAsDouble());
-            Log.log(
-                    "Subsystems/Indexer/Spindexer/temperature",
-                    spindexerTemperature.getValueAsDouble());
+                    getRPM());
         }
     }
 }

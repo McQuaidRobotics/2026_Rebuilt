@@ -20,10 +20,8 @@ public class HoodReal extends Hood {
     private final TalonFX motor =
             new TalonFX(SubsystemConstants.kShooter.kHood.MOTOR_ID, kShooter.CANBUS);
 
-    private final BaseStatusSignal flapAngleRots = motor.getPosition();
     private final DigitalInput reverseLimitSwitch =
             new DigitalInput(kShooter.kHood.REVERSE_LIMIT_SWITCH_ID);
-    private final BaseStatusSignal motorRots = motor.getPosition();
     private Angle targetAngle = Degrees.of(kHood.MIN_ANGLE_DEGREES);
     private boolean hasHomed = false;
 
@@ -63,7 +61,7 @@ public class HoodReal extends Hood {
 
     @Override
     public double getAngleDegrees() {
-        return motorRots.getValueAsDouble() * kHood.MOTOR_ROTS_TO_HOOD_DEGREES;
+        return motor.getPosition().getValueAsDouble() * kHood.MOTOR_ROTS_TO_HOOD_DEGREES;
     }
 
     public boolean isLegalPosition(double angleDegrees) {
@@ -102,7 +100,7 @@ public class HoodReal extends Hood {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(motorRots);
+    
         handleLimitSwitch();
         if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
             Log.log("ROBOT/Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());
