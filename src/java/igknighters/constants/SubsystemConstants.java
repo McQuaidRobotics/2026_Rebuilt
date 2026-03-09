@@ -220,9 +220,9 @@ public class SubsystemConstants {
             public static final double GEAR_RATIO = 16.2;
             public static final double MAX_ANGLE_DEGREES = 270.0;
             public static final double MIN_ANGLE_DEGREES = -90.0;
-            public static final double MAX_SPEED_RPM = 400.0;
-            public static final double MAX_ACCELERATION_RPM = 600.0;
-            public static final double MAX_JERK = 100;
+            public static final double MAX_SPEED_RPM = 600.0;
+            public static final double MAX_ACCELERATION_RPM = 800.0;
+            public static final double MAX_JERK = 300;
             public static final int STATOR_CURRENT_LIMIT = 40;
             public static final int SUPPLY_CURRENT_LIMIT = 30;
             public static final double kP = 45.0; // tuned
