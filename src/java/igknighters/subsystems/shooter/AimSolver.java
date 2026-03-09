@@ -334,9 +334,10 @@ public class AimSolver {
                 double maxHeightMeters,
                 double minHeightMeters,
                 double periodTime) {
-            // 1. Position and Target setup
-            double sx = shooterPose.getX() + speeds.vxMetersPerSecond * periodTime;
-            double sy = shooterPose.getY() + speeds.vyMetersPerSecond * periodTime;
+            RobotPosePredictor predictor = new RobotPosePredictor(.4, .6);
+            Pose2d predictedPose = predictor.getPredictedPose(shooterPose.toPose2d());
+            double sx = predictedPose.getX();
+            double sy = predictedPose.getY();
             double sz = shooterPose.getZ();
 
             double initialDist =
