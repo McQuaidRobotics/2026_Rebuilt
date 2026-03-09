@@ -128,6 +128,7 @@ public class Robot extends LoggedRobot {
         autoChooser.addRoutine("Center Depot climb", routines::centerDepotClimb);
         autoChooser.addRoutine("Right Depo Climb", routines::rightDepoClimb);
         autoChooser.addRoutine("Right Orbit", routines::orbitRight);
+        autoChooser.addRoutine("Pass to self left", routines::passToSelfLeft);
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
     }
 

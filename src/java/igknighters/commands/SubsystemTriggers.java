@@ -202,9 +202,10 @@ public class SubsystemTriggers {
 
         SetupOperatorController(subsystems);
 
-        onBump.whileTrue(
-                Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true))
-                        .andThen(new AutoRotateOnBump(swerve, driverController)));
+        onBump.and(teleop)
+                .whileTrue(
+                        Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true))
+                                .andThen(new AutoRotateOnBump(swerve, driverController)));
         onBump.onFalse(Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(false)));
 
         falseOnce().and(disabled).whileTrue(disabledLED(led));

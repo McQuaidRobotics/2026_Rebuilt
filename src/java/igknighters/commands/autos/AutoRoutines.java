@@ -269,16 +269,39 @@ public class AutoRoutines extends AutoCommands {
 
     public AutoRoutine passToSelfLeft() {
         AutoRoutine routine = autoFactory.newRoutine("Pass to Self Left");
-        AutoTrajectory trajectory = routine.trajectory("PASS_TO_SELF_LEFT_1.traj");
+        AutoTrajectory PASS_TRAJECTORY = routine.trajectory("PASS_TO_SELF_LEFT_1.traj");
+        AutoTrajectory ROOMBA_1_TRAJECTORY = routine.trajectory("PASS_TO_SELF_LEFT_2.traj");
+        AutoTrajectory ROOMBA_2_TRAJECTORY = routine.trajectory("PASS_TO_SELF_LEFT_3.traj");
 
         routine.active()
                 .onTrue(
                         Commands.sequence(
-                                trajectory.resetOdometry(),
+                                PASS_TRAJECTORY.resetOdometry(),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
                                 Commands.parallel(
                                         HigherOrderCommands.hippoShoot(subsystems),
-                                        trajectory.cmd())));
-        trajectory.done().onTrue(SwerveCommands.stopDriving(swerve));
+                                        PASS_TRAJECTORY.cmd())));
+        PASS_TRAJECTORY
+                .done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .andThen(Commands.print("STARTING ROOMBA"))
+                                .andThen(ROOMBA_1_TRAJECTORY.cmd()));
+
+        ROOMBA_1_TRAJECTORY.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+
+        ROOMBA_1_TRAJECTORY
+                .done()
+                .onTrue(SwerveCommands.stopDriving(swerve).andThen(ROOMBA_2_TRAJECTORY.cmd()));
+
+        ROOMBA_2_TRAJECTORY.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+
+        ROOMBA_2_TRAJECTORY
+                .done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .andThen(HigherOrderCommands.rapidFireStream(subsystems)));
+
         return routine;
     }
 
