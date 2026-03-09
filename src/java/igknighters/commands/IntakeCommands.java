@@ -57,8 +57,9 @@ public class IntakeCommands {
     }
 
     public static Command protectedIntake(Intake intake, Supplier<Pose2d> poseSupplier) {
-        return intake.runOnce(
+        return intake.run(
                 () -> {
+                    // if on bump we should be stowed
                     if (FieldConstants.BUMP.isInside(poseSupplier.get())) {
                         Log.log("ROBOT/Commands/Protected Intake", "Inside BUMP, stowing intake");
                         instantHoldAtState(intake, IntakeState.Stowed);
