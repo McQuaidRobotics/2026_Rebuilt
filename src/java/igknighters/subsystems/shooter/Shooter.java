@@ -172,9 +172,9 @@ public class Shooter extends SubsystemBase {
         }
         if (Robot.isReal()) {
             if (currentShotType == shotType.SHOT) {
-                ableToShootState.setAtTarget(atRealTarget(200, 4, 2.5));
+                ableToShootState.setAtTarget(atRealTarget(200, 7, 2.5));
             } else {
-                ableToShootState.setAtTarget(atRealTarget(600, 7, 5));
+                ableToShootState.setAtTarget(atRealTarget(800, 20, 9));
             }
         } else {
             ableToShootState.setAtTarget(atSimTarget(600, 5, 1));
