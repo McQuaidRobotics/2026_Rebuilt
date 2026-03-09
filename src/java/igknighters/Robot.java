@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -280,10 +279,11 @@ public class Robot extends LoggedRobot {
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
-        pose_pred.setNewPose(subsystems.swerve.getState().Pose, subsystems.swerve.getState().Speeds);
+        pose_pred.setNewPose(
+                subsystems.swerve.getState().Pose, subsystems.swerve.getState().Speeds);
         if (Robot.isReal() && !SubsystemConstants.disableAllLogs) {
             FieldVisualizer.getInstance()
-                    .updateTurret( 
+                    .updateTurret(
                             -subsystems.shooter.getTurretAngleDegrees(),
                             subsystems.swerve.getState().Pose);
             Logger.recordOutput(

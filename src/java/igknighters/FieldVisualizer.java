@@ -46,6 +46,9 @@ public class FieldVisualizer {
     private final DoubleArrayPublisher turretAnglePub =
             table.getDoubleArrayTopic("turretAngle").publish();
 
+    private final DoubleArrayPublisher predictedFuturePose =
+            table.getDoubleArrayTopic("futurePose").publish();
+
     private final DoubleArrayPublisher drivingTargetPub =
             table.getDoubleArrayTopic("drivingTargetPose").publish();
 
@@ -64,6 +67,17 @@ public class FieldVisualizer {
         }
         shootingTargetPub.set(
                 new double[] {target.getX(), target.getY(), target.getRotation().getDegrees()});
+    }
+
+    public void updatePredictedPose(Pose2d pred_pose) {
+        if (pred_pose == null) {
+            predictedFuturePose.set(new double[0]);
+            return;
+        }
+        predictedFuturePose.set(
+                new double[] {
+                    pred_pose.getX(), pred_pose.getY(), pred_pose.getRotation().getDegrees()
+                });
     }
 
     /**
