@@ -60,6 +60,7 @@ public class Robot extends LoggedRobot {
     double i = 0;
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
+    public static RobotPosePredictor pose_pred = new RobotPosePredictor(.4, .6);
 
     private final DriverController driverController = new DriverController(0);
 
@@ -279,7 +280,6 @@ public class Robot extends LoggedRobot {
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
-        RobotPosePredictor pose_pred = new RobotPosePredictor(.4, .6);
         pose_pred.setNewPose(subsystems.swerve.getState().Pose, subsystems.swerve.getState().Speeds);
         if (Robot.isReal() && !SubsystemConstants.disableAllLogs) {
             FieldVisualizer.getInstance()

@@ -204,7 +204,8 @@ public class AimSolver {
                 double maxHeightMeters,
                 double periodTime) {
             // 1. Position and Target setup
-            Pose2d predictedPose = predictor.getPredictedPose(shooterPose.toPose2d());
+
+            Pose2d predictedPose = Robot.pose_pred.getPredictedPose(shooterPose.toPose2d());
             double sx = predictedPose.getX();
             double sy = predictedPose.getY();
             double sz = shooterPose.getZ();
