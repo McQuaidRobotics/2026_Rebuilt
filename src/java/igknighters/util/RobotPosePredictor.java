@@ -108,6 +108,10 @@ public class RobotPosePredictor {
         smoothedVelocities = updatedVelos;
     }
 
+
+        public double getPredictedVelos(Pose2d pose, ChassisSpeeds chassisSpeeds) {
+
+        }
     /**
      * Returns the estimated robot pose at the next loop iteration, extrapolated from the current
      * smoothed state using the most recent dt.
