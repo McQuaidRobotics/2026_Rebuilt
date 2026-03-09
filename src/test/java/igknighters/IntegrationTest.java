@@ -39,7 +39,7 @@ public class IntegrationTest {
         DriverStationSim.notifyNewData();
 
         robot = new Robot(false);
-        CommandScheduler.getInstance().removeDefaultCommand(robot.subsytems.shooter);
+        CommandScheduler.getInstance().removeDefaultCommand(robot.subsystems.shooter);
         robot.robotInit();
     }
 
@@ -52,7 +52,7 @@ public class IntegrationTest {
 
     @Test
     public void testRobotIntegration() {
-        Subsystems subsystems = robot.subsytems;
+        Subsystems subsystems = robot.subsystems;
 
         // --- 1. Test Shooting movement ---
         System.out.println("Starting Shooter Test...");
