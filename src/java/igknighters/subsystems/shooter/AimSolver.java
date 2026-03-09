@@ -279,7 +279,7 @@ public class AimSolver {
 
             // 3. Final Angles
             double absoluteFieldAngle = Math.atan2(dy, dx);
-            double robotYawFuture = shooterPose.getRotation().getZ();
+            double robotYawFuture = predictedPose.getRotation().getRadians();
             double turretAngle =
                     Math.atan2(
                             Math.sin(absoluteFieldAngle - robotYawFuture),
@@ -412,7 +412,7 @@ public class AimSolver {
             // 3. Final Angles
             double absoluteFieldAngle = Math.atan2(dy, dx);
             double robotYawFuture =
-                    shooterPose.getRotation().getZ() + speeds.omegaRadiansPerSecond * .05;
+                    predictedPose.getRotation().getRadians();
             double turretAngle =
                     Math.atan2(
                             Math.sin(absoluteFieldAngle - robotYawFuture),
