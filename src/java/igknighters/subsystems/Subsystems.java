@@ -45,21 +45,10 @@ public class Subsystems {
                 new SubsystemBase[] {swerve, shooter, climber, indexer, intake, luma, vision, led};
 
         this.indexer.setDefaultCommand(IndexerCommands.jorkIt(indexer).repeatedly());
-        this.intake.setDefaultCommand(IntakeCommands.holdAtStow(intake));
+        this.intake.setDefaultCommand(
+                IntakeCommands.protectedIntake(intake, () -> swerve.getState().Pose).repeatedly());
         this.shooter.setDefaultCommand(
                 ShooterCommands.idleCommand(
                         shooter, () -> swerve.getState().Pose, swerve::getFieldRelativeSpeeds));
-
-        // CommandScheduler.getInstance().registerSubsystem(this.lockedResources);
     }
-
-    // public static interface SharedSubsystem {
-    //     default void periodic() {}
-
-    //     default void simulationPeriodic() {}
-
-    //     default String getName() {
-    //         return this.getClass().getSimpleName();
-    //     }
-    // }
 }

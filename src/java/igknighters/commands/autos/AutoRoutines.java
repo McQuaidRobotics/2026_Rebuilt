@@ -267,6 +267,21 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine passToSelfLeft() {
+        AutoRoutine routine = autoFactory.newRoutine("Pass to Self Left");
+        AutoTrajectory trajectory = routine.trajectory("PASS_TO_SELF_LEFT_1.traj");
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                trajectory.resetOdometry(),
+                                Commands.parallel(
+                                        HigherOrderCommands.hippoShoot(subsystems),
+                                        trajectory.cmd())));
+        trajectory.done().onTrue(SwerveCommands.stopDriving(swerve));
+        return routine;
+    }
+
     public AutoRoutine leftNuetralHippo() {
         AutoRoutine routine = autoFactory.newRoutine("New Left Neutral Hippo");
 
