@@ -22,6 +22,7 @@ import igknighters.subsystems.shooter.AimSolver;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.util.TunableValues;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class ShooterCommands {
@@ -166,6 +167,38 @@ public class ShooterCommands {
                 robotVelocitySupplier,
                 5,
                 FieldConstants.HUB.HEIGHT_METERS + .5);
+    }
+
+    public static boolean isBetween(Pose2d pose, double a, double b) {
+        double x = pose.getX();
+        return x >= a && x <= b;
+    }
+
+    public static BooleanSupplier isUnderTrench(Supplier<Pose2d> robotPoseSupplier) {
+        return () -> {
+            if (isBetween(
+                            robotPoseSupplier.get(),
+                            FieldConstants.BUMP.BUMP_1_X_METERS - .1,
+                            FieldConstants.BUMP.BUMP_1_X_METERS + .1)
+                    || isBetween(
+                            robotPoseSupplier.get(),
+                            FieldConstants.BUMP.BUMP_2_X_METERS - .1,
+                            FieldConstants.BUMP.BUMP_2_X_METERS + .1)) {
+                return true;
+            }
+            return false;
+        };
+    }
+
+    public static Command shootWithProtection(
+            Shooter shooter,
+            Supplier<Pose2d> robotPoseSupplier,
+            Supplier<ChassisSpeeds> robotVelocitySupplier) {
+
+        return Commands.either(
+                shoot(shooter, robotPoseSupplier, robotVelocitySupplier),
+                idleCommand(shooter, robotPoseSupplier, robotVelocitySupplier),
+                isUnderTrench(robotPoseSupplier));
     }
 
     /**

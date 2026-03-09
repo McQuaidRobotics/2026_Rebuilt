@@ -39,7 +39,7 @@ public class HigherOrderCommands {
 
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
-                ShooterCommands.shoot(
+                ShooterCommands.shootWithProtection(
                                 subsystems.shooter,
                                 () -> subsystems.swerve.getState().Pose,
                                 subsystems.swerve::getFieldRelativeSpeeds)
