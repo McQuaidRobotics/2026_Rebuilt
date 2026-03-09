@@ -31,7 +31,7 @@ public class AutoRoutines extends AutoCommands {
         if (Robot.isSimulation()) {
             new Trigger(DriverStation::isAutonomousEnabled)
                     .onTrue(
-                            Commands.waitSeconds(15.3)
+                            Commands.waitSeconds(20.0)
                                     .andThen(() -> DriverStationSim.setEnabled(false))
                                     .withName("Simulated Auto Ender"));
         }
@@ -241,29 +241,44 @@ public class AutoRoutines extends AutoCommands {
     public AutoRoutine orbitRight() {
         AutoRoutine routine = autoFactory.newRoutine("Orbit Right");
 
-        AutoTrajectory orbitTraj = routine.trajectory("ORBIT_RIGHT_1.traj");
-        AutoTrajectory orbitTraj2 = routine.trajectory("ORBIT_RIGHT_2.traj");
+        AutoTrajectory swipe1Out = routine.trajectory("ORBIT_RIGHT_1.traj");
+        AutoTrajectory swipe1In = routine.trajectory("ORBIT_RIGHT_2.traj");
+        AutoTrajectory swipe2Out = routine.trajectory("ORBIT_RIGHT_3.traj");
+        AutoTrajectory swipe2In = routine.trajectory("ORBIT_RIGHT_4.traj");
         // shoot grab return
         routine.active()
                 .onTrue(
                         Commands.sequence(
-                                orbitTraj.resetOdometry(),
+                                swipe1Out.resetOdometry(),
                                 HigherOrderCommands.shootTillEmpty(subsystems, 3),
                                 Commands.parallel(
-                                        orbitTraj.cmd(),
+                                        swipe1Out.cmd(),
                                         IntakeCommands.holdAtIntake(subsystems.intake))));
         // shoot grab and hippo
-        orbitTraj
-                .atTimeBeforeEnd(0.0)
-                .onTrue(
-                        Commands.sequence(
-                                SwerveCommands.stopDriving(swerve),
-                                HigherOrderCommands.shootTillEmpty(subsystems, 3.0),
-                                Commands.parallel(
-                                        orbitTraj2.cmd(),
-                                        HigherOrderCommands.hippoShoot(subsystems))));
+        swipe1Out
+                .done()
+                .onTrue(Commands.sequence(SwerveCommands.stopDriving(swerve), swipe1In.cmd()));
 
-        orbitTraj2.done().onTrue(SwerveCommands.stopDriving(swerve));
+        swipe1In.active().onTrue(IntakeCommands.holdAtStow(subsystems.intake));
+
+        swipe1In.done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .alongWith(HigherOrderCommands.shootTillEmpty(subsystems, 3))
+                                .andThen(swipe2In.cmd()));
+
+        swipe2In.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
+        swipe2In.done().onTrue(SwerveCommands.stopDriving(swerve).andThen(swipe2Out.cmd()));
+
+        swipe2Out.active().onTrue(IntakeCommands.holdAtStow(subsystems.intake));
+
+        swipe2Out
+                .done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .andThen(HigherOrderCommands.rapidFireStream(subsystems)));
+
         return routine;
     }
 
