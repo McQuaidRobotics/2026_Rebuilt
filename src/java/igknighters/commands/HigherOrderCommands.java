@@ -117,8 +117,7 @@ public class HigherOrderCommands {
 
     public static Command hippoShoot(Subsystems subsystems) {
         return Commands.parallel(
-                hippoShoot(subsystems),
-                Commands.print("IM HIPPPOING TILL I HIPPO").repeatedly(),
+                rapidFireStream(subsystems),
                 IntakeCommands.holdAtIntake(subsystems.intake));
     }
 

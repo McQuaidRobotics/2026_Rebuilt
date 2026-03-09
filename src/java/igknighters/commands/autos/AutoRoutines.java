@@ -258,12 +258,10 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                 SwerveCommands.stopDriving(swerve),
-                                IntakeCommands.holdAtStow(subsystems.intake).withTimeout(.2),
                                 HigherOrderCommands.shootTillEmpty(subsystems, 3.0),
                                 Commands.parallel(
-                                        IntakeCommands.holdAtIntake(subsystems.intake),
                                         orbitTraj2.cmd(),
-                                        HigherOrderCommands.rapidFireStream(subsystems))));
+                                        HigherOrderCommands.hippoShoot(subsystems))));
 
         orbitTraj2.done().onTrue(SwerveCommands.stopDriving(swerve));
         return routine;
