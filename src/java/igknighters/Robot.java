@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
@@ -128,6 +127,8 @@ public class Robot extends LoggedRobot {
         autoChooser.addRoutine("CENTER OUTPOST CLIMB", routines::centerOutpostClimb);
         autoChooser.addRoutine("Center Depot climb", routines::centerDepotClimb);
         autoChooser.addRoutine("Right Depo Climb", routines::rightDepoClimb);
+        autoChooser.addRoutine("Right Orbit", routines::orbitRight);
+        autoChooser.addRoutine("Pass to self left", routines::passToSelfLeft);
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
     }
 

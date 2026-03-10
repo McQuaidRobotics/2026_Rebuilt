@@ -45,10 +45,10 @@ public class TeleopSwerveHeadingCmd extends TeleopSwerveBaseCmd {
                         swerve.getState().Pose.getRotation().getDegrees(), heading);
         if (!SubsystemConstants.disableAllLogs) {
             Log.log(
-                    "Robot/Commands/Swerve/TeleopSwerveHeadingCmd/Swerve Heading: ",
+                    "ROBOT/Commands/Swerve/TeleopSwerveHeadingCmd/Swerve Heading: ",
                     (swerve.getState().Pose.getRotation().getDegrees()));
             Log.log(
-                    "Robot/Commands/Swerve/TeleopSwerveHeadingCmd/error: ",
+                    "ROBOT/Commands/Swerve/TeleopSwerveHeadingCmd/error: ",
                     (swerve.getState().Pose.getRotation().getDegrees() - heading));
             Log.log("ROBOT/Commands/Swerve/TeleopSwerveHeadingCmd/PID CALCULATION: ", omega);
         }

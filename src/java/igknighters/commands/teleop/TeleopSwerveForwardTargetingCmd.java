@@ -68,13 +68,13 @@ public class TeleopSwerveForwardTargetingCmd extends TeleopSwerveBaseCmd {
 
         if (!SubsystemConstants.disableAllLogs) {
             Log.log(
-                    "Robot/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Desired Angle (deg)",
+                    "ROBOT/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Desired Angle (deg)",
                     Math.toDegrees(desiredAngleRad));
             Log.log(
-                    "Robot/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Current Angle (deg)",
+                    "ROBOT/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Current Angle (deg)",
                     Math.toDegrees(currentAngleRad));
             Log.log(
-                    "Robot/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Wrapped Error (deg)",
+                    "ROBOT/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Wrapped Error (deg)",
                     Math.toDegrees(error));
         }
 

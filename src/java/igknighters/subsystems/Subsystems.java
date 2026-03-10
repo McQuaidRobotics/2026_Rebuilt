@@ -49,17 +49,5 @@ public class Subsystems {
         this.shooter.setDefaultCommand(
                 ShooterCommands.idleCommand(
                         shooter, () -> swerve.getState().Pose, swerve::getFieldRelativeSpeeds));
-
-        // CommandScheduler.getInstance().registerSubsystem(this.lockedResources);
     }
-
-    // public static interface SharedSubsystem {
-    //     default void periodic() {}
-
-    //     default void simulationPeriodic() {}
-
-    //     default String getName() {
-    //         return this.getClass().getSimpleName();
-    //     }
-    // }
 }

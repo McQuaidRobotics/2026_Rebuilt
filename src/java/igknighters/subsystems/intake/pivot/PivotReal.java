@@ -117,6 +117,7 @@ public class PivotReal extends Pivot {
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(angleRotations);
+        Log.log("ROBOT/Subsystems/Intake/Pivot/POSITION", getAngle().in(Degrees));
 
         if (!SubsystemConstants.kIntake.kPivot.disablePivotLogs) {
             Log.log("ROBOT/Subsystems/Intake/Pivot/Being Commanded Currently", beingCommanded);

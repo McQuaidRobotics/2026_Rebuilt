@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
@@ -22,6 +21,8 @@ import igknighters.subsystems.shooter.AimSolver;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.util.TunableValues;
+import igknighters.util.log.Log;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class ShooterCommands {
@@ -164,8 +165,116 @@ public class ShooterCommands {
                 shooter,
                 shooterPose,
                 robotVelocitySupplier,
-                4,
+                5,
                 FieldConstants.HUB.HEIGHT_METERS + .5);
+    }
+
+    public static boolean isBetween(Pose2d pose, double a, double b) {
+        double x = pose.getX();
+        return x >= a && x <= b;
+    }
+
+    public static BooleanSupplier isUnderTrench(Supplier<Pose2d> robotPoseSupplier) {
+        return () -> {
+            Pose2d pose = robotPoseSupplier.get();
+            boolean under1 =
+                    isBetween(
+                            pose,
+                            FieldConstants.BUMP.BUMP_1_X_METERS - .1,
+                            FieldConstants.BUMP.BUMP_1_X_METERS + .1);
+            boolean under2 =
+                    isBetween(
+                            pose,
+                            FieldConstants.BUMP.BUMP_2_X_METERS - .1,
+                            FieldConstants.BUMP.BUMP_2_X_METERS + .1);
+
+            boolean isUnder = under1 || under2;
+            if (!SubsystemConstants.disableAllLogs) {
+                Log.log("Shooter/isUnderTrench", isUnder);
+                Log.log("Shooter/RobotX", pose.getX());
+            }
+
+            return isUnder;
+        };
+    }
+
+    public static Command shootWithProtection(
+            Shooter shooter,
+            Supplier<Pose2d> robotPoseSupplier,
+            Supplier<ChassisSpeeds> robotVelocitySupplier) {
+        ShootInformation info = ShootInformation.getInstance();
+        BooleanSupplier underTrenchCheck = isUnderTrench(robotPoseSupplier);
+
+        return shooter.run(
+                () -> {
+                    if (underTrenchCheck.getAsBoolean()) {
+                        // --- Idle Logic (from idleCommand) ---
+                        info.setBeingControlled(false);
+                        Pose2d robotPose2d = robotPoseSupplier.get();
+                        Pose3d targetPose = info.getShotLocation(robotPoseSupplier);
+                        ChassisSpeeds robotVel = robotVelocitySupplier.get();
+
+                        Pose3d shooterPose =
+                                new Pose3d(
+                                        robotPose2d.getX(),
+                                        robotPose2d.getY(),
+                                        SubsystemConstants.kShooter.kFlywheels.ShooterHeightMeters,
+                                        new Rotation3d(
+                                                0.0, 0.0, robotPose2d.getRotation().getRadians()));
+                        ShooterState targetingData =
+                                AimSolver.Solvers.solve_max_height_iterative(
+                                        shooterPose,
+                                        targetPose,
+                                        robotVel,
+                                        shooter.getCurrentState().flywheelSpeed.in(RPM),
+                                        5,
+                                        0.02);
+
+                        shooter.targetState(
+                                RPM.of(2000),
+                                targetingData.turretAngle,
+                                Degrees.of(kHood.MIN_ANGLE_DEGREES));
+                    } else {
+                        // --- Shoot Logic (from shoot/SHOOT_MAX_MIN) ---
+                        Supplier<Pose2d> shooterPoseWithOffset =
+                                getShooterPoseWithOffset(robotPoseSupplier);
+                        Pose2d shooterPose2d = shooterPoseWithOffset.get();
+                        Pose3d targetPose = info.getShotLocation(shooterPoseWithOffset);
+                        info.setBeingControlled(true);
+                        ChassisSpeeds robotVel = robotVelocitySupplier.get();
+
+                        shooter.currentShotType = getShotType(shooterPoseWithOffset);
+
+                        Pose3d shooterPose3d =
+                                new Pose3d(
+                                        shooterPose2d.getX(),
+                                        shooterPose2d.getY(),
+                                        SubsystemConstants.kShooter.kFlywheels.ShooterHeightMeters,
+                                        new Rotation3d(
+                                                0.0,
+                                                0.0,
+                                                shooterPose2d.getRotation().getRadians()));
+                        ShooterState targetingData =
+                                AimSolver.Solvers.solve_max_and_min_iterative(
+                                        shooterPose3d,
+                                        targetPose,
+                                        robotVel,
+                                        shooter.getCurrentState().flywheelSpeed.in(RPM),
+                                        5,
+                                        FieldConstants.HUB.HEIGHT_METERS + .5,
+                                        0.02);
+
+                        if (targetingData.flywheelSpeed.in(RPM) != 0) {
+                            shooter.targetState(targetingData);
+                        } else {
+                            // shot is imposible so we should idle the shooter rpm at like 4000
+                            shooter.targetState(
+                                    RPM.of(4000),
+                                    targetingData.turretAngle,
+                                    Degrees.of(kHood.MIN_ANGLE_DEGREES));
+                        }
+                    }
+                });
     }
 
     /**
@@ -288,9 +397,6 @@ public class ShooterCommands {
 
                     if (targetingData.flywheelSpeed.in(RPM) != 0) {
                         shooter.targetState(targetingData);
-
-                        Commands.runOnce(
-                                () -> ShootInformation.getInstance().setBeingControlled(true));
                     } else {
                         // shot is imposible so we should idle the shooter rpm at like 4000 so it
                         // spins up faster
@@ -298,9 +404,6 @@ public class ShooterCommands {
                                 RPM.of(4000),
                                 targetingData.turretAngle,
                                 Degrees.of(kHood.MIN_ANGLE_DEGREES));
-
-                        Commands.runOnce(
-                                () -> ShootInformation.getInstance().setBeingControlled(true));
                     }
                 });
     }

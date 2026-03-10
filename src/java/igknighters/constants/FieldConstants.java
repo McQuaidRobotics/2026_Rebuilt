@@ -9,6 +9,7 @@ import igknighters.commands.Repulsor.obstacleType;
 import igknighters.util.log.Log;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.function.BooleanSupplier;
 
 public class FieldConstants {
     public static class HUB {
@@ -187,6 +188,27 @@ public class FieldConstants {
     public static final double X_FIELD = 650.12 * Conv.INCHES_TO_METERS; // meters
     public static final double ALIANCE_ZONE_BLUE = 181.56 * Conv.INCHES_TO_METERS; // meters
     public static final double ALIANCE_ZONE_RED = X_FIELD - ALIANCE_ZONE_BLUE;
+
+    public static class TRENCH {
+
+        public static final double TRENCH_1_X_METERS = 182.11 * Conv.INCHES_TO_METERS;
+        public static final double TRENCH_2_X_METERS = X_FIELD - (182.11) * Conv.INCHES_TO_METERS;
+
+        // all trench protection commands are fine to use if on bump to so no need to check for the
+        // y cord
+
+        public static boolean isOnTrench(Pose2d pose, double distanceFromCenter) {
+            double x = pose.getX();
+            return (x >= TRENCH_1_X_METERS - distanceFromCenter
+                            && x <= TRENCH_1_X_METERS + distanceFromCenter)
+                    || (x >= TRENCH_2_X_METERS - distanceFromCenter
+                            && x <= TRENCH_2_X_METERS + distanceFromCenter);
+        }
+
+        public static BooleanSupplier isOnTrenchSupplier(Pose2d pose, double distanceFromCenter) {
+            return () -> isOnTrench(pose, distanceFromCenter);
+        }
+    }
 
     public static class BUMP {
 

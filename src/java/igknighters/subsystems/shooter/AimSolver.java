@@ -24,6 +24,7 @@ import igknighters.util.LerpTable;
 import igknighters.util.LerpTable.LerpTableEntry;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
+import igknighters.util.log.Log;
 import org.littletonrobotics.junction.Logger;
 
 public class AimSolver {
@@ -162,14 +163,14 @@ public class AimSolver {
         static LerpTable airResistanceDTodistancedivider =
                 new LerpTable(
                         new LerpTableEntry[] {
-                            new LerpTableEntry(1.0, 2.5),
-                            new LerpTableEntry(3.0, 2.4),
-                            new LerpTableEntry(4.0, 2.3),
+                            new LerpTableEntry(1.0, 2.4),
+                            new LerpTableEntry(3.0, 2.2),
+                            new LerpTableEntry(4.0, 2.0),
                             new LerpTableEntry(
-                                    5.0, 2.4), // past 5 m we pass so if d set to far imposible shot
-                            new LerpTableEntry(10.0, 2.3),
-                            new LerpTableEntry(15.0, 2.2),
-                            new LerpTableEntry(20.0, 2.1),
+                                    5.0, 2.0), // past 5 m we pass so if d set to far imposible shot
+                            new LerpTableEntry(10.0, 2.0),
+                            new LerpTableEntry(15.0, 2.0),
+                            new LerpTableEntry(20.0, 2.0),
                         });
 
         static Mechanism2d canSHOOTMECH = new Mechanism2d(20, 20);
@@ -202,8 +203,8 @@ public class AimSolver {
                 double maxHeightMeters,
                 double periodTime) {
             // 1. Position and Target setup
-            double sx = shooterPose.getX() + speeds.vxMetersPerSecond * periodTime;
-            double sy = shooterPose.getY() + speeds.vyMetersPerSecond * periodTime;
+            double sx = shooterPose.getX();
+            double sy = shooterPose.getY();
             double sz = shooterPose.getZ();
 
             double initialDist =
@@ -276,8 +277,7 @@ public class AimSolver {
 
             // 3. Final Angles
             double absoluteFieldAngle = Math.atan2(dy, dx);
-            double robotYawFuture =
-                    shooterPose.getRotation().getZ() + speeds.omegaRadiansPerSecond * 0.05;
+            double robotYawFuture = shooterPose.getRotation().getZ();
             double turretAngle =
                     Math.atan2(
                             Math.sin(absoluteFieldAngle - robotYawFuture),
@@ -338,6 +338,7 @@ public class AimSolver {
 
             double initialDist =
                     shooterPose.getTranslation().getDistance(targetPose.getTranslation());
+            Log.log("ROBOT/Commands/AimSolver/Distance", initialDist);
             double estimatedToF = initialDist / 2.0; // Assume 5m/s avg horizontal velocity
 
             // 3. TARGET PROJECTION: Scale the target lead by (ToF + Latency)

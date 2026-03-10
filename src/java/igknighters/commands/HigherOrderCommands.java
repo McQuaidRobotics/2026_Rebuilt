@@ -15,31 +15,14 @@ import java.util.Set;
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
         return rapidFireStream(subsystems)
-                .alongWith(IntakeCommands.jorkIt(subsystems.intake))
                 .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
-    }
-
-    public static Command shootNoStop(Subsystems subsystems) {
-        return Commands.parallel(
-                        ShooterCommands.shoot(
-                                        subsystems.shooter,
-                                        () -> subsystems.swerve.getState().Pose,
-                                        subsystems.swerve::getFieldRelativeSpeeds)
-                                .repeatedly()
-                                .withName("SHOOTING WHILE DOING OTHER STUFF"),
-                        IndexerCommands.dispense(subsystems.indexer)
-                                .onlyIf(ShootInformation.getInstance().atCommandedStateTrigger()),
-                        IntakeCommands.jorkIt(subsystems.intake))
-                .withName("DISPENSING")
-                .alongWith(Commands.print("DISPENSING"))
-                .withName("SHOOT NO STOP");
     }
 
     public static Command rapidFireStream(Subsystems subsystems) {
 
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
-                ShooterCommands.shoot(
+                ShooterCommands.shootWithProtection(
                                 subsystems.shooter,
                                 () -> subsystems.swerve.getState().Pose,
                                 subsystems.swerve::getFieldRelativeSpeeds)
@@ -55,7 +38,8 @@ public class HigherOrderCommands {
                                 .and(ShootInformation.getInstance().beingControlledTrigger())
                                 .and(ShootInformation.getInstance().shotPosible()));
 
-        return Commands.parallel(shooterCommand, smartFeed.repeatedly()).withName("SMART STREAM");
+        return Commands.parallel(shooterCommand.repeatedly(), smartFeed.repeatedly())
+                .withName("SMART STREAM");
     }
 
     public static Command fireAtTarget(Subsystems subsystems, Pose3d targetPose) {
@@ -133,9 +117,9 @@ public class HigherOrderCommands {
 
     public static Command hippoShoot(Subsystems subsystems) {
         return Commands.parallel(
-                shootNoStop(subsystems),
-                Commands.print("IM HIPPPOING TILL I HIPPO").repeatedly(),
-                IntakeCommands.holdAtIntake(subsystems.intake));
+                rapidFireStream(subsystems),
+                IntakeCommands.protectedIntake(
+                        subsystems.intake, () -> subsystems.swerve.getState().Pose));
     }
 
     public static Command unClimbCommand(Subsystems subsystems) {

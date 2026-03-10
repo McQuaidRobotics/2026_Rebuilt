@@ -154,11 +154,11 @@ public class SubsystemConstants {
             public static final int MOTOR_ID = 18;
             public static final int CANCODER_ID = 21;
             public static final double GEAR_RATIO = 15.0;
-            public static final double MAX_ANGLE_DEGREES = 64.0;
+            public static final double MAX_ANGLE_DEGREES = 66.0;
             public static final double MIN_ANGLE_DEGREES = 0.0;
             public static final double MAX_SPEED_METERS_PER_SECOND = 1.0;
             public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = .5;
-            public static final double ENCODER_OFFSET = -1.454834;
+            public static final double ENCODER_OFFSET = 0.259521484375;
             public static final double MAX_JERK = 1.0;
             public static final int STATOR_CURRENT_LIMIT = 20;
             public static final int SUPPLY_CURRENT_LIMIT = 20;
@@ -171,7 +171,7 @@ public class SubsystemConstants {
             public static final double JKG_M2 = 0.01;
             public static final double LENGTH_METERS =
                     .25; // distance from central shaft to edge of wrist
-            public static boolean disablePivotLogs = true;
+            public static boolean disablePivotLogs = false;
 
             static {
                 if (disableAllLogs) {

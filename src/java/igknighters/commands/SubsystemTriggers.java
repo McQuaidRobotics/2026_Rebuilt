@@ -172,8 +172,27 @@ public class SubsystemTriggers {
                         swerve, getPoseFromString("robot/moveWaypoint").toPose2d()));
     }
 
-    public Command getLEDCommandByMode() {
-        return Commands.either(teleopLED, Commands.either(disabledLED, autoLED, disabled), teleop);
+    public Command getLEDCommandByMode(Led led) {
+        return Commands.either(
+                teleopLED(led), Commands.either(disabledLED(led), autoLED(led), disabled), teleop);
+    }
+
+    private Command teleopLED(Led led) {
+        return LEDCommands.run(led, LEDPattern.solid(Color.kGreen))
+                .ignoringDisable(true)
+                .withName("TeleopGreen");
+    }
+
+    private Command autoLED(Led led) {
+        return LEDCommands.run(led, LedUtil.makeRainbow(255, 126))
+                .ignoringDisable(true)
+                .withName("AutoRainbow");
+    }
+
+    private Command disabledLED(Led led) {
+        return LEDCommands.run(led, LEDPattern.solid(Color.kRed))
+                .ignoringDisable(true)
+                .withName("DisabledRed");
     }
 
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
@@ -181,31 +200,19 @@ public class SubsystemTriggers {
         Swerve swerve = subsystems.swerve;
         Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
 
-        teleopLED =
-                LEDCommands.run(led, LEDPattern.solid(Color.kGreen))
-                        .ignoringDisable(true)
-                        .withName("TeleopGreen");
-        autoLED =
-                LEDCommands.run(led, LedUtil.makeRainbow(255, 126))
-                        .ignoringDisable(true)
-                        .withName("AutoRainbow");
-        disabledLED =
-                LEDCommands.run(led, LEDPattern.solid(Color.kRed))
-                        .ignoringDisable(true)
-                        .withName("DisabledRed");
-
         SetupOperatorController(subsystems);
 
-        onBump.whileTrue(
-                Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true))
-                        .andThen(new AutoRotateOnBump(swerve, driverController)));
+        onBump.and(teleop)
+                .whileTrue(
+                        Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true))
+                                .andThen(new AutoRotateOnBump(swerve, driverController)));
         onBump.onFalse(Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(false)));
 
-        falseOnce().and(disabled).whileTrue(disabledLED);
+        falseOnce().and(disabled).whileTrue(disabledLED(led));
 
-        autonomous.onTrue(autoLED);
+        autonomous.onTrue(autoLED(led));
 
-        teleop.onTrue(teleopLED);
+        teleop.onTrue(teleopLED(led));
 
         // Get the AbleToShootSharedState singleton
         ShootInformation ableToShootState = ShootInformation.getInstance();
@@ -215,11 +222,7 @@ public class SubsystemTriggers {
         ableToShootState
                 .canShoot()
                 .whileTrue(LEDCommands.run(led, LedUtil.makeBounce(Color.kCyan, .3)))
-                .onFalse(getLEDCommandByMode());
-        // ableToShootState
-        //         .atCommandedStateTrigger()
-        //         .and(ableToShootState.beingControlledTrigger().negate())
-        //         .whileFalse(LEDCommands.run(led, LEDPattern.solid(Color.kPurple)));
+                .onFalse(getLEDCommandByMode(led));
 
         ableToShootState
                 .beingControlledTrigger()
