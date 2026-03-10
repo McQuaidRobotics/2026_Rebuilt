@@ -336,6 +336,7 @@ public class AimSolver {
                 double periodTime) {
             RobotPosePredictor predictor = new RobotPosePredictor(.4, .6);
             Pose2d predictedPose = predictor.getPredictedPose(shooterPose.toPose2d());
+            FieldVisualizer.getInstance().updatePredictedPose(predictedPose);
             double sx = predictedPose.getX();
             double sy = predictedPose.getY();
             double sz = shooterPose.getZ();
