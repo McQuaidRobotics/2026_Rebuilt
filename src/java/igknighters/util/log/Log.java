@@ -53,6 +53,10 @@ public class Log {
         Logger.recordOutput(path, value);
     }
 
+    public static void log(String path, double[][] value) {
+        Logger.recordOutput(path, value);
+    }
+
     public static void log(String path, boolean value) {
         Logger.recordOutput(path, value);
     }

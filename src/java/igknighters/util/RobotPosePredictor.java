@@ -5,7 +5,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
-import igknighters.FieldVisualizer;
+import igknighters.util.log.Log;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Estimates the robot's pose on the next loop iteration using an alpha-beta filter applied to a
@@ -24,11 +26,13 @@ public class RobotPosePredictor {
     /** Smoothing gain for the velocity estimate (0 < beta ≤ 1). */
     private final double beta;
 
-    private final double[][] veloHistory = new double[HISTORY_SIZE][3];
-    private final double[] timestampHistory = new double[HISTORY_SIZE];
+    int l = 0;
+
+    private double[][] veloHistory = new double[HISTORY_SIZE][3];
+    private double[] timestampHistory = new double[HISTORY_SIZE];
 
     // time in seconds to look-ahead
-    private final double predTime = .02;
+    private static final double predTime = .02;
 
     /** Index of the next write slot in the circular buffers. */
     private int writeIndex = 0;
@@ -38,10 +42,6 @@ public class RobotPosePredictor {
 
     // Alpha-beta filter state: smoothed pose and per-axis velocity (m/s or rad/s)
     private double[] smoothedVelocities = new double[3];
-
-    int latestIdx = (writeIndex - 1 + HISTORY_SIZE) % HISTORY_SIZE;
-    int prevIdx = (writeIndex - 2 + HISTORY_SIZE) % HISTORY_SIZE;
-    double dt = timestampHistory[latestIdx] - timestampHistory[prevIdx];
 
     /**
      * @param alpha position smoothing gain, typically 0.5–0.9
@@ -66,6 +66,20 @@ public class RobotPosePredictor {
         veloHistory[writeIndex][1] = chassisSpeeds.vyMetersPerSecond;
         veloHistory[writeIndex][2] = chassisSpeeds.omegaRadiansPerSecond;
         timestampHistory[writeIndex] = now;
+        double mostRecentTimestamp =
+                Collections.max(Arrays.stream(timestampHistory).boxed().toList());
+        int latestIdx =
+                Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
+        double dt = 0;
+        if (latestIdx == 0 && l < 10) {
+            dt = 0;
+        } else if (latestIdx == 0 && l > 10) {
+            dt = timestampHistory[latestIdx] - timestampHistory[HISTORY_SIZE - 1];
+        }
+        if (latestIdx != 0) {
+            dt = timestampHistory[latestIdx] - timestampHistory[latestIdx - 1];
+        }
+        l++;
         writeIndex = (writeIndex + 1) % HISTORY_SIZE;
         storedCount++;
 
@@ -88,7 +102,22 @@ public class RobotPosePredictor {
         // find acceleration based on last velocity and current
         double[] predictedVelo = new double[3];
         for (int i = 0; i < 3; i++) {
-            predictedVelo[i] = currentVelos[i] + (currentVelos[i] - veloHistory[prevIdx][i]) * dt;
+
+            if (latestIdx == 0 && l < 10) {
+                predictedVelo[i] = currentVelos[i] + (currentVelos[i]) * dt;
+            } else if (latestIdx == 0 && l > 10) {
+
+            }
+            if (latestIdx != 0) {}
+
+            if (latestIdx == 0 && timestampHistory[HISTORY_SIZE - 1] == 0) {
+            } else if (latestIdx == 0 && timestampHistory[HISTORY_SIZE - 1] != 0) {
+                predictedVelo[i] =
+                        currentVelos[i] + (currentVelos[i] - veloHistory[HISTORY_SIZE - 1][i]) * dt;
+            } else {
+                predictedVelo[i] =
+                        currentVelos[i] + (currentVelos[i] - veloHistory[latestIdx - 1][i]) * dt;
+            }
         }
 
         // Residual: difference between measurement and prediction
@@ -106,7 +135,8 @@ public class RobotPosePredictor {
             updatedVelos[i] = predictedVelo[i] + currentVelos[i];
         }
 
-        smoothedVelocities = updatedVelos;
+        veloHistory[latestIdx] = updatedVelos;
+        Log.log("ROBOT/veloHistory", veloHistory);
     }
 
     //     public double getPredictedVelos(Pose2d pose, ChassisSpeeds chassisSpeeds) {
@@ -125,14 +155,20 @@ public class RobotPosePredictor {
     public Pose2d getPredictedPose(Pose2d pose) {
         double[] currentPose = poseToComponents(pose);
         double[] prediction = new double[3];
+        double mostRecentTimestamp =
+                Collections.max(Arrays.stream(timestampHistory).boxed().toList());
+        int latestIdx =
+                Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
+        int prevIdx = (writeIndex - 2 + HISTORY_SIZE) % HISTORY_SIZE;
+
         if (storedCount < 2) {
             for (int i = 0; i < 3; i++) {
-                prediction[i] = currentPose[i] + smoothedVelocities[i] * predTime;
+                prediction[i] = currentPose[i] + veloHistory[latestIdx][i] * predTime;
             }
             return componentsToPose(prediction);
         }
 
-        if (dt <= 0.0) return pose;
+        if (predTime <= 0.0) return pose;
 
         double[] current = poseToComponents(pose);
         double[] predicted = new double[3];
@@ -140,7 +176,6 @@ public class RobotPosePredictor {
             predicted[i] = currentPose[i] + smoothedVelocities[i] * predTime;
         }
 
-        FieldVisualizer.getInstance().updatePredictedPose(componentsToPose(predicted));
         return componentsToPose(predicted);
     }
 
@@ -148,11 +183,9 @@ public class RobotPosePredictor {
     // Helpers
     // -------------------------------------------------------------------------
 
-    /** Decomposes a Pose2d into [x, y, roll, pitch]. */
+    /** Decomposes a Pose2d into [x, y, rotation]. */
     private static double[] poseToComponents(Pose2d pose) {
-        return new double[] {
-            pose.getX(), pose.getY(), pose.getRotation().getCos(), pose.getRotation().getSin()
-        };
+        return new double[] {pose.getX(), pose.getY(), pose.getRotation().getRadians()};
     }
 
     /** Reconstructs a Pose2d from [x, y, roll, pitch]. */
