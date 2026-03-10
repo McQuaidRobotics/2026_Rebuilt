@@ -63,7 +63,9 @@ public class GeminiConsts extends CommonSwerveConsts {
     private static final TalonFXConfiguration driveInitialConfigs =
             new TalonFXConfiguration()
                     .withCurrentLimits(
-                            new CurrentLimitsConfigs().withStatorCurrentLimit(Amps.of(30.0)));
+                            new CurrentLimitsConfigs()
+                                    .withStatorCurrentLimit(Amps.of(60.0))
+                                    .withStatorCurrentLimitEnable(true));
     private static final TalonFXConfiguration steerInitialConfigs =
             new TalonFXConfiguration()
                     .withCurrentLimits(
