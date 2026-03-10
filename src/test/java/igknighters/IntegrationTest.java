@@ -175,7 +175,7 @@ public class IntegrationTest {
         System.out.println("Starting Swerve Auto Routine Test...");
         subsystems.swerve.resetPose(new Pose2d());
         var autoFactory = subsystems.swerve.createAutoFactory();
-        var autoCommand = autoFactory.trajectoryCmd("ShootThenIntake");
+        var autoCommand = autoFactory.trajectoryCmd("ORBIT_RIGHT_1.traj");
         CommandScheduler.getInstance().schedule(autoCommand);
 
         for (int i = 0; i < 1000; i++) {
