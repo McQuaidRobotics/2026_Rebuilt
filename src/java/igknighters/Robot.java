@@ -279,8 +279,7 @@ public class Robot extends LoggedRobot {
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
-        pose_pred.setNewPose(
-                subsystems.swerve.getState().Pose, subsystems.swerve.getState().Speeds);
+        pose_pred.setNewPose(subsystems.swerve.getState().Speeds);
         if (Robot.isReal() && !SubsystemConstants.disableAllLogs) {
             FieldVisualizer.getInstance()
                     .updateTurret(
