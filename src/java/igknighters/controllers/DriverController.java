@@ -195,6 +195,9 @@ public class DriverController {
                                 RPM.of(0.0),
                                 Degrees.of(0.0),
                                 Degrees.of(kHood.MIN_ANGLE_DEGREES))));
+        this.DPD.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.STOW));
+        this.DPU.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.LATCH_ON));
+        this.DPR.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.PULL_UP));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

@@ -62,7 +62,10 @@ public class PivotReal extends Pivot {
         config.CurrentLimits.SupplyCurrentLowerLimit =
                 SubsystemConstants.kIntake.kPivot.SUPPLY_CURRENT_LIMIT;
 
-        config.CurrentLimits.SupplyCurrentLimit = SubsystemConstants.kIntake.kPivot.SUPPLY_UPPER_LIMIT;
+        config.CurrentLimits.SupplyCurrentLimit =
+                SubsystemConstants.kIntake.kPivot.SUPPLY_UPPER_LIMIT;
+
+        config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         config.CurrentLimits.SupplyCurrentLowerTime = 0.25;
 
