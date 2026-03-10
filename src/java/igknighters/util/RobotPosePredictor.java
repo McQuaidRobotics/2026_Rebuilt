@@ -174,7 +174,7 @@ public class RobotPosePredictor {
         for (int i = 0; i < 2; i++) {
             predicted[i] = current[i] + veloHistory[latestIdx][i] * predTime;
         }
-        predicted[2] = current[2] + veloHistory[latestIdx][2] * 0.05;
+        predicted[2] = current[2] + veloHistory[latestIdx][2] * 0.5;
         Log.log("ROBOT/veloHistory", veloHistory);
 
         return componentsToPose(predicted);
