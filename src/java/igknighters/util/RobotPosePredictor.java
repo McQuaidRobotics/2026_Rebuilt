@@ -234,6 +234,8 @@ public class RobotPosePredictor {
      * @return predicted {@link Pose2d} one loop period into the future
      */
     public Pose2d getPredictedPose(Pose2d pose) {
+        double[] currentPose = poseToComponents(pose);
+        ChassisSpeeds prediction = new ChassisSpeeds();
         double mostRecentTimestamp =
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
         int latestIdx =
@@ -241,10 +243,10 @@ public class RobotPosePredictor {
 
         double[] current = poseToComponents(pose);
         double[] predicted = new double[3];
-        predicted[0] = current[0] + predVeloHistory[latestIdx].vxMetersPerSecond * predTime;
-        predicted[1] = current[1] + predVeloHistory[latestIdx].vyMetersPerSecond * predTime;
-        predicted[2] = current[2] + predVeloHistory[latestIdx].omegaRadiansPerSecond * predTime;
-        Log.log("ROBOT/predVeloHistory", predVeloHistory);
+        predicted[0] = current[0] + veloHistory[latestIdx].vxMetersPerSecond * predTime;
+        predicted[1] = current[1] + veloHistory[latestIdx].vyMetersPerSecond * predTime;
+        predicted[2] = current[2] + veloHistory[latestIdx].omegaRadiansPerSecond * predTime;
+        Log.log("ROBOT/veloHistory", veloHistory);
 
         return componentsToPose(predicted);
     }

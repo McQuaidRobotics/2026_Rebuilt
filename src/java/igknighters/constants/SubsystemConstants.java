@@ -162,6 +162,7 @@ public class SubsystemConstants {
             public static final double MAX_JERK = 1.0;
             public static final int STATOR_CURRENT_LIMIT = 20;
             public static final int SUPPLY_CURRENT_LIMIT = 20;
+            public static final int SUPPLY_UPPER_LIMIT = 60;
             public static final double kP = 45.0;
             public static final double kI = 0.0;
             public static final double kD = 0.0;
