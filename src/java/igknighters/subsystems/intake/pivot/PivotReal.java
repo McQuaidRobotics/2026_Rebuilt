@@ -57,10 +57,14 @@ public class PivotReal extends Pivot {
         config.Feedback.FeedbackRemoteSensorID = SubsystemConstants.kIntake.kPivot.CANCODER_ID;
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        config.CurrentLimits.StatorCurrentLimit =
-                SubsystemConstants.kIntake.kPivot.STATOR_CURRENT_LIMIT;
-        config.CurrentLimits.SupplyCurrentLimit =
+        // config.CurrentLimits.StatorCurrentLimit =
+        //         SubsystemConstants.kIntake.kPivot.STATOR_CURRENT_LIMIT;
+        config.CurrentLimits.SupplyCurrentLowerLimit =
                 SubsystemConstants.kIntake.kPivot.SUPPLY_CURRENT_LIMIT;
+
+        config.CurrentLimits.SupplyCurrentLimit = SubsystemConstants.kIntake.kPivot.SUPPLY_UPPER_LIMIT;
+
+        config.CurrentLimits.SupplyCurrentLowerTime = 0.25;
 
         config.MotionMagic.MotionMagicCruiseVelocity =
                 SubsystemConstants.kIntake.kPivot.MAX_SPEED_METERS_PER_SECOND;
