@@ -71,9 +71,9 @@ public class RobotPosePredictor {
         int latestIdx =
                 Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
         double dt = 0;
-        if (latestIdx == 0 && l < 10) {
+        if (latestIdx == 0 && veloHistory[HISTORY_SIZE - 1] == null) {
             dt = 0;
-        } else if (latestIdx == 0 && l > 10) {
+        } else if (latestIdx == 0 && veloHistory[HISTORY_SIZE - 1] != null) {
             dt = timestampHistory[latestIdx] - timestampHistory[HISTORY_SIZE - 1];
         }
         if (latestIdx != 0) {
@@ -103,7 +103,7 @@ public class RobotPosePredictor {
         double[] predictedVelo = new double[3];
         for (int i = 0; i < 3; i++) {
 
-            if (latestIdx == 0 && l < 10) {
+            if (latestIdx == 0 && veloHistory[HISTORY_SIZE - 1] == null) {
                 predictedVelo[i] = currentVelos[i] + (currentVelos[i]) * dt;
             } else if (latestIdx == 0 && l > 10) {
 
@@ -136,7 +136,6 @@ public class RobotPosePredictor {
         }
 
         veloHistory[latestIdx] = updatedVelos;
-        Log.log("ROBOT/veloHistory", veloHistory);
     }
 
     //     public double getPredictedVelos(Pose2d pose, ChassisSpeeds chassisSpeeds) {
@@ -159,22 +158,24 @@ public class RobotPosePredictor {
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
         int latestIdx =
                 Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
-        int prevIdx = (writeIndex - 2 + HISTORY_SIZE) % HISTORY_SIZE;
+        int prevIdx = latestIdx - 1;
 
-        if (storedCount < 2) {
-            for (int i = 0; i < 3; i++) {
-                prediction[i] = currentPose[i] + veloHistory[latestIdx][i] * predTime;
-            }
-            return componentsToPose(prediction);
-        }
+        // if (storedCount < 2) {
+        //     for (int i = 0; i < 3; i++) {
+        //         prediction[i] = currentPose[i] + veloHistory[latestIdx][i] * predTime;
+        //     }
+        //     return componentsToPose(prediction);
+        // }
 
         if (predTime <= 0.0) return pose;
 
         double[] current = poseToComponents(pose);
         double[] predicted = new double[3];
-        for (int i = 0; i < 3; i++) {
-            predicted[i] = currentPose[i] + smoothedVelocities[i] * predTime;
+        for (int i = 0; i < 2; i++) {
+            predicted[i] = current[i] + veloHistory[latestIdx][i] * predTime;
         }
+        predicted[2] = current[2] + veloHistory[latestIdx][2] * 0.05;
+        Log.log("ROBOT/veloHistory", veloHistory);
 
         return componentsToPose(predicted);
     }
