@@ -22,7 +22,6 @@ import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.util.LerpTable;
 import igknighters.util.LerpTable.LerpTableEntry;
-import igknighters.util.RobotPosePredictor;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import igknighters.util.log.Log;
@@ -334,8 +333,7 @@ public class AimSolver {
                 double maxHeightMeters,
                 double minHeightMeters,
                 double periodTime) {
-            RobotPosePredictor predictor = new RobotPosePredictor(.4, .6);
-            Pose2d predictedPose = predictor.getPredictedPose(shooterPose.toPose2d());
+            Pose2d predictedPose = Robot.pose_pred.getPredictedPose(shooterPose.toPose2d());
             FieldVisualizer.getInstance().updatePredictedPose(predictedPose);
             double sx = predictedPose.getX();
             double sy = predictedPose.getY();
