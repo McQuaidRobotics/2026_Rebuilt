@@ -26,17 +26,18 @@ public class RobotPosePredictor {
     /** Smoothing gain for the velocity estimate (0 < beta ≤ 1). */
     private final double beta;
 
-    private ChassisSpeeds[] veloHistory = new ChassisSpeeds[HISTORY_SIZE];
-    private double[] timestampHistory = new double[HISTORY_SIZE];
+    public ChassisSpeeds[] predVeloHistory = new ChassisSpeeds[HISTORY_SIZE];
+    public ChassisSpeeds[] veloHistory = new ChassisSpeeds[HISTORY_SIZE];
+    public double[] timestampHistory = new double[HISTORY_SIZE];
 
     // time in seconds to look-ahead
-    private static final double predTime = .02;
+    public static final double predTime = .02;
 
     /** Index of the next write slot in the circular buffers. */
-    private int writeIndex = 0;
+    public int writeIndex = 0;
 
     /** Number of poses stored so far, capped at HISTORY_SIZE. */
-    private int storedCount = 0;
+    public int storedCount = 0;
 
     /**
      * @param alpha position smoothing gain, typically 0.5–0.9
@@ -58,15 +59,16 @@ public class RobotPosePredictor {
 
         // Write into circular buffer
         veloHistory[writeIndex] = chassisSpeeds;
+        predVeloHistory[writeIndex] = chassisSpeeds;
         timestampHistory[writeIndex] = now;
         double mostRecentTimestamp =
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
         int latestIdx =
                 Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
         double dt = 0;
-        if (latestIdx == 0 && veloHistory[HISTORY_SIZE - 1] == null) {
+        if (latestIdx == 0 && predVeloHistory[HISTORY_SIZE - 1] == null) {
             dt = 0;
-        } else if (latestIdx == 0 && veloHistory[HISTORY_SIZE - 1] != null) {
+        } else if (latestIdx == 0 && predVeloHistory[HISTORY_SIZE - 1] != null) {
             dt = timestampHistory[latestIdx] - timestampHistory[HISTORY_SIZE - 1];
         }
         if (latestIdx != 0) {
@@ -83,12 +85,12 @@ public class RobotPosePredictor {
                         chassisSpeeds.vyMetersPerSecond,
                         chassisSpeeds.omegaRadiansPerSecond);
 
-        if (dt <= 0.0) return;
 
+        if (dt <= 0.0) return;
         // find acceleration based on last velocity and current
         ChassisSpeeds predictedVelo = new ChassisSpeeds();
 
-        if (latestIdx == 0 && veloHistory[HISTORY_SIZE - 1] == null) {
+        if (latestIdx == 0 && predVeloHistory[HISTORY_SIZE - 1] == null) {
             predictedVelo.vxMetersPerSecond =
                     currentVelos.vxMetersPerSecond + (currentVelos.vxMetersPerSecond) * dt;
             predictedVelo.vyMetersPerSecond =
@@ -99,33 +101,33 @@ public class RobotPosePredictor {
             predictedVelo.vxMetersPerSecond =
                     currentVelos.vxMetersPerSecond
                             + (currentVelos.vxMetersPerSecond
-                                            - veloHistory[HISTORY_SIZE - 1].vxMetersPerSecond)
+                                            - predVeloHistory[HISTORY_SIZE - 1].vxMetersPerSecond)
                                     * dt;
             predictedVelo.vyMetersPerSecond =
                     currentVelos.vyMetersPerSecond
                             + (currentVelos.vyMetersPerSecond
-                                            - veloHistory[HISTORY_SIZE - 1].vyMetersPerSecond)
+                                            - predVeloHistory[HISTORY_SIZE - 1].vyMetersPerSecond)
                                     * dt;
             predictedVelo.omegaRadiansPerSecond =
                     currentVelos.omegaRadiansPerSecond
                             + (currentVelos.omegaRadiansPerSecond
-                                            - veloHistory[HISTORY_SIZE - 1].omegaRadiansPerSecond)
+                                            - predVeloHistory[HISTORY_SIZE - 1].omegaRadiansPerSecond)
                                     * dt;
         } else {
             predictedVelo.vxMetersPerSecond =
                     currentVelos.vxMetersPerSecond
                             + (currentVelos.vxMetersPerSecond
-                                            - veloHistory[latestIdx - 1].vxMetersPerSecond)
+                                            - predVeloHistory[latestIdx - 1].vxMetersPerSecond)
                                     * dt;
             predictedVelo.vyMetersPerSecond =
                     currentVelos.vyMetersPerSecond
                             + (currentVelos.vyMetersPerSecond
-                                            - veloHistory[latestIdx - 1].vyMetersPerSecond)
+                                            - predVeloHistory[latestIdx - 1].vyMetersPerSecond)
                                     * dt;
             predictedVelo.omegaRadiansPerSecond =
                     currentVelos.omegaRadiansPerSecond
                             + (currentVelos.omegaRadiansPerSecond
-                                            - veloHistory[latestIdx - 1].omegaRadiansPerSecond)
+                                            - predVeloHistory[latestIdx - 1].omegaRadiansPerSecond)
                                     * dt;
         }
 
@@ -147,8 +149,83 @@ public class RobotPosePredictor {
         updatedVelos.omegaRadiansPerSecond =
                 predictedVelo.omegaRadiansPerSecond + currentVelos.omegaRadiansPerSecond;
 
-        veloHistory[latestIdx] = updatedVelos;
+        predVeloHistory[latestIdx] = updatedVelos;
     }
+
+    public ChassisSpeeds getVelos(ChassisSpeeds chassisSpeeds) {
+        double mostRecentTimestamp =
+                Collections.max(Arrays.stream(timestampHistory).boxed().toList());
+        int latestIdx =
+                Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
+        return predVeloHistory[latestIdx];
+    }
+    //     double now = Timer.getFPGATimestamp();
+
+    //     final ChassisSpeeds updatedVelos = new ChassisSpeeds();
+
+    //     final ChassisSpeeds currentVelos =
+    //             new ChassisSpeeds(
+    //                     chassisSpeeds.vxMetersPerSecond,
+    //                     chassisSpeeds.vyMetersPerSecond,
+    //                     chassisSpeeds.omegaRadiansPerSecond);
+
+    //     if (dt <= 0.0) return null;
+
+    //     // find acceleration based on last velocity and current
+    //     ChassisSpeeds predictedVelo = new ChassisSpeeds();
+
+    //     if (latestIdx == 0 && predVeloHistory[HISTORY_SIZE - 1] == null) {
+    //         predictedVelo.vxMetersPerSecond =
+    //                 currentVelos.vxMetersPerSecond + (currentVelos.vxMetersPerSecond) * dt;
+    //         predictedVelo.vyMetersPerSecond =
+    //                 currentVelos.vyMetersPerSecond + (currentVelos.vyMetersPerSecond) * dt;
+    //         predictedVelo.omegaRadiansPerSecond =
+    //                 currentVelos.omegaRadiansPerSecond + (currentVelos.omegaRadiansPerSecond) *
+    // dt;
+    //     } else if (latestIdx == 0) {
+    //         predictedVelo.vxMetersPerSecond =
+    //                 currentVelos.vxMetersPerSecond
+    //                         + (currentVelos.vxMetersPerSecond
+    //                                         - predVeloHistory[HISTORY_SIZE - 1].vxMetersPerSecond)
+    //                                 * dt;
+    //         predictedVelo.vyMetersPerSecond =
+    //                 currentVelos.vyMetersPerSecond
+    //                         + (currentVelos.vyMetersPerSecond
+    //                                         - predVeloHistory[HISTORY_SIZE - 1].vyMetersPerSecond)
+    //                                 * dt;
+    //         predictedVelo.omegaRadiansPerSecond =
+    //                 currentVelos.omegaRadiansPerSecond
+    //                         + (currentVelos.omegaRadiansPerSecond
+    //                                         - predVeloHistory[HISTORY_SIZE -
+    // 1].omegaRadiansPerSecond)
+    //                                 * dt;
+    //     } else {
+    //         predictedVelo.vxMetersPerSecond =
+    //                 currentVelos.vxMetersPerSecond
+    //                         + (currentVelos.vxMetersPerSecond
+    //                                         - predVeloHistory[latestIdx - 1].vxMetersPerSecond)
+    //                                 * dt;
+    //         predictedVelo.vyMetersPerSecond =
+    //                 currentVelos.vyMetersPerSecond
+    //                         + (currentVelos.vyMetersPerSecond
+    //                                         - predVeloHistory[latestIdx - 1].vyMetersPerSecond)
+    //                                 * dt;
+    //         predictedVelo.omegaRadiansPerSecond =
+    //                 currentVelos.omegaRadiansPerSecond
+    //                         + (currentVelos.omegaRadiansPerSecond
+    //                                         - predVeloHistory[latestIdx - 1].omegaRadiansPerSecond)
+    //                                 * dt;
+    //     }
+    //     // Alpha-beta update
+    //     updatedVelos.vxMetersPerSecond =
+    //             predictedVelo.vxMetersPerSecond + currentVelos.vxMetersPerSecond;
+    //     updatedVelos.vyMetersPerSecond =
+    //             predictedVelo.vyMetersPerSecond + currentVelos.vyMetersPerSecond;
+    //     updatedVelos.omegaRadiansPerSecond =
+    //             predictedVelo.omegaRadiansPerSecond + currentVelos.omegaRadiansPerSecond;
+
+    //     return updatedVelos;
+    // }
 
     /**
      * Returns the estimated robot pose at the next loop iteration, extrapolated from the current
@@ -157,24 +234,27 @@ public class RobotPosePredictor {
      * @return predicted {@link Pose2d} one loop period into the future
      */
     public Pose2d getPredictedPose(Pose2d pose) {
-        double[] currentPose = poseToComponents(pose);
-        ChassisSpeeds prediction = new ChassisSpeeds();
         double mostRecentTimestamp =
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
         int latestIdx =
                 Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
-        int prevIdx = latestIdx - 1;
-
-        if (predTime <= 0.0) return pose;
 
         double[] current = poseToComponents(pose);
         double[] predicted = new double[3];
-        predicted[0] = current[0] + veloHistory[latestIdx].vxMetersPerSecond * predTime;
-        predicted[1] = current[1] + veloHistory[latestIdx].vyMetersPerSecond * predTime;
-        predicted[2] = current[2] + veloHistory[latestIdx].omegaRadiansPerSecond * predTime;
-        Log.log("ROBOT/veloHistory", veloHistory);
+        predicted[0] = current[0] + predVeloHistory[latestIdx].vxMetersPerSecond * predTime;
+        predicted[1] = current[1] + predVeloHistory[latestIdx].vyMetersPerSecond * predTime;
+        predicted[2] = current[2] + predVeloHistory[latestIdx].omegaRadiansPerSecond * predTime;
+        Log.log("ROBOT/predVeloHistory", predVeloHistory);
 
         return componentsToPose(predicted);
+    }
+
+    public ChassisSpeeds getPredictedVelos() {
+        double mostRecentTimestamp =
+                Collections.max(Arrays.stream(timestampHistory).boxed().toList());
+        int latestIdx =
+                Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
+        return predVeloHistory[latestIdx];
     }
 
     // -------------------------------------------------------------------------
