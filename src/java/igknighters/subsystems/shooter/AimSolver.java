@@ -203,14 +203,21 @@ public class AimSolver {
                 double maxHeightMeters,
                 double periodTime) {
             // 1. Position and Target setup
-            double sx = shooterPose.getX();
-            double sy = shooterPose.getY();
+
+            Pose2d predictedPose = Robot.pose_pred.getPredictedPose(shooterPose.toPose2d());
+            double sx = predictedPose.getX();
+            double sy = predictedPose.getY();
             double sz = shooterPose.getZ();
 
             double initialDist =
                     shooterPose.getTranslation().getDistance(targetPose.getTranslation());
-            double estimatedToF = initialDist / 5.0; // Assume 5m/s avg horizontal velocity
-
+            double estimatedToF;
+            if (initialDist <= 8){
+                estimatedToF = initialDist / 1.5; // Assume 5m/s avg horizontal velocity
+            }
+            else {
+                estimatedToF = 1; // Assume 5m/s avg horizontal velocity
+            }
             // 3. TARGET PROJECTION: Scale the target lead by (ToF + Latency)
             // We subtract the robot's velocity because from the ball's perspective,
             // the target is moving toward/away at the robot's speed.
@@ -277,7 +284,7 @@ public class AimSolver {
 
             // 3. Final Angles
             double absoluteFieldAngle = Math.atan2(dy, dx);
-            double robotYawFuture = shooterPose.getRotation().getZ();
+            double robotYawFuture = predictedPose.getRotation().getRadians();
             double turretAngle =
                     Math.atan2(
                             Math.sin(absoluteFieldAngle - robotYawFuture),
@@ -331,15 +338,22 @@ public class AimSolver {
                 double maxHeightMeters,
                 double minHeightMeters,
                 double periodTime) {
-            // 1. Position and Target setup
-            double sx = shooterPose.getX() + speeds.vxMetersPerSecond * periodTime;
-            double sy = shooterPose.getY() + speeds.vyMetersPerSecond * periodTime;
+            Pose2d predictedPose = Robot.pose_pred.getPredictedPose(shooterPose.toPose2d());
+            FieldVisualizer.getInstance().updatePredictedPose(predictedPose);
+            double sx = predictedPose.getX();
+            double sy = predictedPose.getY();
             double sz = shooterPose.getZ();
 
             double initialDist =
                     shooterPose.getTranslation().getDistance(targetPose.getTranslation());
             Log.log("ROBOT/Commands/AimSolver/Distance", initialDist);
-            double estimatedToF = initialDist / 2.0; // Assume 5m/s avg horizontal velocity
+            double estimatedToF;
+            if (initialDist <= 8){
+                estimatedToF = initialDist / 1.5; // Assume 5m/s avg horizontal velocity
+            }
+            else {
+                estimatedToF = 1; // Assume 5m/s avg horizontal velocity
+            }
 
             // 3. TARGET PROJECTION: Scale the target lead by (ToF + Latency)
             // We subtract the robot's velocity because from the ball's perspective,
@@ -408,8 +422,7 @@ public class AimSolver {
 
             // 3. Final Angles
             double absoluteFieldAngle = Math.atan2(dy, dx);
-            double robotYawFuture =
-                    shooterPose.getRotation().getZ() + speeds.omegaRadiansPerSecond * .05;
+            double robotYawFuture = predictedPose.getRotation().getRadians();
             double turretAngle =
                     Math.atan2(
                             Math.sin(absoluteFieldAngle - robotYawFuture),

@@ -3,7 +3,6 @@ package igknighters.subsystems.intake.pivot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotation;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -23,7 +22,6 @@ public class PivotReal extends Pivot {
     private TalonFX pivotMotor;
     private CANcoder pivotEncoder;
     private PositionVoltage motionMagicControl;
-    private BaseStatusSignal angleRotations;
     private double targetDegrees = 0.0;
     private boolean beingCommanded = false;
 
@@ -35,8 +33,6 @@ public class PivotReal extends Pivot {
         pivotEncoder.getConfigurator().apply(getPivotEncoderConfig());
 
         motionMagicControl = new PositionVoltage(0.0).withSlot(0);
-
-        angleRotations = pivotMotor.getPosition();
     }
 
     public CANcoderConfiguration getPivotEncoderConfig() {
@@ -61,10 +57,17 @@ public class PivotReal extends Pivot {
         config.Feedback.FeedbackRemoteSensorID = SubsystemConstants.kIntake.kPivot.CANCODER_ID;
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        config.CurrentLimits.StatorCurrentLimit =
-                SubsystemConstants.kIntake.kPivot.STATOR_CURRENT_LIMIT;
-        config.CurrentLimits.SupplyCurrentLimit =
+        // config.CurrentLimits.StatorCurrentLimit =
+        //         SubsystemConstants.kIntake.kPivot.STATOR_CURRENT_LIMIT;
+        config.CurrentLimits.SupplyCurrentLowerLimit =
                 SubsystemConstants.kIntake.kPivot.SUPPLY_CURRENT_LIMIT;
+
+        config.CurrentLimits.SupplyCurrentLimit =
+                SubsystemConstants.kIntake.kPivot.SUPPLY_UPPER_LIMIT;
+
+        config.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+        config.CurrentLimits.SupplyCurrentLowerTime = 0.25;
 
         config.MotionMagic.MotionMagicCruiseVelocity =
                 SubsystemConstants.kIntake.kPivot.MAX_SPEED_METERS_PER_SECOND;
@@ -111,12 +114,12 @@ public class PivotReal extends Pivot {
 
     @Override
     public Angle getAngle() {
-        return Rotation.of(angleRotations.getValueAsDouble());
+        return Rotation.of(pivotMotor.getPosition().getValueAsDouble());
     }
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(angleRotations);
+
         Log.log("ROBOT/Subsystems/Intake/Pivot/POSITION", getAngle().in(Degrees));
 
         if (!SubsystemConstants.kIntake.kPivot.disablePivotLogs) {

@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
@@ -165,7 +166,7 @@ public class ShooterCommands {
                 shooter,
                 shooterPose,
                 robotVelocitySupplier,
-                5,
+                4,
                 FieldConstants.HUB.HEIGHT_METERS + .5);
     }
 
@@ -180,13 +181,13 @@ public class ShooterCommands {
             boolean under1 =
                     isBetween(
                             pose,
-                            FieldConstants.BUMP.BUMP_1_X_METERS - .1,
-                            FieldConstants.BUMP.BUMP_1_X_METERS + .1);
+                            FieldConstants.BUMP.BUMP_1_X_METERS - .5,
+                            FieldConstants.BUMP.BUMP_1_X_METERS + .5);
             boolean under2 =
                     isBetween(
                             pose,
-                            FieldConstants.BUMP.BUMP_2_X_METERS - .1,
-                            FieldConstants.BUMP.BUMP_2_X_METERS + .1);
+                            FieldConstants.BUMP.BUMP_2_X_METERS - .5,
+                            FieldConstants.BUMP.BUMP_2_X_METERS + .5);
 
             boolean isUnder = under1 || under2;
             if (!SubsystemConstants.disableAllLogs) {
@@ -227,7 +228,7 @@ public class ShooterCommands {
                                         targetPose,
                                         robotVel,
                                         shooter.getCurrentState().flywheelSpeed.in(RPM),
-                                        5,
+                                        4.5,
                                         0.02);
 
                         shooter.targetState(
@@ -260,7 +261,7 @@ public class ShooterCommands {
                                         targetPose,
                                         robotVel,
                                         shooter.getCurrentState().flywheelSpeed.in(RPM),
-                                        5,
+                                        4.8,
                                         FieldConstants.HUB.HEIGHT_METERS + .5,
                                         0.02);
 
@@ -275,6 +276,10 @@ public class ShooterCommands {
                         }
                     }
                 });
+    }
+
+    public static Command homeHood(Shooter shooter) {
+        return Commands.none();
     }
 
     /**

@@ -6,6 +6,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIndexer;
 import igknighters.util.log.Log;
@@ -17,9 +18,6 @@ public class ExitRollersReal extends ExitRollers {
     private final MotionMagicVelocityVoltage velocityControl;
     private final DutyCycleOut dutyCycleControl = new DutyCycleOut(0.0);
     private BaseStatusSignal shooterVelocity;
-    private BaseStatusSignal shooterCurrent;
-    private BaseStatusSignal shooterVoltage;
-    private BaseStatusSignal shooterTemperature;
 
     public TalonFXConfiguration getLeaderConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -57,9 +55,6 @@ public class ExitRollersReal extends ExitRollers {
         velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(0);
 
         shooterVelocity = exitRollerMotor.getVelocity();
-        shooterCurrent = exitRollerMotor.getSupplyCurrent();
-        shooterVoltage = exitRollerMotor.getSupplyVoltage();
-        shooterTemperature = exitRollerMotor.getDeviceTemp();
     }
 
     @Override
@@ -83,28 +78,14 @@ public class ExitRollersReal extends ExitRollers {
 
     @Override
     public double getSpeedRPM() {
-        return shooterVelocity.getValueAsDouble();
+        return exitRollerMotor.getVelocity().getValueAsDouble() * Conv.RPS_TO_RPM;
     }
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(
-                shooterVelocity, shooterCurrent, shooterVoltage, shooterTemperature);
 
         if (!SubsystemConstants.kIndexer.kExitRollers.disableExitRollersLogs) {
-            Log.log(
-                    "Subsystems/Indexer/ExitRollers/velocity",
-                    shooterVelocity.getValueAsDouble() * 60.0);
-            Log.log(
-                    "ROBOT/Subsystems/Indexer/ExitRollers/current",
-                    shooterCurrent.getValueAsDouble());
-            Log.log(
-                    "ROBOT/Subsystems/Indexer/ExitRollers/voltage",
-                    shooterVoltage.getValueAsDouble());
-            Log.log(
-                    "Subsystems/Indexer/ExitRollers/temperature",
-                    shooterTemperature.getValueAsDouble());
-            Log.log("ROBOT/Subsystems/Indexer/ExitRollers/periodicing", true);
+            Log.log("Subsystems/Indexer/ExitRollers/velocity", getSpeedRPM());
         }
     }
 }

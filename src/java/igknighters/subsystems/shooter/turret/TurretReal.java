@@ -3,7 +3,6 @@ package igknighters.subsystems.shooter.turret;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotations;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -28,8 +27,6 @@ public class TurretReal extends Turret {
             new TalonFX(SubsystemConstants.kShooter.kTurret.MOTOR_ID, kShooter.CANBUS);
     private final CANcoder turretCaNcoder =
             new CANcoder(SubsystemConstants.kShooter.kTurret.CANCODER_ID, kShooter.CANBUS);
-
-    private final BaseStatusSignal turretAngle = motor.getPosition();
 
     private final TalonFXConfiguration turretConfiguration() {
         var cfg = new TalonFXConfiguration();
@@ -120,17 +117,17 @@ public class TurretReal extends Turret {
 
     @Override
     public double getAngleDegrees() {
-        return turretAngle.getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
+        return motor.getPosition().getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
     }
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(turretAngle);
+
         if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
             Log.logMotor("Subsystems/Shooter/Turret/Motor", motor);
             Log.log("ROBOT/Subsystems/Shooter/Turret/Target Degrees", super.targetDegrees);
         }
 
-        super.degrees = turretAngle.getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
+        super.degrees = motor.getPosition().getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
     }
 }

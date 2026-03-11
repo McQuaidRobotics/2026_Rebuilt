@@ -1,5 +1,8 @@
 package igknighters.controllers;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -19,6 +22,7 @@ import igknighters.constants.FieldConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.ClimberState;
+import igknighters.subsystems.shooter.ShooterState;
 import java.util.function.DoubleSupplier;
 
 public class DriverController {
@@ -175,14 +179,25 @@ public class DriverController {
         var intake = subsystems.intake;
 
         this.LT
-                .whileTrue(IntakeCommands.protectedIntake(intake, () -> swerve.getState().Pose))
-                .onFalse(IntakeCommands.holdAtStow(intake));
+                .whileTrue(IntakeCommands.holdAtIntake(subsystems.intake))
+                .onFalse(IntakeCommands.holdAtStow(subsystems.intake));
         this.RT
                 .whileTrue(HigherOrderCommands.rapidFireStream(subsystems))
                 .onFalse(HigherOrderCommands.IdleShooter(subsystems));
         this.DPD.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
         this.RB.whileTrue(HigherOrderCommands.forceDispense(subsystems));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
+
+        this.Y.whileTrue(
+                ShooterCommands.targetState(
+                        subsystems.shooter,
+                        new ShooterState(
+                                RPM.of(0.0),
+                                Degrees.of(0.0),
+                                Degrees.of(kHood.MIN_ANGLE_DEGREES))));
+        this.DPD.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.STOW));
+        this.DPU.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.LATCH_ON));
+        this.DPR.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.PULL_UP));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

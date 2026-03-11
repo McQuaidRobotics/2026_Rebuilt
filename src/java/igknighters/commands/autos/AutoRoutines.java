@@ -266,7 +266,7 @@ public class AutoRoutines extends AutoCommands {
 
         swipe2Out.done().onTrue(SwerveCommands.stopDriving(swerve).andThen(swipe2In.cmd()));
 
-        swipe2In.active().onTrue(IntakeCommands.holdAtStow(subsystems.intake));
+        swipe2In.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
 
         swipe2In.done()
                 .onTrue(

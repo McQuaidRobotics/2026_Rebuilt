@@ -46,7 +46,7 @@ public class RollersReal extends Rollers {
 
     @Override
     public AngularVelocity getSpeed() {
-        return RotationsPerSecond.of(intakeSpeed.getValueAsDouble());
+        return intakeMotor.getVelocity().getValue();
     }
 
     @Override
@@ -61,7 +61,6 @@ public class RollersReal extends Rollers {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(intakeSpeed);
 
         if (!SubsystemConstants.kIntake.kRollers.disableRollersLogs) {
             Log.log("ROBOT/Subsystems/Intake/Rollers/SpeedRPS", getSpeed());

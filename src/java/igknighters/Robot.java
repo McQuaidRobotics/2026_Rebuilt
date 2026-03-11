@@ -39,6 +39,7 @@ import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.FuelSim;
+import igknighters.util.RobotPosePredictor;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import igknighters.util.log.Log;
@@ -58,10 +59,11 @@ public class Robot extends LoggedRobot {
     double i = 0;
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
+    public static RobotPosePredictor pose_pred = new RobotPosePredictor(.4, .6);
 
     private final DriverController driverController = new DriverController(0);
 
-    public final Subsystems subsytems;
+    public final Subsystems subsystems;
 
     private FuelSim fuelSim;
     private double lastShotTime = 0.0;
@@ -120,8 +122,8 @@ public class Robot extends LoggedRobot {
     }
 
     public void setUpAutos(Subsystems subsystems) {
-        autoFactory = subsytems.swerve.createAutoFactory();
-        final var routines = new AutoRoutines(subsytems, autoFactory);
+        autoFactory = subsystems.swerve.createAutoFactory();
+        final var routines = new AutoRoutines(subsystems, autoFactory);
         autoChooser.addRoutine("LEFT NUETRAL HIPPO", routines::leftNuetralHippo);
         autoChooser.addRoutine("RIGHT NUETRAL HIPPO", routines::rightNuetralHippo);
         autoChooser.addRoutine("CENTER OUTPOST CLIMB", routines::centerOutpostClimb);
@@ -133,11 +135,11 @@ public class Robot extends LoggedRobot {
     }
 
     public void setUpSwerve(Subsystems subsystems) {
-        subsytems.swerve.setDefaultCommand(
-                new TeleopSwerveWithDetune(subsytems.swerve, driverController, 1.0));
+        subsystems.swerve.setDefaultCommand(
+                new TeleopSwerveWithDetune(subsystems.swerve, driverController, 1.0));
 
-        logger = new Telemetry(subsytems.swerve.getMaxSpeedMetersPerSecond(), subsytems);
-        subsytems.swerve.registerTelemetry(logger::telemeterize);
+        logger = new Telemetry(subsystems.swerve.getMaxSpeedMetersPerSecond(), subsystems);
+        subsystems.swerve.registerTelemetry(logger::telemeterize);
     }
 
     public void setUpTest(Subsystems subsystems) {
@@ -195,7 +197,7 @@ public class Robot extends LoggedRobot {
     public Robot() {
         setUpAdvantageScope();
         setUpCommandLogging();
-        subsytems =
+        subsystems =
                 new Subsystems(
                         new Swerve(false),
                         new LimeLightVision(),
@@ -205,13 +207,13 @@ public class Robot extends LoggedRobot {
                         new Intake(),
                         new Climber(),
                         new Luma(true, "object-detection"));
-        setUpSwerve(subsytems);
-        publishCommandsAndSubystems(subsytems);
-        setUpAutos(subsytems);
-        setUpTest(subsytems);
+        setUpSwerve(subsystems);
+        publishCommandsAndSubystems(subsystems);
+        setUpAutos(subsystems);
+        setUpTest(subsystems);
         bindDriverController();
 
-        subsystemTriggers.SetupTriggers(subsytems, driverController);
+        subsystemTriggers.SetupTriggers(subsystems, driverController);
 
         if (isSimulation()) {
             configureFuelSim();
@@ -221,7 +223,7 @@ public class Robot extends LoggedRobot {
     public Robot(boolean isSwerveDisabled) {
         setUpAdvantageScope();
         setUpCommandLogging();
-        subsytems =
+        subsystems =
                 new Subsystems(
                         new Swerve(isSwerveDisabled),
                         new LimeLightVision(),
@@ -231,13 +233,13 @@ public class Robot extends LoggedRobot {
                         new Intake(),
                         new Climber(),
                         new Luma(true, "object-detection"));
-        setUpSwerve(subsytems);
-        publishCommandsAndSubystems(subsytems);
-        setUpAutos(subsytems);
-        setUpTest(subsytems);
+        setUpSwerve(subsystems);
+        publishCommandsAndSubystems(subsystems);
+        setUpAutos(subsystems);
+        setUpTest(subsystems);
         bindDriverController();
 
-        subsystemTriggers.SetupTriggers(subsytems, driverController);
+        subsystemTriggers.SetupTriggers(subsystems, driverController);
     }
 
     public Pose3d getTurretPose(double turretAngleDegrees) {
@@ -257,7 +259,7 @@ public class Robot extends LoggedRobot {
         double dy = 0.0; // Y offset from turret center to hood
         double dz = 0.12; // z offset from turret pivot to hood pivot
 
-        Pose3d turretPose = getTurretPose(subsytems.shooter.getTurretAngleDegrees());
+        Pose3d turretPose = getTurretPose(subsystems.shooter.getTurretAngleDegrees());
 
         Pose3d hoodPosition =
                 turretPose.transformBy(
@@ -276,28 +278,29 @@ public class Robot extends LoggedRobot {
         // // THE COORDINATES LOOK WEIRD WHEN THERE ARE MULTIPLE FUEL, needs tuning
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
-        //         subsytems.luma.getClosestGamePiece());
+        //         subsystems.luma.getClosestGamePiece());
+        pose_pred.setNewPose(subsystems.swerve.getState().Speeds);
         if (Robot.isReal() && !SubsystemConstants.disableAllLogs) {
             FieldVisualizer.getInstance()
                     .updateTurret(
-                            -subsytems.shooter.getTurretAngleDegrees(),
-                            subsytems.swerve.getState().Pose);
+                            -subsystems.shooter.getTurretAngleDegrees(),
+                            subsystems.swerve.getState().Pose);
             Logger.recordOutput(
                     "componentPoses",
                     new Pose3d[] {
-                        getTurretPose(-subsytems.shooter.getTurretAngleDegrees()),
-                        getHoodPose(subsytems.shooter.getHoodAngleDegrees())
+                        getTurretPose(-subsystems.shooter.getTurretAngleDegrees()),
+                        getHoodPose(subsystems.shooter.getHoodAngleDegrees())
                     });
         } else {
             FieldVisualizer.getInstance()
                     .updateTurret(
-                            subsytems.shooter.getTurretAngleDegrees(),
-                            subsytems.swerve.getState().Pose);
+                            subsystems.shooter.getTurretAngleDegrees(),
+                            subsystems.swerve.getState().Pose);
             Logger.recordOutput(
                     "componentPoses",
                     new Pose3d[] {
-                        getTurretPose(subsytems.shooter.getTurretAngleDegrees()),
-                        getHoodPose(subsytems.shooter.getHoodAngleDegrees())
+                        getTurretPose(subsystems.shooter.getTurretAngleDegrees()),
+                        getHoodPose(subsystems.shooter.getHoodAngleDegrees())
                     });
         }
 
@@ -309,16 +312,16 @@ public class Robot extends LoggedRobot {
                 });
 
         if (kUseLimelight) {
-            var driveState = subsytems.swerve.getState();
+            var driveState = subsystems.swerve.getState();
             double headingDeg = driveState.Pose.getRotation().getDegrees();
             double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
             Pose2d currentPose =
-                    subsytems.vision.getRobotPoseFromVision(headingDeg, omegaRps, 0, 0, 0, 0);
+                    subsystems.vision.getRobotPoseFromVision(headingDeg, omegaRps, 0, 0, 0, 0);
 
             if (currentPose != null) {
-                subsytems.swerve.addVisionMeasurement(
+                subsystems.swerve.addVisionMeasurement(
                         currentPose,
-                        subsytems.vision
+                        subsystems.vision
                                 .getLastTimeStamp()); // trusts vision rotation less. Needs tuning
                 // increase the std devs to trust vision less
                 if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
@@ -333,15 +336,15 @@ public class Robot extends LoggedRobot {
     }
 
     public void bindDriverController() {
-        driverController.bind(subsytems);
+        driverController.bind(subsystems);
     }
 
     @Override
     public void disabledInit() {
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().clearComposedCommands();
-        subsytems.swerve.setDefaultCommand(
-                new TeleopSwerveWithDetune(subsytems.swerve, driverController, detune.value()));
+        subsystems.swerve.setDefaultCommand(
+                new TeleopSwerveWithDetune(subsystems.swerve, driverController, detune.value()));
         DrivingSharedState.getInstance().setDetune(detune.value());
         DrivingSharedState.getInstance().setKP(targetingP.value());
         DrivingSharedState.getInstance().setKI(targetingI.value());
@@ -408,12 +411,12 @@ public class Robot extends LoggedRobot {
 
             // Logic to launch fuel when dispensing and shooter is ready
             double currentTime = RobotController.getFPGATime() / 1.0e6;
-            if (subsytems.indexer.getExitRollerRPM() > 50.0
-                    && subsytems.shooter.getCurrentState().flywheelSpeed.in(RPM) > 500.0
-                    && subsytems.indexer.getSpindexerRPM() > 50.0
+            if (subsystems.indexer.getExitRollerRPM() > 50.0
+                    && subsystems.shooter.getCurrentState().flywheelSpeed.in(RPM) > 500.0
+                    && subsystems.indexer.getSpindexerRPM() > 50.0
                     && (currentTime - lastShotTime) > 0.1) { // 0.1s cooldown
 
-                var shooterState = subsytems.shooter.getCurrentState();
+                var shooterState = subsystems.shooter.getCurrentState();
 
                 // Launch parameters
                 // Velocity is approx (RPM * radius / 2) because only one side is driven (per
@@ -463,8 +466,8 @@ public class Robot extends LoggedRobot {
                 width,
                 length,
                 bumperHeight,
-                () -> subsytems.swerve.getState().Pose,
-                subsytems.swerve::getFieldRelativeSpeeds);
+                () -> subsystems.swerve.getState().Pose,
+                subsystems.swerve::getFieldRelativeSpeeds);
 
         // Register a front intake zone (0.1m deep, 0.4m wide, centered in front of bumper)
         fuelSim.registerIntake(

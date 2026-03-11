@@ -2,7 +2,6 @@ package igknighters.subsystems.shooter.flywheel;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
@@ -34,8 +33,6 @@ public class FlywheelReal extends Flywheel {
 
     // private final DigitalInput beamBreakSensor = new
     // DigitalInput(SubsystemConstants.Shooter.BEAM_BREAK_SENSOR_CHANNEL);
-
-    private BaseStatusSignal shooterVelocity;
 
     // private BaseStatusSignal isBeamBreakTripped;
 
@@ -76,17 +73,14 @@ public class FlywheelReal extends Flywheel {
                 new Follower(mainShooter.getDeviceID(), MotorAlignmentValue.Opposed));
 
         velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(0);
-
-        shooterVelocity = mainShooter.getVelocity();
     }
 
     @Override
     public void setSpeed(AngularVelocity speedRPM) {
         if (!SubsystemConstants.kShooter.kFlywheels.disableFlywheelsLogs) {
-            Log.log("ROBOT/Subsystems/Shooter/Rollers/setSpeed", speedRPM);
+            Log.log("ROBOT/Subsystems/Shooter/Flywheels/setSpeed", speedRPM);
         }
         isBeingControlledActivly = true;
-        // mainShooter.setControl(velocityControl.withVelocity(speedRPM / 60.0));
         mainShooter.setControl(velocityControl.withVelocity(speedRPM.in(RotationsPerSecond)));
     }
 
@@ -98,16 +92,17 @@ public class FlywheelReal extends Flywheel {
 
     @Override
     public AngularVelocity getSpeed() {
-        return RotationsPerSecond.of(shooterVelocity.getValueAsDouble());
+        return mainShooter.getVelocity().getValue();
     }
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(shooterVelocity);
-        if (!SubsystemConstants.kIndexer.kExitRollers.disableExitRollersLogs) {
-            Log.log("ROBOT/Subsystems/Shooter/Rollers/being controlled", isBeingControlledActivly);
+        if (!SubsystemConstants.kShooter.kFlywheels.disableFlywheelsLogs) {
+            Log.log(
+                    "ROBOT/Subsystems/Shooter/Flywheels/being controlled",
+                    isBeingControlledActivly);
+            Log.logMotor("ROBOT/Subsystems/Shooter/Flywheels/Motor", mainShooter);
         }
-        Log.logMotor("Subsystems/Shooter/Rollers/Motor", mainShooter);
 
         isBeingControlledActivly = false;
     }

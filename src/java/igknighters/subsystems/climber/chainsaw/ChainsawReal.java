@@ -1,6 +1,5 @@
 package igknighters.subsystems.climber.chainsaw;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -29,8 +28,6 @@ public class ChainsawReal extends Chainsaw {
             new DigitalInput(SubsystemConstants.kClimber.kChainsaw.MIN_HEIGHT_SENSOR_ID);
     private final DigitalInput middleLimitSwitch =
             new DigitalInput(SubsystemConstants.kClimber.kChainsaw.MIDDLE_HEIGHT_SENSOR_ID);
-
-    private final BaseStatusSignal armPosition, armCurrent;
 
     private final TalonFX leftMotor;
 
@@ -76,9 +73,6 @@ public class ChainsawReal extends Chainsaw {
         leftMotor =
                 new TalonFX(SubsystemConstants.kClimber.kChainsaw.LEFT_MOTOR_ID, kClimber.CANBUS);
 
-        armPosition = leftMotor.getPosition();
-        armCurrent = leftMotor.getStatorCurrent();
-
         leftMotor.getConfigurator().apply(arm1Config());
     }
 
@@ -98,7 +92,6 @@ public class ChainsawReal extends Chainsaw {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(armPosition, armCurrent);
 
         double output = 0.0;
         if (state == ChainsawState.GOING_UP) {
@@ -134,16 +127,11 @@ public class ChainsawReal extends Chainsaw {
         leftMotor.setControl(dutyCycleControl.withOutput(output));
 
         if (!SubsystemConstants.kClimber.kChainsaw.disableChainsawLogs) {
-            Log.log(
-                    "Subsystems/Climber/Inches",
-                    armPosition.getValueAsDouble()
-                            * SubsystemConstants.kClimber.kChainsaw.ROTATIONS_TO_INCHES);
             Log.log("ROBOT/Subsystems/Climber/Is Up", isUp());
             Log.log("ROBOT/Subsystems/Climber/Is Middle", isMiddle());
             Log.log("ROBOT/Subsystems/Climber/Is Down", isDown());
             Log.log("ROBOT/Subsystems/Climber/Sensor Hit", isSensorHit());
             Log.log("ROBOT/Subsystems/Climber/State", state.toString());
-            Log.log("ROBOT/Subsystems/Climber/Current", armCurrent.getValueAsDouble());
         }
     }
 }
