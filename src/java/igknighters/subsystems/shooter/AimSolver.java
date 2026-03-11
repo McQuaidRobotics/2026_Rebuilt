@@ -211,12 +211,12 @@ public class AimSolver {
 
             double initialDist =
                     shooterPose.getTranslation().getDistance(targetPose.getTranslation());
-            double estimatedToF;
-            if (initialDist <= 8) {
-                estimatedToF = initialDist / 1.5; // Assume 5m/s avg horizontal velocity
-            } else {
-                estimatedToF = 1; // Assume 5m/s avg horizontal velocity
-            }
+            double estimatedToF = 1.5;
+            // if (initialDist <= 8) {
+            //     estimatedToF = initialDist / 1.5; // Assume 5m/s avg horizontal velocity
+            // } else {
+            //     estimatedToF = 1; // Assume 5m/s avg horizontal velocity
+            // }
             // 3. TARGET PROJECTION: Scale the target lead by (ToF + Latency)
             // We subtract the robot's velocity because from the ball's perspective,
             // the target is moving toward/away at the robot's speed.
@@ -346,12 +346,12 @@ public class AimSolver {
             double initialDist =
                     shooterPose.getTranslation().getDistance(targetPose.getTranslation());
             Log.log("ROBOT/Commands/AimSolver/Distance", initialDist);
-            double estimatedToF;
-            if (initialDist <= 8) {
-                estimatedToF = initialDist / 1.5; // Assume 5m/s avg horizontal velocity
-            } else {
-                estimatedToF = 1; // Assume 5m/s avg horizontal velocity
-            }
+            double estimatedToF = 1.5;
+            // if (initialDist <= 8) {
+            //     estimatedToF = initialDist / 1.5; // Assume 5m/s avg horizontal velocity
+            // } else {
+            //     estimatedToF = 1; // Assume 5m/s avg horizontal velocity
+            // }
 
             // 3. TARGET PROJECTION: Scale the target lead by (ToF + Latency)
             // We subtract the robot's velocity because from the ball's perspective,

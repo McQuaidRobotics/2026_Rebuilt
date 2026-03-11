@@ -45,7 +45,7 @@ public class IntakeCommands {
      * @return
      */
     public static Command instantHoldAtState(Intake intake, IntakeState state) {
-        return intake.run(() -> intake.goTo(state)).withName("Instant Hold at State");
+        return intake.runOnce(() -> intake.goTo(state)).withName("Instant Hold at State");
     }
 
     public static Command jorkIt(Intake intake) {

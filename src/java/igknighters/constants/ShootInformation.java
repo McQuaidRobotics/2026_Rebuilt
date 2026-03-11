@@ -7,6 +7,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.Robot;
+import igknighters.subsystems.shooter.ShootingData;
 import igknighters.util.log.Log;
 import java.util.function.Supplier;
 
@@ -29,7 +30,6 @@ public class ShootInformation {
     private final Trigger possibleShotTrigger;
     private final Trigger useOperatorControlLocationTrigger;
     private boolean useOperatorControlLocation = false;
-    private Pose3d operatorControlLocation;
 
     private ShootInformation() {
         this.atComandedStateTrigger = new Trigger(this::getAtTarget);
@@ -38,11 +38,27 @@ public class ShootInformation {
         this.useOperatorControlLocationTrigger = new Trigger(this::isUsingOperatorControlLocation);
     }
 
+    public ShootingData getPassData(String path) {
+        double maxHeight =
+                dashboardTable.getEntry(path + "/MaxHeight").getDouble(8) * Conv.FEET_TO_METERS;
+        double minHeight =
+                dashboardTable.getEntry(path + "/MinHeight").getDouble(15) * Conv.FEET_TO_METERS;
+        return new ShootingData(maxHeight, minHeight, getDashboardPose(path + "/passWaypoint"));
+    }
+
+    /**
+     * If the Z is published by arrupage it will supply the z cordinate so that a custom land height
+     * can be configured to shoot into a hopper.
+     *
+     * @param path
+     * @return A target Pose3d
+     */
     public Pose3d getDashboardPose(String path) {
         double x = dashboardTable.getEntry(path + "X").getDouble(0.0) * Conv.FEET_TO_METERS;
         double y = dashboardTable.getEntry(path + "Y").getDouble(0.0) * Conv.FEET_TO_METERS;
+        double z = dashboardTable.getEntry(path + "Z").getDouble(0.0) * Conv.FEET_TO_METERS;
         double theta = dashboardTable.getEntry(path + "Theta").getDouble(0.0);
-        return new Pose3d(x, y, 0, new Rotation3d(0, 0, theta));
+        return new Pose3d(x, y, z, new Rotation3d(0, 0, theta));
     }
 
     public static ShootInformation getInstance() {
@@ -88,6 +104,17 @@ public class ShootInformation {
         } else {
             return getHubTarget();
         }
+    }
+
+    public ShootingData getData(Supplier<Pose2d> robotPoseSupplier) {
+        if (shouldPass(robotPoseSupplier)) {
+            if (useOperatorControlLocation) {
+                return getPassData("robot");
+            } else {
+                return new ShootingData(4.8, 2, getPassTarget(robotPoseSupplier));
+            }
+        }
+        return new ShootingData(4.8, 2, getHubTarget());
     }
 
     public Pose3d getShotLocation(Supplier<Pose2d> robotPose) {
