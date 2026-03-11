@@ -85,7 +85,6 @@ public class RobotPosePredictor {
                         chassisSpeeds.vyMetersPerSecond,
                         chassisSpeeds.omegaRadiansPerSecond);
 
-
         if (dt <= 0.0) return;
         // find acceleration based on last velocity and current
         ChassisSpeeds predictedVelo = new ChassisSpeeds();
@@ -111,7 +110,8 @@ public class RobotPosePredictor {
             predictedVelo.omegaRadiansPerSecond =
                     currentVelos.omegaRadiansPerSecond
                             + (currentVelos.omegaRadiansPerSecond
-                                            - predVeloHistory[HISTORY_SIZE - 1].omegaRadiansPerSecond)
+                                            - predVeloHistory[HISTORY_SIZE - 1]
+                                                    .omegaRadiansPerSecond)
                                     * dt;
         } else {
             predictedVelo.vxMetersPerSecond =
