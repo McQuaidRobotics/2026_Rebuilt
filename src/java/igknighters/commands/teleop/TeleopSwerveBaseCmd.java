@@ -71,7 +71,7 @@ public class TeleopSwerveBaseCmd extends Command {
             if (!SubsystemConstants.disableAllLogs) {
                 Log.log("ROBOT/TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
             }
-            return new Translation2d(processedY, -processedX);
+            return new Translation2d(-processedY, processedX);
         } else {
 
             if (!SubsystemConstants.disableAllLogs) {
