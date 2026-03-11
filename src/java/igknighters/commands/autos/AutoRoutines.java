@@ -235,6 +235,28 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine singleSwipeRight() {
+        AutoRoutine routine = autoFactory.newRoutine("Single Swipe Right");
+
+        AutoTrajectory intakeTrajectory = routine.trajectory("SINGLE_SWIPE_SIMPLE_1.traj");
+        AutoTrajectory scoringTrajectory = routine.trajectory("SINGLE_SWIPE_SIMPLE_2.traj");
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                intakeTrajectory.resetOdometry(),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                Commands.parallel(
+                                        IntakeCommands.holdAtIntake(subsystems.intake),
+                                        intakeTrajectory.cmd())));
+
+        intakeTrajectory.done().onTrue(scoringTrajectory.cmd());
+
+        scoringTrajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+
+        return routine;
+    }
+
     public AutoRoutine orbitRight() {
         AutoRoutine routine = autoFactory.newRoutine("Orbit Right");
 
