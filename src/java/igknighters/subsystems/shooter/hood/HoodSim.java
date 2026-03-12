@@ -24,6 +24,17 @@ public class HoodSim extends Hood {
     }
 
     @Override
+    public void setVoltage(double voltage) {
+        // Do nothing in simulation
+    }
+
+    @Override
+    public boolean isSensorHit() {
+
+        return true;
+    }
+
+    @Override
     public void goToAngle(Angle angle) {
         super.targetDegrees = angle.in(Degrees);
 

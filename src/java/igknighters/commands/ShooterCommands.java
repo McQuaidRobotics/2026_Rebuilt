@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
@@ -291,7 +290,7 @@ public class ShooterCommands {
     }
 
     public static Command homeHood(Shooter shooter) {
-        return Commands.none();
+        return shooter.run(() -> shooter.setHoodVoltage(-1)).until(() -> shooter.isHoodSensorHit());
     }
 
     /**
