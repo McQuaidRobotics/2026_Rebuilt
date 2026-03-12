@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.intake.pivot.Pivot;
-import igknighters.subsystems.intake.pivot.PivotReal;
+import igknighters.subsystems.intake.pivot.PivotDisabled;
 import igknighters.subsystems.intake.pivot.PivotSim;
 import igknighters.subsystems.intake.rollers.Rollers;
-import igknighters.subsystems.intake.rollers.RollersReal;
+import igknighters.subsystems.intake.rollers.RollersDisabled;
 import igknighters.subsystems.intake.rollers.RollersSim;
 import igknighters.util.log.Log;
 
@@ -23,8 +23,8 @@ public class Intake extends SubsystemBase {
 
     public Intake() {
         if (Robot.isReal()) {
-            pivot = new PivotReal();
-            rollers = new RollersReal();
+            pivot = new PivotDisabled();
+            rollers = new RollersDisabled();
         } else {
             pivot = new PivotSim();
             rollers = new RollersSim();

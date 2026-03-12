@@ -181,13 +181,13 @@ public class ShooterCommands {
             boolean under1 =
                     isBetween(
                             pose,
-                            FieldConstants.BUMP.BUMP_1_X_METERS - .5,
-                            FieldConstants.BUMP.BUMP_1_X_METERS + .5);
+                            FieldConstants.BUMP.BUMP_1_X_METERS - .08,
+                            FieldConstants.BUMP.BUMP_1_X_METERS + .08);
             boolean under2 =
                     isBetween(
                             pose,
-                            FieldConstants.BUMP.BUMP_2_X_METERS - .5,
-                            FieldConstants.BUMP.BUMP_2_X_METERS + .5);
+                            FieldConstants.BUMP.BUMP_2_X_METERS - 0.08,
+                            FieldConstants.BUMP.BUMP_2_X_METERS + 0.08);
 
             boolean isUnder = under1 || under2;
             if (!SubsystemConstants.disableAllLogs) {
