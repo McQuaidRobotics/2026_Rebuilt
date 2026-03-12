@@ -245,7 +245,7 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                 intakeTrajectory.resetOdometry(),
-                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 5),
                                 Commands.parallel(
                                         IntakeCommands.holdAtIntake(subsystems.intake),
                                         intakeTrajectory.cmd())));
@@ -308,7 +308,7 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                 PASS_TRAJECTORY.resetOdometry(),
-                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 5),
                                 Commands.parallel(
                                         HigherOrderCommands.hippoShoot(subsystems),
                                         PASS_TRAJECTORY.cmd())));
