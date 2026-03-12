@@ -235,6 +235,28 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine singleSwipeRight() {
+        AutoRoutine routine = autoFactory.newRoutine("Single Swipe Right");
+
+        AutoTrajectory intakeTrajectory = routine.trajectory("SINGLE_SWIPE_SIMPLE_1.traj");
+        AutoTrajectory scoringTrajectory = routine.trajectory("SINGLE_SWIPE_SIMPLE_2.traj");
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                intakeTrajectory.resetOdometry(),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                Commands.parallel(
+                                        IntakeCommands.holdAtIntake(subsystems.intake),
+                                        intakeTrajectory.cmd())));
+
+        intakeTrajectory.done().onTrue(scoringTrajectory.cmd());
+
+        scoringTrajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+
+        return routine;
+    }
+
     public AutoRoutine orbitRight() {
         AutoRoutine routine = autoFactory.newRoutine("Orbit Right");
 
@@ -279,8 +301,8 @@ public class AutoRoutines extends AutoCommands {
     public AutoRoutine passToSelfLeft() {
         AutoRoutine routine = autoFactory.newRoutine("Pass to Self Left");
         AutoTrajectory PASS_TRAJECTORY = routine.trajectory("PASS_TO_SELF_LEFT_1.traj");
-        AutoTrajectory ROOMBA_1_TRAJECTORY = routine.trajectory("PASS_TO_SELF_LEFT_2.traj");
-        AutoTrajectory ROOMBA_2_TRAJECTORY = routine.trajectory("PASS_TO_SELF_LEFT_3.traj");
+        // AutoTrajectory ROOMBA_1_TRAJECTORY = routine.trajectory("PASS_TO_SELF_LEFT_2.traj");
+        // AutoTrajectory ROOMBA_2_TRAJECTORY = routine.trajectory("PASS_TO_SELF_LEFT_3.traj");
 
         routine.active()
                 .onTrue(
@@ -290,26 +312,11 @@ public class AutoRoutines extends AutoCommands {
                                 Commands.parallel(
                                         HigherOrderCommands.hippoShoot(subsystems),
                                         PASS_TRAJECTORY.cmd())));
-        PASS_TRAJECTORY
-                .done()
-                .onTrue(
-                        SwerveCommands.stopDriving(swerve)
-                                .andThen(Commands.print("STARTING ROOMBA"))
-                                .andThen(ROOMBA_1_TRAJECTORY.cmd()));
 
-        ROOMBA_1_TRAJECTORY.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+        PASS_TRAJECTORY.active().onTrue(Commands.print("STARTING PASS TRAJECTORY"));
 
-        ROOMBA_1_TRAJECTORY
-                .done()
-                .onTrue(SwerveCommands.stopDriving(swerve).andThen(ROOMBA_2_TRAJECTORY.cmd()));
-
-        ROOMBA_2_TRAJECTORY.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
-
-        ROOMBA_2_TRAJECTORY
-                .done()
-                .onTrue(
-                        SwerveCommands.stopDriving(swerve)
-                                .andThen(HigherOrderCommands.rapidFireStream(subsystems)));
+        // PASS_TRAJECTORY.atTime("STOW").onTrue(HigherOrderCommands.rapidFireStream(subsystems));
+        // PASS_TRAJECTORY.atTime("INTAKE").onTrue(HigherOrderCommands.hippoShoot(subsystems));
 
         return routine;
     }
@@ -361,8 +368,6 @@ public class AutoRoutines extends AutoCommands {
                                                 HigherOrderCommands.rapidFireStream(subsystems),
                                                 moveTraj.cmd()))
                                 .withName("Move and Shoot"));
-        HigherOrderCommands.prepToClimbFirstRung(subsystems);
-        moveTraj.cmd();
         moveTraj.atTimeBeforeEnd(0.0).onTrue(SwerveCommands.stopDriving(swerve));
         return routine;
     }

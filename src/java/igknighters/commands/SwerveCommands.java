@@ -98,12 +98,11 @@ public class SwerveCommands {
     public static Command stopDriving(Swerve swerve) {
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
-                        .withDeadband(knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond) * 1.0)
-                        .withRotationalDeadband(
-                                RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 1.0)
+                        .withDeadband(0.0)
+                        .withRotationalDeadband(0.0)
                         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                         .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
-        return swerve.run(
+        return swerve.runOnce(
                         () -> {
                             swerve.setControl(
                                     m_driveRequest
@@ -111,7 +110,7 @@ public class SwerveCommands {
                                             .withVelocityY(0.0)
                                             .withRotationalRate(0.0));
                         })
-                .withTimeout(.5);
+                .withName("Stop Driving");
     }
 
     public static BooleanSupplier isAt(

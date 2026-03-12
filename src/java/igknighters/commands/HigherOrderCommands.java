@@ -14,8 +14,10 @@ import java.util.Set;
 
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
-        return rapidFireStream(subsystems)
-                .withTimeout(timeout); // this is a placeholder for IndexerCommands.isBallPresent()
+        return Commands.parallel(rapidFireStream(subsystems))
+                .withTimeout(timeout)
+                .andThen(Commands.print("ALL BALLS SHOT CONTINUING")); // this is a placeholder for
+        // IndexerCommands.isBallPresent()
     }
 
     public static Command rapidFireStream(Subsystems subsystems) {
@@ -117,7 +119,9 @@ public class HigherOrderCommands {
 
     public static Command hippoShoot(Subsystems subsystems) {
         return Commands.parallel(
-                rapidFireStream(subsystems), IntakeCommands.holdAtIntake(subsystems.intake));
+                rapidFireStream(subsystems),
+                IntakeCommands.protectedIntake(
+                        subsystems.intake, () -> subsystems.swerve.getState().Pose));
     }
 
     public static Command unClimbCommand(Subsystems subsystems) {

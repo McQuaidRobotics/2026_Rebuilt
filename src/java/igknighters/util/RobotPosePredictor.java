@@ -179,7 +179,9 @@ public class RobotPosePredictor {
         predicted[0] = current[0] + veloHistory[latestIdx].vxMetersPerSecond * predTime;
         predicted[1] = current[1] + veloHistory[latestIdx].vyMetersPerSecond * predTime;
         predicted[2] = current[2] + veloHistory[latestIdx].omegaRadiansPerSecond * predTime;
-        Log.log("ROBOT/veloHistory", veloHistory);
+        if (veloHistory != null) {
+            Log.log("ROBOT/veloHistory", veloHistory);
+        }
 
         return componentsToPose(predicted);
     }
