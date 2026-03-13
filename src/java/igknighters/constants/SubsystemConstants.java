@@ -272,7 +272,7 @@ public class SubsystemConstants {
     }
 
     public static class kLimelightVision {
-        public static final String turretCam = "limelight-turret";
+        public static final String turretCam = "limelight";
         public static final String intakeCam = "limelight-intake";
         public static final String backCam = "limelight-back";
         public static final String rightCam = "limelight-left";
