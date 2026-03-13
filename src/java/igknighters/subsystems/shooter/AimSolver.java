@@ -263,7 +263,7 @@ public class AimSolver {
                 double v_total = Math.hypot(vx_planar, vz_initial);
 
                 // Single-sided flywheel: Wheel surface speed = 2x Ball speed
-                double RPM = (v_total / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS)) * 60 * 2.0;
+                double RPM = (v_total / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS)) * 60 * 2.1;
 
                 double launchAngleDegrees = Math.toDegrees(Math.atan2(vz_initial, vx_planar));
                 double hoodAngleDegrees = 90.0 - launchAngleDegrees;
@@ -400,7 +400,7 @@ public class AimSolver {
                 double v_total = Math.hypot(vx_planar, vz_initial);
 
                 // Single-sided flywheel: Wheel surface speed = 2x Ball speed
-                double RPM = (v_total / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS)) * 60 * 2.0;
+                double RPM = (v_total / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS)) * 60 * 2.1;
 
                 double launchAngleDegrees = Math.toDegrees(Math.atan2(vz_initial, vx_planar));
                 double hoodAngleDegrees = 90.0 - launchAngleDegrees;
