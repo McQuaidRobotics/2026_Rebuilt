@@ -227,6 +227,10 @@ public class SubsystemTriggers {
         ableToShootState
                 .beingControlledTrigger()
                 .and(teleop)
+                .and(
+                        () ->
+                                ShooterCommands.getShotType(() -> subsystems.swerve.getState().Pose)
+                                        == ShooterCommands.shotType.SHOT)
                 .whileTrue(new SlowedDownDrivingWhileShooting(swerve, driverController));
     }
 }
