@@ -184,10 +184,9 @@ public class DriverController {
         this.RT
                 .whileTrue(HigherOrderCommands.rapidFireStream(subsystems))
                 .onFalse(HigherOrderCommands.IdleShooter(subsystems));
-        this.DPD.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
+        this.DPR.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
         this.RB.whileTrue(HigherOrderCommands.forceDispense(subsystems));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
-
         this.Y.whileTrue(
                 ShooterCommands.targetState(
                         subsystems.shooter,
@@ -195,9 +194,7 @@ public class DriverController {
                                 RPM.of(0.0),
                                 Degrees.of(0.0),
                                 Degrees.of(kHood.MIN_ANGLE_DEGREES))));
-        this.DPD.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.STOW));
-        this.DPU.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.LATCH_ON));
-        this.DPR.whileTrue(ClimberCommands.holdAtState(subsystems.climber, ClimberState.PULL_UP));
+        this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

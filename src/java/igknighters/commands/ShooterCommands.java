@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
@@ -182,13 +181,13 @@ public class ShooterCommands {
             boolean under1 =
                     isBetween(
                             pose,
-                            FieldConstants.BUMP.BUMP_1_X_METERS - .5,
-                            FieldConstants.BUMP.BUMP_1_X_METERS + .5);
+                            FieldConstants.BUMP.BUMP_1_X_METERS - .08,
+                            FieldConstants.BUMP.BUMP_1_X_METERS + .08);
             boolean under2 =
                     isBetween(
                             pose,
-                            FieldConstants.BUMP.BUMP_2_X_METERS - .5,
-                            FieldConstants.BUMP.BUMP_2_X_METERS + .5);
+                            FieldConstants.BUMP.BUMP_2_X_METERS - 0.08,
+                            FieldConstants.BUMP.BUMP_2_X_METERS + 0.08);
 
             boolean isUnder = under1 || under2;
             if (!SubsystemConstants.disableAllLogs) {
@@ -291,7 +290,7 @@ public class ShooterCommands {
     }
 
     public static Command homeHood(Shooter shooter) {
-        return Commands.none();
+        return shooter.run(() -> shooter.setHoodVoltage(-1)).until(() -> shooter.isHoodSensorHit());
     }
 
     /**

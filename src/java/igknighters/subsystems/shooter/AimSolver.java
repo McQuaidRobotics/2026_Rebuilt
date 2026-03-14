@@ -165,12 +165,13 @@ public class AimSolver {
                         new LerpTableEntry[] {
                             new LerpTableEntry(1.0, 2.4),
                             new LerpTableEntry(3.0, 2.2),
+                            new LerpTableEntry(3.6, 2.0),
                             new LerpTableEntry(4.0, 2.0),
                             new LerpTableEntry(
-                                    5.0, 2.0), // past 5 m we pass so if d set to far imposible shot
-                            new LerpTableEntry(10.0, 2.0),
-                            new LerpTableEntry(15.0, 2.0),
-                            new LerpTableEntry(20.0, 2.0),
+                                    5.0, 1.9), // past 5 m we pass so if d set to far imposible shot
+                            new LerpTableEntry(10.0, 1.8),
+                            new LerpTableEntry(15.0, 1.7),
+                            new LerpTableEntry(20.0, 1.6),
                         });
 
         static Mechanism2d canSHOOTMECH = new Mechanism2d(20, 20);
@@ -263,7 +264,7 @@ public class AimSolver {
                 double v_total = Math.hypot(vx_planar, vz_initial);
 
                 // Single-sided flywheel: Wheel surface speed = 2x Ball speed
-                double RPM = (v_total / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS)) * 60 * 2.0;
+                double RPM = (v_total / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS)) * 60 * 2.1;
 
                 double launchAngleDegrees = Math.toDegrees(Math.atan2(vz_initial, vx_planar));
                 double hoodAngleDegrees = 90.0 - launchAngleDegrees;
@@ -400,7 +401,7 @@ public class AimSolver {
                 double v_total = Math.hypot(vx_planar, vz_initial);
 
                 // Single-sided flywheel: Wheel surface speed = 2x Ball speed
-                double RPM = (v_total / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS)) * 60 * 2.0;
+                double RPM = (v_total / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS)) * 60 * 2.1;
 
                 double launchAngleDegrees = Math.toDegrees(Math.atan2(vz_initial, vx_planar));
                 double hoodAngleDegrees = 90.0 - launchAngleDegrees;

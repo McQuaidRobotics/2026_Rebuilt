@@ -8,7 +8,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.util.struct.StructSerializable;
 
 public enum IntakeState implements StructSerializable {
-    Intake(Degrees.of(66), RPM.of(3000), Degrees.of(5)),
+    Intake(Degrees.of(66), RPM.of(3500), Degrees.of(5)),
     PREP_TO_STOW(Degrees.of(30), RPM.of(500), Degrees.of(10)),
     Stowed(Degrees.of(0), RPM.of(100), Degrees.of(5));
 

@@ -58,7 +58,7 @@ public class SwerveConsts {
             if (!SubsystemConstants.disableAllLogs) {
                 Log.log("ROBOT/ROBOT_INFO/SWERVE CONSTS", "Using DemoBotConsts (default)");
             }
-            return new DemoBotConsts();
+            return new GeminiConsts();
         }
     }
 }

@@ -33,9 +33,8 @@ public class RollersReal extends Rollers {
         config.MotionMagic.MotionMagicJerk = kIntake.kRollers.MOTION_MAGIC_JERK;
         config.MotionMagic.MotionMagicCruiseVelocity = kIntake.kRollers.MAX_SPEED_RPM;
         config.MotionMagic.MotionMagicAcceleration = kIntake.kRollers.MAX_ACCELERATION_RPM;
-
-        config.TorqueCurrent.PeakForwardTorqueCurrent = kIntake.kRollers.FORWARD_CURRENT_LIMIT;
-        config.TorqueCurrent.PeakReverseTorqueCurrent = kIntake.kRollers.REVERSE_CURRENT_LIMIT;
+        config.CurrentLimits.StatorCurrentLimit = 35.0;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 

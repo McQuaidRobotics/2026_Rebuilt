@@ -11,5 +11,9 @@ public abstract class Hood {
 
     public abstract void periodic();
 
+    public abstract boolean isSensorHit();
+
     public abstract void goToAngle(Angle angle);
+
+    public abstract void setVoltage(double voltage);
 }

@@ -158,6 +158,18 @@ public class Shooter extends SubsystemBase {
         hood.setAngle(angleDegrees);
     }
 
+    public void setHoodVoltage(double voltage) {
+        if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+            Log.log("ROBOT/Subsystems/Shooter/SETSTATE/HoodVoltage", voltage);
+        }
+        beingControlled = true;
+        hood.setVoltage(voltage);
+    }
+
+    public boolean isHoodSensorHit() {
+        return hood.isSensorHit();
+    }
+
     @Override
     public void periodic() {
         rollers.periodic();

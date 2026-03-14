@@ -158,7 +158,7 @@ public class SubsystemConstants {
             public static final double MIN_ANGLE_DEGREES = 0.0;
             public static final double MAX_SPEED_METERS_PER_SECOND = 1.0;
             public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = .5;
-            public static final double ENCODER_OFFSET = 0.2041015625;
+            public static final double ENCODER_OFFSET = 0.075927734375;
             public static final double MAX_JERK = 1.0;
             public static final int STATOR_CURRENT_LIMIT = 20;
             public static final int SUPPLY_CURRENT_LIMIT = 20;
@@ -272,7 +272,7 @@ public class SubsystemConstants {
     }
 
     public static class kLimelightVision {
-        public static final String turretCam = "limelight-turret";
+        public static final String turretCam = "limelight";
         public static final String intakeCam = "limelight-intake";
         public static final String backCam = "limelight-back";
         public static final String rightCam = "limelight-left";

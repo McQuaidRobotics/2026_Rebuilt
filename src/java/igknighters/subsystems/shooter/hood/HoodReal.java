@@ -82,6 +82,16 @@ public class HoodReal extends Hood {
                         Rotations.of(targetAngle.in(Degrees) / kHood.MOTOR_ROTS_TO_HOOD_DEGREES)));
     }
 
+    @Override
+    public void setVoltage(double voltage) {
+        motor.setVoltage(voltage);
+    }
+
+    @Override
+    public boolean isSensorHit() {
+        return reverseLimitSwitch.get();
+    }
+
     public void handleLimitSwitch() {
         if (reverseLimitSwitch.get() && targetAngle.in(Degrees) < getAngleDegrees()) {
             if (!hasHomed) {

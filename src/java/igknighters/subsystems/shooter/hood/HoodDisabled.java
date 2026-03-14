@@ -19,7 +19,17 @@ public class HoodDisabled extends Hood {
     }
 
     @Override
+    public boolean isSensorHit() {
+        return false;
+    }
+
+    @Override
     public void goToAngle(Angle angle) {
+        // Do nothing
+    }
+
+    @Override
+    public void setVoltage(double voltage) {
         // Do nothing
     }
 }
