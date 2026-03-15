@@ -44,6 +44,30 @@ public class HigherOrderCommands {
                 .withName("SMART STREAM");
     }
 
+    public static Command aggregiouslyHighRapidFireStream(Subsystems subsystems) {
+
+        // 1. The Active Shooter (Tracks and spools continuously)
+        Command shooterCommand =
+                ShooterCommands.shootWithProtectionAndAgregiousMaxHeight(
+                                subsystems.shooter,
+                                () -> subsystems.swerve.getState().Pose,
+                                subsystems.swerve::getFieldRelativeSpeeds)
+                        .withName("Active Spool & Aim");
+
+        // 2. The Smart Hopper/Indexer Feed
+        Command smartFeed =
+                Commands.either(
+                        IndexerCommands.dispense(subsystems.indexer),
+                        IndexerCommands.justStop(subsystems.indexer),
+                        ShootInformation.getInstance()
+                                .atCommandedStateTrigger()
+                                .and(ShootInformation.getInstance().beingControlledTrigger())
+                                .and(ShootInformation.getInstance().shotPosible()));
+
+        return Commands.parallel(shooterCommand.repeatedly(), smartFeed.repeatedly())
+                .withName("SMART STREAM");
+    }
+
     public static Command fireAtTarget(Subsystems subsystems, Pose3d targetPose) {
         Command shooterCommand =
                 ShooterCommands.SHOOT_MAX_MIN_NO_AUTO_PICKED_TARGET(

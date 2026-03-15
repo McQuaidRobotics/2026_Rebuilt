@@ -202,6 +202,78 @@ public class ShooterCommands {
     public static void idleOnce(
             Shooter shooter,
             Supplier<Pose2d> robotPoseSupplier,
+            Supplier<ChassisSpeeds> robotVelocitySupplier,
+            double maxHeight) {
+        ShootInformation info = ShootInformation.getInstance();
+
+        Pose2d robotPose2d = robotPoseSupplier.get();
+        ShootingData shootingData = info.getData(robotPoseSupplier);
+        ChassisSpeeds robotVel = robotVelocitySupplier.get();
+
+        Pose3d shooterPose =
+                new Pose3d(
+                        robotPose2d.getX(),
+                        robotPose2d.getY(),
+                        SubsystemConstants.kShooter.kFlywheels.ShooterHeightMeters,
+                        new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
+        ShooterState targetingData =
+                AimSolver.Solvers.solve_max_and_min_iterative(
+                        shooterPose,
+                        shootingData.TARGET_POSE,
+                        robotVel,
+                        shooter.getCurrentState().flywheelSpeed.in(RPM),
+                        maxHeight,
+                        shootingData.MIN_HEIGHT_METERS,
+                        0.02);
+
+        shooter.targetState(
+                RPM.of(2000), targetingData.turretAngle, Degrees.of(kHood.MIN_ANGLE_DEGREES));
+    }
+
+    public static void shootOnce(
+            Shooter shooter,
+            Supplier<Pose2d> robotPoseSupplier,
+            Supplier<ChassisSpeeds> robotVelocitySupplier,
+            double maxHeight) {
+
+        ShootInformation info = ShootInformation.getInstance();
+        Supplier<Pose2d> shooterPoseWithOffset = getShooterPoseWithOffset(robotPoseSupplier);
+        Pose2d shooterPose2d = shooterPoseWithOffset.get();
+        ShootingData shootingData = info.getData(shooterPoseWithOffset);
+        ChassisSpeeds robotVel = robotVelocitySupplier.get();
+
+        shooter.currentShotType = getShotType(shooterPoseWithOffset);
+
+        Pose3d shooterPose3d =
+                new Pose3d(
+                        shooterPose2d.getX(),
+                        shooterPose2d.getY(),
+                        SubsystemConstants.kShooter.kFlywheels.ShooterHeightMeters,
+                        new Rotation3d(0.0, 0.0, shooterPose2d.getRotation().getRadians()));
+
+        ShooterState targetingData =
+                AimSolver.Solvers.solve_max_and_min_iterative(
+                        shooterPose3d,
+                        shootingData.TARGET_POSE,
+                        robotVel,
+                        shooter.getCurrentState().flywheelSpeed.in(RPM),
+                        maxHeight,
+                        shootingData.MIN_HEIGHT_METERS,
+                        0.02);
+
+        if (targetingData.flywheelSpeed.in(RPM) != 0) {
+            // possible shot so follow its instructions
+            shooter.targetState(targetingData);
+        } else {
+            // shot is impossible so we should idle the shooter rpm at like 4000
+            shooter.targetState(
+                    RPM.of(4000), targetingData.turretAngle, Degrees.of(kHood.MIN_ANGLE_DEGREES));
+        }
+    }
+
+    public static void idleOnce(
+            Shooter shooter,
+            Supplier<Pose2d> robotPoseSupplier,
             Supplier<ChassisSpeeds> robotVelocitySupplier) {
         ShootInformation info = ShootInformation.getInstance();
 
@@ -270,6 +342,23 @@ public class ShooterCommands {
     }
 
     public static double maxHeightMeters = 4.8;
+
+    public static Command shootWithProtectionAndAgregiousMaxHeight(
+            Shooter shooter,
+            Supplier<Pose2d> robotPoseSupplier,
+            Supplier<ChassisSpeeds> robotVelocitySupplier) {
+        ShootInformation info = ShootInformation.getInstance();
+        BooleanSupplier underTrenchCheck = isUnderTrench(robotPoseSupplier);
+        return shooter.run(
+                () -> {
+                    info.setBeingControlled(true);
+                    if (underTrenchCheck.getAsBoolean()) {
+                        idleOnce(shooter, robotPoseSupplier, robotVelocitySupplier, 12);
+                    } else {
+                        shootOnce(shooter, robotPoseSupplier, robotVelocitySupplier, 12);
+                    }
+                });
+    }
 
     public static Command shootWithProtection(
             Shooter shooter,

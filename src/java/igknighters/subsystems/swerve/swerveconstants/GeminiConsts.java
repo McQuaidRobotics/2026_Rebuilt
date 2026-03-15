@@ -64,8 +64,8 @@ public class GeminiConsts extends CommonSwerveConsts {
             new TalonFXConfiguration()
                     .withCurrentLimits(
                             new CurrentLimitsConfigs()
-                                    .withStatorCurrentLimit(Amps.of(40.0))
-                                    .withStatorCurrentLimitEnable(true));
+                                    .withSupplyCurrentLimit(Amps.of(40))
+                                    .withSupplyCurrentLimitEnable(true));
     private static final TalonFXConfiguration steerInitialConfigs =
             new TalonFXConfiguration()
                     .withCurrentLimits(
@@ -82,7 +82,7 @@ public class GeminiConsts extends CommonSwerveConsts {
 
     // CAN bus that the devices are located on;
     // All swerve devices must share the same CAN bus
-    public static final CANBus kCANBus = new CANBus("DriveBus", "./logs/example.hoot");
+    public static final CANBus kCANBus = new CANBus("rio", "./logs/example.hoot");
 
     // Theoretical free speed (m/s) at 12 V applied output;
     // This needs to be tuned to your individual robot
