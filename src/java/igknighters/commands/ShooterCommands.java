@@ -288,7 +288,7 @@ public class ShooterCommands {
                         SubsystemConstants.kShooter.kFlywheels.ShooterHeightMeters,
                         new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
         ShooterState targetingData =
-                AimSolver.Solvers.solve_max_and_min_iterative(
+                AimSolver.Solvers.solve_max_and_min_iterative_with_vectors(
                         shooterPose,
                         shootingData.TARGET_POSE,
                         robotVel,
@@ -322,7 +322,7 @@ public class ShooterCommands {
                         new Rotation3d(0.0, 0.0, shooterPose2d.getRotation().getRadians()));
 
         ShooterState targetingData =
-                AimSolver.Solvers.solve_max_and_min_iterative(
+                AimSolver.Solvers.solve_max_and_min_iterative_with_vectors(
                         shooterPose3d,
                         shootingData.TARGET_POSE,
                         robotVel,
