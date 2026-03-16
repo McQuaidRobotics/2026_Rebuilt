@@ -266,7 +266,10 @@ public class AimSolver {
                 double v_total = Math.hypot(vx_planar, vz_initial);
 
                 // Single-sided flywheel: Wheel surface speed = 2x Ball speed
-                double RPM = (v_total / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS)) * 60 * EfficiencyConst;
+                double RPM =
+                        (v_total / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS))
+                                * 60
+                                * EfficiencyConst;
 
                 double launchAngleDegrees = Math.toDegrees(Math.atan2(vz_initial, vx_planar));
                 double hoodAngleDegrees = 90.0 - launchAngleDegrees;
@@ -403,7 +406,10 @@ public class AimSolver {
                 double v_total = Math.hypot(vx_planar, vz_initial);
 
                 // Single-sided flywheel: Wheel surface speed = 2x Ball speed
-                double RPM = (v_total / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS)) * 60 * EfficiencyConst;
+                double RPM =
+                        (v_total / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS))
+                                * 60
+                                * EfficiencyConst;
 
                 double launchAngleDegrees = Math.toDegrees(Math.atan2(vz_initial, vx_planar));
                 double hoodAngleDegrees = 90.0 - launchAngleDegrees;
@@ -559,7 +565,9 @@ public class AimSolver {
             if (foundValidShot) {
                 // Convert exit velocity to RPM (Using your 2.1 slip/recovery constant)
                 shooterRPM =
-                        (bestV_shooter / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS)) * 60 * EfficiencyConst;
+                        (bestV_shooter / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS))
+                                * 60
+                                * EfficiencyConst;
 
                 // Turret must point in the direction of the COMPENSATED vector
                 double robotYaw = predictedPose.getRotation().getRadians();
