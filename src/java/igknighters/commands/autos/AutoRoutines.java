@@ -235,6 +235,25 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER() {
+        AutoRoutine routine =
+                autoFactory.newRoutine("Pass to Self Right with Depot and Human Player");
+        AutoTrajectory trajectory = routine.trajectory("PASS_TO_SELF_RIGHT_1.traj");
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                trajectory.resetOdometry(),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                trajectory.cmd()));
+
+        // trajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+
+        trajectory.done().onTrue(SwerveCommands.stopDriving(swerve));
+
+        return routine;
+    }
+
     /**
      * LEFT -> Right Human player station Designed to colide in center line with the back of robot
      * facing other teams intake Will pass the first half and then will gather balls untill enter

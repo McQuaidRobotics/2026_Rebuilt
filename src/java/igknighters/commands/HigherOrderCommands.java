@@ -30,17 +30,9 @@ public class HigherOrderCommands {
                                 subsystems.swerve::getFieldRelativeSpeeds)
                         .withName("Active Spool & Aim");
 
-        // 2. The Smart Hopper/Indexer Feed
-        Command smartFeed =
-                Commands.either(
-                        IndexerCommands.dispense(subsystems.indexer),
-                        IndexerCommands.justStop(subsystems.indexer),
-                        ShootInformation.getInstance()
-                                .atCommandedStateTrigger()
-                                .and(ShootInformation.getInstance().beingControlledTrigger())
-                                .and(ShootInformation.getInstance().shotPosible()));
-
-        return Commands.parallel(shooterCommand.repeatedly(), smartFeed.repeatedly())
+        return Commands.parallel(
+                        shooterCommand.repeatedly(),
+                        IndexerCommands.smartDispense(subsystems.indexer))
                 .withName("SMART STREAM");
     }
 
