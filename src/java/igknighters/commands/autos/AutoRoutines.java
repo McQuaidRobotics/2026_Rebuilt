@@ -301,8 +301,6 @@ public class AutoRoutines extends AutoCommands {
     public AutoRoutine passToSelfLeft() {
         AutoRoutine routine = autoFactory.newRoutine("Pass to Self Left");
         AutoTrajectory PASS_TRAJECTORY = routine.trajectory("PASS_TO_SELF_LEFT_1.traj");
-        // AutoTrajectory ROOMBA_1_TRAJECTORY = routine.trajectory("PASS_TO_SELF_LEFT_2.traj");
-        // AutoTrajectory ROOMBA_2_TRAJECTORY = routine.trajectory("PASS_TO_SELF_LEFT_3.traj");
 
         routine.active()
                 .onTrue(
@@ -314,11 +312,27 @@ public class AutoRoutines extends AutoCommands {
                                         PASS_TRAJECTORY.cmd())));
 
         PASS_TRAJECTORY.active().onTrue(Commands.print("STARTING PASS TRAJECTORY"));
-        PASS_TRAJECTORY.done().onTrue(SwerveCommands.stopDriving(swerve));
+        PASS_TRAJECTORY
+                .done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .andThen(HigherOrderCommands.hippoShoot(subsystems)));
 
         // PASS_TRAJECTORY.atTime("STOW").onTrue(HigherOrderCommands.rapidFireStream(subsystems));
         // PASS_TRAJECTORY.atTime("INTAKE").onTrue(HigherOrderCommands.hippoShoot(subsystems));
 
+        return routine;
+    }
+
+    public AutoRoutine centerPreload() {
+        AutoRoutine routine = autoFactory.newRoutine("Center Preload");
+        AutoTrajectory move_traj = routine.trajectory("CENTER_SIMPLE.traj");
+
+        routine.active().onTrue(Commands.sequence(move_traj.resetOdometry(), move_traj.cmd()));
+
+        move_traj.atTime("SHOOT").onTrue(HigherOrderCommands.hippoShoot(subsystems));
+
+        move_traj.done().onTrue(SwerveCommands.stopDriving(swerve));
         return routine;
     }
 

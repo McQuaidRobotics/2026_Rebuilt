@@ -32,6 +32,10 @@ public class Intake extends SubsystemBase {
         visualizer = new IntakeVisualizer();
     }
 
+    public void setRollerSpeed(AngularVelocity velo) {
+        rollers.goToSpeed(velo);
+    }
+
     public void goTo(Angle angle, AngularVelocity speedRPM) {
         pivot.goToAngle(angle);
         rollers.goToSpeed(speedRPM);

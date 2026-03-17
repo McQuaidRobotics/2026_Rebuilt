@@ -36,6 +36,10 @@ public class IntakeCommands {
         return intake.run(() -> intake.goTo(IntakeState.Stowed)).withName("Stow Intake");
     }
 
+    public static Command expell(Intake intake) {
+        return intake.run(() -> intake.setRollerSpeed(RPM.of(3000))).withName("Expell Balls");
+    }
+
     /**
      * Instantly holds the intake at a specified state. This will instantly afterwards. It relies on
      * the motors pid controller holding state. Should be called repeatedly

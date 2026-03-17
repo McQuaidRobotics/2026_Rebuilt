@@ -12,6 +12,14 @@ import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 
 public class FieldConstants {
+
+    public static class STEAL {
+        public static final Pose3d POSITION_LEFT =
+                new Pose3d(X_FIELD / 2, (Y_FIELD / 2) + 2, 0.0, new Rotation3d());
+        public static final Pose3d POSITION_RIGHT =
+                new Pose3d(X_FIELD / 2, (Y_FIELD / 2) - 2, 0.0, new Rotation3d());
+    }
+
     public static class HUB {
         public static final double HEIGHT_METERS = 72.0 * Conv.INCHES_TO_METERS;
         public static final Pose2d POSITION_BLUE =

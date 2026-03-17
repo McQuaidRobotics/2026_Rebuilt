@@ -76,6 +76,14 @@ public class ShootInformation {
         return Robot.isBlue() ? FieldConstants.HUB.POSE3D_BLUE : FieldConstants.HUB.POSE3D_RED;
     }
 
+    public Pose3d getStealTarget(Supplier<Pose2d> robotPoseSupplier) {
+        if (robotPoseSupplier.get().getY() > FieldConstants.Y_FIELD / 2) {
+            return FieldConstants.STEAL.POSITION_LEFT;
+        } else {
+            return FieldConstants.STEAL.POSITION_RIGHT;
+        }
+    }
+
     public Pose3d getPassTarget(Supplier<Pose2d> robotPoSupplier) {
         if (Robot.isBlue()) {
             Pose2d robotPose2d = robotPoSupplier.get();
@@ -115,6 +123,14 @@ public class ShootInformation {
             }
         }
         return new ShootingData(4.8, 2, getHubTarget());
+    }
+
+    public boolean shouldSteal(Supplier<Pose2d> robotPoseSupplier) {
+        if (Robot.isBlue()) { // in red zone on blue so we are stealing
+            return robotPoseSupplier.get().getX() > FieldConstants.ALIANCE_ZONE_RED;
+        } else { // in blue zone on red so we are stealing
+            return robotPoseSupplier.get().getX() < FieldConstants.ALIANCE_ZONE_BLUE;
+        }
     }
 
     public Pose3d getShotLocation(Supplier<Pose2d> robotPose) {
