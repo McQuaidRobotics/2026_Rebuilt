@@ -235,11 +235,39 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine singleSwipeLeft() {
+        AutoRoutine routine = autoFactory.newRoutine("Single Swipe Left");
+
+        AutoTrajectory intakeTrajectory = routine.trajectory("LEFT_SINGLE_SWIPE_1.traj");
+        AutoTrajectory scoringTrajectory = routine.trajectory("LEFT_SINGLE_SWIPE_2.traj");
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                intakeTrajectory.resetOdometry(),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 4),
+                                intakeTrajectory.cmd()));
+
+        intakeTrajectory.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
+        intakeTrajectory.done().onTrue(scoringTrajectory.cmd());
+
+        scoringTrajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+
+        scoringTrajectory
+                .done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .alongWith(HigherOrderCommands.hippoShoot(subsystems)));
+
+        return routine;
+    }
+
     public AutoRoutine singleSwipeRight() {
         AutoRoutine routine = autoFactory.newRoutine("Single Swipe Right");
 
-        AutoTrajectory intakeTrajectory = routine.trajectory("SINGLE_SWIPE_SIMPLE_1.traj");
-        AutoTrajectory scoringTrajectory = routine.trajectory("SINGLE_SWIPE_SIMPLE_2.traj");
+        AutoTrajectory intakeTrajectory = routine.trajectory("RIGHT_SINGLE_SWIPE_1.traj");
+        AutoTrajectory scoringTrajectory = routine.trajectory("RIGHT_SINGLE_SWIPE_2.traj");
 
         routine.active()
                 .onTrue(
