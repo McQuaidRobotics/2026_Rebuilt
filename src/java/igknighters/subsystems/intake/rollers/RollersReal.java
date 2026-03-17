@@ -4,9 +4,12 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIntake;
@@ -15,12 +18,16 @@ import igknighters.util.log.Log;
 public class RollersReal extends Rollers {
     private final TalonFX intakeMotor =
             new TalonFX(kIntake.kRollers.LEADER_MOTOR_ID, kIntake.CANBUS);
+
+    private final TalonFX followerMotor =
+            new TalonFX(kIntake.kRollers.FOLLOWER_MOTOR_ID, kIntake.CANBUS);
     private final MotionMagicVelocityVoltage velocityContorl =
             new MotionMagicVelocityVoltage(0.0).withSlot(0);
     private BaseStatusSignal intakeSpeed;
 
     public RollersReal() {
         intakeMotor.getConfigurator().apply(getLeaderConfig());
+        followerMotor.setControl(new Follower(intakeMotor.getDeviceID(), MotorAlignmentValue.Opposed));
         intakeSpeed = intakeMotor.getVelocity();
     }
 
