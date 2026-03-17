@@ -245,9 +245,9 @@ public class AutoRoutines extends AutoCommands {
                         Commands.sequence(
                                 trajectory.resetOdometry(),
                                 HigherOrderCommands.shootTillEmpty(subsystems, 3),
-                                trajectory.cmd()));
-
-        // trajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+                                Commands.parallel(
+                                        HigherOrderCommands.hippoShoot(subsystems),
+                                        trajectory.cmd())));
 
         trajectory.done().onTrue(SwerveCommands.stopDriving(swerve));
 
