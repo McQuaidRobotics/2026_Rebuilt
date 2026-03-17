@@ -131,6 +131,7 @@ public class Robot extends LoggedRobot {
         autoChooser.addRoutine("Single Swipe Right", routines::singleSwipeRight);
         autoChooser.addRoutine("Single Swipe Left", routines::singleSwipeLeft);
         autoChooser.addRoutine("Center Preload", routines::centerPreload);
+        autoChooser.addRoutine("MAKE OUR ENEMIES KILL US", routines::meanRoutine);
 
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
     }
