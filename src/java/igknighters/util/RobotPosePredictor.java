@@ -82,13 +82,13 @@ public class RobotPosePredictor {
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
         int latestIdx =
                 Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
-        double dt = 0;
         int prevIdx = 0;
         if (latestIdx == 0) {
             prevIdx = HISTORY_SIZE - 1;
         } else {
             prevIdx = latestIdx - 1;
         }
+        double dt = timestampHistory[latestIdx] - timestampHistory[prevIdx];
         final ChassisSpeeds currentVelos =
                 new ChassisSpeeds(
                         veloHistory[latestIdx].vxMetersPerSecond,
