@@ -126,13 +126,15 @@ public class Robot extends LoggedRobot {
         final var routines = new AutoRoutines(subsystems, autoFactory);
         autoChooser.addRoutine("LEFT NUETRAL HIPPO", routines::leftNuetralHippo);
         autoChooser.addRoutine("RIGHT NUETRAL HIPPO", routines::rightNuetralHippo);
-        autoChooser.addRoutine("CENTER OUTPOST CLIMB", routines::centerOutpostClimb);
-        autoChooser.addRoutine("Center Depot climb", routines::centerDepotClimb);
-        autoChooser.addRoutine("Right Depo Climb", routines::rightDepoClimb);
         autoChooser.addRoutine("Right Orbit", routines::orbitRight);
         autoChooser.addRoutine("Pass to self left", routines::passToSelfLeft);
         autoChooser.addRoutine("Single Swipe Right", routines::singleSwipeRight);
-        autoChooser.addRoutine("Center Preload", routines::centerPreload);
+        autoChooser.addRoutine("Single Swipe Left", routines::singleSwipeLeft);
+        autoChooser.addRoutine("Center Depot", routines::centerPreload);
+        autoChooser.addRoutine(
+                "Pass to Self Right with Depot and Human Player",
+                routines::PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER);
+        autoChooser.addRoutine("Aggresive Center Auto Left", routines::meanRoutine);
 
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
     }
