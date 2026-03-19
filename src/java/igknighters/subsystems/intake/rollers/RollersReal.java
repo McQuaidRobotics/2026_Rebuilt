@@ -9,7 +9,6 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
-
 import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIntake;
@@ -27,7 +26,8 @@ public class RollersReal extends Rollers {
 
     public RollersReal() {
         intakeMotor.getConfigurator().apply(getLeaderConfig());
-        followerMotor.setControl(new Follower(intakeMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+        followerMotor.setControl(
+                new Follower(intakeMotor.getDeviceID(), MotorAlignmentValue.Opposed));
         intakeSpeed = intakeMotor.getVelocity();
     }
 
