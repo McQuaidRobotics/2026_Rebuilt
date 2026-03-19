@@ -130,11 +130,11 @@ public class Robot extends LoggedRobot {
         autoChooser.addRoutine("Pass to self left", routines::passToSelfLeft);
         autoChooser.addRoutine("Single Swipe Right", routines::singleSwipeRight);
         autoChooser.addRoutine("Single Swipe Left", routines::singleSwipeLeft);
-        autoChooser.addRoutine("Center Preload", routines::centerPreload);
+        autoChooser.addRoutine("Center Depot", routines::centerPreload);
         autoChooser.addRoutine(
                 "Pass to Self Right with Depot and Human Player",
                 routines::PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER);
-        autoChooser.addRoutine("MAKE OUR ENEMIES KILL US", routines::meanRoutine);
+        autoChooser.addRoutine("Aggresive Center Auto Left", routines::meanRoutine);
 
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
     }
