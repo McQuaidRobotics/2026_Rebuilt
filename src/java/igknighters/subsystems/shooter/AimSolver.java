@@ -166,9 +166,9 @@ public class AimSolver {
                 new LerpTable(
                         new LerpTableEntry[] {
                             new LerpTableEntry(1.0, 2.4),
-                            new LerpTableEntry(3.0, 2.2),
-                            new LerpTableEntry(3.6, 2.0),
-                            new LerpTableEntry(4.0, 2.0),
+                            new LerpTableEntry(3.0, 2.05),
+                            new LerpTableEntry(3.6, 1.95),
+                            new LerpTableEntry(4.0, 1.8),
                             new LerpTableEntry(
                                     5.0, 1.9), // past 5 m we pass so if d set to far imposible shot
                             new LerpTableEntry(10.0, 1.8),
