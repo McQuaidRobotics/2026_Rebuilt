@@ -38,6 +38,8 @@ public class RobotPosePredictor {
     /** Number of poses stored so far, capped at HISTORY_SIZE. */
     public int storedCount = 0;
 
+    int l = 0;
+
     /**
      * @param alpha position smoothing gain, typically 0.5–0.9
      * @param beta velocity smoothing gain, typically 0.1–0.5
@@ -54,10 +56,25 @@ public class RobotPosePredictor {
      * @param pose the latest measured robot pose
      */
     public void setNewPose(ChassisSpeeds chassisSpeeds) {
+
+        if (l == 0) {
+
+            for (int i = 0; i < HISTORY_SIZE; i++) {
+                veloHistory[i] = new ChassisSpeeds(0, 0, 0);
+                l++;
+            }
+        }
+
+
         double now = Timer.getFPGATimestamp();
 
         // Write into circular buffer
-        veloHistory[writeIndex] = chassisSpeeds;
+        Object xCopy = PipedDeepCopy.copy(chassisSpeeds.vxMetersPerSecond);
+        Object yCopy = PipedDeepCopy.copy(chassisSpeeds.vyMetersPerSecond);
+        Object oCopy = PipedDeepCopy.copy(chassisSpeeds.omegaRadiansPerSecond);
+        veloHistory[writeIndex].vxMetersPerSecond = (double) xCopy;
+        veloHistory[writeIndex].vyMetersPerSecond = (double) yCopy;
+        veloHistory[writeIndex].omegaRadiansPerSecond = (double) oCopy;
         timestampHistory[writeIndex] = now;
         double mostRecentTimestamp =
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
