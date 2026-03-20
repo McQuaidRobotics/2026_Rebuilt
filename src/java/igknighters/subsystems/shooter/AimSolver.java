@@ -162,18 +162,30 @@ public class AimSolver {
     public static class Solvers {
 
         static final double EfficiencyConst = 2.1;
+        static LerpTable maxHeightDistanceLerp =
+                new LerpTable(
+                        new LerpTableEntry[] {
+                            new LerpTableEntry(1, 2.5),
+                            new LerpTableEntry(2, 3.0),
+                            new LerpTableEntry(3, 3.2),
+                            new LerpTableEntry(4, 3.4),
+                            new LerpTableEntry(5, 3.6),
+                            new LerpTableEntry(6, 3.9),
+                            new LerpTableEntry(10, 5.0)
+                        });
         static LerpTable airResistanceDTodistancedivider =
                 new LerpTable(
                         new LerpTableEntry[] {
                             new LerpTableEntry(1.0, 2.4),
-                            new LerpTableEntry(3.0, 2.05),
-                            new LerpTableEntry(3.6, 1.95),
-                            new LerpTableEntry(4.0, 1.8),
+                            new LerpTableEntry(3.0, 2.0),
+                            new LerpTableEntry(3.6, 1.8),
+                            new LerpTableEntry(4.0, 1.9),
                             new LerpTableEntry(
-                                    5.0, 1.9), // past 5 m we pass so if d set to far imposible shot
-                            new LerpTableEntry(10.0, 1.8),
-                            new LerpTableEntry(15.0, 1.7),
-                            new LerpTableEntry(20.0, 1.6),
+                                    5.0, 2.0),
+                            new LerpTableEntry(6, 2.1),
+                            new LerpTableEntry(10.0, 1.65),
+                            new LerpTableEntry(15.0, 1.5),
+                            new LerpTableEntry(20.0, 1.485),
                         });
 
         static Mechanism2d canSHOOTMECH = new Mechanism2d(20, 20);
@@ -499,6 +511,8 @@ public class AimSolver {
             double dy = ty - sy;
             double floorDistance = Math.hypot(dx, dy);
 
+            //     DogLog.log("ROBOT/Commands/Solve/Distance", floorDistance);
+
             // Iterative Search Variables
             double bestV_shooter = 0.0;
             double bestThetaHoodDegrees = 0.0;
@@ -511,6 +525,145 @@ public class AimSolver {
             for (int i = 0; i < 5; i++) {
                 double currentCeilingHeight =
                         minHeightMeters + (i * (maxHeightMeters - minHeightMeters) / 4.0);
+
+                double hRise = currentCeilingHeight - sz;
+                double hFall = currentCeilingHeight - tz;
+
+                // Peak must be above both shooter and target
+                if (hRise <= 0 || hFall <= 0) continue;
+
+                double tRise = Math.sqrt(2.0 * hRise / 9.81);
+                double tFall = Math.sqrt(2.0 * hFall / 9.81);
+                double totalTime = tRise + tFall;
+
+                // VELOCITY THE BALL NEEDS (Field Frame)
+                double vx_field = dx / totalTime;
+                double vy_field = dy / totalTime;
+                double vz_field = 9.81 * tRise;
+
+                // 4. VECTOR SUBTRACTION (Shooting on the Move)
+                // We subtract the robot's velocity so the launcher compensates for momentum
+                double vx_shooter = vx_field - speeds.vxMetersPerSecond;
+                double vy_shooter = vy_field - speeds.vyMetersPerSecond;
+                double vz_shooter = vz_field; // Vertical velocity is independent of floor speeds
+
+                double v_planar_shooter = Math.hypot(vx_shooter, vy_shooter);
+                double total_v_shooter = Math.hypot(v_planar_shooter, vz_shooter);
+
+                // Calculate Launcher Angles (Angle relative to the robot's hardware)
+                double launchAngleDegrees =
+                        Math.toDegrees(Math.atan2(vz_shooter, v_planar_shooter));
+                double hoodAngleDegrees =
+                        90.0 - launchAngleDegrees; // Assuming 0 is vertical, 90 is flat
+
+                // 5. VALIDATE PHYSICAL CONSTRAINTS
+                if (hoodAngleDegrees < kHood.MIN_ANGLE_DEGREES
+                        || hoodAngleDegrees > kHood.MAX_ANGLE_DEGREES) {
+                    continue;
+                }
+
+                // Logic to pick the "Best" shot (here we prefer the highest arc for a 'lob')
+                if (launchAngleDegrees > highestArc) {
+                    highestArc = launchAngleDegrees;
+                    bestV_shooter = total_v_shooter;
+                    bestThetaHoodDegrees = hoodAngleDegrees;
+                    bestTurretFieldAngle = Math.atan2(vy_shooter, vx_shooter);
+                    foundValidShot = true;
+                }
+            }
+
+            // 6. FINALIZE HARDWARE SETPOINTS
+            double shooterRPM = 0.0;
+            double turretAngle = 0.0;
+
+            if (foundValidShot) {
+                // Convert exit velocity to RPM (Using your 2.1 slip/recovery constant)
+                shooterRPM =
+                        (bestV_shooter / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS))
+                                * 60
+                                * EfficiencyConst;
+
+                // Turret must point in the direction of the COMPENSATED vector
+                double robotYaw = predictedPose.getRotation().getRadians();
+                turretAngle =
+                        Math.atan2(
+                                Math.sin(bestTurretFieldAngle - robotYaw),
+                                Math.cos(bestTurretFieldAngle - robotYaw));
+
+                canShoot(true);
+                ShootInformation.getInstance().setPossibleShot(true);
+                publishShotTrajectory(
+                        bestV_shooter,
+                        Math.toRadians(90 - bestThetaHoodDegrees),
+                        bestTurretFieldAngle,
+                        shooterPose,
+                        targetPose);
+            } else {
+                canShoot(false);
+                ShootInformation.getInstance().setPossibleShot(false);
+            }
+
+            return new ShooterState(
+                    RPM.of(shooterRPM), Radians.of(-turretAngle), Degrees.of(bestThetaHoodDegrees));
+        }
+
+        /**
+         * MAKES THE PARABOLA FALL BACK TO THE MINIMUM HEIGHT
+         *
+         * @param shooterPose The pose of the shooter where the balls leave
+         * @param targetPose The pose of the target
+         * @param speeds The chassis speeds
+         * @param currentRPM The current RPM of the shooter
+         * @param maxHeightMeters The maximum height the ball can reach
+         * @param minHeightMeters The minimum height the ball can reach
+         * @param periodTime The loop time eg 20 ms
+         * @return The calculated shooter state
+         */
+        public static ShooterState solve_max_and_min_iterative_with_vectors_VARIED_MAX_HEIGHT(
+                Pose3d shooterPose,
+                Pose3d targetPose,
+                ChassisSpeeds speeds,
+                double currentRPM,
+                double maxHeightMeters,
+                double minHeightMeters,
+                double periodTime) {
+
+            // 1. PROJECT ROBOT POSITION
+            // Predict where the robot will be based on latency/processing time
+            Pose2d predictedPose = Robot.pose_pred.getPredictedPose(shooterPose.toPose2d());
+            FieldVisualizer.getInstance().updatePredictedPose(predictedPose);
+
+            double sx = predictedPose.getX();
+            double sy = predictedPose.getY();
+            double sz = shooterPose.getZ();
+
+            // 2. TARGET POSITION (Static Field Position + Air Resistance Offset)
+            Translation2d airResistanceAdder =
+                    addDToTargetWithAirResistance(targetPose, shooterPose);
+            double tx = targetPose.getX() + airResistanceAdder.getX();
+            double ty = targetPose.getY() + airResistanceAdder.getY();
+            double tz = targetPose.getZ();
+
+            FieldVisualizer.getInstance()
+                    .updateShootingTarget(new Pose2d(tx, ty, new Rotation2d()));
+
+            // Relative displacement to target
+            double dx = tx - sx;
+            double dy = ty - sy;
+            double floorDistance = Math.hypot(dx, dy);
+
+            // Iterative Search Variables
+            double bestV_shooter = 0.0;
+            double bestThetaHoodDegrees = 0.0;
+            double bestTurretFieldAngle = 0.0;
+            double highestArc = -1.0;
+            boolean foundValidShot = false;
+
+            double maxHeight = maxHeightDistanceLerp.lerp(floorDistance);
+            // 3. ITERATIVE ARC SEARCH
+            // We test different apex heights to find a valid trajectory
+            for (int i = 0; i < 5; i++) {
+                double currentCeilingHeight = 1.0 + (i * (maxHeight - 1.0) / 4.0);
 
                 double hRise = currentCeilingHeight - sz;
                 double hFall = currentCeilingHeight - tz;
