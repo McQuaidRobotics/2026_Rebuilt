@@ -180,9 +180,8 @@ public class AimSolver {
                             new LerpTableEntry(3.0, 2.0),
                             new LerpTableEntry(3.6, 1.8),
                             new LerpTableEntry(4.0, 1.9),
-                            new LerpTableEntry(
-                                    5.0, 2.0),
-                            new LerpTableEntry(6, 2.1),
+                            new LerpTableEntry(5.0, 2.0),
+                            new LerpTableEntry(6, 2.15),
                             new LerpTableEntry(10.0, 1.65),
                             new LerpTableEntry(15.0, 1.5),
                             new LerpTableEntry(20.0, 1.485),
@@ -776,6 +775,8 @@ public class AimSolver {
         public static Translation2d addDToTargetWithAirResistance(
                 Pose3d targetPose, Pose3d shooterPose) {
             double d = shooterPose.getTranslation().getDistance(targetPose.getTranslation());
+
+            Log.log("ROBOT/Commands/AimSolver/Distance", d);
 
             // this is complete bs
             double angleToTarget =
