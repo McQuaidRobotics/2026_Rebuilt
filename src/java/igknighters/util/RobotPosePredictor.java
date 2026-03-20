@@ -113,48 +113,24 @@ public class RobotPosePredictor {
             return pose;
         }
 
-        predictedVelo.vxMetersPerSecond =
-                currentVelos.vxMetersPerSecond
-                        + (currentVelos.vxMetersPerSecond - veloHistory[prevIdx].vxMetersPerSecond)
-                                * dt;
-        predictedVelo.vyMetersPerSecond =
-                currentVelos.vyMetersPerSecond
-                        + (currentVelos.vyMetersPerSecond - veloHistory[prevIdx].vyMetersPerSecond)
-                                * dt;
-        predictedVelo.omegaRadiansPerSecond =
-                currentVelos.omegaRadiansPerSecond
-                        + (currentVelos.omegaRadiansPerSecond
-                                        - veloHistory[prevIdx].omegaRadiansPerSecond)
-                                * dt;
-
-        // Residual: difference between measurement and prediction
-        double[] residual = new double[3];
-        residual[0] = currentVelos.vxMetersPerSecond - predictedVelo.vxMetersPerSecond;
-        residual[1] = currentVelos.vyMetersPerSecond - predictedVelo.vyMetersPerSecond;
-        residual[2] = currentVelos.omegaRadiansPerSecond - predictedVelo.omegaRadiansPerSecond;
-        // Normalize angular residuals to [-π, π]
-        for (int i = 3; i < 3; i++) {
-            residual[i] = Math.atan2(Math.sin(residual[i]), Math.cos(residual[i]));
-        }
-        ;
-        /**
-         * Returns the estimated robot pose at the next loop iteration, extrapolated from the
-         * current smoothed state using the most recent dt.
-         *
-         * @return predicted {@link Pose2d} one loop period into the future
-         */
         double[] currentPose = poseToComponents(pose);
         double[] predicted = new double[3];
 
         // Predict next pose using predicted velocity
-        predicted[0] = currentPose[0] + predictedVelo.vxMetersPerSecond * predTime;
-        predicted[1] = currentPose[1] + predictedVelo.vyMetersPerSecond * predTime;
-        predicted[2] = currentPose[2] + predictedVelo.omegaRadiansPerSecond * predTime;
+        predicted[0] = currentPose[0] + currentVelos.vxMetersPerSecond * predTime;
+        predicted[1] = currentPose[1] + currentVelos.vyMetersPerSecond * predTime;
+        predicted[2] = currentPose[2] + currentVelos.omegaRadiansPerSecond * predTime;
+
+        
+        // predicted[0] = currentPose[0] + (currentVelos.vxMetersPerSecond-veloHistory[prevIdx].vxMetersPerSecond*dt);
+        // predicted[1] = currentPose[1] + (currentVelos.vyMetersPerSecond-veloHistory[prevIdx].vyMetersPerSecond*dt);
+        // predicted[2] = currentPose[2] + (currentVelos.omegaRadiansPerSecond-veloHistory[prevIdx].omegaRadiansPerSecond*dt);
 
         return componentsToPose(predicted);
     }
 
     public ChassisSpeeds getPredictedVelos() {
+        ChassisSpeeds predictedAcc = new ChassisSpeeds();
         ChassisSpeeds predictedVelo = new ChassisSpeeds();
         double mostRecentTimestamp =
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
@@ -167,21 +143,25 @@ public class RobotPosePredictor {
             prevIdx = latestIdx - 1;
         }
         double dt = timestampHistory[latestIdx] - timestampHistory[prevIdx];
-        predictedVelo.vxMetersPerSecond =
+        predictedAcc.vxMetersPerSecond =
                 veloHistory[latestIdx].vxMetersPerSecond
                         + (veloHistory[latestIdx].vxMetersPerSecond
                                         - veloHistory[prevIdx].vxMetersPerSecond)
                                 / dt;
-        predictedVelo.vyMetersPerSecond =
+        predictedAcc.vyMetersPerSecond =
                 veloHistory[latestIdx].vyMetersPerSecond
                         + (veloHistory[latestIdx].vyMetersPerSecond
                                         - veloHistory[prevIdx].vyMetersPerSecond)
                                 / dt;
-        predictedVelo.omegaRadiansPerSecond =
+        predictedAcc.omegaRadiansPerSecond =
                 veloHistory[latestIdx].omegaRadiansPerSecond
                         + (veloHistory[latestIdx].omegaRadiansPerSecond
                                         - veloHistory[prevIdx].omegaRadiansPerSecond)
                                 / dt;
+        predictedVelo.vxMetersPerSecond = predictedAcc.vxMetersPerSecond*predTime;
+        predictedVelo.vyMetersPerSecond = predictedAcc.vyMetersPerSecond*predTime;
+        predictedVelo.omegaRadiansPerSecond = predictedAcc.omegaRadiansPerSecond*predTime;
+        
         return predictedVelo;
     }
 
