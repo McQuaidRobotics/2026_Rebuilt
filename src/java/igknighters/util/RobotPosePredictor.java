@@ -178,7 +178,7 @@ public class RobotPosePredictor {
         double[] predicted = new double[3];
         predicted[0] = current[0] + veloHistory[latestIdx].vxMetersPerSecond * predTime;
         predicted[1] = current[1] + veloHistory[latestIdx].vyMetersPerSecond * predTime;
-        predicted[2] = current[2] + veloHistory[latestIdx].omegaRadiansPerSecond * predTime;
+        predicted[2] = current[2] + veloHistory[latestIdx].omegaRadiansPerSecond * .07;
         if (veloHistory != null) {
             Log.log("ROBOT/veloHistory", veloHistory);
         }
