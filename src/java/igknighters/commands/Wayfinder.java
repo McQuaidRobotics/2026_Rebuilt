@@ -8,11 +8,12 @@ import igknighters.constants.FieldConstants;
 
 public class Wayfinder {
     
+        ArrayList<obstacle> obstacles = FieldConstants.OBSTACLES.ALL_WAYFINDER_OBSTACLES;
+    
     public Pose2d[] wayfind(Pose2d currentPose, Pose2d goalPose)
     {
         Pose2d[] path = new Pose2d[1];
         
-        ArrayList<obstacle> obstacles = FieldConstants.OBSTACLES.ALL_OBSTACLES;
 
         //the rotational step distance when searching for path (degrees)
         double omegaStep = 15;
@@ -22,10 +23,7 @@ public class Wayfinder {
         
         do {
             path[0] = currentPose;
-            for (obstacle obs:obstacles)
-            {
-
-            }
+            score(path[-1]);
 
         } while (!goalState(path[-1], goalPose));
 
@@ -42,6 +40,14 @@ public class Wayfinder {
             return true;
         }
         return false;
+    }
+
+    public double score(Pose2d potentialPose)
+    {
+            for (obstacle obs:obstacles)
+            {
+
+            }
     }
     
 }

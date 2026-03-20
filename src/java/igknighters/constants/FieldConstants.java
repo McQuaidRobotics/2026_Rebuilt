@@ -192,6 +192,11 @@ public class FieldConstants {
                                 ABOVE_RED_BUMP));
     }
 
+    public static class WAYFINDER_OBSTACLES
+ {
+        public static final obstacle BLUE_BUMP_BOTTOM = new obstacle(new Pose2d(182.11 * Conv.INCHES_TO_METERS, 56.3*Conv.INCHES_TO_METERS, new Rotation2d()), Y_FIELD, Y_FIELD, Y_FIELD, null);
+ }
+
     public static final double Y_FIELD = 316.64 * Conv.INCHES_TO_METERS; // meters
     public static final double X_FIELD = 650.12 * Conv.INCHES_TO_METERS; // meters
     public static final double ALIANCE_ZONE_BLUE = 181.56 * Conv.INCHES_TO_METERS; // meters
