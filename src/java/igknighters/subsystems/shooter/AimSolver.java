@@ -180,8 +180,7 @@ public class AimSolver {
                             new LerpTableEntry(3.0, 2.0),
                             new LerpTableEntry(3.6, 1.8),
                             new LerpTableEntry(4.0, 1.9),
-                            new LerpTableEntry(
-                                    5.0, 2.0),
+                            new LerpTableEntry(5.0, 2.0),
                             new LerpTableEntry(6, 2.1),
                             new LerpTableEntry(10.0, 1.65),
                             new LerpTableEntry(15.0, 1.5),

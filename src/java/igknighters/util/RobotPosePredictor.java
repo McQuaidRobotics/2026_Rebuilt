@@ -38,7 +38,6 @@ public class RobotPosePredictor {
     /** Number of poses stored so far, capped at HISTORY_SIZE. */
     public int storedCount = 0;
 
-    int l = 0;
 
     /**
      * @param alpha position smoothing gain, typically 0.5–0.9
@@ -47,6 +46,9 @@ public class RobotPosePredictor {
     public RobotPosePredictor(double alpha, double beta) {
         this.alpha = alpha;
         this.beta = beta;
+        for (ChassisSpeeds velo : veloHistory) {
+            velo = new ChassisSpeeds();
+        }
     }
 
     /**
@@ -56,15 +58,6 @@ public class RobotPosePredictor {
      * @param pose the latest measured robot pose
      */
     public void setNewPose(ChassisSpeeds chassisSpeeds) {
-
-        if (l == 0) {
-
-            for (int i = 0; i < HISTORY_SIZE; i++) {
-                veloHistory[i] = new ChassisSpeeds(0, 0, 0);
-                l++;
-            }
-        }
-
 
         double now = Timer.getFPGATimestamp();
 
@@ -108,9 +101,9 @@ public class RobotPosePredictor {
         double dt = timestampHistory[latestIdx] - timestampHistory[prevIdx];
         final ChassisSpeeds currentVelos =
                 new ChassisSpeeds(
-                        veloHistory[latestIdx].vxMetersPerSecond,
-                        veloHistory[latestIdx].vyMetersPerSecond,
-                        veloHistory[latestIdx].omegaRadiansPerSecond);
+                        (double) PipedDeepCopy.copy(veloHistory[latestIdx].vxMetersPerSecond),
+                        (double) PipedDeepCopy.copy(veloHistory[latestIdx].vyMetersPerSecond),
+                        (double) PipedDeepCopy.copy(veloHistory[latestIdx].omegaRadiansPerSecond));
 
         if (dt <= 0.0) return pose;
         // find acceleration based on last velocity and current
@@ -178,17 +171,17 @@ public class RobotPosePredictor {
                 veloHistory[latestIdx].vxMetersPerSecond
                         + (veloHistory[latestIdx].vxMetersPerSecond
                                         - veloHistory[prevIdx].vxMetersPerSecond)
-                                * dt;
+                                / dt;
         predictedVelo.vyMetersPerSecond =
                 veloHistory[latestIdx].vyMetersPerSecond
                         + (veloHistory[latestIdx].vyMetersPerSecond
                                         - veloHistory[prevIdx].vyMetersPerSecond)
-                                * dt;
+                                / dt;
         predictedVelo.omegaRadiansPerSecond =
                 veloHistory[latestIdx].omegaRadiansPerSecond
                         + (veloHistory[latestIdx].omegaRadiansPerSecond
                                         - veloHistory[prevIdx].omegaRadiansPerSecond)
-                                * dt;
+                                / dt;
         return predictedVelo;
     }
 
