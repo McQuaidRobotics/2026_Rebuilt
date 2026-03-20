@@ -335,7 +335,7 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                 swipe1Out.resetOdometry(),
-                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 4),
                                 swipe1Out.cmd()));
 
         swipe1Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
@@ -346,7 +346,7 @@ public class AutoRoutines extends AutoCommands {
         swipe1In.done()
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
-                                .alongWith(HigherOrderCommands.shootTillEmpty(subsystems, 2))
+                                .alongWith(HigherOrderCommands.shootTillEmpty(subsystems, 4))
                                 .andThen(swipe2Out.cmd()));
 
         swipe2Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
