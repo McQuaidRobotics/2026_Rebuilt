@@ -15,7 +15,7 @@ public class IndexerCommands {
                 .withName("DISPENSE");
     }
 
-       public static Command smartDispense(Indexer indexer) {
+    public static Command smartDispense(Indexer indexer) {
         return indexer.run(
                 () -> {
                     if (ShootInformation.getInstance().canShoot().getAsBoolean()) {

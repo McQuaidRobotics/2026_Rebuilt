@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
-import igknighters.constants.ShootInformation;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.ClimberState;
 import java.util.Set;
@@ -46,8 +45,9 @@ public class HigherOrderCommands {
                                 subsystems.swerve::getFieldRelativeSpeeds)
                         .withName("Active Spool & Aim");
 
-
-        return Commands.parallel(shooterCommand.repeatedly(), IndexerCommands.smartDispense(subsystems.indexer))
+        return Commands.parallel(
+                        shooterCommand.repeatedly(),
+                        IndexerCommands.smartDispense(subsystems.indexer))
                 .withName("SMART STREAM");
     }
 
@@ -61,7 +61,9 @@ public class HigherOrderCommands {
                                 5,
                                 3)
                         .withName("Active Spool & Aim");
-        return Commands.parallel(shooterCommand, IndexerCommands.smartDispense(subsystems.indexer)).withName("FIRE AT TARGET");
+
+        return Commands.parallel(shooterCommand, IndexerCommands.smartDispense(subsystems.indexer))
+                .withName("SMART STREAM");
     }
 
     public static Command IdleShooter(Subsystems subsystems) {

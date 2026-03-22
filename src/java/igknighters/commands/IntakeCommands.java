@@ -52,12 +52,23 @@ public class IntakeCommands {
         return intake.runOnce(() -> intake.goTo(state)).withName("Instant Hold at State");
     }
 
+    public static Command holdAtState(Intake intake, IntakeState state) {
+        return intake.run(() -> intake.goTo(state)).withName("Hold at State");
+    }
+
     public static Command jorkIt(Intake intake) {
         return holdAtIntake(intake)
                 .withTimeout(.5)
                 .andThen(holdAtStow(intake))
                 .withTimeout(.5)
                 .withName("JORK INTAKE");
+    }
+
+    public static Command slightJorkIntake(Intake intake) {
+        return holdAtState(intake, IntakeState.Intake)
+                .withTimeout(1.0)
+                .andThen(holdAtState(intake, IntakeState.slightJork))
+                .withTimeout(.2);
     }
 
     public static Command protectedIntake(Intake intake, Supplier<Pose2d> poseSupplier) {

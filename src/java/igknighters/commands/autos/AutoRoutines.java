@@ -235,11 +235,78 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER() {
+        AutoRoutine routine =
+                autoFactory.newRoutine("Pass to Self Right with Depot and Human Player");
+        AutoTrajectory trajectory = routine.trajectory("PASS_TO_SELF_RIGHT_1.traj");
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                trajectory.resetOdometry(),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                Commands.parallel(
+                                        HigherOrderCommands.hippoShoot(subsystems),
+                                        trajectory.cmd())));
+
+        trajectory.done().onTrue(SwerveCommands.stopDriving(swerve));
+
+        return routine;
+    }
+
+    /**
+     * LEFT -> Right Human player station Designed to colide in center line with the back of robot
+     * facing other teams intake Will pass the first half and then will gather balls untill enter
+     * trench Once under trench intake + score going to human player station
+     */
+    public AutoRoutine meanRoutine() {
+        AutoRoutine routine = autoFactory.newRoutine("Mean Routine");
+        AutoTrajectory meanTrajectory = routine.trajectory("MEAN_AUTO_1.traj");
+
+        routine.active().onTrue(meanTrajectory.resetOdometry().andThen(meanTrajectory.cmd()));
+        // steal balls from them we shouldnt get too many bc intake backwards but any balls shot is
+        // better then none
+        meanTrajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+        // start preserving balls for shots instead of just stealing to our side
+        meanTrajectory.atTime("INTAKE").onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+        // back on our side so shoot gathered balls + human player station
+        meanTrajectory.atTime("SCORE").onTrue(HigherOrderCommands.hippoShoot(subsystems));
+        return routine;
+    }
+
+    public AutoRoutine singleSwipeLeft() {
+        AutoRoutine routine = autoFactory.newRoutine("Single Swipe Left");
+
+        AutoTrajectory intakeTrajectory = routine.trajectory("LEFT_SINGLE_SWIPE_1.traj");
+        AutoTrajectory scoringTrajectory = routine.trajectory("LEFT_SINGLE_SWIPE_2.traj");
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                intakeTrajectory.resetOdometry(),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 4),
+                                intakeTrajectory.cmd()));
+
+        intakeTrajectory.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
+        intakeTrajectory.done().onTrue(scoringTrajectory.cmd());
+
+        scoringTrajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+
+        scoringTrajectory
+                .done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .alongWith(HigherOrderCommands.hippoShoot(subsystems)));
+
+        return routine;
+    }
+
     public AutoRoutine singleSwipeRight() {
         AutoRoutine routine = autoFactory.newRoutine("Single Swipe Right");
 
-        AutoTrajectory intakeTrajectory = routine.trajectory("SINGLE_SWIPE_SIMPLE_1.traj");
-        AutoTrajectory scoringTrajectory = routine.trajectory("SINGLE_SWIPE_SIMPLE_2.traj");
+        AutoTrajectory intakeTrajectory = routine.trajectory("RIGHT_SINGLE_SWIPE_1.traj");
+        AutoTrajectory scoringTrajectory = routine.trajectory("RIGHT_SINGLE_SWIPE_2.traj");
 
         routine.active()
                 .onTrue(
@@ -272,16 +339,14 @@ public class AutoRoutines extends AutoCommands {
                                 swipe1Out.cmd()));
 
         swipe1Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
-        swipe1Out
-                .done()
-                .onTrue(Commands.sequence(SwerveCommands.stopDriving(swerve), swipe1In.cmd()));
+        swipe1Out.done().onTrue(swipe1In.cmd());
 
         swipe1In.active().onTrue(IntakeCommands.holdAtStow(subsystems.intake));
 
         swipe1In.done()
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
-                                .alongWith(HigherOrderCommands.shootTillEmpty(subsystems, 3))
+                                .alongWith(HigherOrderCommands.shootTillEmpty(subsystems, 2))
                                 .andThen(swipe2Out.cmd()));
 
         swipe2Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
