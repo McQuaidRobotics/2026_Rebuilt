@@ -325,7 +325,7 @@ public class ShooterCommands {
                         new Rotation3d(0.0, 0.0, shooterPose2d.getRotation().getRadians()));
 
         ShooterState targetingData =
-                LerpSolveShot.solve(shooterPose3d, shootingData.TARGET_POSE, 0.1, 0.1);
+                LerpSolveShot.solve(shooterPose3d, shootingData.TARGET_POSE, 0.1, 0.0);
 
         if (targetingData.flywheelSpeed.in(RPM) != 0) {
             // possible shot so follow its instructions

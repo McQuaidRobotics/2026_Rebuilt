@@ -9,12 +9,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import igknighters.Robot;
-import igknighters.constants.Conv;
 import igknighters.constants.ShootInformation;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.shooter.ShooterState;
-import igknighters.subsystems.shooter.solvers.Solver;
 import igknighters.util.*;
 import igknighters.util.LerpTable.LerpTableEntry;
 
@@ -46,76 +44,78 @@ public class LerpSolveShot {
     static LerpTable TIME_OF_FLIGHT_LERP =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1, 1),
-                        new LerpTableEntry(2, 1),
-                        new LerpTableEntry(3, 1),
-                        new LerpTableEntry(4, 1),
-                        new LerpTableEntry(5, 1),
-                        new LerpTableEntry(6, 1.0),
-                        new LerpTableEntry(10, 1.0)
+                        new LerpTableEntry(1, .5),
+                        new LerpTableEntry(2, .5),
+                        new LerpTableEntry(3, .5),
+                        new LerpTableEntry(4, .5),
+                        new LerpTableEntry(5, .5),
+                        new LerpTableEntry(6, .5),
+                        new LerpTableEntry(10, .5)
                     });
 
     public static ShooterState solve(
             Pose3d shooterPose, Pose3d goalPose, double currentRPM, double latencyCompensation) {
-        // 1. Get current velocity (Assume this is FIELD-RELATIVE from pose estimator)
+
         ChassisSpeeds robotSpeeds = Robot.pose_pred.getPredictedVelos();
-        Pose3d predictedShooterPose = Robot.pose_pred.getPredictedShooterPose(shooterPose);
         Translation2d robotVelocity =
                 new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
+        double kConversion = SubsystemConstants.kShooter.kFlywheels.RPM_TO_METERS_PER_SECOND_FACTOR;
 
-        // 2. Calculate the REAL Floor Distance (2D) for stable RPM
-        double floorDistance =
-                predictedShooterPose
+        // --- STEP 1: Initial Estimate ---
+        double actualDistance =
+                shooterPose
                         .toPose2d()
                         .getTranslation()
                         .getDistance(goalPose.toPose2d().getTranslation());
-        double requiredRpm = RPM_LERP.lerp(floorDistance);
+        double tof = TIME_OF_FLIGHT_LERP.lerp(actualDistance);
 
-        // 3. Time of Flight based on actual distance
-        double tof = TIME_OF_FLIGHT_LERP.lerp(floorDistance);
+        double requiredTableRpm = 0;
+        Rotation2d fieldRelativeTurretAngle = new Rotation2d();
 
-        // 4. Calculate Movement Compensation
-        Translation2d movingCompensation = robotVelocity.times(tof + latencyCompensation);
+        // --- STEP 2: The Magic Loop (2 Iterations is plenty) ---
+        for (int i = 0; i < 2; i++) {
+            // Find where the goal "will be" relative to the ball
+            Translation2d movingCompensation = robotVelocity.times(tof + latencyCompensation);
+            Translation2d relativeGoal2d =
+                    goalPose.getTranslation()
+                            .toTranslation2d()
+                            .minus(shooterPose.getTranslation().toTranslation2d());
 
-        Translation2d relativeGoal2d =
-                goalPose.getTranslation()
-                        .toTranslation2d()
-                        .minus(shooterPose.getTranslation().toTranslation2d());
+            Translation2d compensatedVector = relativeGoal2d.minus(movingCompensation);
+            double virtualDistance = compensatedVector.getNorm();
 
-        Translation2d compensatedVector = relativeGoal2d.minus(movingCompensation);
+            // Get the RPM we WOULD use if we were standing still at this virtual spot
+            double baselineRpm = RPM_LERP.lerp(virtualDistance);
+            double baselineExitVelocity = baselineRpm * kConversion;
 
-        // 5. EXTRACT RESULTS
-        // This is the angle the turret needs to point RELATIVE TO THE FIELD
-        Rotation2d fieldRelativeTurretAngle = compensatedVector.getAngle();
+            // Vector Subtraction: (Goal Velocity) - (Robot Velocity) = (Needed Shooter Velocity)
+            Translation2d targetDirection = compensatedVector.div(virtualDistance);
+            Translation2d fieldRelativeVelocityVector = targetDirection.times(baselineExitVelocity);
+            Translation2d requiredShooterVector = fieldRelativeVelocityVector.minus(robotVelocity);
 
-        // THIS IS THE FIX: Subtract the robot's heading to get the angle RELATIVE TO THE ROBOT
-        // If the field angle is 90° and the robot is at 10°, the turret needs to be at 80°
+            // Update our values
+            double requiredExitVelocity = requiredShooterVector.getNorm();
+            requiredTableRpm = requiredExitVelocity / kConversion;
+            fieldRelativeTurretAngle = requiredShooterVector.getAngle();
+
+            // RE-CALCULATE TOF: Since the RPM changed, the time in air changed!
+            // This is why you were missing driving away; the ball was in the air longer than
+            // expected.
+            double effectiveDistance = RPM_LERP.inverseLerp(requiredTableRpm);
+            tof = TIME_OF_FLIGHT_LERP.lerp(effectiveDistance);
+        }
+
+        // --- STEP 3: Final Outputs ---
+        double finalEffectiveDistance = RPM_LERP.inverseLerp(requiredTableRpm);
+        double finalHoodAngle = HOOD_LERP.lerp(finalEffectiveDistance);
         Rotation2d robotRelativeTurretAngle =
                 fieldRelativeTurretAngle.minus(shooterPose.getRotation().toRotation2d());
 
-        // 6. PRIORITIZE HOOD
-        double effectiveDistance = compensatedVector.getNorm();
-        double requiredHoodAngle = HOOD_LERP.lerp(effectiveDistance);
-
-        if (requiredRpm < 6000) {
-
-            ShootInformation.getInstance().setPossibleShot(true);
-
-        } else {
-            ShootInformation.getInstance().setPossibleShot(false);
-        }
-
-        Solver.publishShotTrajectory(
-                requiredRpm
-                        * SubsystemConstants.kShooter.kFlywheels.RPM_TO_METERS_PER_SECOND_FACTOR,
-                (requiredHoodAngle * Conv.DEGREES_TO_RADIANS),
-                fieldRelativeTurretAngle.getRadians(),
-                shooterPose,
-                goalPose);
+        ShootInformation.getInstance().setPossibleShot(requiredTableRpm < 6000);
 
         return new ShooterState(
-                RPM.of(requiredRpm),
+                RPM.of(requiredTableRpm),
                 Radians.of(-robotRelativeTurretAngle.getRadians()),
-                Degrees.of(requiredHoodAngle));
+                Degrees.of(finalHoodAngle));
     }
 }
