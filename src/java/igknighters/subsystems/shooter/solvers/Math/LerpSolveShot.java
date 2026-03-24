@@ -44,17 +44,19 @@ public class LerpSolveShot {
     static LerpTable TIME_OF_FLIGHT_LERP =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1, .5),
-                        new LerpTableEntry(2, .5),
-                        new LerpTableEntry(3, .5),
-                        new LerpTableEntry(4, .5),
-                        new LerpTableEntry(5, .5),
-                        new LerpTableEntry(6, .5),
-                        new LerpTableEntry(10, .5)
+                        new LerpTableEntry(1, .3),
+                        new LerpTableEntry(2, .3),
+                        new LerpTableEntry(3, .3),
+                        new LerpTableEntry(4, .3),
+                        new LerpTableEntry(5, .3),
+                        new LerpTableEntry(6, .3),
+                        new LerpTableEntry(10, .3)
                     });
 
     public static ShooterState solve(
-            Pose3d shooterPose, Pose3d goalPose, double currentRPM, double latencyCompensation) {
+            Pose3d robotPose, Pose3d goalPose, double currentRPM, double latencyCompensation) {
+
+        Pose3d shooterPose = Robot.pose_pred.getPredictedShooterPose(robotPose);
 
         ChassisSpeeds robotSpeeds = Robot.pose_pred.getPredictedVelos();
         Translation2d robotVelocity =
@@ -72,7 +74,6 @@ public class LerpSolveShot {
         double requiredTableRpm = 0;
         Rotation2d fieldRelativeTurretAngle = new Rotation2d();
 
-        // --- STEP 2: The Magic Loop (2 Iterations is plenty) ---
         for (int i = 0; i < 2; i++) {
             // Find where the goal "will be" relative to the ball
             Translation2d movingCompensation = robotVelocity.times(tof + latencyCompensation);
