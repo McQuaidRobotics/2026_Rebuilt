@@ -1,7 +1,9 @@
 package igknighters.util;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
@@ -166,6 +168,29 @@ public class RobotPosePredictor {
      *
      * @return predicted {@link Pose2d} one loop period into the future
      */
+    public Pose3d getPredictedShooterPose(Pose3d pose) {
+        double[] currentPose = poseToComponents(pose);
+        double mostRecentTimestamp =
+                Collections.max(Arrays.stream(timestampHistory).boxed().toList());
+        int latestIdx =
+                Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
+        // 0 =x
+        // 1 = y
+        // 2 = z
+        // 3 = rotation
+        double[] predicted = new double[4];
+        predicted[0] = currentPose[0] + veloHistory[latestIdx].vxMetersPerSecond * predTime;
+        predicted[1] = currentPose[1] + veloHistory[latestIdx].vyMetersPerSecond * predTime;
+        predicted[2] = currentPose[2]; // z should not change
+        predicted[3] = currentPose[3] + veloHistory[latestIdx].omegaRadiansPerSecond * .07;
+        if (veloHistory != null) {
+            Log.log("ROBOT/veloHistory", veloHistory);
+        }
+
+        return new Pose3d(
+                predicted[0], predicted[1], predicted[2], new Rotation3d(0, 0, predicted[3]));
+    }
+
     public Pose2d getPredictedPose(Pose2d pose) {
         double[] currentPose = poseToComponents(pose);
         ChassisSpeeds prediction = new ChassisSpeeds();
@@ -201,6 +226,10 @@ public class RobotPosePredictor {
     /** Decomposes a Pose2d into [x, y, rotation]. */
     private static double[] poseToComponents(Pose2d pose) {
         return new double[] {pose.getX(), pose.getY(), pose.getRotation().getRadians()};
+    }
+
+    private static double[] poseToComponents(Pose3d pose) {
+        return new double[] {pose.getX(), pose.getY(), pose.getZ(), pose.getRotation().getZ()};
     }
 
     /** Reconstructs a Pose2d from [x, y, roll, pitch]. */

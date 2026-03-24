@@ -21,12 +21,15 @@ import igknighters.subsystems.shooter.AimSolver;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.subsystems.shooter.ShootingData;
+import igknighters.subsystems.shooter.solvers.Math.LerpSolveShot;
 import igknighters.util.TunableValues;
 import igknighters.util.log.Log;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class ShooterCommands {
+
+    public ShooterCommands() {}
 
     public static TunableValues.TunableDouble shootRPM =
             TunableValues.getDouble("Shooter/ShootRPM", 3000);
@@ -322,14 +325,7 @@ public class ShooterCommands {
                         new Rotation3d(0.0, 0.0, shooterPose2d.getRotation().getRadians()));
 
         ShooterState targetingData =
-                AimSolver.Solvers.solve_max_and_min_iterative_with_vectors(
-                        shooterPose3d,
-                        shootingData.TARGET_POSE,
-                        robotVel,
-                        shooter.getCurrentState().flywheelSpeed.in(RPM),
-                        shootingData.MAX_HEIGHT_METERS,
-                        shootingData.MIN_HEIGHT_METERS,
-                        0.02);
+                LerpSolveShot.solve(shooterPose3d, shootingData.TARGET_POSE, 0.1, 0.1);
 
         if (targetingData.flywheelSpeed.in(RPM) != 0) {
             // possible shot so follow its instructions

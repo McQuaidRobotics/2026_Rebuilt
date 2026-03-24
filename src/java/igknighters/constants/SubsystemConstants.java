@@ -208,6 +208,9 @@ public class SubsystemConstants {
             public static final double SUPPLY_CURRENT_LIMIT = 30;
             public static boolean disableFlywheelsLogs = false;
 
+            public static double RPM_TO_METERS_PER_SECOND_FACTOR =
+                    2.0 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS / 60.0;
+
             static {
                 if (disableAllLogs) {
                     disableFlywheelsLogs = true;

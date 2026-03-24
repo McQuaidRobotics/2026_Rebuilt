@@ -284,7 +284,7 @@ public class Robot extends LoggedRobot {
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
-        pose_pred.setNewPose(subsystems.swerve.getState().Speeds);
+        pose_pred.setNewPose(subsystems.swerve.getFieldRelativeSpeeds());
         if (Robot.isReal() && !SubsystemConstants.disableAllLogs) {
             FieldVisualizer.getInstance()
                     .updateTurret(
@@ -447,7 +447,7 @@ public class Robot extends LoggedRobot {
 
     private void configureFuelSim() {
         fuelSim = new FuelSim();
-        fuelSim.spawnStartingFuel();
+        // fuelSim.spawnStartingFuel();
         fuelSim.start();
         SmartDashboard.putData(
                 Commands.runOnce(
