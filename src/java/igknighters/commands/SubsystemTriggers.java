@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.LEDCommands.LEDSection;
+import igknighters.commands.Shooter.AimingCommands;
+import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.commands.teleop.AutoRotateOnBump;
 import igknighters.commands.teleop.SlowedDownDrivingWhileShooting;
 import igknighters.constants.Conv;
@@ -229,7 +231,7 @@ public class SubsystemTriggers {
                 .and(teleop)
                 .and(
                         () ->
-                                ShooterCommands.getShotType(() -> subsystems.swerve.getState().Pose)
+                                AimingCommands.getShotType(() -> subsystems.swerve.getState().Pose)
                                         == ShooterCommands.shotType.SHOT)
                 .whileTrue(new SlowedDownDrivingWhileShooting(swerve, driverController));
     }

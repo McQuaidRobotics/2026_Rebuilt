@@ -14,7 +14,8 @@ import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.IntakeCommands;
 import igknighters.commands.Repulsor;
-import igknighters.commands.ShooterCommands;
+import igknighters.commands.Shooter.AimingCommands;
+import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
 import igknighters.constants.DrivingSharedState;
@@ -142,11 +143,10 @@ public class DriverController {
             // this.RT.whileTrue(IndexerCommands.dispense(indexer));
             // this.LT.whileTrue(IndexerCommands.stopDispensing(indexer));
             this.RT.whileTrue(
-                    ShooterCommands.shootWithMaxHeightIterative(
+                    AimingCommands.shootWithProtection(
                             subsystems.shooter,
                             () -> swerve.getState().Pose,
-                            swerve::getFieldRelativeSpeeds,
-                            5.0));
+                            swerve::getFieldRelativeSpeeds));
             this.LT.whileTrue(IndexerCommands.dispense(indexer));
 
             // this.DPD.whileTrue(ShooterCommands.targetState(shooter, 0, 0,

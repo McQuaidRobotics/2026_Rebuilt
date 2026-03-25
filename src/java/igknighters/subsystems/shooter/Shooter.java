@@ -7,7 +7,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
-import igknighters.commands.ShooterCommands.shotType;
+import igknighters.commands.Shooter.ShooterCommands.shotType;
 import igknighters.constants.ShootInformation;
 import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.shooter.flywheel.*;

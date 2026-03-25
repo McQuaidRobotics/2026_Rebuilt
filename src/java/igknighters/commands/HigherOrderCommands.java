@@ -5,6 +5,8 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
+import igknighters.commands.Shooter.AimingCommands;
+import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
@@ -24,7 +26,7 @@ public class HigherOrderCommands {
 
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
-                ShooterCommands.shootWithProtection(
+                AimingCommands.shootWithProtection(
                                 subsystems.shooter,
                                 () -> subsystems.swerve.getState().Pose,
                                 subsystems.swerve::getFieldRelativeSpeeds)
@@ -40,7 +42,7 @@ public class HigherOrderCommands {
 
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
-                ShooterCommands.shootWithProtectionAndAgregiousMaxHeight(
+                AimingCommands.shootWithProtectionAndAgregiousMaxHeight(
                                 subsystems.shooter,
                                 () -> subsystems.swerve.getState().Pose,
                                 subsystems.swerve::getFieldRelativeSpeeds)
@@ -54,7 +56,7 @@ public class HigherOrderCommands {
 
     public static Command fireAtTarget(Subsystems subsystems, Pose3d targetPose) {
         Command shooterCommand =
-                ShooterCommands.SHOOT_MAX_MIN_NO_AUTO_PICKED_TARGET(
+                AimingCommands.SHOOT_AT_TARGET(
                                 subsystems.shooter,
                                 targetPose,
                                 () -> subsystems.swerve.getState().Pose,
@@ -80,7 +82,7 @@ public class HigherOrderCommands {
     public static Command forceDispense(Subsystems subsystems) {
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
-                ShooterCommands.shoot(
+                AimingCommands.shootWithProtection(
                                 subsystems.shooter,
                                 () -> subsystems.swerve.getState().Pose,
                                 subsystems.swerve::getFieldRelativeSpeeds)
