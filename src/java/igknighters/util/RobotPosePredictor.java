@@ -38,7 +38,6 @@ public class RobotPosePredictor {
     /** Number of poses stored so far, capped at HISTORY_SIZE. */
     public int storedCount = 0;
 
-
     /**
      * @param alpha position smoothing gain, typically 0.5–0.9
      * @param beta velocity smoothing gain, typically 0.1–0.5
@@ -46,8 +45,8 @@ public class RobotPosePredictor {
     public RobotPosePredictor(double alpha, double beta) {
         this.alpha = alpha;
         this.beta = beta;
-        for (ChassisSpeeds velo : veloHistory) {
-            velo = new ChassisSpeeds();
+        for (int i = 0; i < HISTORY_SIZE; i++) {
+            veloHistory[i] = new ChassisSpeeds(0, 0, 0);
         }
     }
 
@@ -121,10 +120,12 @@ public class RobotPosePredictor {
         predicted[1] = currentPose[1] + currentVelos.vyMetersPerSecond * predTime;
         predicted[2] = currentPose[2] + currentVelos.omegaRadiansPerSecond * predTime;
 
-        
-        // predicted[0] = currentPose[0] + (currentVelos.vxMetersPerSecond-veloHistory[prevIdx].vxMetersPerSecond*dt);
-        // predicted[1] = currentPose[1] + (currentVelos.vyMetersPerSecond-veloHistory[prevIdx].vyMetersPerSecond*dt);
-        // predicted[2] = currentPose[2] + (currentVelos.omegaRadiansPerSecond-veloHistory[prevIdx].omegaRadiansPerSecond*dt);
+        // predicted[0] = currentPose[0] +
+        // (currentVelos.vxMetersPerSecond-veloHistory[prevIdx].vxMetersPerSecond*dt);
+        // predicted[1] = currentPose[1] +
+        // (currentVelos.vyMetersPerSecond-veloHistory[prevIdx].vyMetersPerSecond*dt);
+        // predicted[2] = currentPose[2] +
+        // (currentVelos.omegaRadiansPerSecond-veloHistory[prevIdx].omegaRadiansPerSecond*dt);
 
         return componentsToPose(predicted);
     }
@@ -158,10 +159,10 @@ public class RobotPosePredictor {
                         + (veloHistory[latestIdx].omegaRadiansPerSecond
                                         - veloHistory[prevIdx].omegaRadiansPerSecond)
                                 / dt;
-        predictedVelo.vxMetersPerSecond = predictedAcc.vxMetersPerSecond*predTime;
-        predictedVelo.vyMetersPerSecond = predictedAcc.vyMetersPerSecond*predTime;
-        predictedVelo.omegaRadiansPerSecond = predictedAcc.omegaRadiansPerSecond*predTime;
-        
+        predictedVelo.vxMetersPerSecond = predictedAcc.vxMetersPerSecond * predTime;
+        predictedVelo.vyMetersPerSecond = predictedAcc.vyMetersPerSecond * predTime;
+        predictedVelo.omegaRadiansPerSecond = predictedAcc.omegaRadiansPerSecond * predTime;
+
         return predictedVelo;
     }
 
