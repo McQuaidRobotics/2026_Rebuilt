@@ -179,23 +179,24 @@ public class ShooterCommands {
     }
 
     public static BooleanSupplier isUnderTrench(Supplier<Pose2d> robotPoseSupplier) {
+            Supplier<Pose2d> turretPose = getShooterPoseWithOffset(robotPoseSupplier);
         return () -> {
-            Pose2d pose = robotPoseSupplier.get();
+            
             boolean under1 =
                     isBetween(
-                            pose,
+                            turretPose.get(),
                             FieldConstants.BUMP.BUMP_1_X_METERS - .08,
                             FieldConstants.BUMP.BUMP_1_X_METERS + .08);
             boolean under2 =
                     isBetween(
-                            pose,
+                            turretPose.get(),
                             FieldConstants.BUMP.BUMP_2_X_METERS - 0.08,
                             FieldConstants.BUMP.BUMP_2_X_METERS + 0.08);
 
             boolean isUnder = under1 || under2;
             if (!SubsystemConstants.disableAllLogs) {
                 Log.log("ROBOT/Commands/Shooter/Trench Protection/isUnderTrench", isUnder);
-                Log.log("ROBOT/Commands/Shooter/Trench Protection/RobotX", pose.getX());
+                Log.log("ROBOT/Commands/Shooter/Trench Protection/RobotX", turretPose.get().getX());
             }
 
             return isUnder;
