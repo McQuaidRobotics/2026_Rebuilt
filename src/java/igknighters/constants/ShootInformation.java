@@ -122,7 +122,7 @@ public class ShootInformation {
                 return new ShootingData(4.8, 2, getPassTarget(robotPoseSupplier));
             }
         }
-        return new ShootingData(4.8, 2, getHubTarget());
+        return new ShootingData(4.0, 2, getHubTarget());
     }
 
     public boolean shouldSteal(Supplier<Pose2d> robotPoseSupplier) {

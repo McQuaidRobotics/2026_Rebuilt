@@ -298,7 +298,7 @@ public class ShooterCommands {
                         0.02);
 
         shooter.targetState(
-                RPM.of(2000), targetingData.turretAngle, Degrees.of(kHood.MIN_ANGLE_DEGREES));
+                RPM.of(3000), targetingData.turretAngle, Degrees.of(kHood.MIN_ANGLE_DEGREES));
     }
 
     public static void shootOnce(
@@ -419,7 +419,7 @@ public class ShooterCommands {
                                     0.02);
 
                     shooter.targetState(
-                            RPM.of(2000),
+                            RPM.of(3000),
                             targetingData.turretAngle,
                             Degrees.of(kHood.MIN_ANGLE_DEGREES));
                 });

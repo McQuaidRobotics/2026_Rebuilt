@@ -447,7 +447,7 @@ public class Robot extends LoggedRobot {
 
     private void configureFuelSim() {
         fuelSim = new FuelSim();
-        // fuelSim.spawnStartingFuel();
+        fuelSim.spawnStartingFuel();
         fuelSim.start();
         SmartDashboard.putData(
                 Commands.runOnce(
