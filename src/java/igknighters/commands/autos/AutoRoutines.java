@@ -19,14 +19,17 @@ import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IntakeCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.constants.FieldConstants;
-import igknighters.constants.SubsystemConstants.kShooter.kHood;
+import igknighters.constants.RobotConsts;
 import igknighters.subsystems.Subsystems;
 import java.util.function.Supplier;
 
 public class AutoRoutines extends AutoCommands {
 
-    public AutoRoutines(Subsystems subsystems, AutoFactory factory) {
+RobotConsts consts;
+
+    public AutoRoutines(Subsystems subsystems, AutoFactory factory, RobotConsts consts) {
         super(subsystems, factory);
+        this.consts = consts;
 
         if (Robot.isSimulation()) {
             new Trigger(DriverStation::isAutonomousEnabled)
@@ -233,7 +236,7 @@ public class AutoRoutines extends AutoCommands {
                                                                                         Degrees.of(
                                                                                                 0.0),
                                                                                         Degrees.of(
-                                                                                                kHood.MIN_ANGLE_DEGREES))),
+                                                                                                consts.shooter().kHood().MIN_ANGLE_DEGREES()))),
                                                         Commands.waitSeconds(1.0),
                                                         HigherOrderCommands.rapidFireStream(
                                                                 subsystems)),
@@ -432,7 +435,7 @@ public class AutoRoutines extends AutoCommands {
                                                                                         Degrees.of(
                                                                                                 0.0),
                                                                                         Degrees.of(
-                                                                                                kHood.MIN_ANGLE_DEGREES))),
+                                                                                                consts.shooter().kHood().MIN_ANGLE_DEGREES()))),
                                                         Commands.waitSeconds(1.0),
                                                         HigherOrderCommands.rapidFireStream(
                                                                 subsystems)),

@@ -31,7 +31,6 @@ import igknighters.constants.RobotConsts;
 import igknighters.constants.RobotIdentity;
 import igknighters.constants.SecondBotRobotConsts;
 import igknighters.constants.SubsystemConstants;
-import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
@@ -143,7 +142,7 @@ public class Robot extends LoggedRobot {
 
     public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsystems.swerve.createAutoFactory();
-        final var routines = new AutoRoutines(subsystems, autoFactory);
+        final var routines = new AutoRoutines(subsystems, autoFactory, consts);
         autoChooser.addRoutine("LEFT NUETRAL HIPPO", routines::leftNuetralHippo);
         autoChooser.addRoutine("RIGHT NUETRAL HIPPO", routines::rightNuetralHippo);
         autoChooser.addRoutine("Right Orbit", routines::orbitRight);
@@ -454,11 +453,11 @@ public class Robot extends LoggedRobot {
                         MetersPerSecond.of(launchVelocity),
                         Radians.of(Math.PI / 2 - shooterState.hoodAngle.in(Radian)),
                         shooterState.turretAngle,
-                        Meters.of(kFlywheels.ShooterHeightMeters) // height of shooter exit
+                        Meters.of(consts.shooter().kFlywheels().ShooterHeightMeters()) // height of shooter exit
                         );
 
                 lastShotTime = currentTime;
-                if (!SubsystemConstants.disableAllLogs) {
+                if (!consts.shooter().kFlywheels().disableFlywheelsLogs()) {
                     Log.log("ROBOT/Simulation/FuelLaunched", true);
                 }
             }

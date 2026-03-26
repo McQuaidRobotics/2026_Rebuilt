@@ -22,7 +22,10 @@ public class Intake extends SubsystemBase {
     private final Rollers rollers;
     private final IntakeVisualizer visualizer;
 
+    private final RobotConsts consts;
+
     public Intake(RobotConsts consts) {
+        this.consts = consts;
         if (Robot.isReal()) {
             pivot = new PivotReal(consts);
             rollers = new RollersReal(consts);
@@ -74,7 +77,7 @@ public class Intake extends SubsystemBase {
         boolean isAtSpeed =
                 Math.abs(rollers.getSpeed().in(RPM) - speedRPM.in(RPM)) < speedTolerance.in(RPM);
 
-        if (!SubsystemConstants.kIntake.kPivot.disablePivotLogs) {
+        if (!consts.intake().kPivot().disablePivotLogs()) {
 
             Log.log("ROBOT/Subsystems/Intake/AT STATE/Is At Speed", isAtSpeed);
             Log.log("ROBOT/Subsystems/Intake/AT STATE/Is At Angle", isAtAngle);
