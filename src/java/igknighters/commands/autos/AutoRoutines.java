@@ -117,91 +117,99 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
-//     public AutoRoutine rightOutpostClimb() {
-//         AutoRoutine routine = autoFactory.newRoutine("Right Outpost Climb");
-//         AutoTrajectory outpostTraj = routine.trajectory("RIGHT_OUTPOST_CLIMB.traj");
+    //     public AutoRoutine rightOutpostClimb() {
+    //         AutoRoutine routine = autoFactory.newRoutine("Right Outpost Climb");
+    //         AutoTrajectory outpostTraj = routine.trajectory("RIGHT_OUTPOST_CLIMB.traj");
 
-//         routine.active()
-//                 .onTrue(
-//                         Commands.sequence(
-//                                         outpostTraj.resetOdometry(),
-//                                         HigherOrderCommands.shootTillEmpty(subsystems, 3),
-//                                         Commands.parallel(
-//                                                 HigherOrderCommands.hippoShoot(subsystems),
-//                                                 outpostTraj.cmd()))
-//                                 .withName("Right Outpost Climb"));
-//         outpostTraj
-//                 .done()
-//                 .onTrue(
-//                         SwerveCommands.stopDriving(swerve)
-//                                 .andThen(HigherOrderCommands.prepToClimbFirstRung(subsystems)));
+    //         routine.active()
+    //                 .onTrue(
+    //                         Commands.sequence(
+    //                                         outpostTraj.resetOdometry(),
+    //                                         HigherOrderCommands.shootTillEmpty(subsystems, 3),
+    //                                         Commands.parallel(
+    //                                                 HigherOrderCommands.hippoShoot(subsystems),
+    //                                                 outpostTraj.cmd()))
+    //                                 .withName("Right Outpost Climb"));
+    //         outpostTraj
+    //                 .done()
+    //                 .onTrue(
+    //                         SwerveCommands.stopDriving(swerve)
+    //
+    // .andThen(HigherOrderCommands.prepToClimbFirstRung(subsystems)));
 
-//         return routine;
-//     }
+    //         return routine;
+    //     }
 
-//     public AutoRoutine leftOutpostClimb() {
-//         AutoRoutine routine = autoFactory.newRoutine("Left Outpost Climb");
-//         AutoTrajectory outpostTraj = routine.trajectory("LEFT_OUTPOST_CLIMB.traj");
+    //     public AutoRoutine leftOutpostClimb() {
+    //         AutoRoutine routine = autoFactory.newRoutine("Left Outpost Climb");
+    //         AutoTrajectory outpostTraj = routine.trajectory("LEFT_OUTPOST_CLIMB.traj");
 
-//         routine.active()
-//                 .onTrue(
-//                         Commands.sequence(
-//                                         outpostTraj.resetOdometry(),
-//                                         HigherOrderCommands.shootTillEmpty(subsystems, 3),
-//                                         Commands.parallel(
-//                                                 IntakeCommands.holdAtIntake(subsystems.intake),
-//                                                 HigherOrderCommands.rapidFireStream(subsystems),
-//                                                 outpostTraj.cmd()))
-//                                 .withName("Left Outpost Climb"));
-//         outpostTraj
-//                 .done()
-//                 .onTrue(
-//                         SwerveCommands.stopDriving(swerve)
-//                                 .andThen(HigherOrderCommands.prepToClimbFirstRung(subsystems)));
+    //         routine.active()
+    //                 .onTrue(
+    //                         Commands.sequence(
+    //                                         outpostTraj.resetOdometry(),
+    //                                         HigherOrderCommands.shootTillEmpty(subsystems, 3),
+    //                                         Commands.parallel(
+    //
+    // IntakeCommands.holdAtIntake(subsystems.intake),
+    //
+    // HigherOrderCommands.rapidFireStream(subsystems),
+    //                                                 outpostTraj.cmd()))
+    //                                 .withName("Left Outpost Climb"));
+    //         outpostTraj
+    //                 .done()
+    //                 .onTrue(
+    //                         SwerveCommands.stopDriving(swerve)
+    //
+    // .andThen(HigherOrderCommands.prepToClimbFirstRung(subsystems)));
 
-//         return routine;
-//     }
+    //         return routine;
+    //     }
 
-//     public AutoRoutine leftDepoClimb() {
-//         AutoRoutine routine = autoFactory.newRoutine("Left Depo Climb");
-//         AutoTrajectory depoTraj = routine.trajectory("LEFT_DEPO_CLIMB.traj"); // test
-//         routine.active()
-//                 .onTrue(
-//                         Commands.sequence(
-//                                         depoTraj.resetOdometry(),
-//                                         HigherOrderCommands.shootTillEmpty(subsystems, 3),
-//                                         Commands.parallel(
-//                                                 IntakeCommands.holdAtIntake(subsystems.intake),
-//                                                 HigherOrderCommands.rapidFireStream(subsystems),
-//                                                 depoTraj.cmd()))
-//                                 .withName("Left Depo Climb"));
-//         depoTraj.done()
-//                 .onTrue(
-//                         SwerveCommands.stopDriving(swerve)
-//                                 .andThen(HigherOrderCommands.prepToClimbFirstRung(subsystems)));
-//         return routine;
-//     }
+    //     public AutoRoutine leftDepoClimb() {
+    //         AutoRoutine routine = autoFactory.newRoutine("Left Depo Climb");
+    //         AutoTrajectory depoTraj = routine.trajectory("LEFT_DEPO_CLIMB.traj"); // test
+    //         routine.active()
+    //                 .onTrue(
+    //                         Commands.sequence(
+    //                                         depoTraj.resetOdometry(),
+    //                                         HigherOrderCommands.shootTillEmpty(subsystems, 3),
+    //                                         Commands.parallel(
+    //
+    // IntakeCommands.holdAtIntake(subsystems.intake),
+    //
+    // HigherOrderCommands.rapidFireStream(subsystems),
+    //                                                 depoTraj.cmd()))
+    //                                 .withName("Left Depo Climb"));
+    //         depoTraj.done()
+    //                 .onTrue(
+    //                         SwerveCommands.stopDriving(swerve)
+    //
+    // .andThen(HigherOrderCommands.prepToClimbFirstRung(subsystems)));
+    //         return routine;
+    //     }
 
-//     public AutoRoutine rightDepoClimb() {
-//         AutoRoutine routine = autoFactory.newRoutine("Right Depo Climb");
-//         AutoTrajectory depoTraj = routine.trajectory("RIGHT_DEPO_CLIMB.traj");
+    //     public AutoRoutine rightDepoClimb() {
+    //         AutoRoutine routine = autoFactory.newRoutine("Right Depo Climb");
+    //         AutoTrajectory depoTraj = routine.trajectory("RIGHT_DEPO_CLIMB.traj");
 
-//         routine.active()
-//                 .onTrue(
-//                         Commands.sequence(
-//                                         depoTraj.resetOdometry(),
-//                                         HigherOrderCommands.shootTillEmpty(subsystems, 3),
-//                                         Commands.parallel(
-//                                                 HigherOrderCommands.hippoShoot(subsystems),
-//                                                 depoTraj.cmd()))
-//                                 .withName("Right Depo Climb"));
-//         depoTraj.done()
-//                 .onTrue(
-//                         SwerveCommands.stopDriving(swerve)
-//                                 .andThen(HigherOrderCommands.prepToClimbFirstRung(subsystems)));
+    //         routine.active()
+    //                 .onTrue(
+    //                         Commands.sequence(
+    //                                         depoTraj.resetOdometry(),
+    //                                         HigherOrderCommands.shootTillEmpty(subsystems, 3),
+    //                                         Commands.parallel(
+    //                                                 HigherOrderCommands.hippoShoot(subsystems),
+    //                                                 depoTraj.cmd()))
+    //                                 .withName("Right Depo Climb"));
+    //         depoTraj.done()
+    //                 .onTrue(
+    //                         SwerveCommands.stopDriving(swerve)
+    //
+    // .andThen(HigherOrderCommands.prepToClimbFirstRung(subsystems)));
 
-//         return routine;
-//     }
+    //         return routine;
+    //     }
 
     public AutoRoutine rightNuetralHippo() {
         AutoRoutine routine = autoFactory.newRoutine("Right Neutral Hippo");
@@ -452,28 +460,28 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
-//     public AutoRoutine centerDepotClimb() {
-//         AutoRoutine routine = autoFactory.newRoutine("Center Depot climb");
+    //     public AutoRoutine centerDepotClimb() {
+    //         AutoRoutine routine = autoFactory.newRoutine("Center Depot climb");
 
-//         AutoTrajectory moveTraj = routine.trajectory("CENTER_DEPOT_CLIMB.traj");
+    //         AutoTrajectory moveTraj = routine.trajectory("CENTER_DEPOT_CLIMB.traj");
 
-//         routine.active()
-//                 .onTrue(
-//                         Commands.sequence(
-//                                 moveTraj.resetOdometry(),
-//                                 Commands.print("ODOMETRY RESET"),
-//                                 moveTraj.cmd()
-//                                         .alongWith(
-//                                                 HigherOrderCommands.hippoShoot(subsystems)
-//                                                         .repeatedly(),
-//                                                 Commands.print("IM PARELELING").repeatedly())
-//                                         .withName("Intake and Shoot")));
+    //         routine.active()
+    //                 .onTrue(
+    //                         Commands.sequence(
+    //                                 moveTraj.resetOdometry(),
+    //                                 Commands.print("ODOMETRY RESET"),
+    //                                 moveTraj.cmd()
+    //                                         .alongWith(
+    //                                                 HigherOrderCommands.hippoShoot(subsystems)
+    //                                                         .repeatedly(),
+    //                                                 Commands.print("IM PARELELING").repeatedly())
+    //                                         .withName("Intake and Shoot")));
 
-//         moveTraj.done()
-//                 .onTrue(
-//                         Commands.sequence(
-//                                 SwerveCommands.stopDriving(swerve),
-//                                 HigherOrderCommands.prepToClimbFirstRung(subsystems)));
-//         return routine;
-//     }
+    //         moveTraj.done()
+    //                 .onTrue(
+    //                         Commands.sequence(
+    //                                 SwerveCommands.stopDriving(swerve),
+    //                                 HigherOrderCommands.prepToClimbFirstRung(subsystems)));
+    //         return routine;
+    //     }
 }

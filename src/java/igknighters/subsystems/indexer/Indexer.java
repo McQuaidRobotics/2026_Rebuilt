@@ -2,6 +2,7 @@ package igknighters.subsystems.indexer;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
+import igknighters.constants.RobotConsts;
 import igknighters.subsystems.indexer.launcherRollers.*;
 import igknighters.subsystems.indexer.launcherRollers.ExitRollers;
 import igknighters.subsystems.indexer.spindexer.*;
@@ -13,10 +14,10 @@ public class Indexer extends SubsystemBase {
     private ExitRollers exitRollers;
     private final IndexerVisualizer visualizer = new IndexerVisualizer();
 
-    public Indexer() {
+    public Indexer(RobotConsts consts) {
         if (Robot.isReal()) {
             spindexer = new SpindexerReal();
-            exitRollers = new ExitRollersReal();
+            exitRollers = new ExitRollersReal(consts);
 
         } else {
             spindexer = new SpindexerSim();

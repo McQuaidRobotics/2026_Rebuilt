@@ -11,15 +11,17 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
+import igknighters.constants.RobotConsts;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
 import igknighters.util.log.Log;
 
 public class FlywheelReal extends Flywheel {
-    private final TalonFX mainShooter =
-            new TalonFX(SubsystemConstants.kShooter.kFlywheels.LEADER_MOTOR_ID, kShooter.CANBUS);
-    private final TalonFX followerShooter =
-            new TalonFX(SubsystemConstants.kShooter.kFlywheels.FOLLOWER_MOTOR_ID, kShooter.CANBUS);
+
+    private final RobotConsts consts;
+
+    private final TalonFX mainShooter;
+    private final TalonFX followerShooter;
 
     // private final MotionMagicVelocityVoltage velocityControl = new
 
@@ -38,33 +40,37 @@ public class FlywheelReal extends Flywheel {
 
     public TalonFXConfiguration getLeaderConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = SubsystemConstants.kShooter.kFlywheels.kP;
-        config.Slot0.kI = SubsystemConstants.kShooter.kFlywheels.kI;
-        config.Slot0.kD = SubsystemConstants.kShooter.kFlywheels.kD;
-        config.Slot0.kS = SubsystemConstants.kShooter.kFlywheels.kS;
-        config.Slot0.kV = SubsystemConstants.kShooter.kFlywheels.kV;
+        config.Slot0.kP = consts.shooter().kFlywheels().kP();
+        config.Slot0.kI = consts.shooter().kFlywheels().kI();
+        config.Slot0.kD = consts.shooter().kFlywheels().kD();
+        config.Slot0.kS = consts.shooter().kFlywheels().kS();
+        config.Slot0.kV = consts.shooter().kFlywheels().kV();
 
-        config.Feedback.SensorToMechanismRatio = SubsystemConstants.kShooter.kFlywheels.GEAR_RATIO;
+        config.Feedback.SensorToMechanismRatio = consts.shooter().kFlywheels().GEAR_RATIO();
 
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
         config.MotionMagic.MotionMagicJerk =
-                SubsystemConstants.kShooter.kFlywheels.MOTION_MAGIC_JERK;
+                consts.shooter().kFlywheels().MOTION_MAGIC_JERK();
         config.MotionMagic.MotionMagicAcceleration =
-                SubsystemConstants.kShooter.kFlywheels.MAX_ACCELERATION_RPM;
+                consts.shooter().kFlywheels().MAX_ACCELERATION_RPM();
         config.MotionMagic.MotionMagicCruiseVelocity =
-                SubsystemConstants.kShooter.kFlywheels.MAX_SPEED_RPM;
+                consts.shooter().kFlywheels().MAX_SPEED_RPM();
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
         config.CurrentLimits.SupplyCurrentLimit =
-                SubsystemConstants.kShooter.kFlywheels.SUPPLY_CURRENT_LIMIT;
+                consts.shooter().kFlywheels().SUPPLY_CURRENT_LIMIT();
         config.MotorOutput.PeakReverseDutyCycle = 0.0; // do not allow the motor to run in reverse
 
         return config;
     }
 
-    public FlywheelReal() {
+    public FlywheelReal(RobotConsts consts) {
+        this.consts = consts;
+
+        mainShooter = new TalonFX(consts.shooter().kFlywheels().LEADER_MOTOR_ID(), consts.shooter().kCANBUS());
+        followerShooter = new TalonFX(consts.shooter().kFlywheels().FOLLOWER_MOTOR_ID(), consts.shooter().kCANBUS());
 
         mainShooter.getConfigurator().apply(getLeaderConfig());
         followerShooter.setControl(
@@ -75,7 +81,7 @@ public class FlywheelReal extends Flywheel {
 
     @Override
     public void setSpeed(AngularVelocity speedRPM) {
-        if (!SubsystemConstants.kShooter.kFlywheels.disableFlywheelsLogs) {
+        if (!consts.shooter().kFlywheels().disableFlywheelsLogs()) {
             Log.log("ROBOT/Subsystems/Shooter/Flywheels/setSpeed", speedRPM);
         }
         isBeingControlledActivly = true;
@@ -95,7 +101,7 @@ public class FlywheelReal extends Flywheel {
 
     @Override
     public void periodic() {
-        if (!SubsystemConstants.kShooter.kFlywheels.disableFlywheelsLogs) {
+        if (!consts.shooter().kFlywheels().disableFlywheelsLogs()) {
             Log.log(
                     "ROBOT/Subsystems/Shooter/Flywheels/being controlled",
                     isBeingControlledActivly);

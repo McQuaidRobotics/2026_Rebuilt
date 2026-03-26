@@ -7,48 +7,52 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import igknighters.constants.Conv;
-import igknighters.constants.SubsystemConstants;
-import igknighters.constants.SubsystemConstants.kIndexer;
+import igknighters.constants.RobotConsts;
 import igknighters.util.log.Log;
 
 public class ExitRollersReal extends ExitRollers {
-    private final TalonFX exitRollerMotor =
-            new TalonFX(SubsystemConstants.kIndexer.kExitRollers.LEADER_MOTOR_ID, kIndexer.CANBUS);
 
+    private final RobotConsts consts;
+
+    private final TalonFX exitRollerMotor;
     private final MotionMagicVelocityVoltage velocityControl;
     private final DutyCycleOut dutyCycleControl = new DutyCycleOut(0.0);
     private BaseStatusSignal shooterVelocity;
 
     public TalonFXConfiguration getLeaderConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = SubsystemConstants.kIndexer.kExitRollers.kP;
-        config.Slot0.kI = SubsystemConstants.kIndexer.kExitRollers.kI;
-        config.Slot0.kD = SubsystemConstants.kIndexer.kExitRollers.kD;
-        config.Slot0.kS = SubsystemConstants.kIndexer.kExitRollers.kS;
-        config.Slot0.kV = SubsystemConstants.kIndexer.kExitRollers.kV;
 
-        config.Feedback.SensorToMechanismRatio =
-                SubsystemConstants.kIndexer.kExitRollers.GEAR_RATIO;
+        config.Slot0.kP = consts.indexer().kExitRollers().kP();
+        config.Slot0.kI = consts.indexer().kExitRollers().kI();
+        config.Slot0.kD = consts.indexer().kExitRollers().kD();
+        config.Slot0.kS = consts.indexer().kExitRollers().kS();
+        config.Slot0.kV = consts.indexer().kExitRollers().kV();
+        config.Feedback.SensorToMechanismRatio = consts.indexer().kExitRollers().GEAR_RATIO();
 
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        config.MotionMagic.MotionMagicJerk =
-                SubsystemConstants.kIndexer.kExitRollers.MOTION_MAGIC_JERK;
+        config.MotionMagic.MotionMagicJerk = consts.indexer().kExitRollers().MOTION_MAGIC_JERK();
         config.MotionMagic.MotionMagicAcceleration =
-                SubsystemConstants.kIndexer.kExitRollers.MAX_ACCELERATION_RPM;
+                consts.indexer().kExitRollers().MAX_ACCELERATION_RPM();
         config.MotionMagic.MotionMagicCruiseVelocity =
-                SubsystemConstants.kIndexer.kExitRollers.MAX_SPEED_RPM;
+                consts.indexer().kExitRollers().MAX_SPEED_RPM();
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
         config.CurrentLimits.SupplyCurrentLimit =
-                SubsystemConstants.kIndexer.kExitRollers.SUPPLY_CURRENT_LIMIT;
+                consts.indexer().kExitRollers().SUPPLY_CURRENT_LIMIT();
         config.MotorOutput.PeakReverseDutyCycle = 0.0; // do not allow the motor to run in reverse
         config.TorqueCurrent.PeakForwardTorqueCurrent =
-                SubsystemConstants.kIndexer.kExitRollers.PEAK_CURRENT_LIMIT;
+                consts.indexer().kExitRollers().PEAK_CURRENT_LIMIT();
 
         return config;
     }
 
-    public ExitRollersReal() {
+    public ExitRollersReal(RobotConsts consts) {
+        this.consts = consts;
+
+        exitRollerMotor =
+                new TalonFX(
+                        consts.indexer().kExitRollers().LEADER_MOTOR_ID(),
+                        consts.indexer().kCANBUS());
 
         exitRollerMotor.getConfigurator().apply(getLeaderConfig());
 
@@ -59,7 +63,7 @@ public class ExitRollersReal extends ExitRollers {
 
     @Override
     public void setSpeedRPM(double speedRpm) {
-        if (!SubsystemConstants.kIndexer.kExitRollers.disableExitRollersLogs) {
+        if (!consts.indexer().kExitRollers().disableExitRollersLogs()) {
             Log.log("ROBOT/Subsystems/Indexer/ExitRollers/setSpeed", speedRpm);
         }
         exitRollerMotor.setControl(velocityControl.withVelocity(speedRpm / 60.0));
@@ -84,7 +88,7 @@ public class ExitRollersReal extends ExitRollers {
     @Override
     public void periodic() {
 
-        if (!SubsystemConstants.kIndexer.kExitRollers.disableExitRollersLogs) {
+        if (!consts.indexer().kExitRollers().disableExitRollersLogs()) {
             Log.log("Subsystems/Indexer/ExitRollers/velocity", getSpeedRPM());
         }
     }

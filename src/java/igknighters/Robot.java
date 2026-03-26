@@ -26,6 +26,10 @@ import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
+import igknighters.constants.GeminiRobotConsts;
+import igknighters.constants.RobotConsts;
+import igknighters.constants.RobotIdentity;
+import igknighters.constants.SecondBotRobotConsts;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.controllers.DriverController;
@@ -53,6 +57,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
 
     private Command m_autonomousCommand;
+
+    public RobotConsts consts;
     private AutoFactory autoFactory;
     public final AutoChooser autoChooser = new AutoChooser();
     double i = 0;
@@ -117,6 +123,21 @@ public class Robot extends LoggedRobot {
         SmartDashboard.putData(CommandScheduler.getInstance());
         for (var subsystem : subsystems.lockedResources) {
             SmartDashboard.putData("SubsystemCommands/" + subsystem.getName(), subsystem);
+        }
+    }
+
+    public void setUpRobotConsts() {
+
+        // THE IDS WILL BE WRONG SINCE SN IS WRONG WILL DEFAULT TO SECOND BOT
+        if (RobotIdentity.isGemini()) {
+            consts = new GeminiRobotConsts();
+        } else if (RobotIdentity.isSecondBot()) {
+            consts = new SecondBotRobotConsts();
+        } else if (Robot.isReal()) {
+            throw new IllegalStateException(
+                    "Unknown robot identity ENSURE SERIAL NUMBERS MATCH"); // only problem irl
+        } else {
+            consts = new GeminiRobotConsts(); // in sim with unknown sn we should pick something
         }
     }
 
@@ -201,13 +222,14 @@ public class Robot extends LoggedRobot {
     public Robot() {
         setUpAdvantageScope();
         setUpCommandLogging();
+        setUpRobotConsts();
         subsystems =
                 new Subsystems(
                         new Swerve(false),
                         new LimeLightVision(),
                         new Led(80, 2),
-                        new Shooter(),
-                        new Indexer(),
+                        new Shooter(consts),
+                        new Indexer(consts),
                         new Intake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
@@ -226,13 +248,14 @@ public class Robot extends LoggedRobot {
     public Robot(boolean isSwerveDisabled) {
         setUpAdvantageScope();
         setUpCommandLogging();
+        setUpRobotConsts();
         subsystems =
                 new Subsystems(
                         new Swerve(isSwerveDisabled),
                         new LimeLightVision(),
                         new Led(80, 2),
-                        new Shooter(),
-                        new Indexer(),
+                        new Shooter(consts),
+                        new Indexer(consts),
                         new Intake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);

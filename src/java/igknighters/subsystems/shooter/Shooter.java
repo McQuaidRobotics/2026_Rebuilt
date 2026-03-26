@@ -8,6 +8,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.commands.Shooter.ShooterCommands.shotType;
+import igknighters.constants.RobotConsts;
 import igknighters.constants.ShootInformation;
 import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.shooter.flywheel.*;
@@ -41,11 +42,11 @@ public class Shooter extends SubsystemBase {
                         new LerpTableEntry(20.0, 6000.0),
                     });
 
-    public Shooter() {
+    public Shooter(RobotConsts consts) {
         if (Robot.isReal()) {
-            rollers = new FlywheelReal();
-            turret = new TurretReal();
-            hood = new HoodReal();
+            rollers = new FlywheelReal(consts);
+            turret = new TurretReal(consts);
+            hood = new HoodReal(consts);
         } else {
             rollers = new FlywheelSimulator();
             turret = new TurretSim();
