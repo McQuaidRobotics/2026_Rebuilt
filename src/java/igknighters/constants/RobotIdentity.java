@@ -24,7 +24,7 @@ public class RobotIdentity {
             } else if (serialNumber.equals(SECOND_BOT_SERIAL_NUMBER)) {
                 robot = Robots.SECOND_BOT;
             } else if (serialNumber.equals("TBD")) { // Placeholder for Demo Bot if different
-                robot = Robots.DEMO_BOT;
+                robot = Robots.GEMINKNIGHT;
             } else {
                 robot = Robots.UNKNOWN;
             }
