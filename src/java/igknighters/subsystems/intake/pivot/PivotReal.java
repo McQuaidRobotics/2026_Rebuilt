@@ -15,8 +15,6 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
 import igknighters.constants.Conv;
 import igknighters.constants.RobotConsts;
-import igknighters.constants.SubsystemConstants;
-import igknighters.constants.SubsystemConstants.kIntake;
 import igknighters.util.log.Log;
 
 public class PivotReal extends Pivot {
@@ -32,7 +30,8 @@ public class PivotReal extends Pivot {
         pivotMotor = new TalonFX(consts.intake().kPivot().MOTOR_ID(), consts.intake().kCANBUS());
         pivotMotor.getConfigurator().apply(getPivotConfig());
 
-        pivotEncoder = new CANcoder(consts.intake().kPivot().CANCODER_ID(), consts.intake().kCANBUS());
+        pivotEncoder =
+                new CANcoder(consts.intake().kPivot().CANCODER_ID(), consts.intake().kCANBUS());
         pivotEncoder.getConfigurator().apply(getPivotEncoderConfig());
 
         motionMagicControl = new PositionVoltage(0.0).withSlot(0);
@@ -65,8 +64,7 @@ public class PivotReal extends Pivot {
         config.CurrentLimits.SupplyCurrentLowerLimit =
                 consts.intake().kPivot().SUPPLY_CURRENT_LIMIT();
 
-        config.CurrentLimits.SupplyCurrentLimit =
-                consts.intake().kPivot().SUPPLY_UPPER_LIMIT();
+        config.CurrentLimits.SupplyCurrentLimit = consts.intake().kPivot().SUPPLY_UPPER_LIMIT();
 
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
 

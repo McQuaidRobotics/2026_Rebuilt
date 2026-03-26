@@ -7,13 +7,10 @@ import static edu.wpi.first.units.Units.Rotations;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.RobotCentric;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import igknighters.constants.RobotConsts;
-import igknighters.constants.SubsystemConstants;
-import igknighters.constants.SubsystemConstants.kShooter;
 import igknighters.util.log.Log;
 
 public class HoodReal extends Hood {
@@ -37,10 +34,8 @@ public class HoodReal extends Hood {
         config.Slot0.kA = consts.shooter().kHood().kA();
 
         config.MotionMagic.MotionMagicJerk = consts.shooter().kHood().MAX_JERK();
-        config.MotionMagic.MotionMagicAcceleration =
-                consts.shooter().kHood().MAX_ACCEL_R_P_S_S();
-        config.MotionMagic.MotionMagicCruiseVelocity =
-                consts.shooter().kHood().MAX_SPEED_R_P_S();
+        config.MotionMagic.MotionMagicAcceleration = consts.shooter().kHood().MAX_ACCEL_R_P_S_S();
+        config.MotionMagic.MotionMagicCruiseVelocity = consts.shooter().kHood().MAX_SPEED_R_P_S();
 
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
@@ -65,11 +60,13 @@ public class HoodReal extends Hood {
 
     @Override
     public double getAngleDegrees() {
-        return motor.getPosition().getValueAsDouble() * consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES();
+        return motor.getPosition().getValueAsDouble()
+                * consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES();
     }
 
     public boolean isLegalPosition(double angleDegrees) {
-        return angleDegrees >= consts.shooter().kHood().MIN_ANGLE_DEGREES() && angleDegrees <= consts.shooter().kHood().MAX_ANGLE_DEGREES();
+        return angleDegrees >= consts.shooter().kHood().MIN_ANGLE_DEGREES()
+                && angleDegrees <= consts.shooter().kHood().MAX_ANGLE_DEGREES();
     }
 
     @Override
@@ -84,7 +81,9 @@ public class HoodReal extends Hood {
         super.targetDegrees = targetAngle.in(Degrees);
         motor.setControl(
                 positionControl.withPosition(
-                        Rotations.of(targetAngle.in(Degrees) / consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES())));
+                        Rotations.of(
+                                targetAngle.in(Degrees)
+                                        / consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES())));
     }
 
     @Override
@@ -126,10 +125,14 @@ public class HoodReal extends Hood {
 
     @Override
     public void setAngle(double angleDegrees) {
-        motor.setPosition(Rotation.of(angleDegrees / consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES()));
+        motor.setPosition(
+                Rotation.of(angleDegrees / consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES()));
     }
 
     public void setAngle(Angle angle) {
-        motor.setPosition(Rotations.of(angle.in(Rotations) / consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES()));
+        motor.setPosition(
+                Rotations.of(
+                        angle.in(Rotations)
+                                / consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES()));
     }
 }

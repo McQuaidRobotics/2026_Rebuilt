@@ -11,8 +11,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.constants.RobotConsts;
-import igknighters.constants.SubsystemConstants;
-import igknighters.constants.SubsystemConstants.kIntake;
 import igknighters.util.log.Log;
 
 public class RollersReal extends Rollers {
@@ -27,8 +25,12 @@ public class RollersReal extends Rollers {
 
     public RollersReal(RobotConsts consts) {
         this.consts = consts;
-        intakeMotor = new TalonFX(consts.intake().kRollers().LEADER_MOTOR_ID(), consts.intake().kCANBUS());
-        followerMotor = new TalonFX(consts.intake().kRollers().FOLLOWER_MOTOR_ID(), consts.intake().kCANBUS());
+        intakeMotor =
+                new TalonFX(
+                        consts.intake().kRollers().LEADER_MOTOR_ID(), consts.intake().kCANBUS());
+        followerMotor =
+                new TalonFX(
+                        consts.intake().kRollers().FOLLOWER_MOTOR_ID(), consts.intake().kCANBUS());
         intakeMotor.getConfigurator().apply(getLeaderConfig());
         followerMotor.setControl(
                 new Follower(intakeMotor.getDeviceID(), MotorAlignmentValue.Opposed));
@@ -43,7 +45,8 @@ public class RollersReal extends Rollers {
 
         config.MotionMagic.MotionMagicJerk = consts.intake().kRollers().MOTION_MAGIC_JERK();
         config.MotionMagic.MotionMagicCruiseVelocity = consts.intake().kRollers().MAX_SPEED_RPM();
-        config.MotionMagic.MotionMagicAcceleration = consts.intake().kRollers().MAX_ACCELERATION_RPM();
+        config.MotionMagic.MotionMagicAcceleration =
+                consts.intake().kRollers().MAX_ACCELERATION_RPM();
         config.CurrentLimits.StatorCurrentLimit = 35.0;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 

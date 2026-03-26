@@ -12,8 +12,6 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.constants.RobotConsts;
-import igknighters.constants.SubsystemConstants;
-import igknighters.constants.SubsystemConstants.kShooter;
 import igknighters.util.log.Log;
 
 public class FlywheelReal extends Flywheel {
@@ -52,8 +50,7 @@ public class FlywheelReal extends Flywheel {
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-        config.MotionMagic.MotionMagicJerk =
-                consts.shooter().kFlywheels().MOTION_MAGIC_JERK();
+        config.MotionMagic.MotionMagicJerk = consts.shooter().kFlywheels().MOTION_MAGIC_JERK();
         config.MotionMagic.MotionMagicAcceleration =
                 consts.shooter().kFlywheels().MAX_ACCELERATION_RPM();
         config.MotionMagic.MotionMagicCruiseVelocity =
@@ -69,8 +66,14 @@ public class FlywheelReal extends Flywheel {
     public FlywheelReal(RobotConsts consts) {
         this.consts = consts;
 
-        mainShooter = new TalonFX(consts.shooter().kFlywheels().LEADER_MOTOR_ID(), consts.shooter().kCANBUS());
-        followerShooter = new TalonFX(consts.shooter().kFlywheels().FOLLOWER_MOTOR_ID(), consts.shooter().kCANBUS());
+        mainShooter =
+                new TalonFX(
+                        consts.shooter().kFlywheels().LEADER_MOTOR_ID(),
+                        consts.shooter().kCANBUS());
+        followerShooter =
+                new TalonFX(
+                        consts.shooter().kFlywheels().FOLLOWER_MOTOR_ID(),
+                        consts.shooter().kCANBUS());
 
         mainShooter.getConfigurator().apply(getLeaderConfig());
         followerShooter.setControl(
