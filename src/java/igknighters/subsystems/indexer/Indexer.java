@@ -14,10 +14,10 @@ public class Indexer extends SubsystemBase {
     private ExitRollers exitRollers;
     private final IndexerVisualizer visualizer = new IndexerVisualizer();
 
-    public Indexer(RobotConsts consts) {
+    public Indexer() {
         if (Robot.isReal()) {
             spindexer = new SpindexerReal();
-            exitRollers = new ExitRollersReal(consts);
+            exitRollers = new ExitRollersReal();
 
         } else {
             spindexer = new SpindexerSim();
@@ -38,8 +38,8 @@ public class Indexer extends SubsystemBase {
     }
 
     public void goToState(IndexerState state) {
-        spindexer.goToRPM(state.spindexerRPM);
-        exitRollers.setSpeedRPM(state.exitRollerRPM);
+        spindexer.goToRPM(state.getSpindexerRPM());
+        exitRollers.setSpeedRPM(state.getExitRollerRPM());
     }
 
     public void stop() {

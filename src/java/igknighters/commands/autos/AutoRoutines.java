@@ -236,7 +236,7 @@ RobotConsts consts;
                                                                                         Degrees.of(
                                                                                                 0.0),
                                                                                         Degrees.of(
-                                                                                                consts.shooter().kHood().MIN_ANGLE_DEGREES()))),
+                                                                                               Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()))),
                                                         Commands.waitSeconds(1.0),
                                                         HigherOrderCommands.rapidFireStream(
                                                                 subsystems)),
@@ -435,7 +435,7 @@ RobotConsts consts;
                                                                                         Degrees.of(
                                                                                                 0.0),
                                                                                         Degrees.of(
-                                                                                                consts.shooter().kHood().MIN_ANGLE_DEGREES()))),
+                                                                                               Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()))),
                                                         Commands.waitSeconds(1.0),
                                                         HigherOrderCommands.rapidFireStream(
                                                                 subsystems)),

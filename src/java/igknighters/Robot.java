@@ -227,9 +227,9 @@ public class Robot extends LoggedRobot {
                         new Swerve(false),
                         new LimeLightVision(),
                         new Led(80, 2),
-                        new Shooter(consts),
-                        new Indexer(consts),
-                        new Intake(consts),
+                        new Shooter(),
+                        new Indexer(),
+                        new Intake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
         publishCommandsAndSubystems(subsystems);
@@ -253,9 +253,9 @@ public class Robot extends LoggedRobot {
                         new Swerve(isSwerveDisabled),
                         new LimeLightVision(),
                         new Led(80, 2),
-                        new Shooter(consts),
-                        new Indexer(consts),
-                        new Intake(consts),
+                        new Shooter(),
+                        new Indexer(),
+                        new Intake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
         publishCommandsAndSubystems(subsystems);
@@ -453,11 +453,11 @@ public class Robot extends LoggedRobot {
                         MetersPerSecond.of(launchVelocity),
                         Radians.of(Math.PI / 2 - shooterState.hoodAngle.in(Radian)),
                         shooterState.turretAngle,
-                        Meters.of(consts.shooter().kFlywheels().ShooterHeightMeters()) // height of shooter exit
+                        Meters.of(Robot.consts.shooter().kFlywheels().ShooterHeightMeters()) // height of shooter exit
                         );
 
                 lastShotTime = currentTime;
-                if (!consts.shooter().kFlywheels().disableFlywheelsLogs()) {
+                if (!Robot.consts.shooter().kFlywheels().disableFlywheelsLogs()) {
                     Log.log("ROBOT/Simulation/FuelLaunched", true);
                 }
             }

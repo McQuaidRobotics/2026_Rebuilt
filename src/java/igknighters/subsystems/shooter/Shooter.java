@@ -42,11 +42,11 @@ public class Shooter extends SubsystemBase {
                         new LerpTableEntry(20.0, 6000.0),
                     });
 
-    public Shooter(RobotConsts consts) {
+    public Shooter() {
         if (Robot.isReal()) {
-            rollers = new FlywheelReal(consts);
-            turret = new TurretReal(consts);
-            hood = new HoodReal(consts);
+            rollers = new FlywheelReal();
+            turret = new TurretReal();
+            hood = new HoodReal();
         } else {
             rollers = new FlywheelSimulator();
             turret = new TurretSim();

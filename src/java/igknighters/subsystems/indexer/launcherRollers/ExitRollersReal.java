@@ -6,13 +6,13 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+
+import igknighters.Robot;
 import igknighters.constants.Conv;
 import igknighters.constants.RobotConsts;
 import igknighters.util.log.Log;
 
 public class ExitRollersReal extends ExitRollers {
-
-    private final RobotConsts consts;
 
     private final TalonFX exitRollerMotor;
     private final MotionMagicVelocityVoltage velocityControl;
@@ -22,37 +22,36 @@ public class ExitRollersReal extends ExitRollers {
     public TalonFXConfiguration getLeaderConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
-        config.Slot0.kP = consts.indexer().kExitRollers().kP();
-        config.Slot0.kI = consts.indexer().kExitRollers().kI();
-        config.Slot0.kD = consts.indexer().kExitRollers().kD();
-        config.Slot0.kS = consts.indexer().kExitRollers().kS();
-        config.Slot0.kV = consts.indexer().kExitRollers().kV();
-        config.Feedback.SensorToMechanismRatio = consts.indexer().kExitRollers().GEAR_RATIO();
+        config.Slot0.kP =Robot.consts.indexer().kExitRollers().kP();
+        config.Slot0.kI =Robot.consts.indexer().kExitRollers().kI();
+        config.Slot0.kD =Robot.consts.indexer().kExitRollers().kD();
+        config.Slot0.kS =Robot.consts.indexer().kExitRollers().kS();
+        config.Slot0.kV =Robot.consts.indexer().kExitRollers().kV();
+        config.Feedback.SensorToMechanismRatio =Robot.consts.indexer().kExitRollers().GEAR_RATIO();
 
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        config.MotionMagic.MotionMagicJerk = consts.indexer().kExitRollers().MOTION_MAGIC_JERK();
+        config.MotionMagic.MotionMagicJerk =Robot.consts.indexer().kExitRollers().MOTION_MAGIC_JERK();
         config.MotionMagic.MotionMagicAcceleration =
-                consts.indexer().kExitRollers().MAX_ACCELERATION_RPM();
+               Robot.consts.indexer().kExitRollers().MAX_ACCELERATION_RPM();
         config.MotionMagic.MotionMagicCruiseVelocity =
-                consts.indexer().kExitRollers().MAX_SPEED_RPM();
+               Robot.consts.indexer().kExitRollers().MAX_SPEED_RPM();
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
         config.CurrentLimits.SupplyCurrentLimit =
-                consts.indexer().kExitRollers().SUPPLY_CURRENT_LIMIT();
+               Robot.consts.indexer().kExitRollers().SUPPLY_CURRENT_LIMIT();
         config.MotorOutput.PeakReverseDutyCycle = 0.0; // do not allow the motor to run in reverse
         config.TorqueCurrent.PeakForwardTorqueCurrent =
-                consts.indexer().kExitRollers().PEAK_CURRENT_LIMIT();
+               Robot.consts.indexer().kExitRollers().PEAK_CURRENT_LIMIT();
 
         return config;
     }
 
-    public ExitRollersReal(RobotConsts consts) {
-        this.consts = consts;
+    public ExitRollersReal() {
 
         exitRollerMotor =
                 new TalonFX(
-                        consts.indexer().kExitRollers().LEADER_MOTOR_ID(),
-                        consts.indexer().kCANBUS());
+                       Robot.consts.indexer().kExitRollers().LEADER_MOTOR_ID(),
+                       Robot.consts.indexer().kCANBUS());
 
         exitRollerMotor.getConfigurator().apply(getLeaderConfig());
 
@@ -63,7 +62,7 @@ public class ExitRollersReal extends ExitRollers {
 
     @Override
     public void setSpeedRPM(double speedRpm) {
-        if (!consts.indexer().kExitRollers().disableExitRollersLogs()) {
+        if (!Robot.consts.indexer().kExitRollers().disableExitRollersLogs()) {
             Log.log("ROBOT/Subsystems/Indexer/ExitRollers/setSpeed", speedRpm);
         }
         exitRollerMotor.setControl(velocityControl.withVelocity(speedRpm / 60.0));
@@ -88,7 +87,7 @@ public class ExitRollersReal extends ExitRollers {
     @Override
     public void periodic() {
 
-        if (!consts.indexer().kExitRollers().disableExitRollersLogs()) {
+        if (!Robot.consts.indexer().kExitRollers().disableExitRollersLogs()) {
             Log.log("Subsystems/Indexer/ExitRollers/velocity", getSpeedRPM());
         }
     }
