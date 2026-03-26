@@ -324,7 +324,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_SPEED_RPM() {
-            return 5800.0;
+            return 5000.0;
         }
 
         @Override
@@ -334,7 +334,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double MOTION_MAGIC_JERK() {
-            return 500.0;
+            return 100.0;
         }
 
         @Override
