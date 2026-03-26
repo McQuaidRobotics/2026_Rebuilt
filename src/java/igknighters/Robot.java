@@ -32,7 +32,6 @@ import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.climber.Climber;
 import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
@@ -210,7 +209,6 @@ public class Robot extends LoggedRobot {
                         new Shooter(),
                         new Indexer(),
                         new Intake(),
-                        new Climber(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
         publishCommandsAndSubystems(subsystems);
@@ -236,7 +234,6 @@ public class Robot extends LoggedRobot {
                         new Shooter(),
                         new Indexer(),
                         new Intake(),
-                        new Climber(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
         publishCommandsAndSubystems(subsystems);

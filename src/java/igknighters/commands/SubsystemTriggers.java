@@ -21,8 +21,6 @@ import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.climber.Climber;
-import igknighters.subsystems.climber.ClimberState;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
 import igknighters.subsystems.shooter.Shooter;
@@ -144,19 +142,8 @@ public class SubsystemTriggers {
     }
 
     public void SetupOperatorController(Subsystems subsystems) {
-        Climber climber = subsystems.climber;
         Swerve swerve = subsystems.swerve;
         Shooter shooter = subsystems.shooter;
-
-        Trigger prepClimb =
-                new Trigger(() -> (dashboardTable.getEntry("climb/stage").getDouble(2) == 0));
-        Trigger pullUpClimb =
-                new Trigger(() -> (dashboardTable.getEntry("climb/stage").getDouble(2) == 1));
-        Trigger stowClimbTrigger =
-                new Trigger(() -> (dashboardTable.getEntry("climb/stage").getDouble(2) == 2));
-        prepClimb.onTrue(ClimberCommands.goToState(climber, ClimberState.LATCH_ON));
-        pullUpClimb.onTrue(ClimberCommands.goToState(climber, ClimberState.PULL_UP));
-        stowClimbTrigger.onTrue(ClimberCommands.goToState(climber, ClimberState.STOW));
 
         Trigger moveToTrigger =
                 new Trigger(() -> dashboardTable.getEntry("robot/moveTrigger").getBoolean(false));

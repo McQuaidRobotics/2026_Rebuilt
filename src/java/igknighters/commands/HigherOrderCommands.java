@@ -10,7 +10,6 @@ import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.climber.ClimberState;
 import java.util.Set;
 
 public class HigherOrderCommands {
@@ -118,65 +117,5 @@ public class HigherOrderCommands {
     public static Command hippoShoot(Subsystems subsystems) {
         return Commands.parallel(
                 rapidFireStream(subsystems), IntakeCommands.holdAtIntake(subsystems.intake));
-    }
-
-    public static Command unClimbCommand(Subsystems subsystems) {
-        return Commands.sequence(
-                ClimberCommands.goToState(subsystems.climber, ClimberState.LATCH_ON),
-                Repulsor.moveWithRepulsor(subsystems.swerve, getClimbStartPose()),
-                ClimberCommands.goToState(subsystems.climber, ClimberState.STOW));
-    }
-
-    public static Command prepToClimbFirstRung(Subsystems subsystems) {
-        return Commands.defer(
-                        () -> {
-                            Pose2d startPose = getClimbStartPose();
-                            Pose2d endPose = getClimbEndPose();
-                            return Commands.parallel(
-                                    IntakeCommands.holdAtStow(subsystems.intake),
-                                    Commands.sequence(
-                                            Commands.parallel(
-                                                            ClimberCommands.holdAtState(
-                                                                    subsystems.climber,
-                                                                    ClimberState.LATCH_ON),
-                                                            Repulsor.moveWithRepulsor(
-                                                                    subsystems.swerve, startPose))
-                                                    .until(
-                                                            SwerveCommands.isAt(
-                                                                    subsystems.swerve,
-                                                                    startPose,
-                                                                    3,
-                                                                    2)),
-                                            Commands.parallel(
-                                                            ClimberCommands.holdAtState(
-                                                                    subsystems.climber,
-                                                                    ClimberState.LATCH_ON),
-                                                            SwerveCommands.moveToSimple(
-                                                                    subsystems.swerve, startPose))
-                                                    .until(
-                                                            SwerveCommands.isAt(
-                                                                    subsystems.swerve,
-                                                                    startPose,
-                                                                    .02,
-                                                                    .05)),
-                                            Commands.parallel(
-                                                            ClimberCommands.holdAtState(
-                                                                    subsystems.climber,
-                                                                    ClimberState.LATCH_ON),
-                                                            SwerveCommands.moveToSimple(
-                                                                    subsystems.swerve, endPose))
-                                                    .until(
-                                                            () ->
-                                                                    SwerveCommands.isAt(
-                                                                                    subsystems
-                                                                                            .swerve,
-                                                                                    endPose,
-                                                                                    .02,
-                                                                                    .05)
-                                                                            .getAsBoolean()),
-                                            SwerveCommands.stopDriving(subsystems.swerve)));
-                        },
-                        Set.of(subsystems.swerve, subsystems.climber, subsystems.intake))
-                .withName("Moving to Climber and raising to max height");
     }
 }

@@ -163,7 +163,7 @@ public class ShootInformation {
      * @param newState The new boolean state for canShoot.
      */
     public void setAtTarget(boolean newState) {
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!GeminiRobotConsts.disableAllLogs) {
             Log.log("ROBOT/STATUS/CAN SHOOT", newState);
         }
         this.atTarget = newState;
@@ -174,14 +174,14 @@ public class ShootInformation {
     }
 
     public void setPossibleShot(boolean newState) {
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!GeminiRobotConsts.disableAllLogs) {
             Log.log("ROBOT/STATUS/POSSIBLE SHOT", newState);
         }
         this.possibleShot = newState;
     }
 
     public void setBeingControlled(boolean newState) {
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!GeminiRobotConsts.disableAllLogs) {
             Log.log("ROBOT/Subsystems/Shooter/BeingControlled", newState);
         }
         this.beingControlled = newState;

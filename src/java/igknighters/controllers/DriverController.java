@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import igknighters.commands.ClimberCommands;
 import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.IntakeCommands;
@@ -22,7 +21,6 @@ import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.climber.ClimberState;
 import igknighters.subsystems.shooter.ShooterState;
 import java.util.function.DoubleSupplier;
 
@@ -119,7 +117,6 @@ public class DriverController {
         var swerve = subsystems.swerve;
         var shooter = subsystems.shooter;
         var indexer = subsystems.indexer;
-        var climber = subsystems.climber;
 
         if (debugType == DebugType.SWERVE) {
             this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
@@ -158,13 +155,6 @@ public class DriverController {
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));
             this.B.onTrue(IndexerCommands.justStop(indexer));
-
-        } else if (debugType == DebugType.CLIMBER) {
-            this.B.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.LATCH_ON));
-            this.X.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.STOW));
-            this.Y.whileTrue(ClimberCommands.climbSequence(climber));
-            this.LT.whileTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
-            this.RT.whileTrue(HigherOrderCommands.unClimbCommand(subsystems));
         } else if (debugType == DebugType.INTAKE) {
             this.A.whileTrue(IntakeCommands.holdAtIntake(subsystems.intake));
             this.B.whileTrue(IntakeCommands.holdAtStow(subsystems.intake));
