@@ -2,6 +2,7 @@ package igknighters.subsystems.led.driver;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import igknighters.Robot;
 import igknighters.constants.SubsystemConstants;
 import igknighters.util.log.Log;
 import monologue.Logged;
@@ -40,7 +41,7 @@ public class PWMDriver implements Logged {
             previousBuffer = appliedBuffer;
             led.setData(appliedBuffer);
         }
-        if (!Robot.consts.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs()) {
             Log.log("ROBOT/Subsystems/LED/New Buffer Applied", newBuffer);
         }
     }

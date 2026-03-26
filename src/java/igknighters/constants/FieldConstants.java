@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import igknighters.Robot;
 import igknighters.commands.Repulsor.obstacle;
 import igknighters.commands.Repulsor.obstacleType;
 import igknighters.util.log.Log;
@@ -232,7 +233,7 @@ public class FieldConstants {
         public static boolean isInside(Pose2d pose) {
             double x = pose.getX();
             double y = pose.getY();
-            if (!Robot.consts.disableAllLogs) {
+            if (!Robot.consts.disableAllLogs()) {
                 Log.log("ROBOT/Commands/BumpProtection: x;", x);
                 Log.log("ROBOT/Commands/BumpProtection: y;", y);
             }
@@ -242,7 +243,7 @@ public class FieldConstants {
                     && x <= BUMP_1_X_METERS + HALF_Y_FIELD_METERS) {
                 if (y >= BUMP_1_Y_METERS - HALF_HEIGHT_METERS
                         && y <= BUMP_1_Y_METERS + HALF_HEIGHT_METERS) {
-                    if (!Robot.consts.disableAllLogs) {
+                    if (!Robot.consts.disableAllLogs()) {
                         Log.log("ROBOT/Commands/BumpProtection: inside bump 1", true);
                     }
                     return true;
@@ -254,14 +255,14 @@ public class FieldConstants {
                     && x <= BUMP_2_X_METERS + HALF_Y_FIELD_METERS) {
                 if (y >= BUMP_2_Y_METERS - HALF_HEIGHT_METERS
                         && y <= BUMP_2_Y_METERS + HALF_HEIGHT_METERS) {
-                    if (!Robot.consts.disableAllLogs) {
+                    if (!Robot.consts.disableAllLogs()) {
                         Log.log("ROBOT/Commands/BumpProtection: inside bump 2", true);
                     }
                     return true;
                 }
             }
 
-            if (!Robot.consts.disableAllLogs) {
+            if (!Robot.consts.disableAllLogs()) {
                 Log.log("ROBOT/Commands/BumpProtection: inside bump 2", false);
                 Log.log("ROBOT/Commands/BumpProtection: inside bump 1", false);
             }

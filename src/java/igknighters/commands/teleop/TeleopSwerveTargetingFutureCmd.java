@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import igknighters.Robot;
 import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
@@ -80,7 +81,7 @@ public class TeleopSwerveTargetingFutureCmd extends TeleopSwerveBaseCmd {
 
         double error = wrapAngleRadians(desiredAngleRad - futureAngleRad);
 
-        if (!Robot.consts.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs()) {
             Log.log(
                     "ROBOT/Commands/Swerve/TeleopSwerveTargetingFutureCmd/Desired Angle (deg)",
                     Math.toDegrees(desiredAngleRad));

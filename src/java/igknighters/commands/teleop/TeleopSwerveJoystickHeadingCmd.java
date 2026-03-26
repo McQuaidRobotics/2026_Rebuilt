@@ -8,6 +8,7 @@ import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
+import igknighters.Robot;
 import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
@@ -44,7 +45,7 @@ public class TeleopSwerveJoystickHeadingCmd extends TeleopSwerveJoystickRepulsor
         double omega =
                 rotationController.calculate(
                         swerve.getState().Pose.getRotation().getDegrees(), heading);
-        if (!Robot.consts.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs()) {
             Log.log(
                     "ROBOT/Commands/Swerve/TeleopSwerveHeadingCmd/Swerve Heading: ",
                     (swerve.getState().Pose.getRotation().getDegrees()));

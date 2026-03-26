@@ -7,6 +7,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import igknighters.Robot;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIndexer.kSpindexer;
 import igknighters.util.log.Log;
@@ -88,7 +89,7 @@ public class SpindexerSim extends Spindexer {
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
 
         // Logging
-        if (!Robot.consts.kIndexer.kSpindexer.disableSpindexerLogs) {
+        if (!Robot.consts.indexer().kSpindexer().disableSpindexerLogs()) {
             Log.log("ROBOT/Subsystems/Indexer/Spindexer/SimVoltage", voltage);
             Log.log("ROBOT/Subsystems/Indexer/Spindexer/SimSpeedRPM", currentRPM);
             Log.log("ROBOT/Subsystems/Indexer/Spindexer/GoalSpeedRPM", goalRPS * 60.0);
