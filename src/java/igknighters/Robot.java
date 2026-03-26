@@ -57,7 +57,7 @@ public class Robot extends LoggedRobot {
 
     private Command m_autonomousCommand;
 
-    public RobotConsts consts;
+    public static RobotConsts consts;
     private AutoFactory autoFactory;
     public final AutoChooser autoChooser = new AutoChooser();
     double i = 0;
