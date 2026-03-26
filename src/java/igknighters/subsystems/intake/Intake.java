@@ -7,6 +7,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
+import igknighters.constants.RobotConsts;
 import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.intake.pivot.Pivot;
 import igknighters.subsystems.intake.pivot.PivotReal;
@@ -21,10 +22,10 @@ public class Intake extends SubsystemBase {
     private final Rollers rollers;
     private final IntakeVisualizer visualizer;
 
-    public Intake() {
+    public Intake(RobotConsts consts) {
         if (Robot.isReal()) {
-            pivot = new PivotReal();
-            rollers = new RollersReal();
+            pivot = new PivotReal(consts);
+            rollers = new RollersReal(consts);
         } else {
             pivot = new PivotSim();
             rollers = new RollersSim();

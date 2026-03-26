@@ -15,6 +15,8 @@ public abstract class RobotConsts {
 
     public abstract kIndexerConsts indexer();
 
+    public abstract kIntakeConsts intake();
+
     public abstract kLimelightVisionConsts limelightVision();
 
     public interface kShooterConsts {
@@ -275,6 +277,100 @@ public abstract class RobotConsts {
         double kA();
 
         boolean disableSpindexerLogs();
+    }
+
+    public interface kIntakeConsts {
+        CANBus kCANBUS();
+
+        kPivotConsts kPivot();
+
+        kRollersConsts kRollers();
+    }
+
+    public interface kPivotConsts {
+        int MOTOR_ID();
+
+        int CANCODER_ID();
+
+        double GEAR_RATIO();
+
+        double MAX_ANGLE_DEGREES();
+
+        double MIN_ANGLE_DEGREES();
+
+        double MAX_SPEED_METERS_PER_SECOND();
+
+        double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED();
+
+        double ENCODER_OFFSET();
+
+        double MAX_JERK();
+
+        int STATOR_CURRENT_LIMIT();
+
+        int SUPPLY_CURRENT_LIMIT();
+
+        int SUPPLY_UPPER_LIMIT();
+
+        double kP();
+
+        double kI();
+
+        double kD();
+
+        double kS();
+
+        double kV();
+
+        double kA();
+
+        double JKG_M2();
+
+        double LENGTH_METERS();
+
+        boolean disablePivotLogs();
+    }
+
+    public interface kRollersConsts {
+        int LEADER_MOTOR_ID();
+
+        int FOLLOWER_MOTOR_ID();
+
+        double WHEEL_RADIUS_METERS();
+
+        double GEAR_RATIO();
+
+        double MOMENT_OF_INERTIA_KG_M2();
+
+        double MAX_SPEED_RPM();
+
+        double MAX_ACCELERATION_RPM();
+
+        double MOTION_MAGIC_JERK();
+
+        int BEAM_BREAK_SENSOR_CHANNEL();
+
+        int FORWARD_CURRENT_LIMIT();
+
+        int REVERSE_CURRENT_LIMIT();
+
+        int STATOR_CURRENT_LIMIT();
+
+        int SUPPLY_CURRENT_LIMIT();
+
+        double kP();
+
+        double kI();
+
+        double kD();
+
+        double kS();
+
+        double kV();
+
+        double kA();
+
+        boolean disableRollersLogs();
     }
 
     public interface kExitRollersConsts {

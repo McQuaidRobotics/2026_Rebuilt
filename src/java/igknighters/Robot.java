@@ -230,7 +230,7 @@ public class Robot extends LoggedRobot {
                         new Led(80, 2),
                         new Shooter(consts),
                         new Indexer(consts),
-                        new Intake(),
+                        new Intake(consts),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
         publishCommandsAndSubystems(subsystems);
@@ -256,7 +256,7 @@ public class Robot extends LoggedRobot {
                         new Led(80, 2),
                         new Shooter(consts),
                         new Indexer(consts),
-                        new Intake(),
+                        new Intake(consts),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
         publishCommandsAndSubystems(subsystems);
