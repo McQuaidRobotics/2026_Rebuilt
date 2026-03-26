@@ -50,7 +50,7 @@ public class LEDCommands {
             names.add(section.name());
         }
 
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs) {
             Log.log("ROBOT/Subsystems/LED/Run/Sections", sections.length);
         }
 
@@ -84,7 +84,7 @@ public class LEDCommands {
 
         for (int i = 0; i < led.pwm1.numberOfStrips; i++) {
             String name = "full led strip " + (i + 1);
-            if (!SubsystemConstants.disableAllLogs) {
+            if (!Robot.consts.disableAllLogs) {
                 Log.log("ROBOT/Subsystems/LED/Run/AddingSection", name);
             }
             sections[i] = new LEDSection(i, 0, pattern, stripLength, name);

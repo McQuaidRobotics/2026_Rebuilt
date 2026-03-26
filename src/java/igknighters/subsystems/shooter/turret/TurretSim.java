@@ -3,6 +3,7 @@ package igknighters.subsystems.shooter.turret;
 import static edu.wpi.first.units.Units.Degrees;
 
 import edu.wpi.first.units.measure.Angle;
+import igknighters.Robot;
 import igknighters.constants.SubsystemConstants;
 import igknighters.util.log.Log;
 
@@ -33,7 +34,7 @@ public class TurretSim extends Turret {
     @Override
     public void periodic() {
 
-        if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+        if (!Robot.consts.shooter().kTurret().disableTurretLogs()) {
             Log.log("ROBOT/Subsystems/Shooter/Turret/AngleDegrees", getAngleDegrees());
             Log.log("ROBOT/Subsystems/Shooter/Turret/TargetDegrees", super.targetDegrees);
         }

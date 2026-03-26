@@ -81,7 +81,7 @@ public class Robot extends LoggedRobot {
     TunableDouble targetingD = TunableValues.getDouble("Tunables/TargetingD", 0.00);
 
     public void setUpCommandLogging() {
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs) {
             scheduler.onCommandInitialize(
                     command ->
                             Log.log(
@@ -348,11 +348,11 @@ public class Robot extends LoggedRobot {
                         subsystems.vision
                                 .getLastTimeStamp()); // trusts vision rotation less. Needs tuning
                 // increase the std devs to trust vision less
-                if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+                if (!Robot.consts.kLimelightVision.disableVisionLogs) {
                     Log.log("ROBOT/Subsystems/Vision/Null Pose", false);
                 }
             } else {
-                if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+                if (!Robot.consts.kLimelightVision.disableVisionLogs) {
                     Log.log("ROBOT/Subsystems/Vision/Null Pose", true);
                 }
             }
@@ -511,7 +511,7 @@ public class Robot extends LoggedRobot {
         } else {
             // Default to blue if alliance is unknown (e.g., in simulation without alliance set)
             // Log this so we know why things might be going to the blue side.
-            if (!SubsystemConstants.disableAllLogs) {
+            if (!Robot.consts.disableAllLogs) {
                 Log.log("ROBOT/System/AllianceUnknown", true);
             }
             return true;

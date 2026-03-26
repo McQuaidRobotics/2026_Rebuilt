@@ -40,7 +40,7 @@ public class PWMDriver implements Logged {
             previousBuffer = appliedBuffer;
             led.setData(appliedBuffer);
         }
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs) {
             Log.log("ROBOT/Subsystems/LED/New Buffer Applied", newBuffer);
         }
     }

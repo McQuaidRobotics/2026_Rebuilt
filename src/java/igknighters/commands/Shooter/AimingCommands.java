@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import igknighters.Robot;
 import igknighters.commands.Shooter.ShooterCommands.shotType;
 import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
@@ -58,7 +59,7 @@ public class AimingCommands {
                             FieldConstants.BUMP.BUMP_2_X_METERS + 0.08);
 
             boolean isUnder = under1 || under2;
-            if (!SubsystemConstants.disableAllLogs) {
+            if (!Robot.consts.disableAllLogs()) {
                 Log.log("ROBOT/Commands/Shooter/Trench Protection/isUnderTrench", isUnder);
                 Log.log("ROBOT/Commands/Shooter/Trench Protection/RobotX", turretPose.get().getX());
             }

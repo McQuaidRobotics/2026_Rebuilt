@@ -9,6 +9,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import igknighters.Robot;
 import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
@@ -66,7 +67,7 @@ public class TeleopSwerveForwardTargetingCmd extends TeleopSwerveBaseCmd {
 
         double error = wrapAngleRadians(desiredAngleRad - currentAngleRad);
 
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs) {
             Log.log(
                     "ROBOT/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Desired Angle (deg)",
                     Math.toDegrees(desiredAngleRad));

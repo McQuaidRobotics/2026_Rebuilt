@@ -146,7 +146,7 @@ public class LedUtil {
             blue[i] = color.blue;
         }
 
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs) {
             Log.log("ROBOT/Commands/" + name + "Led/Reds", red);
             Log.log("ROBOT/Commands/" + name + "Led/Greens", green);
             Log.log("ROBOT/Commands/" + name + "Led/Blues", blue);

@@ -88,7 +88,7 @@ public class SpindexerSim extends Spindexer {
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
 
         // Logging
-        if (!SubsystemConstants.kIndexer.kSpindexer.disableSpindexerLogs) {
+        if (!Robot.consts.kIndexer.kSpindexer.disableSpindexerLogs) {
             Log.log("ROBOT/Subsystems/Indexer/Spindexer/SimVoltage", voltage);
             Log.log("ROBOT/Subsystems/Indexer/Spindexer/SimSpeedRPM", currentRPM);
             Log.log("ROBOT/Subsystems/Indexer/Spindexer/GoalSpeedRPM", goalRPS * 60.0);

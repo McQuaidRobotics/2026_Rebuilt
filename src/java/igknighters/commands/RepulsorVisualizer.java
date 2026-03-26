@@ -49,7 +49,7 @@ public class RepulsorVisualizer {
 
     public static void update(
             double goalTheta, double repulseTheta, double goalStrength, double repulseStrength) {
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs) {
             Log.log("ROBOT/Commands/repulsor/repulse theta", repulseTheta);
             Log.log("ROBOT/Commands/repulsor/goal theta", goalTheta);
             Log.log("ROBOT/Commands/repulsor/repulse strength", repulseStrength);

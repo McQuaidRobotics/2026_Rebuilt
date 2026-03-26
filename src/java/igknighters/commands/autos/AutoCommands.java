@@ -37,7 +37,7 @@ public class AutoCommands {
     }
 
     protected void logAutoEvent(String message, String event) {
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs()) {
             Log.log("ROBOT/Commands/Autos", message + " is " + event);
         }
     }
@@ -174,7 +174,7 @@ public class AutoCommands {
     }
 
     protected RebuiltAuto newRebuiltAuto(String name) {
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs()) {
             Log.log("ROBOT/Commands/Autos/Creation", "Creating new rebuilt auto: " + name);
         }
         return new RebuiltAuto(autoFactory.newRoutine(name));

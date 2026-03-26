@@ -3,6 +3,7 @@ package igknighters.subsystems.Luma.Cameras;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import igknighters.Robot;
 import igknighters.constants.SubsystemConstants;
 import igknighters.util.log.Log;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class CameraReal extends Camera {
 
         camera.setPipelineIndex(0);
 
-        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+        if (!Robot.consts.limelightVision().disableVisionLogs()) {
             Log.log(cameraName, true);
             Log.log("ROBOT/Subsystems/Vision/" + cameraName + "/Status", "ENABLED");
         }
@@ -46,7 +47,7 @@ public class CameraReal extends Camera {
 
     @Override
     public void periodic() {
-        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+        if (!Robot.consts.limelightVision().disableVisionLogs()) {
             Log.log("ROBOT/Subsystems/Vision/" + name + "/Connected", camera.isConnected());
         }
 
@@ -96,30 +97,30 @@ public class CameraReal extends Camera {
 
     @Override
     public Translation2d getGamePieceOffset() {
-        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+        if (!Robot.consts.limelightVision().disableVisionLogs()) {
             Log.log("ROBOT/Subsystems/Vision/Getting Offset", true);
         }
 
         if (results.isEmpty()) {
-            if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+            if (!Robot.consts.limelightVision().disableVisionLogs()) {
                 Log.log("ROBOT/Subsystems/Vision/ObjectDetection/Camera Results", false);
             }
             return new Translation2d();
         }
 
-        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+        if (!Robot.consts.limelightVision().disableVisionLogs()) {
             Log.log("ROBOT/Subsystems/Vision/ObjectDetection/Camera Results", true);
         }
         var result = results.get(results.size() - 1);
 
         if (!result.hasTargets()) {
-            if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+            if (!Robot.consts.limelightVision().disableVisionLogs()) {
                 Log.log("ROBOT/Subsystems/Vision/ObjectDetection/Camera Has Target", false);
             }
             return new Translation2d();
         }
 
-        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+        if (!Robot.consts.limelightVision().disableVisionLogs()) {
             Log.log("ROBOT/Subsystems/Vision/ObjectDetection/Camera Has Target", true);
         }
 
@@ -156,7 +157,7 @@ public class CameraReal extends Camera {
             bestCluster = currentCluster;
         }
 
-        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+        if (!Robot.consts.limelightVision().disableVisionLogs()) {
             Log.log(
                     "ROBOT/Subsystems/Vision/ObjectDetection/Camera Cluster Size",
                     bestCluster.size());
@@ -188,7 +189,7 @@ public class CameraReal extends Camera {
                     gamePieceNumber++) {
                 PhotonTrackedTarget gamePiece = gamePieces.getTargets().get(gamePieceNumber);
 
-                if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+                if (!Robot.consts.limelightVision().disableVisionLogs()) {
                     Log.log(
                             "Subsystems/Vision/ObjectDetection/GAMEPIECES/"
                                     + gamePieceNumber
@@ -214,7 +215,7 @@ public class CameraReal extends Camera {
                         new Translation2d(distance * Math.cos(yaw), distance * Math.sin(yaw))
                                 .plus(robotToCameraTranslation);
 
-                if (!SubsystemConstants.kIndexer.kExitRollers.disableExitRollersLogs) {
+                if (!Robot.consts.limelightVision().disableVisionLogs()) {
                     Log.log(
                             "Subsystems/Vision/ObjectDetection/GAMEPIECES/"
                                     + gamePieceNumber

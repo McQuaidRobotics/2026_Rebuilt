@@ -39,7 +39,7 @@ public class PivotSim extends Pivot {
     @Override
     public void periodic() {
 
-        if (!SubsystemConstants.kIntake.kPivot.disablePivotLogs) {
+        if (!Robot.consts.kIntake.kPivot.disablePivotLogs) {
             Log.log("ROBOT/Subsystems/Intake/Pivot/AngleDegrees", getAngle().in(Degrees));
             Log.log("ROBOT/Subsystems/Intake/Pivot/TargetDegrees", super.targetDegrees);
         }

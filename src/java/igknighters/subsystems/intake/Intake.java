@@ -43,7 +43,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void goTo(IntakeState state) {
-        goTo(state.pivotDegrees, state.rollerSpeedRPM);
+        goTo(state.getPivotAngle(), state.getRollerSpeed());
     }
 
     public Angle getPivotAngle() {

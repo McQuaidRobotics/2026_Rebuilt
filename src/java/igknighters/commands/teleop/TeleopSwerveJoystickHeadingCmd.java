@@ -44,7 +44,7 @@ public class TeleopSwerveJoystickHeadingCmd extends TeleopSwerveJoystickRepulsor
         double omega =
                 rotationController.calculate(
                         swerve.getState().Pose.getRotation().getDegrees(), heading);
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs) {
             Log.log(
                     "ROBOT/Commands/Swerve/TeleopSwerveHeadingCmd/Swerve Heading: ",
                     (swerve.getState().Pose.getRotation().getDegrees()));

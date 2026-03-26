@@ -120,7 +120,7 @@ public class SwerveCommands {
             double angleToleranceRadians) {
         return () -> {
             Pose2d currentPose = swerve.getState().Pose;
-            if (!SubsystemConstants.disableAllLogs) {
+            if (!Robot.consts.disableAllLogs) {
                 FieldVisualizer.getInstance().updateDrivingTarget(targetPose);
             }
 
@@ -141,7 +141,7 @@ public class SwerveCommands {
             boolean isAt =
                     positionError <= positionToleranceMeters && angleError <= angleToleranceRadians;
 
-            if (!SubsystemConstants.disableAllLogs) {
+            if (!Robot.consts.disableAllLogs) {
                 Log.log("ROBOT/Commands/Swerve/IsAt/PositionError", positionError);
                 Log.log("ROBOT/Commands/Swerve/IsAt/AngleError", angleError);
                 Log.log("ROBOT/Commands/Swerve/IsAt/Reached Target", isAt);
@@ -177,7 +177,7 @@ public class SwerveCommands {
                             thetaController.calculate(
                                     MathUtil.angleModulus(currentPose.getRotation().getRadians()),
                                     MathUtil.angleModulus(targetPose.getRotation().getRadians()));
-                    if (!SubsystemConstants.disableAllLogs) {
+                    if (!Robot.consts.disableAllLogs) {
                         Log.log("ROBOT/Commands/Swerve/MoveToSimple/VX", vx);
                         Log.log("ROBOT/Commands/Swerve/MoveToSimple/VY", vy);
                         Log.log("ROBOT/Commands/Swerve/MoveToSimple/Omega", omega);
@@ -237,7 +237,7 @@ public class SwerveCommands {
                             Math.max(
                                     Math.min(-omega, maxVelocities.getRotation().getRadians()),
                                     -maxVelocities.getRotation().getRadians());
-                    if (!SubsystemConstants.disableAllLogs) {
+                    if (!Robot.consts.disableAllLogs) {
 
                         Log.log(
                                 "Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedVX",
