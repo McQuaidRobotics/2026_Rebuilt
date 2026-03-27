@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 
 public class AutoRoutines extends AutoCommands {
 
-RobotConsts consts;
+    RobotConsts consts;
 
     public AutoRoutines(Subsystems subsystems, AutoFactory factory, RobotConsts consts) {
         super(subsystems, factory);
@@ -236,7 +236,11 @@ RobotConsts consts;
                                                                                         Degrees.of(
                                                                                                 0.0),
                                                                                         Degrees.of(
-                                                                                               Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()))),
+                                                                                                Robot
+                                                                                                        .consts
+                                                                                                        .shooter()
+                                                                                                        .kHood()
+                                                                                                        .MIN_ANGLE_DEGREES()))),
                                                         Commands.waitSeconds(1.0),
                                                         HigherOrderCommands.rapidFireStream(
                                                                 subsystems)),
@@ -435,7 +439,11 @@ RobotConsts consts;
                                                                                         Degrees.of(
                                                                                                 0.0),
                                                                                         Degrees.of(
-                                                                                               Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()))),
+                                                                                                Robot
+                                                                                                        .consts
+                                                                                                        .shooter()
+                                                                                                        .kHood()
+                                                                                                        .MIN_ANGLE_DEGREES()))),
                                                         Commands.waitSeconds(1.0),
                                                         HigherOrderCommands.rapidFireStream(
                                                                 subsystems)),

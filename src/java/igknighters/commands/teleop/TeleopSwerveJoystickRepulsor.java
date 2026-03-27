@@ -9,7 +9,6 @@ import igknighters.Robot;
 import igknighters.commands.Repulsor;
 import igknighters.commands.Repulsor.obstacle;
 import igknighters.constants.FieldConstants;
-import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.ControllerConstants;

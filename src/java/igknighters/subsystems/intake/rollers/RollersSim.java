@@ -11,7 +11,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import igknighters.Robot;
-import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIntake;
 import igknighters.util.log.Log;
 

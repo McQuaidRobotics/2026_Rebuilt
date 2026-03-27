@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.LEDWriter;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.util.Color;
 import igknighters.Robot;
-import igknighters.constants.SubsystemConstants;
 import igknighters.util.log.Log;
 import java.nio.ByteBuffer;
 

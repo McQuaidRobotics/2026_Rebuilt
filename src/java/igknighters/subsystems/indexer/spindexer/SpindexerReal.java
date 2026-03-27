@@ -5,15 +5,14 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-
 import igknighters.Robot;
-import igknighters.constants.SubsystemConstants;
-import igknighters.constants.SubsystemConstants.kIndexer;
 import igknighters.util.log.Log;
 
 public class SpindexerReal extends Spindexer {
     private final TalonFX spindexer =
-            new TalonFX(Robot.consts.indexer().kSpindexer().LEADER_MOTOR_ID(), Robot.consts.indexer().kCANBUS());
+            new TalonFX(
+                    Robot.consts.indexer().kSpindexer().LEADER_MOTOR_ID(),
+                    Robot.consts.indexer().kCANBUS());
 
     private final MotionMagicVelocityVoltage velocityControl;
     private final DutyCycleOut dutyCycleControl = new DutyCycleOut(0.0);

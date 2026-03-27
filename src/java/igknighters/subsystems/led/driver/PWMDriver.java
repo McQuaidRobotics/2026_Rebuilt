@@ -3,7 +3,6 @@ package igknighters.subsystems.led.driver;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import igknighters.Robot;
-import igknighters.constants.SubsystemConstants;
 import igknighters.util.log.Log;
 import monologue.Logged;
 

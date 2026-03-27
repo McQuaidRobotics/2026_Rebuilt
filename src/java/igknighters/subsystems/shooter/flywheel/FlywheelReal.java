@@ -12,11 +12,9 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.Robot;
-import igknighters.constants.RobotConsts;
 import igknighters.util.log.Log;
 
 public class FlywheelReal extends Flywheel {
-
 
     private final TalonFX mainShooter;
     private final TalonFX followerShooter;
@@ -38,26 +36,27 @@ public class FlywheelReal extends Flywheel {
 
     public TalonFXConfiguration getLeaderConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP =Robot.consts.shooter().kFlywheels().kP();
-        config.Slot0.kI =Robot.consts.shooter().kFlywheels().kI();
-        config.Slot0.kD =Robot.consts.shooter().kFlywheels().kD();
-        config.Slot0.kS =Robot.consts.shooter().kFlywheels().kS();
-        config.Slot0.kV =Robot.consts.shooter().kFlywheels().kV();
+        config.Slot0.kP = Robot.consts.shooter().kFlywheels().kP();
+        config.Slot0.kI = Robot.consts.shooter().kFlywheels().kI();
+        config.Slot0.kD = Robot.consts.shooter().kFlywheels().kD();
+        config.Slot0.kS = Robot.consts.shooter().kFlywheels().kS();
+        config.Slot0.kV = Robot.consts.shooter().kFlywheels().kV();
 
-        config.Feedback.SensorToMechanismRatio =Robot.consts.shooter().kFlywheels().GEAR_RATIO();
+        config.Feedback.SensorToMechanismRatio = Robot.consts.shooter().kFlywheels().GEAR_RATIO();
 
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-        config.MotionMagic.MotionMagicJerk =Robot.consts.shooter().kFlywheels().MOTION_MAGIC_JERK();
+        config.MotionMagic.MotionMagicJerk =
+                Robot.consts.shooter().kFlywheels().MOTION_MAGIC_JERK();
         config.MotionMagic.MotionMagicAcceleration =
-               Robot.consts.shooter().kFlywheels().MAX_ACCELERATION_RPM();
+                Robot.consts.shooter().kFlywheels().MAX_ACCELERATION_RPM();
         config.MotionMagic.MotionMagicCruiseVelocity =
-               Robot.consts.shooter().kFlywheels().MAX_SPEED_RPM();
+                Robot.consts.shooter().kFlywheels().MAX_SPEED_RPM();
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
         config.CurrentLimits.SupplyCurrentLimit =
-               Robot.consts.shooter().kFlywheels().SUPPLY_CURRENT_LIMIT();
+                Robot.consts.shooter().kFlywheels().SUPPLY_CURRENT_LIMIT();
         config.MotorOutput.PeakReverseDutyCycle = 0.0; // do not allow the motor to run in reverse
 
         return config;
@@ -67,12 +66,12 @@ public class FlywheelReal extends Flywheel {
 
         mainShooter =
                 new TalonFX(
-                       Robot.consts.shooter().kFlywheels().LEADER_MOTOR_ID(),
-                       Robot.consts.shooter().kCANBUS());
+                        Robot.consts.shooter().kFlywheels().LEADER_MOTOR_ID(),
+                        Robot.consts.shooter().kCANBUS());
         followerShooter =
                 new TalonFX(
-                       Robot.consts.shooter().kFlywheels().FOLLOWER_MOTOR_ID(),
-                       Robot.consts.shooter().kCANBUS());
+                        Robot.consts.shooter().kFlywheels().FOLLOWER_MOTOR_ID(),
+                        Robot.consts.shooter().kCANBUS());
 
         mainShooter.getConfigurator().apply(getLeaderConfig());
         followerShooter.setControl(

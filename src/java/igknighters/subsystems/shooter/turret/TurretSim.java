@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.Degrees;
 
 import edu.wpi.first.units.measure.Angle;
 import igknighters.Robot;
-import igknighters.constants.SubsystemConstants;
 import igknighters.util.log.Log;
 
 public class TurretSim extends Turret {

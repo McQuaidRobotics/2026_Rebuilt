@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import igknighters.Robot;
-import igknighters.constants.SubsystemConstants;
 import igknighters.util.log.Log;
 
 public class RepulsorVisualizer {

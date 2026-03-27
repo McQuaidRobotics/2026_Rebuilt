@@ -16,7 +16,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import igknighters.Robot;
 import igknighters.constants.Conv;
-import igknighters.constants.RobotConsts;
 import igknighters.util.log.Log;
 
 public class TurretReal extends Turret {
@@ -29,32 +28,34 @@ public class TurretReal extends Turret {
     private final TalonFXConfiguration turretConfiguration() {
         var cfg = new TalonFXConfiguration();
 
-        cfg.Slot0.kP =Robot.consts.shooter().kTurret().kP();
-        cfg.Slot0.kD =Robot.consts.shooter().kTurret().kD();
-        cfg.Slot0.kS =Robot.consts.shooter().kTurret().kS();
-        cfg.Slot0.kV =Robot.consts.shooter().kTurret().kV();
-        cfg.Slot0.kA =Robot.consts.shooter().kTurret().kA();
+        cfg.Slot0.kP = Robot.consts.shooter().kTurret().kP();
+        cfg.Slot0.kD = Robot.consts.shooter().kTurret().kD();
+        cfg.Slot0.kS = Robot.consts.shooter().kTurret().kS();
+        cfg.Slot0.kV = Robot.consts.shooter().kTurret().kV();
+        cfg.Slot0.kA = Robot.consts.shooter().kTurret().kA();
 
-        cfg.Feedback.RotorToSensorRatio =Robot.consts.shooter().kTurret().GEAR_RATIO();
+        cfg.Feedback.RotorToSensorRatio = Robot.consts.shooter().kTurret().GEAR_RATIO();
         cfg.Feedback.SensorToMechanismRatio = 1.0;
         cfg.Feedback.FeedbackSensorSource =
                 FeedbackSensorSourceValue.RemoteCANcoder; // should be fused but rio bomb not pro
-        cfg.Feedback.FeedbackRemoteSensorID =Robot.consts.shooter().kTurret().CANCODER_ID();
+        cfg.Feedback.FeedbackRemoteSensorID = Robot.consts.shooter().kTurret().CANCODER_ID();
 
         cfg.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         cfg.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-               Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES() * Conv.DEGREES_TO_ROTATIONS;
+                Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES() * Conv.DEGREES_TO_ROTATIONS;
         cfg.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         cfg.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-               Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES() * Conv.DEGREES_TO_ROTATIONS;
+                Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES() * Conv.DEGREES_TO_ROTATIONS;
 
         cfg.MotionMagic.MotionMagicCruiseVelocity =
-               Robot.consts.shooter().kTurret().MAX_SPEED_RPM() * Conv.RPM_TO_RPS;
+                Robot.consts.shooter().kTurret().MAX_SPEED_RPM() * Conv.RPM_TO_RPS;
         cfg.MotionMagic.MotionMagicAcceleration =
-               Robot.consts.shooter().kTurret().MAX_ACCELERATION_RPM() * Conv.RPM_TO_RPS;
+                Robot.consts.shooter().kTurret().MAX_ACCELERATION_RPM() * Conv.RPM_TO_RPS;
 
-        cfg.CurrentLimits.StatorCurrentLimit =Robot.consts.shooter().kTurret().STATOR_CURRENT_LIMIT();
-        cfg.CurrentLimits.SupplyCurrentLimit =Robot.consts.shooter().kTurret().SUPPLY_CURRENT_LIMIT();
+        cfg.CurrentLimits.StatorCurrentLimit =
+                Robot.consts.shooter().kTurret().STATOR_CURRENT_LIMIT();
+        cfg.CurrentLimits.SupplyCurrentLimit =
+                Robot.consts.shooter().kTurret().SUPPLY_CURRENT_LIMIT();
 
         cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -65,7 +66,8 @@ public class TurretReal extends Turret {
     private final CANcoderConfiguration wristCaNcoderConfiguration() {
         var cfg = new CANcoderConfiguration();
 
-        cfg.MagnetSensor.MagnetOffset =Robot.consts.shooter().kTurret().CANCODER_OFFSET_ROTATIONS();
+        cfg.MagnetSensor.MagnetOffset =
+                Robot.consts.shooter().kTurret().CANCODER_OFFSET_ROTATIONS();
         cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.75;
         cfg.MagnetSensor.SensorDirection =
                 SensorDirectionValue.Clockwise_Positive; // Adjust as needed
@@ -75,8 +77,13 @@ public class TurretReal extends Turret {
 
     public TurretReal() {
         turretCaNcoder =
-                new CANcoder(Robot.consts.shooter().kTurret().CANCODER_ID(),Robot.consts.shooter().kCANBUS());
-        motor = new TalonFX(Robot.consts.shooter().kTurret().MOTOR_ID(),Robot.consts.shooter().kCANBUS());
+                new CANcoder(
+                        Robot.consts.shooter().kTurret().CANCODER_ID(),
+                        Robot.consts.shooter().kCANBUS());
+        motor =
+                new TalonFX(
+                        Robot.consts.shooter().kTurret().MOTOR_ID(),
+                        Robot.consts.shooter().kCANBUS());
         turretCaNcoder.getConfigurator().apply(wristCaNcoderConfiguration());
         motor.getConfigurator().apply(turretConfiguration());
     }
@@ -87,8 +94,8 @@ public class TurretReal extends Turret {
     }
 
     public boolean isLegalPosition(double angleDegrees) {
-        return angleDegrees >=Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES()
-                && angleDegrees <=Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES();
+        return angleDegrees >= Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES()
+                && angleDegrees <= Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES();
     }
 
     public boolean isLegalPositionWrapped(double angleDegrees) {

@@ -453,7 +453,11 @@ public class Robot extends LoggedRobot {
                         MetersPerSecond.of(launchVelocity),
                         Radians.of(Math.PI / 2 - shooterState.hoodAngle.in(Radian)),
                         shooterState.turretAngle,
-                        Meters.of(Robot.consts.shooter().kFlywheels().ShooterHeightMeters()) // height of shooter exit
+                        Meters.of(
+                                Robot.consts
+                                        .shooter()
+                                        .kFlywheels()
+                                        .ShooterHeightMeters()) // height of shooter exit
                         );
 
                 lastShotTime = currentTime;
