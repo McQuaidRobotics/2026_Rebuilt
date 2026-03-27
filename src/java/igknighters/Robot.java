@@ -219,9 +219,9 @@ public class Robot extends LoggedRobot {
     }
 
     public Robot() {
+        setUpRobotConsts();
         setUpAdvantageScope();
         setUpCommandLogging();
-        setUpRobotConsts();
         subsystems =
                 new Subsystems(
                         new Swerve(false),

@@ -24,8 +24,8 @@ public class LerpSolveShot {
                         new LerpTableEntry(1.5, kHood.MIN_ANGLE_DEGREES),
                         new LerpTableEntry(2.5, 25.0),
                         new LerpTableEntry(3.5, 35.0),
-                        new LerpTableEntry(4.5, 40.0),
-                        new LerpTableEntry(6.0, 43.0)
+                        new LerpTableEntry(4.5, 35.0),
+                        new LerpTableEntry(6.0, 35.0)
                     });
 
     static LerpTable RPM_LERP =
