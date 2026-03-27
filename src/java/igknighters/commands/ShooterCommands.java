@@ -179,28 +179,35 @@ public class ShooterCommands {
     }
 
     public static BooleanSupplier isUnderTrench(Supplier<Pose2d> robotPoseSupplier) {
-            Supplier<Pose2d> turretPose = getShooterPoseWithOffset(robotPoseSupplier);
-        return () -> {
-            
-            boolean under1 =
-                    isBetween(
-                            turretPose.get(),
-                            FieldConstants.BUMP.BUMP_1_X_METERS - .08,
-                            FieldConstants.BUMP.BUMP_1_X_METERS + .08);
-            boolean under2 =
-                    isBetween(
-                            turretPose.get(),
-                            FieldConstants.BUMP.BUMP_2_X_METERS - 0.08,
-                            FieldConstants.BUMP.BUMP_2_X_METERS + 0.08);
+        Supplier<Pose2d> turretPose = getShooterPoseWithOffset(robotPoseSupplier);
+                // Trigger only when the robot is approximately 6 inches (0.1524 m)
+                // away from the front or rear bump X positions. Do NOT trigger when
+                // the robot is directly next to (or under) the trench.
+                final double TRIGGER_DISTANCE_METERS = 0.1524; // 6 inches
+                final double TOLERANCE_METERS = 0.02; // +/- 2 cm tolerance (~0.8 in)
+                final double MIN_TRIGGER = TRIGGER_DISTANCE_METERS - TOLERANCE_METERS;
+                final double MAX_TRIGGER = TRIGGER_DISTANCE_METERS + TOLERANCE_METERS;
 
-            boolean isUnder = under1 || under2;
-            if (!SubsystemConstants.disableAllLogs) {
-                Log.log("ROBOT/Commands/Shooter/Trench Protection/isUnderTrench", isUnder);
-                Log.log("ROBOT/Commands/Shooter/Trench Protection/RobotX", turretPose.get().getX());
-            }
+                return () -> {
+                        double robotX = turretPose.get().getX();
 
-            return isUnder;
-        };
+                        double dx1 = Math.abs(robotX - FieldConstants.BUMP.BUMP_1_X_METERS);
+                        double dx2 = Math.abs(robotX - FieldConstants.BUMP.BUMP_2_X_METERS);
+
+                        boolean nearFrontAtDistance = dx1 >= MIN_TRIGGER && dx1 <= MAX_TRIGGER;
+                        boolean nearRearAtDistance = dx2 >= MIN_TRIGGER && dx2 <= MAX_TRIGGER;
+
+                        boolean isUnder = nearFrontAtDistance || nearRearAtDistance;
+
+                        if (!SubsystemConstants.disableAllLogs) {
+                                Log.log("ROBOT/Commands/Shooter/Trench Protection/isUnderTrench", isUnder);
+                                Log.log("ROBOT/Commands/Shooter/Trench Protection/RobotX", robotX);
+                                Log.log("ROBOT/Commands/Shooter/Trench Protection/dx1", dx1);
+                                Log.log("ROBOT/Commands/Shooter/Trench Protection/dx2", dx2);
+                        }
+
+                        return isUnder;
+                };
     }
 
     public static void idleOnce(
