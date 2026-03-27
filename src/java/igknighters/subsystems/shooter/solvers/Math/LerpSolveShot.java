@@ -4,10 +4,12 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import igknighters.FieldVisualizer;
 import igknighters.Robot;
 import igknighters.constants.ShootInformation;
 import igknighters.constants.SubsystemConstants;
@@ -23,9 +25,9 @@ public class LerpSolveShot {
                     new LerpTableEntry[] {
                         new LerpTableEntry(1.5, kHood.MIN_ANGLE_DEGREES),
                         new LerpTableEntry(2.5, 25.0),
-                        new LerpTableEntry(3.5, 35.0),
-                        new LerpTableEntry(4.5, 35.0),
-                        new LerpTableEntry(6.0, 35.0)
+                        new LerpTableEntry(3.5, 32.0),
+                        new LerpTableEntry(4.5, 33.0),
+                        new LerpTableEntry(6.0, 33.0)
                     });
 
     static LerpTable RPM_LERP =
@@ -34,23 +36,33 @@ public class LerpSolveShot {
                         new LerpTableEntry(1.5, 2500),
                         new LerpTableEntry(2.0, 2750),
                         new LerpTableEntry(2.5, 2800),
-                        new LerpTableEntry(3.5, 3200),
+                        new LerpTableEntry(3.5, 3100),
                         new LerpTableEntry(4.0, 3300),
                         new LerpTableEntry(4.5, 3400),
-                        new LerpTableEntry(5.0, 3600),
+                        new LerpTableEntry(5.0, 3500),
                         new LerpTableEntry(6.0, 3800)
                     });
+
+    //     static LerpTable TIME_OF_FLIGHT_LERP =
+    //             new LerpTable(
+    //                     new LerpTableEntry[] {
+    //                         new LerpTableEntry(1, .9),
+    //                         new LerpTableEntry(2.5, 1.1),
+    //                         new LerpTableEntry(3.5, 1.05),
+    //                         new LerpTableEntry(4, 1.1),
+    //                         new LerpTableEntry(5.5, 1.15),
+    //                         new LerpTableEntry(6, 1)
+    //                     });
 
     static LerpTable TIME_OF_FLIGHT_LERP =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1, .3),
-                        new LerpTableEntry(2, .3),
-                        new LerpTableEntry(3, .3),
-                        new LerpTableEntry(4, .3),
-                        new LerpTableEntry(5, .3),
-                        new LerpTableEntry(6, .3),
-                        new LerpTableEntry(10, .3)
+                        new LerpTableEntry(1, .5),
+                        new LerpTableEntry(2.5, .5),
+                        new LerpTableEntry(3.5, .5),
+                        new LerpTableEntry(4, .5),
+                        new LerpTableEntry(5.5, .5),
+                        new LerpTableEntry(6, .5)
                     });
 
     public static ShooterState solve(
@@ -83,6 +95,14 @@ public class LerpSolveShot {
                             .minus(shooterPose.getTranslation().toTranslation2d());
 
             Translation2d compensatedVector = relativeGoal2d.minus(movingCompensation);
+
+            FieldVisualizer.getInstance()
+                    .updateShootingTarget(
+                            new Pose2d(
+                                    goalPose.getTranslation()
+                                            .toTranslation2d()
+                                            .minus(movingCompensation),
+                                    new Rotation2d()));
             double virtualDistance = compensatedVector.getNorm();
 
             // Get the RPM we WOULD use if we were standing still at this virtual spot
