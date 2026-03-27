@@ -71,16 +71,32 @@ public class LerpSolveShot {
         Pose3d shooterPose = Robot.pose_pred.getPredictedShooterPose(robotPose);
 
         ChassisSpeeds robotSpeeds = Robot.pose_pred.getPredictedVelos();
-        Translation2d robotVelocity =
+        Translation2d rawRobotVelocity =
                 new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
         double kConversion = SubsystemConstants.kShooter.kFlywheels.RPM_TO_METERS_PER_SECOND_FACTOR;
 
+        // --- NEW: Towards/Away Multiplier Logic ---
+        Translation2d vectorToGoal =
+                goalPose.getTranslation()
+                        .toTranslation2d()
+                        .minus(shooterPose.getTranslation().toTranslation2d());
+
+        // Dot product: Positive = moving towards, Negative = moving away
+        double dotProduct =
+                (vectorToGoal.getX() * rawRobotVelocity.getX())
+                        + (vectorToGoal.getY() * rawRobotVelocity.getY());
+
+        // TODO: Tune these! You might want to pull them out into TunableDoubles for
+        // Glass/AdvantageScope
+        double towardsMultiplier = 1.0;
+        double awayMultiplier = 0.75; // Reduce this until the overshooting stops
+
+        double velocityMultiplier = (dotProduct >= 0) ? towardsMultiplier : awayMultiplier;
+        Translation2d tunedRobotVelocity = rawRobotVelocity.times(velocityMultiplier);
+        // ------------------------------------------
+
         // --- STEP 1: Initial Estimate ---
-        double actualDistance =
-                shooterPose
-                        .toPose2d()
-                        .getTranslation()
-                        .getDistance(goalPose.toPose2d().getTranslation());
+        double actualDistance = vectorToGoal.getNorm(); // Reused the vector we made above
         double tof = TIME_OF_FLIGHT_LERP.lerp(actualDistance);
 
         double requiredTableRpm = 0;
@@ -88,11 +104,9 @@ public class LerpSolveShot {
 
         for (int i = 0; i < 2; i++) {
             // Find where the goal "will be" relative to the ball
-            Translation2d movingCompensation = robotVelocity.times(tof + latencyCompensation);
-            Translation2d relativeGoal2d =
-                    goalPose.getTranslation()
-                            .toTranslation2d()
-                            .minus(shooterPose.getTranslation().toTranslation2d());
+            // USE TUNED VELOCITY HERE
+            Translation2d movingCompensation = tunedRobotVelocity.times(tof + latencyCompensation);
+            Translation2d relativeGoal2d = vectorToGoal;
 
             Translation2d compensatedVector = relativeGoal2d.minus(movingCompensation);
 
@@ -112,16 +126,17 @@ public class LerpSolveShot {
             // Vector Subtraction: (Goal Velocity) - (Robot Velocity) = (Needed Shooter Velocity)
             Translation2d targetDirection = compensatedVector.div(virtualDistance);
             Translation2d fieldRelativeVelocityVector = targetDirection.times(baselineExitVelocity);
-            Translation2d requiredShooterVector = fieldRelativeVelocityVector.minus(robotVelocity);
+
+            // USE TUNED VELOCITY HERE
+            Translation2d requiredShooterVector =
+                    fieldRelativeVelocityVector.minus(tunedRobotVelocity);
 
             // Update our values
             double requiredExitVelocity = requiredShooterVector.getNorm();
             requiredTableRpm = requiredExitVelocity / kConversion;
             fieldRelativeTurretAngle = requiredShooterVector.getAngle();
 
-            // RE-CALCULATE TOF: Since the RPM changed, the time in air changed!
-            // This is why you were missing driving away; the ball was in the air longer than
-            // expected.
+            // RE-CALCULATE TOF
             double effectiveDistance = RPM_LERP.inverseLerp(requiredTableRpm);
             tof = TIME_OF_FLIGHT_LERP.lerp(effectiveDistance);
         }
