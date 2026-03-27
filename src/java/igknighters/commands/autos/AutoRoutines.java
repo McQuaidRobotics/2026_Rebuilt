@@ -362,7 +362,8 @@ public class AutoRoutines extends AutoCommands {
 
         return routine;
     }
-        public AutoRoutine orbitLeft() {
+
+    public AutoRoutine orbitLeft() {
         AutoRoutine routine = autoFactory.newRoutine("Orbit Left");
 
         AutoTrajectory swipe1Out = routine.trajectory("ORBIT_LEFT_1.traj");
