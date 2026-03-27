@@ -370,6 +370,7 @@ public class AutoRoutines extends AutoCommands {
         AutoTrajectory swipe1In = routine.trajectory("ORBIT_LEFT_2.traj");
         AutoTrajectory swipe2Out = routine.trajectory("ORBIT_LEFT_3.traj");
         AutoTrajectory swipe2In = routine.trajectory("ORBIT_LEFT_4.traj");
+        AutoTrajectory swipe3Out = routine.trajectory("ORBIT_LEFT_5.traj");
         routine.active()
                 .onTrue(
                         Commands.sequence(
@@ -398,6 +399,9 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
                                 .andThen(HigherOrderCommands.rapidFireStream(subsystems)));
+        swipe3Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
+        swipe3Out.done().onTrue(SwerveCommands.stopDriving(swerve));
 
         return routine;
     }
