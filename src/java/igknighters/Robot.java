@@ -30,7 +30,6 @@ import igknighters.constants.GeminiRobotConsts;
 import igknighters.constants.RobotConsts;
 import igknighters.constants.RobotIdentity;
 import igknighters.constants.SecondBotRobotConsts;
-import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
@@ -304,7 +303,7 @@ public class Robot extends LoggedRobot {
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
         pose_pred.setNewPose(subsystems.swerve.getFieldRelativeSpeeds());
-        if (Robot.isReal() && !SubsystemConstants.disableAllLogs) {
+        if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()
                     .updateTurret(
                             -subsystems.shooter.getTurretAngleDegrees(),

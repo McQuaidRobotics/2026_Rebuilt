@@ -1,8 +1,5 @@
 package igknighters.controllers;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.RPM;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -19,9 +16,7 @@ import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
-import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.shooter.ShooterState;
 import java.util.function.DoubleSupplier;
 
 public class DriverController {
@@ -132,8 +127,7 @@ public class DriverController {
                                     FieldConstants.Y_FIELD / 2,
                                     new Rotation2d())));
         } else if (debugType == DebugType.SHOOTER) {
-            this.A.whileTrue(
-                    ShooterCommands.targetState(shooter, 5000, 90, kHood.MIN_ANGLE_DEGREES));
+            this.A.whileTrue(ShooterCommands.targetState(shooter, 5000, 90, 25));
             this.B.whileTrue(ShooterCommands.targetState(shooter, 5000, 180, 30));
             this.X.whileTrue(ShooterCommands.targetState(shooter, 5000, 270, 35));
             this.Y.whileTrue(ShooterCommands.targetState(shooter, 5000, 360, 40));
@@ -179,13 +173,6 @@ public class DriverController {
         this.LB.whileTrue(HigherOrderCommands.aggregiouslyHighRapidFireStream(subsystems));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
         this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
-        this.Y.whileTrue(
-                ShooterCommands.targetState(
-                        subsystems.shooter,
-                        new ShooterState(
-                                RPM.of(0.0),
-                                Degrees.of(0.0),
-                                Degrees.of(kHood.MIN_ANGLE_DEGREES))));
         this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
     }
 
