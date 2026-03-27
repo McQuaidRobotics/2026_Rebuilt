@@ -416,6 +416,21 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine SOTMTEST() {
+        AutoRoutine routine = autoFactory.newRoutine("SOTM TEST");
+        AutoTrajectory move_traj = routine.trajectory("SOTM_TEST.traj");
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                move_traj.resetOdometry(),
+                                Commands.parallel(
+                                        move_traj.cmd(),
+                                        HigherOrderCommands.hippoShoot(subsystems))));
+
+        move_traj.done().onTrue(SwerveCommands.stopDriving(swerve));
+        return routine;
+    }
+
     public AutoRoutine leftNuetralHippo() {
         AutoRoutine routine = autoFactory.newRoutine("New Left Neutral Hippo");
 

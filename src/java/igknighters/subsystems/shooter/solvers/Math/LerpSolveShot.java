@@ -88,8 +88,8 @@ public class LerpSolveShot {
 
         // TODO: Tune these! You might want to pull them out into TunableDoubles for
         // Glass/AdvantageScope
-        double towardsMultiplier = 1.0;
-        double awayMultiplier = 0.75; // Reduce this until the overshooting stops
+        double towardsMultiplier = 1.1;
+        double awayMultiplier = 0.6; // Reduce this until the overshooting stops
 
         double velocityMultiplier = (dotProduct >= 0) ? towardsMultiplier : awayMultiplier;
         Translation2d tunedRobotVelocity = rawRobotVelocity.times(velocityMultiplier);
