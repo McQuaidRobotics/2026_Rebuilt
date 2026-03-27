@@ -9,10 +9,8 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import igknighters.Robot;
 import igknighters.constants.ShootInformation;
-import igknighters.constants.SubsystemConstants;
-import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
-import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.shooter.AimSolver;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
@@ -25,7 +23,8 @@ public class ShooterCommands {
     public static TunableValues.TunableDouble shootRPM =
             TunableValues.getDouble("Shooter/ShootRPM", 3000);
     public static TunableValues.TunableDouble shootHoodAngle =
-            TunableValues.getDouble("Shooter/ShootHoodAngle", kHood.MIN_ANGLE_DEGREES);
+            TunableValues.getDouble(
+                    "Shooter/ShootHoodAngle", Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES());
 
     public static Command shootAtSpeed(Shooter shooter, double speed) {
         return shooter.run(() -> shooter.targetState(RPM.of(speed), Degrees.of(0), Degrees.of(0)))
@@ -105,9 +104,10 @@ public class ShooterCommands {
                                             new Pose3d(
                                                     robotPose.getX(),
                                                     robotPose.getY(),
-                                                    SubsystemConstants.kShooter
-                                                            .kFlywheels
-                                                            .ShooterHeightMeters,
+                                                    Robot.consts
+                                                            .shooter()
+                                                            .kFlywheels()
+                                                            .ShooterHeightMeters(),
                                                     new Rotation3d(
                                                             0.0,
                                                             0.0,
@@ -168,7 +168,7 @@ public class ShooterCommands {
                             new Pose3d(
                                     robotPose2d.getX(),
                                     robotPose2d.getY(),
-                                    SubsystemConstants.kShooter.kFlywheels.ShooterHeightMeters,
+                                    Robot.consts.shooter().kFlywheels().ShooterHeightMeters(),
                                     new Rotation3d(
                                             0.0, 0.0, robotPose2d.getRotation().getRadians()));
                     ShooterState targetingData =
@@ -183,7 +183,7 @@ public class ShooterCommands {
                     shooter.targetState(
                             RPM.of(3000),
                             targetingData.turretAngle,
-                            Degrees.of(kHood.MIN_ANGLE_DEGREES));
+                            Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
                 });
     }
 
@@ -210,7 +210,10 @@ public class ShooterCommands {
                                                             new Transform3d(
                                                                     0,
                                                                     0,
-                                                                    kFlywheels.ShooterHeightMeters,
+                                                                    Robot.consts
+                                                                            .shooter()
+                                                                            .kFlywheels()
+                                                                            .ShooterHeightMeters(),
                                                                     new Rotation3d())),
                                             targetPose3d,
                                             shooter.getCurrentState().flywheelSpeed.in(RPM),
@@ -227,7 +230,11 @@ public class ShooterCommands {
                                 shooter.targetState(
                                         RPM.of(3000.0),
                                         targetingData.turretAngle,
-                                        Degrees.of(kHood.MIN_ANGLE_DEGREES));
+                                        Degrees.of(
+                                                Robot.consts
+                                                        .shooter()
+                                                        .kHood()
+                                                        .MIN_ANGLE_DEGREES()));
                             }
                         })
                 .withName("Aiming at auto chosen target with look ahead");

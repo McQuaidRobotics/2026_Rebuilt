@@ -29,11 +29,6 @@ public class FlywheelReal extends Flywheel {
     //         new MotionMagicVelocityTorqueCurrentFOC(0.0).withSlot(0);
     private final DutyCycleOut dutyCycleControl = new DutyCycleOut(0.0);
 
-    // private final DigitalInput beamBreakSensor = new
-    // DigitalInput(SubsystemConstants.Shooter.BEAM_BREAK_SENSOR_CHANNEL);
-
-    // private BaseStatusSignal isBeamBreakTripped;
-
     public TalonFXConfiguration getLeaderConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.Slot0.kP = Robot.consts.shooter().kFlywheels().kP();

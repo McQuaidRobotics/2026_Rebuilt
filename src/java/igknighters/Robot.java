@@ -245,9 +245,9 @@ public class Robot extends LoggedRobot {
     }
 
     public Robot(boolean isSwerveDisabled) {
+        setUpRobotConsts();
         setUpAdvantageScope();
         setUpCommandLogging();
-        setUpRobotConsts();
         subsystems =
                 new Subsystems(
                         new Swerve(isSwerveDisabled),

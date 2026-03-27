@@ -15,8 +15,6 @@ import igknighters.commands.Shooter.ShooterCommands.shotType;
 import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
-import igknighters.constants.SubsystemConstants;
-import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.shooter.AimSolver;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
@@ -98,7 +96,7 @@ public class AimingCommands {
                 new Pose3d(
                         robotPose2d.getX(),
                         robotPose2d.getY(),
-                        SubsystemConstants.kShooter.kFlywheels.ShooterHeightMeters,
+                        Robot.consts.shooter().kFlywheels().ShooterHeightMeters(),
                         new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
         ShooterState targetingData =
                 AimSolver.Solvers.solve_max_and_min_iterative_with_vectors(
@@ -111,7 +109,9 @@ public class AimingCommands {
                         0.02);
 
         shooter.targetState(
-                RPM.of(3000), targetingData.turretAngle, Degrees.of(kHood.MIN_ANGLE_DEGREES));
+                RPM.of(3000),
+                targetingData.turretAngle,
+                Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
     }
 
     public static void shootOnce(
@@ -131,7 +131,7 @@ public class AimingCommands {
                 new Pose3d(
                         shooterPose2d.getX(),
                         shooterPose2d.getY(),
-                        SubsystemConstants.kShooter.kFlywheels.ShooterHeightMeters,
+                        Robot.consts.shooter().kFlywheels().ShooterHeightMeters(),
                         new Rotation3d(0.0, 0.0, shooterPose2d.getRotation().getRadians()));
 
         ShooterState targetingData =
@@ -143,7 +143,9 @@ public class AimingCommands {
         } else {
             // shot is impossible so we should idle the shooter rpm at like 4000
             shooter.targetState(
-                    RPM.of(4000), targetingData.turretAngle, Degrees.of(kHood.MIN_ANGLE_DEGREES));
+                    RPM.of(3200),
+                    targetingData.turretAngle,
+                    Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
         }
     }
 
@@ -200,7 +202,7 @@ public class AimingCommands {
                             new Pose3d(
                                     robotPose2d.getX(),
                                     robotPose2d.getY(),
-                                    SubsystemConstants.kShooter.kFlywheels.ShooterHeightMeters,
+                                    Robot.consts.shooter().kFlywheels().ShooterHeightMeters(),
                                     new Rotation3d(
                                             0.0, 0.0, robotPose2d.getRotation().getRadians()));
                     ShooterState targetingData =
@@ -218,7 +220,7 @@ public class AimingCommands {
                         shooter.targetState(
                                 RPM.of(3000),
                                 targetingData.turretAngle,
-                                Degrees.of(kHood.MIN_ANGLE_DEGREES));
+                                Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
                     }
                 });
     }
