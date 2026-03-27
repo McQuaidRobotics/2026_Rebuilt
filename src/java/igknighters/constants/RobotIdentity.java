@@ -11,7 +11,7 @@ public class RobotIdentity {
         UNKNOWN
     }
 
-    private static final String GEMINKNIGHT_SERIAL_NUMBER = "03260AF0";
+    private static final String GEMINKNIGHT_SERIAL_NUMBER = "032B4B20";
     private static final String SECOND_BOT_SERIAL_NUMBER = "TBD"; // To be filled in later
 
     private static Robots robot = null;
