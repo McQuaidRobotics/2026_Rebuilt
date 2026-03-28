@@ -21,12 +21,6 @@ public class RobotPosePredictor {
 
     private static final int HISTORY_SIZE = 10;
 
-    /** Smoothing gain for the position estimate (0 < alpha ≤ 1). */
-    private final double alpha;
-
-    /** Smoothing gain for the velocity estimate (0 < beta ≤ 1). */
-    private final double beta;
-
     public ChassisSpeeds[] veloHistory = new ChassisSpeeds[HISTORY_SIZE];
     public double[] timestampHistory = new double[HISTORY_SIZE];
 
@@ -43,9 +37,7 @@ public class RobotPosePredictor {
      * @param alpha position smoothing gain, typically 0.5–0.9
      * @param beta velocity smoothing gain, typically 0.1–0.5
      */
-    public RobotPosePredictor(double alpha, double beta) {
-        this.alpha = alpha;
-        this.beta = beta;
+    public RobotPosePredictor() {
         for (int i = 0; i < HISTORY_SIZE; i++) {
             veloHistory[i] = new ChassisSpeeds(0, 0, 0);
         }

@@ -60,7 +60,7 @@ public class Robot extends LoggedRobot {
     double i = 0;
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
-    public static RobotPosePredictor pose_pred = new RobotPosePredictor(.4, .6);
+    public static RobotPosePredictor pose_pred = new RobotPosePredictor();
     public static RobotPosePredError pose_pred_error = new RobotPosePredError();
 
     private final DriverController driverController = new DriverController(0);
