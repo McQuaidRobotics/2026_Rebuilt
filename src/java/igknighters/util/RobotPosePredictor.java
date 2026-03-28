@@ -149,28 +149,29 @@ public class RobotPosePredictor {
             prevIdx = latestIdx - 1;
         }
         double dt = timestampHistory[latestIdx] - timestampHistory[prevIdx];
-        predictedAcc.vxMetersPerSecond =(veloHistory[latestIdx].vxMetersPerSecond
-                                        - veloHistory[prevIdx].vxMetersPerSecond)
-                                / dt;
-        predictedAcc.vyMetersPerSecond =(veloHistory[latestIdx].vyMetersPerSecond
-                                        - veloHistory[prevIdx].vyMetersPerSecond)
-                                / dt;
-        predictedAcc.omegaRadiansPerSecond =(veloHistory[latestIdx].omegaRadiansPerSecond
-                                        - veloHistory[prevIdx].omegaRadiansPerSecond)
-                                / dt;
-        predictedVelo.vxMetersPerSecond = 
+        predictedAcc.vxMetersPerSecond =
+                (veloHistory[latestIdx].vxMetersPerSecond - veloHistory[prevIdx].vxMetersPerSecond)
+                        / dt;
+        predictedAcc.vyMetersPerSecond =
+                (veloHistory[latestIdx].vyMetersPerSecond - veloHistory[prevIdx].vyMetersPerSecond)
+                        / dt;
+        predictedAcc.omegaRadiansPerSecond =
+                (veloHistory[latestIdx].omegaRadiansPerSecond
+                                - veloHistory[prevIdx].omegaRadiansPerSecond)
+                        / dt;
+        predictedVelo.vxMetersPerSecond =
                 veloHistory[latestIdx].vxMetersPerSecond
                         + predictedAcc.vxMetersPerSecond * predTime;
-        predictedVelo.vyMetersPerSecond = 
+        predictedVelo.vyMetersPerSecond =
                 veloHistory[latestIdx].vyMetersPerSecond
                         + predictedAcc.vyMetersPerSecond * predTime;
-        predictedVelo.omegaRadiansPerSecond = 
+        predictedVelo.omegaRadiansPerSecond =
                 veloHistory[latestIdx].omegaRadiansPerSecond
                         + predictedAcc.omegaRadiansPerSecond * predTime;
 
         return predictedVelo;
     }
- 
+
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------

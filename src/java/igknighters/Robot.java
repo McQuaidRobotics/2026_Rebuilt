@@ -307,7 +307,7 @@ public class Robot extends LoggedRobot {
         //         subsystems.luma.getClosestGamePiece());
         pose_pred.setVelocities(subsystems.swerve.getFieldRelativeSpeeds());
         pose_pred_error.logPose(subsystems.swerve.getState().Pose);
-        if (Robot.isReal() && !SubsystemConstants.disableAllLogs) {
+        if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()
                     .updateTurret(
                             -subsystems.shooter.getTurretAngleDegrees(),
