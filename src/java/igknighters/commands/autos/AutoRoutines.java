@@ -9,11 +9,8 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.Robot;
 import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IntakeCommands;
@@ -31,13 +28,13 @@ public class AutoRoutines extends AutoCommands {
         super(subsystems, factory);
         this.consts = consts;
 
-        if (Robot.isSimulation()) {
-            new Trigger(DriverStation::isAutonomousEnabled)
-                    .onTrue(
-                            Commands.waitSeconds(20.0)
-                                    .andThen(() -> DriverStationSim.setEnabled(false))
-                                    .withName("Simulated Auto Ender"));
-        }
+        // if (Robot.isSimulation()) {
+        //     new Trigger(DriverStation::isAutonomousEnabled)
+        //             .onTrue(
+        //                     Commands.waitSeconds(20.0)
+        //                             .andThen(() -> DriverStationSim.setEnabled(false))
+        //                             .withName("Simulated Auto Ender"));
+        // }
     }
 
     public Supplier<Command> trajTest(String trajName) {
@@ -418,16 +415,45 @@ public class AutoRoutines extends AutoCommands {
 
     public AutoRoutine SOTMTEST() {
         AutoRoutine routine = autoFactory.newRoutine("SOTM TEST");
-        AutoTrajectory move_traj = routine.trajectory("SOTM_TEST.traj");
+        AutoTrajectory tangential_traj = routine.trajectory("SOTM_TEST_1.traj");
+        AutoTrajectory reset_traj = routine.trajectory("SOTM_TEST_2.traj");
+        AutoTrajectory radial_away_traj = routine.trajectory("SOTM_TEST_3.traj");
+        AutoTrajectory radial_towards_traj = routine.trajectory("SOTM_TEST_4.traj");
         routine.active()
                 .onTrue(
                         Commands.sequence(
-                                move_traj.resetOdometry(),
+                                tangential_traj.resetOdometry(),
+                                Commands.waitSeconds(5),
                                 Commands.parallel(
-                                        move_traj.cmd(),
+                                        tangential_traj.cmd(),
                                         HigherOrderCommands.hippoShoot(subsystems))));
 
-        move_traj.done().onTrue(SwerveCommands.stopDriving(swerve));
+        tangential_traj
+                .done()
+                .onTrue(Commands.sequence(SwerveCommands.stopDriving(swerve), reset_traj.cmd()));
+
+        reset_traj
+                .done()
+                .onTrue(
+                        Commands.sequence(
+                                SwerveCommands.stopDriving(swerve),
+                                Commands.deadline(
+                                        Commands.waitSeconds(5),
+                                        IntakeCommands.holdAtIntake(subsystems.intake)),
+                                Commands.parallel(
+                                        HigherOrderCommands.hippoShoot(subsystems),
+                                        radial_away_traj.cmd())));
+
+        radial_away_traj
+                .done()
+                .onTrue(
+                        Commands.sequence(
+                                SwerveCommands.stopDriving(swerve),
+                                Commands.parallel(
+                                        radial_towards_traj.cmd(),
+                                        HigherOrderCommands.hippoShoot(subsystems))));
+
+        radial_towards_traj.done().onTrue(SwerveCommands.stopDriving(swerve));
         return routine;
     }
 

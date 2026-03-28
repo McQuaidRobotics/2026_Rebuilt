@@ -43,27 +43,27 @@ public class LerpSolveShot {
                         new LerpTableEntry(6.0, 3800)
                     });
 
-    //     static LerpTable TIME_OF_FLIGHT_LERP =
-    //             new LerpTable(
-    //                     new LerpTableEntry[] {
-    //                         new LerpTableEntry(1, .9),
-    //                         new LerpTableEntry(2.5, 1.1),
-    //                         new LerpTableEntry(3.5, 1.05),
-    //                         new LerpTableEntry(4, 1.1),
-    //                         new LerpTableEntry(5.5, 1.15),
-    //                         new LerpTableEntry(6, 1)
-    //                     });
-
     static LerpTable TIME_OF_FLIGHT_LERP =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1, .5),
-                        new LerpTableEntry(2.5, .5),
-                        new LerpTableEntry(3.5, .5),
-                        new LerpTableEntry(4, .5),
-                        new LerpTableEntry(5.5, .5),
-                        new LerpTableEntry(6, .5)
+                        new LerpTableEntry(1, .9),
+                        new LerpTableEntry(2.5, 1.1),
+                        new LerpTableEntry(3.5, 1.05),
+                        new LerpTableEntry(4, 1.1),
+                        new LerpTableEntry(5.5, 1.15),
+                        new LerpTableEntry(6, 1)
                     });
+
+    //     static LerpTable TIME_OF_FLIGHT_LERP =
+    //             new LerpTable(
+    //                     new LerpTableEntry[] {
+    //                         new LerpTableEntry(1, .5),
+    //                         new LerpTableEntry(2.5, .5),
+    //                         new LerpTableEntry(3.5, .5),
+    //                         new LerpTableEntry(4, .5),
+    //                         new LerpTableEntry(5.5, .5),
+    //                         new LerpTableEntry(6, .5)
+    //                     });
 
     public static ShooterState solve(
             Pose3d robotPose, Pose3d goalPose, double currentRPM, double latencyCompensation) {
@@ -75,28 +75,45 @@ public class LerpSolveShot {
                 new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
         double kConversion = SubsystemConstants.kShooter.kFlywheels.RPM_TO_METERS_PER_SECOND_FACTOR;
 
-        // --- NEW: Towards/Away Multiplier Logic ---
+        // --- NEW: Radial and Tangential Separation ---
         Translation2d vectorToGoal =
                 goalPose.getTranslation()
                         .toTranslation2d()
                         .minus(shooterPose.getTranslation().toTranslation2d());
 
-        // Dot product: Positive = moving towards, Negative = moving away
-        double dotProduct =
-                (vectorToGoal.getX() * rawRobotVelocity.getX())
-                        + (vectorToGoal.getY() * rawRobotVelocity.getY());
+        double actualDistance = vectorToGoal.getNorm();
 
-        // TODO: Tune these! You might want to pull them out into TunableDoubles for
-        // Glass/AdvantageScope
-        double towardsMultiplier = 1.1;
-        double awayMultiplier = 0.6; // Reduce this until the overshooting stops
+        // 1. Find the unit vector pointing straight at the goal
+        Translation2d unitVectorToGoal =
+                actualDistance > 1e-6 ? vectorToGoal.div(actualDistance) : new Translation2d();
 
-        double velocityMultiplier = (dotProduct >= 0) ? towardsMultiplier : awayMultiplier;
-        Translation2d tunedRobotVelocity = rawRobotVelocity.times(velocityMultiplier);
+        // 2. Project robot velocity onto the unit vector (Radial magnitude)
+        // Positive = moving towards goal, Negative = moving away
+        double radialVelocityMag =
+                (unitVectorToGoal.getX() * rawRobotVelocity.getX())
+                        + (unitVectorToGoal.getY() * rawRobotVelocity.getY());
+
+        // 3. Separate into radial and tangential vectors
+        Translation2d radialVelocity = unitVectorToGoal.times(radialVelocityMag);
+        Translation2d tangentialVelocity = rawRobotVelocity.minus(radialVelocity);
+
+        // 4. TODO: Tune these! Pull them out into TunableDoubles for Glass/AdvantageScope
+        double radialTowardsMultiplier = 0.4;
+        double radialAwayMultiplier = 0.4; // Keep reducing until overshooting away stops
+        double tangentialMultiplier =
+                0.45; // Tune this if your shots drift left/right while strafing
+
+        double radialMultiplierToUse =
+                (radialVelocityMag >= 0) ? radialTowardsMultiplier : radialAwayMultiplier;
+
+        // 5. Apply multipliers and recombine
+        Translation2d tunedRadialVelocity = radialVelocity.times(radialMultiplierToUse);
+        Translation2d tunedTangentialVelocity = tangentialVelocity.times(tangentialMultiplier);
+
+        Translation2d tunedRobotVelocity = tunedRadialVelocity.plus(tunedTangentialVelocity);
         // ------------------------------------------
 
         // --- STEP 1: Initial Estimate ---
-        double actualDistance = vectorToGoal.getNorm(); // Reused the vector we made above
         double tof = TIME_OF_FLIGHT_LERP.lerp(actualDistance);
 
         double requiredTableRpm = 0;

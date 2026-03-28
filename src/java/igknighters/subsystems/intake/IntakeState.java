@@ -18,8 +18,8 @@ public enum IntakeState implements StructSerializable {
             () -> Degrees.of(55),
             () -> RPM.of(Robot.consts.intake().kRollers().MAX_SPEED_RPM()),
             () -> Degrees.of(5)),
-    PREP_TO_STOW(() -> Degrees.of(30), () -> RPM.of(500), () -> Degrees.of(10)),
-    Stowed(() -> Degrees.of(10), () -> RPM.of(100), () -> Degrees.of(5));
+    PREP_TO_STOW(() -> Degrees.of(27), () -> RPM.of(500), () -> Degrees.of(10)),
+    Stowed(() -> Degrees.of(15), () -> RPM.of(100), () -> Degrees.of(5));
 
     private final Supplier<Angle> pivotDegrees;
     private final Supplier<AngularVelocity> rollerSpeedRPM;
