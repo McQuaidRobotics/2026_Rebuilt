@@ -10,7 +10,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import igknighters.constants.SubsystemConstants;
+import igknighters.Robot;
 import igknighters.constants.SubsystemConstants.kIntake;
 import igknighters.util.log.Log;
 
@@ -52,7 +52,7 @@ public class RollersSim extends Rollers {
 
     @Override
     public void goToSpeed(AngularVelocity speed) {
-        if (!SubsystemConstants.kIntake.kRollers.disableRollersLogs) {
+        if (!Robot.consts.intake().kRollers().disableRollersLogs()) {
             Log.log("ROBOT/Subsystems/Intake/Rollers/Target Speed RPM", speed.in(RPM));
         }
         profiledPIDController.setGoal(speed.in(RPM));
@@ -94,7 +94,7 @@ public class RollersSim extends Rollers {
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
 
         // Logging
-        if (!SubsystemConstants.kIndexer.kExitRollers.disableExitRollersLogs) {
+        if (!Robot.consts.intake().kRollers().disableRollersLogs()) {
             Log.log("ROBOT/Subsystems/Intake/Rollers/SimVoltage", voltage);
             Log.log("ROBOT/Subsystems/Intake/Rollers/SimSpeedRPM", currentRPM);
             Log.log("ROBOT/Subsystems/Intake/Rollers/GoalSpeedRPM", goalRPM);

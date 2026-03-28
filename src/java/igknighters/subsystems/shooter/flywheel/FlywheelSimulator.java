@@ -10,6 +10,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import igknighters.Robot;
 import igknighters.constants.Conv;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter;
@@ -109,7 +110,7 @@ public class FlywheelSimulator extends Flywheel {
 
         // Logging
 
-        if (!SubsystemConstants.kShooter.kFlywheels.disableFlywheelsLogs) {
+        if (!Robot.consts.shooter().kFlywheels().disableFlywheelsLogs()) {
             Log.log("ROBOT/Subsystems/Shooter/Rollers/SimVoltage", voltage);
 
             Log.log("ROBOT/Subsystems/Shooter/Rollers/SimSpeedRPM", currentRPM);

@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.LEDWriter;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.util.Color;
 import igknighters.Robot;
-import igknighters.constants.SubsystemConstants;
 import igknighters.util.log.Log;
 import java.nio.ByteBuffer;
 
@@ -146,7 +145,7 @@ public class LedUtil {
             blue[i] = color.blue;
         }
 
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs()) {
             Log.log("ROBOT/Commands/" + name + "Led/Reds", red);
             Log.log("ROBOT/Commands/" + name + "Led/Greens", green);
             Log.log("ROBOT/Commands/" + name + "Led/Blues", blue);
