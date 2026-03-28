@@ -40,6 +40,7 @@ public class LerpSolveShot {
                         new LerpTableEntry(4.0, 3300),
                         new LerpTableEntry(4.5, 3400),
                         new LerpTableEntry(5.0, 3500),
+                        new LerpTableEntry(5.5, 3700),
                         new LerpTableEntry(6.0, 3800)
                     });
 
