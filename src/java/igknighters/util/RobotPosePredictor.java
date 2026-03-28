@@ -149,28 +149,28 @@ public class RobotPosePredictor {
             prevIdx = latestIdx - 1;
         }
         double dt = timestampHistory[latestIdx] - timestampHistory[prevIdx];
-        predictedAcc.vxMetersPerSecond =
-                veloHistory[latestIdx].vxMetersPerSecond
-                        + (veloHistory[latestIdx].vxMetersPerSecond
+        predictedAcc.vxMetersPerSecond =(veloHistory[latestIdx].vxMetersPerSecond
                                         - veloHistory[prevIdx].vxMetersPerSecond)
                                 / dt;
-        predictedAcc.vyMetersPerSecond =
-                veloHistory[latestIdx].vyMetersPerSecond
-                        + (veloHistory[latestIdx].vyMetersPerSecond
+        predictedAcc.vyMetersPerSecond =(veloHistory[latestIdx].vyMetersPerSecond
                                         - veloHistory[prevIdx].vyMetersPerSecond)
                                 / dt;
-        predictedAcc.omegaRadiansPerSecond =
-                veloHistory[latestIdx].omegaRadiansPerSecond
-                        + (veloHistory[latestIdx].omegaRadiansPerSecond
+        predictedAcc.omegaRadiansPerSecond =(veloHistory[latestIdx].omegaRadiansPerSecond
                                         - veloHistory[prevIdx].omegaRadiansPerSecond)
                                 / dt;
-        predictedVelo.vxMetersPerSecond = predictedAcc.vxMetersPerSecond * predTime;
-        predictedVelo.vyMetersPerSecond = predictedAcc.vyMetersPerSecond * predTime;
-        predictedVelo.omegaRadiansPerSecond = predictedAcc.omegaRadiansPerSecond * predTime;
+        predictedVelo.vxMetersPerSecond = 
+                veloHistory[latestIdx].vxMetersPerSecond
+                        + predictedAcc.vxMetersPerSecond * predTime;
+        predictedVelo.vyMetersPerSecond = 
+                veloHistory[latestIdx].vyMetersPerSecond
+                        + predictedAcc.vyMetersPerSecond * predTime;
+        predictedVelo.omegaRadiansPerSecond = 
+                veloHistory[latestIdx].omegaRadiansPerSecond
+                        + predictedAcc.omegaRadiansPerSecond * predTime;
 
         return predictedVelo;
     }
-
+ 
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
