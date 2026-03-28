@@ -117,10 +117,20 @@ public class RobotPosePredictor {
         double[] predicted = new double[3];
 
         // Predict next pose using predicted velocity
-        predicted[0] = currentPose[0] + currentVelos.vxMetersPerSecond * predTime;
-        predicted[1] = currentPose[1] + currentVelos.vyMetersPerSecond * predTime;
+        ChassisSpeeds predictedAcc = getPredictedAcceleration();
+        predicted[0] =
+                currentPose[0]
+                        + currentVelos.vxMetersPerSecond * predTime
+                        + 1 / 2 * predictedAcc.vxMetersPerSecond * Math.pow(predTime, 2);
+        predicted[1] =
+                currentPose[1]
+                        + currentVelos.vyMetersPerSecond * predTime
+                        + 1 / 2 * predictedAcc.vyMetersPerSecond * Math.pow(predTime, 2);
         // handle wrapping
-        double predOmega = currentVelos.omegaRadiansPerSecond * predTime + currentPose[2];
+        double predOmega =
+                currentPose[2]
+                        + currentVelos.omegaRadiansPerSecond * predTime
+                        + 1 / 2 * predictedAcc.omegaRadiansPerSecond * Math.pow(predTime, 2);
 
         if (predOmega > Math.PI) {
             predicted[2] = predOmega - 2 * Math.PI;
@@ -136,8 +146,27 @@ public class RobotPosePredictor {
     }
 
     public ChassisSpeeds getPredictedVelos() {
-        ChassisSpeeds predictedAcc = new ChassisSpeeds();
         ChassisSpeeds predictedVelo = new ChassisSpeeds();
+        double mostRecentTimestamp =
+                Collections.max(Arrays.stream(timestampHistory).boxed().toList());
+        int latestIdx =
+                Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
+        ChassisSpeeds predictedAcc = getPredictedAcceleration();
+        predictedVelo.vxMetersPerSecond =
+                veloHistory[latestIdx].vxMetersPerSecond
+                        + predictedAcc.vxMetersPerSecond * predTime;
+        predictedVelo.vyMetersPerSecond =
+                veloHistory[latestIdx].vyMetersPerSecond
+                        + predictedAcc.vyMetersPerSecond * predTime;
+        predictedVelo.omegaRadiansPerSecond =
+                veloHistory[latestIdx].omegaRadiansPerSecond
+                        + predictedAcc.omegaRadiansPerSecond * predTime;
+
+        return predictedVelo;
+    }
+
+    public ChassisSpeeds getPredictedAcceleration() {
+        ChassisSpeeds predictedAcc = new ChassisSpeeds();
         double mostRecentTimestamp =
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
         int latestIdx =
@@ -159,17 +188,7 @@ public class RobotPosePredictor {
                 (veloHistory[latestIdx].omegaRadiansPerSecond
                                 - veloHistory[prevIdx].omegaRadiansPerSecond)
                         / dt;
-        predictedVelo.vxMetersPerSecond =
-                veloHistory[latestIdx].vxMetersPerSecond
-                        + predictedAcc.vxMetersPerSecond * predTime;
-        predictedVelo.vyMetersPerSecond =
-                veloHistory[latestIdx].vyMetersPerSecond
-                        + predictedAcc.vyMetersPerSecond * predTime;
-        predictedVelo.omegaRadiansPerSecond =
-                veloHistory[latestIdx].omegaRadiansPerSecond
-                        + predictedAcc.omegaRadiansPerSecond * predTime;
-
-        return predictedVelo;
+        return predictedAcc;
     }
 
     // -------------------------------------------------------------------------
