@@ -17,7 +17,7 @@ public class SlowedDownDrivingWhileShooting extends TeleopSwerveBaseCmd {
             new SwerveRequest.FieldCentric()
                     .withDeadband(knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.1)
                     .withRotationalDeadband(RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .1)
-                    .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
+                    .withDriveRequestType(SwerveModule.DriveRequestType.Velocity)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
 
     public SlowedDownDrivingWhileShooting(Swerve swerve, DriverController controller) {
