@@ -80,10 +80,15 @@ public class RobotPosePredictor {
         }
     }
 
-    public Pose3d getPredictedShooterPose3d(Pose3d pose3d){
+    public Pose3d getPredictedShooterPose3d(Pose3d pose3d) {
 
         Pose2d pose = getPredictedPose(pose3d.toPose2d());
-        Pose3d newPose3d = new Pose3d(pose.getX(), pose.getY(), pose3d.getZ(), new Rotation3d(0, 0, pose.getRotation().getRadians()));
+        Pose3d newPose3d =
+                new Pose3d(
+                        pose.getX(),
+                        pose.getY(),
+                        pose3d.getZ(),
+                        new Rotation3d(0, 0, pose.getRotation().getRadians()));
         return newPose3d;
     }
 
