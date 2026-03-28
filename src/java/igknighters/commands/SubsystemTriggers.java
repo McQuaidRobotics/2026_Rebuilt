@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.LEDCommands.LEDSection;
 import igknighters.commands.teleop.AutoRotateOnBump;
-import igknighters.commands.teleop.SlowedDownDrivingWhileShooting;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
@@ -36,6 +35,7 @@ public class SubsystemTriggers {
     private boolean shotPossible = false;
     private boolean atState = false;
     private boolean beingCommanded = false;
+    private boolean inAutoLastCycle = false;
 
     Command disabledLED;
 
@@ -173,7 +173,7 @@ public class SubsystemTriggers {
     }
 
     public Command getLEDCommandByMode() {
-        return Commands.either(teleopLED, Commands.either(disabledLED, autoLED, disabled), teleop);
+        return Commands.either(teleopLED, autoLED, teleop);
     }
 
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
@@ -185,10 +185,12 @@ public class SubsystemTriggers {
                 LEDCommands.run(led, LEDPattern.solid(Color.kGreen))
                         .ignoringDisable(true)
                         .withName("TeleopGreen");
+            
         autoLED =
                 LEDCommands.run(led, LedUtil.makeRainbow(255, 126))
                         .ignoringDisable(true)
                         .withName("AutoRainbow");
+
         disabledLED =
                 LEDCommands.run(led, LEDPattern.solid(Color.kRed))
                         .ignoringDisable(true)
@@ -203,7 +205,7 @@ public class SubsystemTriggers {
 
         falseOnce().and(disabled).whileTrue(disabledLED);
 
-        autonomous.onTrue(autoLED);
+        autonomous.whileTrue(autoLED);
 
         teleop.onTrue(teleopLED);
 
@@ -220,10 +222,5 @@ public class SubsystemTriggers {
         //         .atCommandedStateTrigger()
         //         .and(ableToShootState.beingControlledTrigger().negate())
         //         .whileFalse(LEDCommands.run(led, LEDPattern.solid(Color.kPurple)));
-
-        ableToShootState
-                .beingControlledTrigger()
-                .and(teleop)
-                .whileTrue(new SlowedDownDrivingWhileShooting(swerve, driverController));
     }
 }
