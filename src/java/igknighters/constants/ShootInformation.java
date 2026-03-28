@@ -115,13 +115,13 @@ public class ShootInformation {
     }
 
     public ShootingData getData(Supplier<Pose2d> robotPoseSupplier) {
-        if (shouldPass(robotPoseSupplier)) {
-            if (useOperatorControlLocation) {
-                return getPassData("robot");
-            } else {
-                return new ShootingData(4.8, 2, getPassTarget(robotPoseSupplier));
-            }
-        }
+        // if (shouldPass(robotPoseSupplier)) {
+        //     if (useOperatorControlLocation) {
+        //         return getPassData("robot");
+        //     } else {
+        //         return new ShootingData(4.8, 2, getPassTarget(robotPoseSupplier));
+        //     }
+        // }
         return new ShootingData(4.0, 2, getHubTarget());
     }
 
@@ -134,13 +134,13 @@ public class ShootInformation {
     }
 
     public Pose3d getShotLocation(Supplier<Pose2d> robotPose) {
-        if (shouldPass(robotPose)) {
-            if (useOperatorControlLocation) {
-                return getDashboardPose("robot/passWaypoint");
-            } else {
-                return getPassTarget(robotPose);
-            }
-        }
+        // if (shouldPass(robotPose)) {
+        //     if (useOperatorControlLocation) {
+        //         return getDashboardPose("robot/passWaypoint");
+        //     } else {
+        //         return getPassTarget(robotPose);
+        //     }
+        // }
         return getHubTarget();
     }
 

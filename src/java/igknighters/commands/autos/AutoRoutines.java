@@ -416,6 +416,50 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine SOTMTEST() {
+        AutoRoutine routine = autoFactory.newRoutine("SOTM TEST");
+        AutoTrajectory tangential_traj = routine.trajectory("SOTM_TEST_1.traj");
+        AutoTrajectory reset_traj = routine.trajectory("SOTM_TEST_2.traj");
+        AutoTrajectory radial_away_traj = routine.trajectory("SOTM_TEST_3.traj");
+        AutoTrajectory radial_towards_traj = routine.trajectory("SOTM_TEST_4.traj");
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                tangential_traj.resetOdometry(),
+                                Commands.waitSeconds(5),
+                                Commands.parallel(
+                                        tangential_traj.cmd(),
+                                        HigherOrderCommands.hippoShoot(subsystems))));
+
+        tangential_traj
+                .done()
+                .onTrue(Commands.sequence(SwerveCommands.stopDriving(swerve), reset_traj.cmd()));
+
+        reset_traj
+                .done()
+                .onTrue(
+                        Commands.sequence(
+                                SwerveCommands.stopDriving(swerve),
+                                Commands.deadline(
+                                        Commands.waitSeconds(5),
+                                        IntakeCommands.holdAtIntake(subsystems.intake)),
+                                Commands.parallel(
+                                        HigherOrderCommands.hippoShoot(subsystems),
+                                        radial_away_traj.cmd())));
+
+        radial_away_traj
+                .done()
+                .onTrue(
+                        Commands.sequence(
+                                SwerveCommands.stopDriving(swerve),
+                                Commands.parallel(
+                                        radial_towards_traj.cmd(),
+                                        HigherOrderCommands.hippoShoot(subsystems))));
+
+        radial_towards_traj.done().onTrue(SwerveCommands.stopDriving(swerve));
+        return routine;
+    }
+
     public AutoRoutine leftNuetralHippo() {
         AutoRoutine routine = autoFactory.newRoutine("New Left Neutral Hippo");
 
