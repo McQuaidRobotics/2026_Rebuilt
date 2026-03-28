@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import igknighters.Robot;
-import igknighters.util.log.Log;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -56,12 +55,9 @@ public class RobotPosePredictor {
         double now = Timer.getFPGATimestamp();
 
         // Write into circular buffer
-        Object xCopy = PipedDeepCopy.copy(chassisSpeeds.vxMetersPerSecond);
-        Object yCopy = PipedDeepCopy.copy(chassisSpeeds.vyMetersPerSecond);
-        Object oCopy = PipedDeepCopy.copy(chassisSpeeds.omegaRadiansPerSecond);
-        veloHistory[writeIndex].vxMetersPerSecond = (double) xCopy;
-        veloHistory[writeIndex].vyMetersPerSecond = (double) yCopy;
-        veloHistory[writeIndex].omegaRadiansPerSecond = (double) oCopy;
+        veloHistory[writeIndex].vxMetersPerSecond = chassisSpeeds.vxMetersPerSecond;
+        veloHistory[writeIndex].vyMetersPerSecond = chassisSpeeds.vyMetersPerSecond;
+        veloHistory[writeIndex].omegaRadiansPerSecond = chassisSpeeds.omegaRadiansPerSecond;
         timestampHistory[writeIndex] = now;
         double mostRecentTimestamp =
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
@@ -75,9 +71,9 @@ public class RobotPosePredictor {
         }
         writeIndex = (writeIndex + 1) % HISTORY_SIZE;
         storedCount++;
-        if (veloHistory[HISTORY_SIZE - 1] != null) {
-            Log.log("ROBOT/veloHistory", veloHistory);
-        }
+        // if (veloHistory[HISTORY_SIZE - 1] != null) {
+        //     Log.log("ROBOT/veloHistory", veloHistory);
+        // }
     }
 
     public Pose3d getPredictedShooterPose3d(Pose3d pose3d) {
@@ -107,13 +103,11 @@ public class RobotPosePredictor {
         double dt = timestampHistory[latestIdx] - timestampHistory[prevIdx];
         final ChassisSpeeds currentVelos =
                 new ChassisSpeeds(
-                        (double) PipedDeepCopy.copy(veloHistory[latestIdx].vxMetersPerSecond),
-                        (double) PipedDeepCopy.copy(veloHistory[latestIdx].vyMetersPerSecond),
-                        (double) PipedDeepCopy.copy(veloHistory[latestIdx].omegaRadiansPerSecond));
+                        veloHistory[latestIdx].vxMetersPerSecond,
+                        veloHistory[latestIdx].vyMetersPerSecond,
+                        veloHistory[latestIdx].omegaRadiansPerSecond);
 
         if (dt <= 0.0) return pose;
-        // find acceleration based on last velocity and current
-        ChassisSpeeds predictedVelo = new ChassisSpeeds();
 
         if (veloHistory[HISTORY_SIZE - 1] == null) {
             return pose;
@@ -125,14 +119,16 @@ public class RobotPosePredictor {
         // Predict next pose using predicted velocity
         predicted[0] = currentPose[0] + currentVelos.vxMetersPerSecond * predTime;
         predicted[1] = currentPose[1] + currentVelos.vyMetersPerSecond * predTime;
-        predicted[2] = currentPose[2] + currentVelos.omegaRadiansPerSecond * predTime;
+        // handle wrapping
+        double predOmega = currentVelos.omegaRadiansPerSecond * predTime + currentPose[2];
 
-        // predicted[0] = currentPose[0] +
-        // (currentVelos.vxMetersPerSecond-veloHistory[prevIdx].vxMetersPerSecond*dt);
-        // predicted[1] = currentPose[1] +
-        // (currentVelos.vyMetersPerSecond-veloHistory[prevIdx].vyMetersPerSecond*dt);
-        // predicted[2] = currentPose[2] +
-        // (currentVelos.omegaRadiansPerSecond-veloHistory[prevIdx].omegaRadiansPerSecond*dt);
+        if (predOmega > Math.PI) {
+            predicted[2] = predOmega - 2 * Math.PI;
+        } else if (predOmega < -Math.PI) {
+            predicted[2] = predOmega - 2 * Math.PI;
+        } else {
+            predicted[2] = predOmega;
+        }
 
         Robot.pose_pred_error.findError(pose);
 

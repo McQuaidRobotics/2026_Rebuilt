@@ -13,7 +13,6 @@ import igknighters.subsystems.intake.pivot.PivotReal;
 import igknighters.subsystems.intake.pivot.PivotSim;
 import igknighters.subsystems.intake.rollers.Rollers;
 import igknighters.subsystems.intake.rollers.RollersDisabled;
-import igknighters.subsystems.intake.rollers.RollersReal;
 import igknighters.subsystems.intake.rollers.RollersSim;
 import igknighters.util.log.Log;
 
