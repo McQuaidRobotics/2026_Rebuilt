@@ -56,7 +56,7 @@ public class LerpSolveShot {
     public static ShooterState solve(
             Pose3d robotPose, Pose3d goalPose, double currentRPM, double latencyCompensation) {
 
-        Pose3d shooterPose = Robot.pose_pred.getPredictedShooterPose(robotPose);
+        Pose3d shooterPose = Robot.pose_pred.getPredictedShooterPose3d(robotPose);
 
         ChassisSpeeds robotSpeeds = Robot.pose_pred.getPredictedVelos();
         Translation2d robotVelocity =
