@@ -7,9 +7,8 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
-import igknighters.commands.ShooterCommands.shotType;
+import igknighters.commands.Shooter.ShooterCommands.shotType;
 import igknighters.constants.ShootInformation;
-import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.shooter.flywheel.*;
 import igknighters.subsystems.shooter.hood.*;
 import igknighters.subsystems.shooter.turret.Turret;
@@ -74,14 +73,14 @@ public class Shooter extends SubsystemBase {
 
     private void goToTurretAngle(Angle angle) {
         beingControlled = true;
-        if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+        if (!Robot.consts.shooter().kTurret().disableTurretLogs()) {
             Log.log("ROBOT/Subsystems/Shooter/TARGETING", angle.in(Degrees));
         }
         turret.goToAngleDegrees(angle);
     }
 
     public void targetState(AngularVelocity velo, Angle turretAngle, Angle hoodAngle) {
-        if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+        if (!Robot.consts.shooter().kTurret().disableTurretLogs()) {
             Log.log("ROBOT/Subsystems/Shooter/TARGETING/RPM", velo.in(RPM));
             Log.log("ROBOT/Subsystems/Shooter/TARGETING/ANGLE", turretAngle.in(Degrees));
             Log.log("ROBOT/Subsystems/Shooter/TARGETING/HoodAngle", hoodAngle.in(Degrees));
@@ -119,7 +118,7 @@ public class Shooter extends SubsystemBase {
                 Math.abs(getTurretAngleDegrees() - goalTurretAngleDegrees) < toleranceDegrees;
         boolean atHoodAngle =
                 Math.abs(hood.getAngleDegrees() - goalHoodAngleDegrees) < toleranceHoodDegrees;
-        if (!SubsystemConstants.kShooter.kFlywheels.disableFlywheelsLogs) {
+        if (!Robot.consts.shooter().kFlywheels().disableFlywheelsLogs()) {
             Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT SPEED", atSpeed);
             Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT TURRET ANGLE", atTurretAngle);
             Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT HOOD ANGLE", atHoodAngle);
@@ -128,7 +127,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setTurretPosition(Angle angle) {
-        if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+        if (!Robot.consts.shooter().kTurret().disableTurretLogs()) {
             Log.log("ROBOT/Subsystems/Shooter/SETSTATE/ANGLE", angle.in(Degrees));
         }
         turret.setAngle(angle);
@@ -151,7 +150,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setHoodAngleDegrees(double angleDegrees) {
-        if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+        if (!Robot.consts.shooter().kHood().disableHoodLogs()) {
             Log.log("ROBOT/Subsystems/Shooter/SETSTATE/HoodAngle", angleDegrees);
         }
         beingControlled = true;
@@ -159,7 +158,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setHoodVoltage(double voltage) {
-        if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+        if (!Robot.consts.shooter().kHood().disableHoodLogs()) {
             Log.log("ROBOT/Subsystems/Shooter/SETSTATE/HoodVoltage", voltage);
         }
         beingControlled = true;
@@ -176,7 +175,7 @@ public class Shooter extends SubsystemBase {
         turret.periodic();
         hood.periodic();
 
-        if (!SubsystemConstants.kShooter.kTurret.disableTurretLogs) {
+        if (!Robot.consts.shooter().kTurret().disableTurretLogs()) {
             Log.log("ROBOT/Subsystems/Shooter/BEING CONTROLLED", beingControlled);
         }
         if (!Robot.isReal()) {

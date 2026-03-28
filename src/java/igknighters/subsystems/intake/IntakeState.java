@@ -6,24 +6,50 @@ import static edu.wpi.first.units.Units.RPM;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.util.struct.StructSerializable;
+import igknighters.Robot;
+import java.util.function.Supplier;
 
 public enum IntakeState implements StructSerializable {
-    Intake(Degrees.of(66), RPM.of(3500), Degrees.of(5)),
-    slightJork(Degrees.of(55), RPM.of(3500), Degrees.of(5)),
-    PREP_TO_STOW(Degrees.of(30), RPM.of(500), Degrees.of(10)),
-    Stowed(Degrees.of(0), RPM.of(100), Degrees.of(5));
+    Intake(
+            () -> Degrees.of(Robot.consts.intake().kPivot().MAX_ANGLE_DEGREES()),
+            () -> RPM.of(Robot.consts.intake().kRollers().MAX_SPEED_RPM()),
+            () -> Degrees.of(5)),
+    slightJork(
+            () -> Degrees.of(55),
+            () -> RPM.of(Robot.consts.intake().kRollers().MAX_SPEED_RPM()),
+            () -> Degrees.of(5)),
+    PREP_TO_STOW(() -> Degrees.of(30), () -> RPM.of(500), () -> Degrees.of(10)),
+    Stowed(
+            () -> Degrees.of(Robot.consts.intake().kPivot().MIN_ANGLE_DEGREES()),
+            () -> RPM.of(100),
+            () -> Degrees.of(5));
 
-    public final Angle pivotDegrees;
-    public final AngularVelocity rollerSpeedRPM;
-    public final Angle tolerenceDegrees;
+    private final Supplier<Angle> pivotDegrees;
+    private final Supplier<AngularVelocity> rollerSpeedRPM;
+    private final Supplier<Angle> tolerenceDegrees;
 
-    IntakeState(Angle pivotDegrees, AngularVelocity rollerSpeedRPM, Angle tolerenceDegrees) {
+    IntakeState(
+            Supplier<Angle> pivotDegrees,
+            Supplier<AngularVelocity> rollerSpeedRPM,
+            Supplier<Angle> tolerenceDegrees) {
         this.pivotDegrees = pivotDegrees;
         this.rollerSpeedRPM = rollerSpeedRPM;
         this.tolerenceDegrees = tolerenceDegrees;
     }
 
-    IntakeState(Angle pivotAngle, AngularVelocity rollerSpeed) {
-        this(pivotAngle, rollerSpeed, Degrees.of(5));
+    IntakeState(Supplier<Angle> pivotAngle, Supplier<AngularVelocity> rollerSpeed) {
+        this(pivotAngle, rollerSpeed, () -> Degrees.of(5));
+    }
+
+    public Angle getPivotAngle() {
+        return pivotDegrees.get();
+    }
+
+    public AngularVelocity getRollerSpeed() {
+        return rollerSpeedRPM.get();
+    }
+
+    public Angle getTolerance() {
+        return tolerenceDegrees.get();
     }
 }

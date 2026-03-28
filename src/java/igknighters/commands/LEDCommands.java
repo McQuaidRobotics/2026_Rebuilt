@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import igknighters.constants.SubsystemConstants;
+import igknighters.Robot;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
 import igknighters.util.log.Log;
@@ -50,7 +50,7 @@ public class LEDCommands {
             names.add(section.name());
         }
 
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs()) {
             Log.log("ROBOT/Subsystems/LED/Run/Sections", sections.length);
         }
 
@@ -84,7 +84,7 @@ public class LEDCommands {
 
         for (int i = 0; i < led.pwm1.numberOfStrips; i++) {
             String name = "full led strip " + (i + 1);
-            if (!SubsystemConstants.disableAllLogs) {
+            if (!Robot.consts.disableAllLogs()) {
                 Log.log("ROBOT/Subsystems/LED/Run/AddingSection", name);
             }
             sections[i] = new LEDSection(i, 0, pattern, stripLength, name);
