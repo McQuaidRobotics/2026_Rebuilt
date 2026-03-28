@@ -35,16 +35,18 @@ public class RobotPosePredError {
         int latestIdx = Arrays.stream(timestampHistory).boxed().toList().indexOf(prevTimestamp);
         double[] errors = new double[3];
         errors[0] =
-                Math.abs((actualPose.getX() - predictionHistory[latestIdx].getX()))
-                        / actualPose.getX();
+                Math.abs(
+                        (actualPose.getX() - predictionHistory[latestIdx].getX())
+                                / actualPose.getX());
         errors[1] =
-                Math.abs((actualPose.getY() - predictionHistory[latestIdx].getY()))
-                        / actualPose.getY();
+                Math.abs(
+                        (actualPose.getY() - predictionHistory[latestIdx].getY())
+                                / actualPose.getY());
         errors[2] =
                 Math.abs(
-                                (actualPose.getRotation().getDegrees()
-                                        - predictionHistory[latestIdx].getRotation().getDegrees()))
-                        / actualPose.getRotation().getDegrees();
+                        (actualPose.getRotation().getDegrees()
+                                        - predictionHistory[latestIdx].getRotation().getDegrees())
+                                / actualPose.getRotation().getDegrees());
         Log.log("ROBOT/pose_pred_error", errors);
         return errors;
     }
