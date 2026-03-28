@@ -370,12 +370,12 @@ public class AutoRoutines extends AutoCommands {
         AutoTrajectory swipe1In = routine.trajectory("ORBIT_LEFT_2.traj");
         AutoTrajectory swipe2Out = routine.trajectory("ORBIT_LEFT_3.traj");
         AutoTrajectory swipe2In = routine.trajectory("ORBIT_LEFT_4.traj");
-        AutoTrajectory swipe3Out = routine.trajectory("ORBIT_LEFT_5.traj");
+
         routine.active()
                 .onTrue(
                         Commands.sequence(
                                 swipe1Out.resetOdometry(),
-                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 4),
                                 swipe1Out.cmd()));
 
         swipe1Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
@@ -386,7 +386,7 @@ public class AutoRoutines extends AutoCommands {
         swipe1In.done()
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
-                                .alongWith(HigherOrderCommands.shootTillEmpty(subsystems, 2.5))
+                                .alongWith(HigherOrderCommands.shootTillEmpty(subsystems, 4))
                                 .andThen(swipe2Out.cmd()));
 
         swipe2Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
@@ -398,11 +398,7 @@ public class AutoRoutines extends AutoCommands {
         swipe2In.done()
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
-                                .alongWith(HigherOrderCommands.shootTillEmpty(subsystems, .5))
-                                .andThen(swipe3Out.cmd()));
-        swipe3Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
-
-        swipe3Out.done().onTrue(SwerveCommands.stopDriving(swerve));
+                                .andThen(HigherOrderCommands.rapidFireStream(subsystems)));
 
         return routine;
     }
