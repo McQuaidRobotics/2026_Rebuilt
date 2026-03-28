@@ -48,6 +48,9 @@ public class RobotPosePredictor {
     public RobotPosePredictor(double alpha, double beta) {
         this.alpha = alpha;
         this.beta = beta;
+        for (int i = 0; i < HISTORY_SIZE; i++) {
+            veloHistory[i] = new ChassisSpeeds(0, 0, 0);
+        }
     }
 
     /**
