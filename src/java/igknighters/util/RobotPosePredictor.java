@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
+import igknighters.Robot;
 import igknighters.util.log.Log;
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,7 +57,7 @@ public class RobotPosePredictor {
      *
      * @param pose the latest measured robot pose
      */
-    public void setNewPose(ChassisSpeeds chassisSpeeds) {
+    public void setVelocities(ChassisSpeeds chassisSpeeds) {
 
         double now = Timer.getFPGATimestamp();
 
@@ -126,6 +127,8 @@ public class RobotPosePredictor {
         // (currentVelos.vyMetersPerSecond-veloHistory[prevIdx].vyMetersPerSecond*dt);
         // predicted[2] = currentPose[2] +
         // (currentVelos.omegaRadiansPerSecond-veloHistory[prevIdx].omegaRadiansPerSecond*dt);
+
+        Robot.pose_pred_error.findError(pose);
 
         return componentsToPose(predicted);
     }
