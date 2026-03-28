@@ -99,9 +99,9 @@ public class LerpSolveShot {
 
         // 4. TODO: Tune these! Pull them out into TunableDoubles for Glass/AdvantageScope
         double radialTowardsMultiplier = 0.4;
-        double radialAwayMultiplier = 0.4; // Keep reducing until overshooting away stops
+        double radialAwayMultiplier = 0.3; // Keep reducing until overshooting away stops
         double tangentialMultiplier =
-                0.45; // Tune this if your shots drift left/right while strafing
+                0.4; // Tune this if your shots drift left/right while strafing
 
         double radialMultiplierToUse =
                 (radialVelocityMag >= 0) ? radialTowardsMultiplier : radialAwayMultiplier;
