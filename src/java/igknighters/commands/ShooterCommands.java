@@ -21,12 +21,15 @@ import igknighters.subsystems.shooter.AimSolver;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.subsystems.shooter.ShootingData;
+import igknighters.subsystems.shooter.solvers.Math.LerpSolveShot;
 import igknighters.util.TunableValues;
 import igknighters.util.log.Log;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class ShooterCommands {
+
+    public ShooterCommands() {}
 
     public static TunableValues.TunableDouble shootRPM =
             TunableValues.getDouble("Shooter/ShootRPM", 3000);
@@ -176,23 +179,24 @@ public class ShooterCommands {
     }
 
     public static BooleanSupplier isUnderTrench(Supplier<Pose2d> robotPoseSupplier) {
+            Supplier<Pose2d> turretPose = getShooterPoseWithOffset(robotPoseSupplier);
         return () -> {
-            Pose2d pose = robotPoseSupplier.get();
+            
             boolean under1 =
                     isBetween(
-                            pose,
+                            turretPose.get(),
                             FieldConstants.BUMP.BUMP_1_X_METERS - .08,
                             FieldConstants.BUMP.BUMP_1_X_METERS + .08);
             boolean under2 =
                     isBetween(
-                            pose,
+                            turretPose.get(),
                             FieldConstants.BUMP.BUMP_2_X_METERS - 0.08,
                             FieldConstants.BUMP.BUMP_2_X_METERS + 0.08);
 
             boolean isUnder = under1 || under2;
             if (!SubsystemConstants.disableAllLogs) {
                 Log.log("ROBOT/Commands/Shooter/Trench Protection/isUnderTrench", isUnder);
-                Log.log("ROBOT/Commands/Shooter/Trench Protection/RobotX", pose.getX());
+                Log.log("ROBOT/Commands/Shooter/Trench Protection/RobotX", turretPose.get().getX());
             }
 
             return isUnder;
@@ -298,7 +302,7 @@ public class ShooterCommands {
                         0.02);
 
         shooter.targetState(
-                RPM.of(2000), targetingData.turretAngle, Degrees.of(kHood.MIN_ANGLE_DEGREES));
+                RPM.of(3000), targetingData.turretAngle, Degrees.of(kHood.MIN_ANGLE_DEGREES));
     }
 
     public static void shootOnce(
@@ -322,14 +326,7 @@ public class ShooterCommands {
                         new Rotation3d(0.0, 0.0, shooterPose2d.getRotation().getRadians()));
 
         ShooterState targetingData =
-                AimSolver.Solvers.solve_max_and_min_iterative_with_vectors(
-                        shooterPose3d,
-                        shootingData.TARGET_POSE,
-                        robotVel,
-                        shooter.getCurrentState().flywheelSpeed.in(RPM),
-                        shootingData.MAX_HEIGHT_METERS,
-                        shootingData.MIN_HEIGHT_METERS,
-                        0.02);
+                LerpSolveShot.solve(shooterPose3d, shootingData.TARGET_POSE, 0.1, 0.0);
 
         if (targetingData.flywheelSpeed.in(RPM) != 0) {
             // possible shot so follow its instructions
@@ -419,7 +416,7 @@ public class ShooterCommands {
                                     0.02);
 
                     shooter.targetState(
-                            RPM.of(2000),
+                            RPM.of(3000),
                             targetingData.turretAngle,
                             Degrees.of(kHood.MIN_ANGLE_DEGREES));
                 });

@@ -13,7 +13,8 @@ import java.util.Set;
 
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
-        return Commands.parallel(rapidFireStream(subsystems))
+        return Commands.parallel(
+                        rapidFireStream(subsystems), IntakeCommands.jorkIt(subsystems.intake))
                 .withTimeout(timeout)
                 .andThen(Commands.print("ALL BALLS SHOT CONTINUING")); // this is a placeholder for
         // IndexerCommands.isBallPresent()

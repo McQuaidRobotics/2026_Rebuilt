@@ -1,7 +1,9 @@
 package igknighters.util;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
@@ -168,6 +170,10 @@ public class RobotPosePredictor {
     /** Decomposes a Pose2d into [x, y, rotation]. */
     private static double[] poseToComponents(Pose2d pose) {
         return new double[] {pose.getX(), pose.getY(), pose.getRotation().getRadians()};
+    }
+
+    private static double[] poseToComponents(Pose3d pose) {
+        return new double[] {pose.getX(), pose.getY(), pose.getZ(), pose.getRotation().getZ()};
     }
 
     /** Reconstructs a Pose2d from [x, y, roll, pitch]. */
