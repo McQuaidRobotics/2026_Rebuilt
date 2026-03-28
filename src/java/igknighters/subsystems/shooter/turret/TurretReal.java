@@ -129,7 +129,7 @@ public class TurretReal extends Turret {
     public void periodic() {
 
         if (!Robot.consts.shooter().kTurret().disableTurretLogs()) {
-            Log.logMotor("Subsystems/Shooter/Turret/Motor", motor);
+            //     Log.logMotor("Subsystems/Shooter/Turret/Motor", motor);
             Log.log("ROBOT/Subsystems/Shooter/Turret/Target Degrees", super.targetDegrees);
         }
 
