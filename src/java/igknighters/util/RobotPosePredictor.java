@@ -118,18 +118,19 @@ public class RobotPosePredictor {
 
         // Predict next pose using predicted velocity
         ChassisSpeeds predictedAcc = getPredictedAcceleration();
+        ChassisSpeeds predictedVelo = getPredictedVelos();
         predicted[0] =
                 currentPose[0]
-                        + currentVelos.vxMetersPerSecond * predTime
+                        + predictedVelo.vxMetersPerSecond * predTime
                         + 1 / 2 * predictedAcc.vxMetersPerSecond * Math.pow(predTime, 2);
         predicted[1] =
                 currentPose[1]
-                        + currentVelos.vyMetersPerSecond * predTime
+                        + predictedVelo.vyMetersPerSecond * predTime
                         + 1 / 2 * predictedAcc.vyMetersPerSecond * Math.pow(predTime, 2);
         // handle wrapping
         double predOmega =
                 currentPose[2]
-                        + currentVelos.omegaRadiansPerSecond * predTime
+                        + predictedVelo.omegaRadiansPerSecond * predTime
                         + 1 / 2 * predictedAcc.omegaRadiansPerSecond * Math.pow(predTime, 2);
 
         if (predOmega > Math.PI) {
