@@ -169,6 +169,7 @@ public class DriverController {
             this.A.whileTrue(IntakeCommands.holdAtIntake(subsystems.intake));
             this.B.whileTrue(IntakeCommands.holdAtStow(subsystems.intake));
             this.X.whileTrue(IntakeCommands.slightJorkIntake(subsystems.intake));
+            this.Y.whileTrue(IntakeCommands.toggleHoldState(subsystems.intake));
         } else {
             System.out.println("UNKNOWN DEBUG TYPE: " + debugType);
             throw new IllegalArgumentException("UNKNOWN DEBUG TYPE: " + debugType);

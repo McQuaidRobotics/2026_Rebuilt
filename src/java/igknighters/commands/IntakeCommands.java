@@ -14,6 +14,8 @@ import igknighters.util.log.Log;
 import java.util.function.Supplier;
 
 public class IntakeCommands {
+    public static boolean isStowed = false; //this starts at false because it needs to change to true when the toggle is called
+    
     /**
      * Holds the intake in the intake position. This will not end unless a new command is called on
      * the intake
@@ -34,6 +36,16 @@ public class IntakeCommands {
      */
     public static Command holdAtStow(Intake intake) {
         return intake.run(() -> intake.goTo(IntakeState.Stowed)).withName("Stow Intake");
+    }
+
+    public static Command toggleHoldState(Intake intake) {
+        isStowed = !isStowed;
+        //goes to the state that is opposite of what it currently is
+        if (isStowed) {
+            return intake.run(() -> intake.goTo(IntakeState.Intake)).withName("Intake Balls");
+        } else {
+            return intake.run(() -> intake.goTo(IntakeState.Stowed)).withName("Stow Intake");
+        }
     }
 
     public static Command expell(Intake intake) {
