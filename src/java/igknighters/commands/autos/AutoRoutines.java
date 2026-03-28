@@ -387,13 +387,19 @@ public class AutoRoutines extends AutoCommands {
 
         swipe1In.done()
                 .onTrue(
-                        SwerveCommands.stopDriving(swerve)
-                                .alongWith(HigherOrderCommands.shootTillEmpty(subsystems, 3))
-                                .andThen(swipe2Out.cmd()));
+                        Commands.parallel(
+                                SwerveCommands.stopDriving(swerve)
+                                        .alongWith(
+                                                HigherOrderCommands.shootTillEmpty(subsystems, 3))
+                                        .andThen(swipe2Out.cmd())));
 
         swipe2Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
 
-        swipe2Out.done().onTrue(SwerveCommands.stopDriving(swerve).andThen(swipe2In.cmd()));
+        swipe2Out
+                .done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .andThen(Commands.parallel(swipe2In.cmd())));
 
         swipe2In.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
 
