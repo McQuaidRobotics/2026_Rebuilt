@@ -25,33 +25,31 @@ public class LerpSolveShot {
     static LerpTable RADIAL_TOWARDS =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, .4),
-                        new LerpTableEntry(2.0, .4),
-                        new LerpTableEntry(3, .3),
-                        new LerpTableEntry(4.5, .3),
-                        new LerpTableEntry(5, .3)
+                        new LerpTableEntry(1.0, .6),
+                        new LerpTableEntry(2.0, .7),
+                        new LerpTableEntry(3, .8),
+                        new LerpTableEntry(4.5, .9),
+                        new LerpTableEntry(5, 1.0)
                     });
 
     static LerpTable TANGENTIAL =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, .4),
-                        new LerpTableEntry(2.0, .4),
-                        new LerpTableEntry(3, .3),
-                        new LerpTableEntry(4.5, .3),
-                        new LerpTableEntry(5, .3)
+                        new LerpTableEntry(1.0, .7),
+                        new LerpTableEntry(2.0, .8),
+                        new LerpTableEntry(3, .9),
+                        new LerpTableEntry(4.5, 1.0),
+                        new LerpTableEntry(5, 1.0)
                     });
-
-    
 
     static LerpTable RADIAL_AWAY =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, .3),
-                        new LerpTableEntry(2.0, .3),
-                        new LerpTableEntry(3, .25),
-                        new LerpTableEntry(4.5, .2),
-                        new LerpTableEntry(5, .2)
+                        new LerpTableEntry(1.0, .7),
+                        new LerpTableEntry(2.0, .8),
+                        new LerpTableEntry(3, .9),
+                        new LerpTableEntry(4.5, 1.0),
+                        new LerpTableEntry(5, 1.1)
                     });
 
     static LerpTable HOOD_LERP =
@@ -131,7 +129,10 @@ public class LerpSolveShot {
                 RADIAL_AWAY.lerp(
                         rawRobotVelocity.getNorm()); // Keep reducing until overshooting away stops
         double tangentialMultiplier =
-                0.4; // Tune this if your shots drift left/right while strafing
+                TANGENTIAL.lerp(
+                        rawRobotVelocity
+                                .getNorm()); // Tune this if your shots drift left/right while
+        // strafing
 
         double radialMultiplierToUse =
                 (radialVelocityMag >= 0) ? radialTowardsMultiplier : radialAwayMultiplier;

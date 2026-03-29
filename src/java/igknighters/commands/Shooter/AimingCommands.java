@@ -33,7 +33,7 @@ public class AimingCommands {
                         .plus(
                                 new Transform2d(
                                         -5 * Conv.INCHES_TO_METERS,
-                                        -5 * Conv.INCHES_TO_METERS,
+                                        +5 * Conv.INCHES_TO_METERS,
                                         new Rotation2d()));
     }
 
@@ -42,26 +42,33 @@ public class AimingCommands {
         return x >= a && x <= b;
     }
 
+    public static Pose2d getTurretPose(Supplier<Pose2d> robotPoSupplier) {
+        return getShooterPoseWithOffset(
+                        () -> Robot.pose_pred.getPredictedPose(robotPoSupplier.get()))
+                .get();
+    }
+
     public static BooleanSupplier isUnderTrench(Supplier<Pose2d> robotPoseSupplier) {
-        Supplier<Pose2d> turretPose = getShooterPoseWithOffset(robotPoseSupplier);
+
         return () -> {
+            Pose2d turretPose = getTurretPose(robotPoseSupplier);
             boolean under1 =
                     isBetween(
-                            turretPose.get(),
-                            FieldConstants.BUMP.BUMP_1_X_METERS - .08,
-                            FieldConstants.BUMP.BUMP_1_X_METERS + .08);
+                            turretPose,
+                            FieldConstants.BUMP.BUMP_1_X_METERS - .5,
+                            FieldConstants.BUMP.BUMP_1_X_METERS + .5);
             boolean under2 =
                     isBetween(
-                            turretPose.get(),
-                            FieldConstants.BUMP.BUMP_2_X_METERS - 0.08,
-                            FieldConstants.BUMP.BUMP_2_X_METERS + 0.08);
+                            turretPose,
+                            FieldConstants.BUMP.BUMP_2_X_METERS - 0.36,
+                            FieldConstants.BUMP.BUMP_2_X_METERS + 0.36);
 
             boolean isUnder = under1 || under2;
             if (!Robot.consts.disableAllLogs()) {
                 Log.log("ROBOT/Commands/Shooter/Trench Protection/isUnderTrench", isUnder);
                 Log.log("ROBOT/Commands/Shooter/Trench Protection/Under 1", under1);
                 Log.log("ROBOT/Commands/Shooter/Trench Protection/Under 2", under2);
-                Log.log("ROBOT/Commands/Shooter/Trench Protection/RobotX", turretPose.get().getX());
+                Log.log("ROBOT/Commands/Shooter/Trench Protection/RobotX", turretPose.getX());
             }
 
             return isUnder;
