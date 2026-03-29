@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
@@ -20,6 +21,10 @@ public class SlowedDownDrivingWhileShooting extends TeleopSwerveBaseCmd {
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
 
+    private final SlewRateLimiter xLimiter = new SlewRateLimiter(0.5);
+    private final SlewRateLimiter yLimiter = new SlewRateLimiter(0.5);
+    private final SlewRateLimiter rotLimiter = new SlewRateLimiter(0.5);
+
     public SlowedDownDrivingWhileShooting(Swerve swerve, DriverController controller) {
         super(swerve, controller);
         addRequirements(swerve);
@@ -33,16 +38,16 @@ public class SlowedDownDrivingWhileShooting extends TeleopSwerveBaseCmd {
         swerve.setControl(
                 m_driveRequest
                         .withVelocityX(
-                                vt.getX()
+                                xLimiter.calculate(vt.getX())
                                         * knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond)
                                         * .5)
                         .withVelocityY(
-                                vt.getY()
+                                yLimiter.calculate(vt.getY())
                                         * knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond)
                                         * .5)
                         .withRotationalRate(
-                                .4
-                                        * RotationsPerSecond.of(0.75).in(RadiansPerSecond)
-                                        * rotationStick().getX()));
+                                rotLimiter.calculate(rotationStick().getX())
+                                        * .4
+                                        * RotationsPerSecond.of(0.75).in(RadiansPerSecond)));
     }
 }
