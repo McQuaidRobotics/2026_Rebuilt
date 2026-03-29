@@ -385,7 +385,7 @@ public class AutoRoutines extends AutoCommands {
 
         swipe1In.active().onTrue(IntakeCommands.holdAtStow(subsystems.intake));
 
-        swipe1In.done()
+         swipe1In.done()
                 .onTrue(
                         Commands.parallel(
                                 SwerveCommands.stopDriving(swerve)
