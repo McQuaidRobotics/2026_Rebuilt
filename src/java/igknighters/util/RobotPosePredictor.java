@@ -9,7 +9,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import igknighters.Robot;
 import igknighters.subsystems.swerve.Swerve;
-
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -59,7 +58,6 @@ public class RobotPosePredictor {
         ChassisSpeeds chassisSpeeds = swerve.getFieldRelativeSpeeds();
 
         double now = Timer.getFPGATimestamp();
-
 
         // Write into circular buffer
         veloHistory[writeIndex].vxMetersPerSecond = chassisSpeeds.vxMetersPerSecond;
@@ -123,7 +121,8 @@ public class RobotPosePredictor {
         double[] currentPose = poseToComponents(poseNow);
         double[] predicted = new double[3];
 
-        // Predict next pose using predicted velocity (consider changing predicted velo to current velo)
+        // Predict next pose using predicted velocity (consider changing predicted velo to current
+        // velo)
         ChassisSpeeds predictedAcc = getPredictedAcceleration();
         ChassisSpeeds predictedVelo = getPredictedVelos();
         predicted[0] =
