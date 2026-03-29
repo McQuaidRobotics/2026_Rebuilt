@@ -32,7 +32,7 @@ public class AimingCommands {
                         .get()
                         .plus(
                                 new Transform2d(
-                                        +5 * Conv.INCHES_TO_METERS,
+                                        -5 * Conv.INCHES_TO_METERS,
                                         -5 * Conv.INCHES_TO_METERS,
                                         new Rotation2d()));
     }
