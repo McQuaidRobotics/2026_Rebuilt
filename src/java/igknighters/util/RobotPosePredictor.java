@@ -116,7 +116,8 @@ public class RobotPosePredictor {
         double[] currentPose = poseToComponents(pose);
         double[] predicted = new double[3];
 
-        // Predict next pose using predicted velocity (consider changing predicted velo to current velo)
+        // Predict next pose using predicted velocity (consider changing predicted velo to current
+        // velo)
         ChassisSpeeds predictedAcc = getPredictedAcceleration();
         ChassisSpeeds predictedVelo = getPredictedVelos();
         predicted[0] =
