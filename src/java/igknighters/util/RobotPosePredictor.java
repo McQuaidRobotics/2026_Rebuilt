@@ -31,6 +31,8 @@ public class RobotPosePredictor {
 
     Pose2d poseNow = new Pose2d();
 
+    double[] accelerationsNow = new double[3];
+
     /** Index of the next write slot in the circular buffers. */
     public int writeIndex = 0;
 
@@ -58,6 +60,9 @@ public class RobotPosePredictor {
         double now = Timer.getFPGATimestamp();
         poseNow = swerve.getState().Pose;
         ChassisSpeeds chassisSpeeds = swerve.getFieldRelativeSpeeds();
+        accelerationsNow[0] = swerve.getXAcceleration();
+        accelerationsNow[1] = swerve.getYAcceleration();
+        accelerationsNow[2] = swerve.getRotationalAcceleration();
 
         // Write into circular buffer
         veloHistory[writeIndex].vxMetersPerSecond = chassisSpeeds.vxMetersPerSecond;
@@ -128,16 +133,16 @@ public class RobotPosePredictor {
         predicted[0] =
                 currentPose[0]
                         + predictedVelo.vxMetersPerSecond * predTime
-                        + 1 / 2 * predictedAcc.vxMetersPerSecond * Math.pow(predTime, 2);
+                        + 1 / 2 * accelerationsNow[0] * Math.pow(predTime, 2);
         predicted[1] =
                 currentPose[1]
                         + predictedVelo.vyMetersPerSecond * predTime
-                        + 1 / 2 * predictedAcc.vyMetersPerSecond * Math.pow(predTime, 2);
+                        + 1 / 2 * accelerationsNow[1] * Math.pow(predTime, 2);
         // handle wrapping
         double predOmega =
                 currentPose[2]
                         + predictedVelo.omegaRadiansPerSecond * predTime
-                        + 1 / 2 * predictedAcc.omegaRadiansPerSecond * Math.pow(predTime, 2);
+                        + 1 / 2 * accelerationsNow[2] * Math.pow(predTime, 2);
 
         if (predOmega > Math.PI) {
             predicted[2] = predOmega - 2 * Math.PI;

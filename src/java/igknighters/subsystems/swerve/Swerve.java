@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import igknighters.constants.Conv;
 import igknighters.subsystems.swerve.swerveconstants.SwerveConsts;
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -152,7 +151,7 @@ public class Swerve extends SubsystemBase {
     public double getXAcceleration() {
         return drivetrain.getPigeon2().getAccelerationX().getValueAsDouble();
     }
-    
+
     public double getYAcceleration() {
         return drivetrain.getPigeon2().getAccelerationY().getValueAsDouble();
     }
