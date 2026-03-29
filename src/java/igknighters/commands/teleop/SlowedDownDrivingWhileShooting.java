@@ -21,9 +21,9 @@ public class SlowedDownDrivingWhileShooting extends TeleopSwerveBaseCmd {
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
 
-    private final SlewRateLimiter xLimiter = new SlewRateLimiter(0.5);
-    private final SlewRateLimiter yLimiter = new SlewRateLimiter(0.5);
-    private final SlewRateLimiter rotLimiter = new SlewRateLimiter(0.5);
+    private final SlewRateLimiter xLimiter = new SlewRateLimiter(1);
+    private final SlewRateLimiter yLimiter = new SlewRateLimiter(1);
+    private final SlewRateLimiter rotLimiter = new SlewRateLimiter(1);
 
     public SlowedDownDrivingWhileShooting(Swerve swerve, DriverController controller) {
         super(swerve, controller);
