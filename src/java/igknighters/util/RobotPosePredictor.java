@@ -8,8 +8,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import igknighters.Robot;
-import igknighters.subsystems.swerve.Swerve;
-
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -29,8 +27,6 @@ public class RobotPosePredictor {
 
     // time in seconds to look-ahead
     public static final double predTime = .02;
-
-    Pose2d poseNow = new Pose2d();
 
     /** Index of the next write slot in the circular buffers. */
     public int writeIndex = 0;
@@ -54,12 +50,9 @@ public class RobotPosePredictor {
      *
      * @param pose the latest measured robot pose
      */
-    public void setVelocitiesandPose(Swerve swerve) {
-        poseNow = swerve.getState().Pose;
-        ChassisSpeeds chassisSpeeds = swerve.getFieldRelativeSpeeds();
+    public void setVelocities(ChassisSpeeds chassisSpeeds) {
 
         double now = Timer.getFPGATimestamp();
-
 
         // Write into circular buffer
         veloHistory[writeIndex].vxMetersPerSecond = chassisSpeeds.vxMetersPerSecond;
@@ -85,7 +78,7 @@ public class RobotPosePredictor {
 
     public Pose3d getPredictedShooterPose3d(Pose3d pose3d) {
 
-        Pose2d pose = getPredictedPose();
+        Pose2d pose = getPredictedPose(pose3d.toPose2d());
         Pose3d newPose3d =
                 new Pose3d(
                         pose.getX(),
@@ -95,7 +88,7 @@ public class RobotPosePredictor {
         return newPose3d;
     }
 
-    public Pose2d getPredictedPose() {
+    public Pose2d getPredictedPose(Pose2d pose) {
 
         double mostRecentTimestamp =
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
@@ -114,13 +107,13 @@ public class RobotPosePredictor {
                         veloHistory[latestIdx].vyMetersPerSecond,
                         veloHistory[latestIdx].omegaRadiansPerSecond);
 
-        if (dt <= 0.0) return poseNow;
+        if (dt <= 0.0) return pose;
 
         if (veloHistory[HISTORY_SIZE - 1] == null) {
-            return poseNow;
+            return pose;
         }
 
-        double[] currentPose = poseToComponents(poseNow);
+        double[] currentPose = poseToComponents(pose);
         double[] predicted = new double[3];
 
         // Predict next pose using predicted velocity (consider changing predicted velo to current velo)
@@ -148,7 +141,7 @@ public class RobotPosePredictor {
             predicted[2] = predOmega;
         }
 
-        Robot.pose_pred_error.findError(poseNow);
+        Robot.pose_pred_error.findError(pose);
 
         return componentsToPose(predicted);
     }
