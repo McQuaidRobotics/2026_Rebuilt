@@ -179,9 +179,8 @@ public class ShooterCommands {
     }
 
     public static BooleanSupplier isUnderTrench(Supplier<Pose2d> robotPoseSupplier) {
-            Supplier<Pose2d> turretPose = getShooterPoseWithOffset(robotPoseSupplier);
+        Supplier<Pose2d> turretPose = getShooterPoseWithOffset(robotPoseSupplier);
         return () -> {
-            
             boolean under1 =
                     isBetween(
                             turretPose.get(),

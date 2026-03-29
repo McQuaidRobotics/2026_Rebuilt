@@ -3,6 +3,7 @@ package igknighters.controllers;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -165,11 +166,13 @@ public class DriverController {
             this.Y.whileTrue(ClimberCommands.climbSequence(climber));
             this.LT.whileTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
             this.RT.whileTrue(HigherOrderCommands.unClimbCommand(subsystems));
+
         } else if (debugType == DebugType.INTAKE) {
             this.A.whileTrue(IntakeCommands.holdAtIntake(subsystems.intake));
             this.B.whileTrue(IntakeCommands.holdAtStow(subsystems.intake));
             this.X.whileTrue(IntakeCommands.slightJorkIntake(subsystems.intake));
             this.Y.whileTrue(IntakeCommands.toggleHoldState(subsystems.intake));
+            DogLog.log("ROBOT/Subsystems/Intake/Pivot/Debugtype", "we in debug type");
         } else {
             System.out.println("UNKNOWN DEBUG TYPE: " + debugType);
             throw new IllegalArgumentException("UNKNOWN DEBUG TYPE: " + debugType);
