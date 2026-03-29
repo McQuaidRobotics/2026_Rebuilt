@@ -300,12 +300,12 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void robotPeriodic() {
+        pose_pred.setVelocitiesandPose(subsystems.swerve);
         CommandScheduler.getInstance().run();
         // // THE COORDINATES LOOK WEIRD WHEN THERE ARE MULTIPLE FUEL, needs tuning
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
-        pose_pred.setVelocities(subsystems.swerve.getFieldRelativeSpeeds());
         pose_pred_error.logPose(subsystems.swerve.getState().Pose);
         if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()
