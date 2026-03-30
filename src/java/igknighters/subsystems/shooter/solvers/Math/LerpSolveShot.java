@@ -22,24 +22,36 @@ import igknighters.util.log.Log;
 public class LerpSolveShot {
     // minimal change in RPM most of the change will come from the hood
 
+    // RADIAL_TOWARDS RADIAL_AWAY TANGENTIAL all the inputs are in hyoptenuse of (VX, VY) of robot
+
     static LerpTable RADIAL_TOWARDS =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, .4),
-                        new LerpTableEntry(2.0, .4),
-                        new LerpTableEntry(3, .3),
-                        new LerpTableEntry(4.5, .3),
-                        new LerpTableEntry(5, .3)
+                        new LerpTableEntry(1.0, .5),
+                        new LerpTableEntry(2.0, .6),
+                        new LerpTableEntry(3, .7),
+                        new LerpTableEntry(4.5, .8),
+                        new LerpTableEntry(5, .9)
+                    });
+
+    static LerpTable TANGENTIAL =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(1.0, .7),
+                        new LerpTableEntry(2.0, .85),
+                        new LerpTableEntry(3, .95),
+                        new LerpTableEntry(4.5, 1.05),
+                        new LerpTableEntry(5, 1.09)
                     });
 
     static LerpTable RADIAL_AWAY =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, .3),
-                        new LerpTableEntry(2.0, .3),
-                        new LerpTableEntry(3, .25),
-                        new LerpTableEntry(4.5, .2),
-                        new LerpTableEntry(5, .2)
+                        new LerpTableEntry(1.0, .6),
+                        new LerpTableEntry(2.0, .7),
+                        new LerpTableEntry(3, .8),
+                        new LerpTableEntry(4.5, .9),
+                        new LerpTableEntry(5, 1.0)
                     });
 
     static LerpTable HOOD_LERP =
@@ -119,7 +131,10 @@ public class LerpSolveShot {
                 RADIAL_AWAY.lerp(
                         rawRobotVelocity.getNorm()); // Keep reducing until overshooting away stops
         double tangentialMultiplier =
-                0.4; // Tune this if your shots drift left/right while strafing
+                TANGENTIAL.lerp(
+                        rawRobotVelocity
+                                .getNorm()); // Tune this if your shots drift left/right while
+        // strafing
 
         double radialMultiplierToUse =
                 (radialVelocityMag >= 0) ? radialTowardsMultiplier : radialAwayMultiplier;
