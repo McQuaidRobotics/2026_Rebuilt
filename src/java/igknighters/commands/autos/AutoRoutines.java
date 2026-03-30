@@ -346,11 +346,7 @@ public class AutoRoutines extends AutoCommands {
         AutoTrajectory swipe1In = routine.trajectory("ORBIT_RIGHT_2.traj");
         AutoTrajectory swipe2Out = routine.trajectory("ORBIT_RIGHT_3.traj");
         AutoTrajectory swipe2In = routine.trajectory("ORBIT_RIGHT_4.traj");
-        routine.active()
-                .onTrue(
-                        Commands.sequence(
-                                swipe1Out.resetOdometry(),
-                                swipe1Out.cmd()));
+        routine.active().onTrue(Commands.sequence(swipe1Out.resetOdometry(), swipe1Out.cmd()));
 
         swipe1Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
         swipe1Out.done().onTrue(swipe1In.cmd());
