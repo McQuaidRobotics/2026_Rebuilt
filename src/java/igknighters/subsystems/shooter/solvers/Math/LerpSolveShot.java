@@ -25,6 +25,7 @@ public class LerpSolveShot {
     static LerpTable RADIAL_TOWARDS =
             new LerpTable(
                     new LerpTableEntry[] {
+<<<<<<< TEST-SPEED-UP-WITH-NEW-POSE-PREDICTOR
                         new LerpTableEntry(1.0, .5),
                         new LerpTableEntry(2.0, .6),
                         new LerpTableEntry(3, .7),
@@ -40,16 +41,31 @@ public class LerpSolveShot {
                         new LerpTableEntry(3, .95),
                         new LerpTableEntry(4.5, 1.05),
                         new LerpTableEntry(5, 1.09)
+=======
+                        new LerpTableEntry(1.0, .4),
+                        new LerpTableEntry(2.0, .4),
+                        new LerpTableEntry(3, .3),
+                        new LerpTableEntry(4.5, .3),
+                        new LerpTableEntry(5, .3)
+>>>>>>> main
                     });
 
     static LerpTable RADIAL_AWAY =
             new LerpTable(
                     new LerpTableEntry[] {
+<<<<<<< TEST-SPEED-UP-WITH-NEW-POSE-PREDICTOR
                         new LerpTableEntry(1.0, .6),
                         new LerpTableEntry(2.0, .7),
                         new LerpTableEntry(3, .8),
                         new LerpTableEntry(4.5, .9),
                         new LerpTableEntry(5, 1.0)
+=======
+                        new LerpTableEntry(1.0, .3),
+                        new LerpTableEntry(2.0, .3),
+                        new LerpTableEntry(3, .25),
+                        new LerpTableEntry(4.5, .2),
+                        new LerpTableEntry(5, .2)
+>>>>>>> main
                     });
 
     static LerpTable HOOD_LERP =
