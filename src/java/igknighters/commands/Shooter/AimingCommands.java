@@ -55,8 +55,8 @@ public class AimingCommands {
             boolean under1 =
                     isBetween(
                             turretPose,
-                            FieldConstants.BUMP.BUMP_1_X_METERS - .5,
-                            FieldConstants.BUMP.BUMP_1_X_METERS + .5);
+                            FieldConstants.BUMP.BUMP_1_X_METERS - 0.36,
+                            FieldConstants.BUMP.BUMP_1_X_METERS + 0.36);
             boolean under2 =
                     isBetween(
                             turretPose,
