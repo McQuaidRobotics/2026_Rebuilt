@@ -44,7 +44,7 @@ public class AimingCommands {
 
     public static Pose2d getTurretPose(Supplier<Pose2d> robotPoSupplier) {
         return getShooterPoseWithOffset(
-                        () -> Robot.pose_pred.getPredictedPose(robotPoSupplier.get()))
+                        () -> Robot.pose_pred.getPredictedPose())
                 .get();
     }
 
