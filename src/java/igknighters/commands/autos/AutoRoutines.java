@@ -427,13 +427,20 @@ public class AutoRoutines extends AutoCommands {
                         Commands.sequence(
                                 tangential_traj.resetOdometry(),
                                 Commands.waitSeconds(5),
-                                Commands.parallel(
-                                        tangential_traj.cmd(),
-                                        HigherOrderCommands.hippoShoot(subsystems))));
+                                Commands.parallel(tangential_traj.cmd())));
+
+        tangential_traj.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
+        tangential_traj.atTime("SHOOT").onTrue(HigherOrderCommands.hippoShoot(subsystems));
 
         tangential_traj
                 .done()
-                .onTrue(Commands.sequence(SwerveCommands.stopDriving(swerve), reset_traj.cmd()));
+                .onTrue(
+                        Commands.sequence(
+                                SwerveCommands.stopDriving(swerve),
+                                Commands.parallel(
+                                        reset_traj.cmd(),
+                                        HigherOrderCommands.IdleShooter(subsystems))));
 
         reset_traj
                 .done()
