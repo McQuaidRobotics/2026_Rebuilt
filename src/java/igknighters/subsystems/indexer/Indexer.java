@@ -37,8 +37,8 @@ public class Indexer extends SubsystemBase {
     }
 
     public void goToState(IndexerState state) {
-        spindexer.goToRPM(state.spindexerRPM);
-        exitRollers.setSpeedRPM(state.exitRollerRPM);
+        spindexer.goToRPM(state.getSpindexerRPM());
+        exitRollers.setSpeedRPM(state.getExitRollerRPM());
     }
 
     public void stop() {

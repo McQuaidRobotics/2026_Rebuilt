@@ -10,49 +10,52 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
-import igknighters.constants.SubsystemConstants;
-import igknighters.constants.SubsystemConstants.kShooter;
-import igknighters.constants.SubsystemConstants.kShooter.kHood;
+import igknighters.Robot;
 import igknighters.util.log.Log;
 
 public class HoodReal extends Hood {
-    private final TalonFX motor =
-            new TalonFX(SubsystemConstants.kShooter.kHood.MOTOR_ID, kShooter.CANBUS);
+    private final TalonFX motor;
 
-    private final DigitalInput reverseLimitSwitch =
-            new DigitalInput(kShooter.kHood.REVERSE_LIMIT_SWITCH_ID);
-    private Angle targetAngle = Degrees.of(kHood.MIN_ANGLE_DEGREES);
+    private final DigitalInput reverseLimitSwitch;
+    private Angle targetAngle;
     private boolean hasHomed = false;
 
     private final PositionVoltage positionControl = new PositionVoltage(0.0).withSlot(0);
 
     public TalonFXConfiguration flapConfiguration() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = SubsystemConstants.kShooter.kHood.kP;
-        config.Slot0.kI = SubsystemConstants.kShooter.kHood.kI;
-        config.Slot0.kD = SubsystemConstants.kShooter.kHood.kD;
-        config.Slot0.kS = SubsystemConstants.kShooter.kHood.kS;
-        config.Slot0.kV = SubsystemConstants.kShooter.kHood.kV;
-        config.Slot0.kA = SubsystemConstants.kShooter.kHood.kA;
+        config.Slot0.kP = Robot.consts.shooter().kHood().kP();
+        config.Slot0.kI = Robot.consts.shooter().kHood().kI();
+        config.Slot0.kD = Robot.consts.shooter().kHood().kD();
+        config.Slot0.kS = Robot.consts.shooter().kHood().kS();
+        config.Slot0.kV = Robot.consts.shooter().kHood().kV();
+        config.Slot0.kA = Robot.consts.shooter().kHood().kA();
 
-        config.MotionMagic.MotionMagicJerk = SubsystemConstants.kShooter.kHood.MAX_JERK;
+        config.MotionMagic.MotionMagicJerk = Robot.consts.shooter().kHood().MAX_JERK();
         config.MotionMagic.MotionMagicAcceleration =
-                SubsystemConstants.kShooter.kHood.MAX_ACCEL_R_P_S_S;
+                Robot.consts.shooter().kHood().MAX_ACCEL_R_P_S_S();
         config.MotionMagic.MotionMagicCruiseVelocity =
-                SubsystemConstants.kShooter.kHood.MAX_SPEED_R_P_S;
+                Robot.consts.shooter().kHood().MAX_SPEED_R_P_S();
 
         config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         config.Feedback.SensorToMechanismRatio = 1.0;
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-                SubsystemConstants.kShooter.kHood.MAX_ANGLE_DEGREES
-                        / kHood.MOTOR_ROTS_TO_HOOD_DEGREES;
+                Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES()
+                        / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES();
         return config;
     }
 
     public HoodReal() {
-        if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+        reverseLimitSwitch =
+                new DigitalInput(Robot.consts.shooter().kHood().REVERSE_LIMIT_SWITCH_ID());
+        targetAngle = Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES());
+        motor =
+                new TalonFX(
+                        Robot.consts.shooter().kHood().MOTOR_ID(),
+                        Robot.consts.shooter().kCANBUS());
+        if (!Robot.consts.shooter().kHood().disableHoodLogs()) {
             Log.log("ROBOT/Subsystems/Shooter/Hood/Initialized", true);
         }
         motor.getConfigurator().apply(flapConfiguration());
@@ -60,17 +63,19 @@ public class HoodReal extends Hood {
 
     @Override
     public double getAngleDegrees() {
-        return motor.getPosition().getValueAsDouble() * kHood.MOTOR_ROTS_TO_HOOD_DEGREES;
+        return motor.getPosition().getValueAsDouble()
+                * Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES();
     }
 
     public boolean isLegalPosition(double angleDegrees) {
-        return angleDegrees >= kHood.MIN_ANGLE_DEGREES && angleDegrees <= kHood.MAX_ANGLE_DEGREES;
+        return angleDegrees >= Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()
+                && angleDegrees <= Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES();
     }
 
     @Override
     public void goToAngle(Angle targetAngle) {
         if (!isLegalPosition(targetAngle.in(Degrees))) {
-            if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+            if (!Robot.consts.shooter().kHood().disableHoodLogs()) {
                 Log.log("ROBOT/Subsystems/Shooter/Hood/IllegalPosition", targetAngle.in(Degrees));
             }
             return;
@@ -79,7 +84,12 @@ public class HoodReal extends Hood {
         super.targetDegrees = targetAngle.in(Degrees);
         motor.setControl(
                 positionControl.withPosition(
-                        Rotations.of(targetAngle.in(Degrees) / kHood.MOTOR_ROTS_TO_HOOD_DEGREES)));
+                        Rotations.of(
+                                targetAngle.in(Degrees)
+                                        / Robot.consts
+                                                .shooter()
+                                                .kHood()
+                                                .MOTOR_ROTS_TO_HOOD_DEGREES())));
     }
 
     @Override
@@ -96,12 +106,12 @@ public class HoodReal extends Hood {
         if (reverseLimitSwitch.get() && targetAngle.in(Degrees) < getAngleDegrees()) {
             if (!hasHomed) {
                 hasHomed = true;
-                setAngle(kHood.MIN_ANGLE_DEGREES);
+                setAngle(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES());
             }
             motor.setVoltage(0.0);
         } else if (reverseLimitSwitch.get() && !hasHomed) {
             hasHomed = true;
-            setAngle(kHood.MIN_ANGLE_DEGREES);
+            setAngle(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES());
         } else if (!reverseLimitSwitch.get()) {
             hasHomed = false;
         }
@@ -111,7 +121,7 @@ public class HoodReal extends Hood {
     public void periodic() {
 
         handleLimitSwitch();
-        if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+        if (!Robot.consts.shooter().kHood().disableHoodLogs()) {
             Log.log("ROBOT/Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());
             Log.log("ROBOT/Subsystems/Shooter/Hood/Homing", hasHomed);
             Log.log("ROBOT/Subsystems/Shooter/Hood/TargetDegrees", super.targetDegrees);
@@ -121,10 +131,16 @@ public class HoodReal extends Hood {
 
     @Override
     public void setAngle(double angleDegrees) {
-        motor.setPosition(Rotation.of(angleDegrees / kHood.MOTOR_ROTS_TO_HOOD_DEGREES));
+        motor.setPosition(
+                Rotation.of(
+                        angleDegrees
+                                / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES()));
     }
 
     public void setAngle(Angle angle) {
-        motor.setPosition(Rotations.of(angle.in(Rotations) / kHood.MOTOR_ROTS_TO_HOOD_DEGREES));
+        motor.setPosition(
+                Rotations.of(
+                        angle.in(Rotations)
+                                / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES()));
     }
 }

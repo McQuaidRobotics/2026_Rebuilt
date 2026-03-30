@@ -7,8 +7,8 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Translation2d;
+import igknighters.Robot;
 import igknighters.constants.DrivingSharedState;
-import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
@@ -35,7 +35,7 @@ public class TeleopSwerveWithDetune extends TeleopSwerveBaseCmd {
         detune = DrivingSharedState.getInstance().detune;
         Translation2d vt = translationStick();
 
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs()) {
             Log.log("ROBOT/Subsystems/Swerve/DETUNE", detune);
         }
 
