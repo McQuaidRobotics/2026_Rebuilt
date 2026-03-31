@@ -169,9 +169,9 @@ public class DriverController {
 
         } else if (debugType == DebugType.INTAKE) {
             this.A.whileTrue(IntakeCommands.holdAtIntake(subsystems.intake));
-            this.B.whileTrue(IntakeCommands.holdAtStow(subsystems.intake));
+            this.B.whileTrue(IntakeCommands.jorkIt(subsystems.intake));
             this.X.whileTrue(IntakeCommands.slightJorkIntake(subsystems.intake));
-            this.Y.whileTrue(IntakeCommands.toggleHoldState(subsystems.intake));
+            this.Y.onTrue(IntakeCommands.toggleHoldState(subsystems.intake));
             DogLog.log("ROBOT/Subsystems/Intake/Pivot/Debugtype", "we in debug type");
         } else {
             System.out.println("UNKNOWN DEBUG TYPE: " + debugType);

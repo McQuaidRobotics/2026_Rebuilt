@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.intake.IntakeState;
@@ -14,7 +15,7 @@ import igknighters.util.log.Log;
 import java.util.function.Supplier;
 
 public class IntakeCommands {
-    public static boolean toggledState = false;
+    public static boolean toggledState = true;
 
     // called
 
@@ -70,15 +71,15 @@ public class IntakeCommands {
                 .withTimeout(.5)
                 .andThen(holdAtStow(intake))
                 .withTimeout(.5)
+                .repeatedly()
                 .withName("JORK INTAKE");
     }
 
     public static Command slightJorkIntake(Intake intake) {
-        return holdAtState(intake, IntakeState.Intake)
-                .withTimeout(.5)
-                .andThen(holdAtState(intake, IntakeState.slightJork))
-                .withTimeout(.2)
-                .repeatedly();
+        return Commands.sequence(
+            holdAtIntake(intake).withTimeout(1),
+            holdAtState(intake, IntakeState.SlightJork).withTimeout(.5)
+        ).withName("Slight Jork");
     }
 
     public static Command protectedIntake(Intake intake, Supplier<Pose2d> poseSupplier) {
