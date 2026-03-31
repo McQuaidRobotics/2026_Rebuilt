@@ -141,9 +141,7 @@ public class ShooterCommands {
     }
 
     public static Command homeHood(Shooter shooter) {
-        return shooter.run(() -> shooter.setHoodVoltage(-1))
-                .until(() -> shooter.getHoodPosition() < 0.1)
-                .withName("Hood Might Home IDK");
+        return shooter.run(() -> shooter.setHoodVoltage(-1)).until(() -> shooter.getHoodPosition() < 0.1).withName("Hood Might Home IDK");
     }
 
     /**
