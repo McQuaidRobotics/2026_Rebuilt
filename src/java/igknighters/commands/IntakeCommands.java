@@ -78,7 +78,7 @@ public class IntakeCommands {
     public static Command slightJorkIntake(Intake intake) {
         return Commands.sequence(
             holdAtIntake(intake).withTimeout(1),
-            holdAtState(intake, IntakeState.SlightJork).withTimeout(.5)
+            holdAtState(intake, IntakeState.slightJork).withTimeout(.5)
         ).withName("Slight Jork");
     }
 

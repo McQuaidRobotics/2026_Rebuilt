@@ -153,14 +153,6 @@ public class DriverController {
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));
             this.B.onTrue(IndexerCommands.justStop(indexer));
-
-        } else if (debugType == DebugType.CLIMBER) {
-            this.B.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.LATCH_ON));
-            this.X.whileTrue(ClimberCommands.holdAtState(climber, ClimberState.STOW));
-            this.Y.whileTrue(ClimberCommands.climbSequence(climber));
-            this.LT.whileTrue(HigherOrderCommands.prepToClimbFirstRung(subsystems));
-            this.RT.whileTrue(HigherOrderCommands.unClimbCommand(subsystems));
-
         } else if (debugType == DebugType.INTAKE) {
             this.A.whileTrue(IntakeCommands.holdAtIntake(subsystems.intake));
             this.B.whileTrue(IntakeCommands.jorkIt(subsystems.intake));
