@@ -174,7 +174,7 @@ public class DriverController {
                 .onFalse(HigherOrderCommands.IdleShooter(subsystems));
         this.DPR.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
         this.RB.whileTrue(HigherOrderCommands.forceDispense(subsystems));
-        this.LB.whileTrue(IntakeCommands.slightJorkIntake(intake));
+        this.LB.whileTrue(IntakeCommands.intakeWhileSlightJorking(intake));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
         this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
         this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
