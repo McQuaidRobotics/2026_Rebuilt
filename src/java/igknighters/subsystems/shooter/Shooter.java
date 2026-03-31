@@ -197,4 +197,9 @@ public class Shooter extends SubsystemBase {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getHoodPosition'");
     }
+
+    public void resetHoodEncoder() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'resetHoodEncoder'");
+    }
 }
