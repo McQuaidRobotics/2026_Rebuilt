@@ -24,7 +24,8 @@ public class SlowedDownDrivingWhileShooting extends TeleopSwerveBaseCmd {
     private final SlewRateLimiter xLimiter = new SlewRateLimiter(1);
     private final SlewRateLimiter yLimiter = new SlewRateLimiter(1);
     private final SlewRateLimiter rotLimiter = new SlewRateLimiter(2);
-    //changed from 1 to 2
+
+    // changed from 1 to 2
 
     public SlowedDownDrivingWhileShooting(Swerve swerve, DriverController controller) {
         super(swerve, controller);
@@ -44,7 +45,6 @@ public class SlowedDownDrivingWhileShooting extends TeleopSwerveBaseCmd {
                         .withVelocityY(
                                 yLimiter.calculate(vt.getY())
                                         * knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond))
-                        .withRotationalRate(
-                                rotLimiter.calculate(rotationStick().getX())));
+                        .withRotationalRate(rotLimiter.calculate(rotationStick().getX())));
     }
 }
