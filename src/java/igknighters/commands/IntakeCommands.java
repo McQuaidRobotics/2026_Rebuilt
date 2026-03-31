@@ -14,8 +14,8 @@ import igknighters.util.log.Log;
 import java.util.function.Supplier;
 
 public class IntakeCommands {
-    public static boolean isStowed = true;
-    
+    public static boolean toggledState = false;
+
     // called
 
     /**
@@ -41,13 +41,8 @@ public class IntakeCommands {
     }
 
     public static Command toggleHoldState(Intake intake) {
-        if (isStowed) {
-            isStowed = false;
-            return intake.run(() -> intake.goTo(IntakeState.Intake)).withName("Intake Balls");
-        } else {
-            isStowed = true;
-            return intake.run(() -> intake.goTo(IntakeState.Stowed)).withName("Stow Intake");
-        }
+        return intake.startRun(() -> toggledState = !toggledState, () -> intake.goTo(toggledState))
+                .withName("Intake Balls");
     }
 
     public static Command expell(Intake intake) {
@@ -82,7 +77,8 @@ public class IntakeCommands {
         return holdAtState(intake, IntakeState.Intake)
                 .withTimeout(.5)
                 .andThen(holdAtState(intake, IntakeState.slightJork))
-                .withTimeout(.2);
+                .withTimeout(.2)
+                .repeatedly();
     }
 
     public static Command protectedIntake(Intake intake, Supplier<Pose2d> poseSupplier) {

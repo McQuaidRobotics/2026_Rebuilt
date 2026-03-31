@@ -45,6 +45,14 @@ public class Intake extends SubsystemBase {
         goTo(state.pivotDegrees, state.rollerSpeedRPM);
     }
 
+    public void goTo(boolean toggledState) {
+        if (toggledState) {
+            goTo(IntakeState.Stowed.pivotDegrees, IntakeState.Stowed.rollerSpeedRPM);
+        } else {
+            goTo(IntakeState.Intake.pivotDegrees, IntakeState.Intake.rollerSpeedRPM);
+        }
+    }
+
     public Angle getPivotAngle() {
         return pivot.getAngle();
     }
