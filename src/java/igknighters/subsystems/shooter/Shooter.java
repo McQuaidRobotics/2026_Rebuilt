@@ -192,4 +192,9 @@ public class Shooter extends SubsystemBase {
         }
         beingControlled = false;
     }
+
+    public double getHoodPosition() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getHoodPosition'");
+    }
 }
