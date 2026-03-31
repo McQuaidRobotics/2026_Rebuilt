@@ -10,20 +10,17 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import igknighters.commands.ClimberCommands;
 import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.IntakeCommands;
 import igknighters.commands.Repulsor;
-import igknighters.commands.ShooterCommands;
+import igknighters.commands.Shooter.AimingCommands;
+import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
-import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.climber.ClimberState;
-import igknighters.subsystems.shooter.ShooterState;
 import java.util.function.DoubleSupplier;
 
 public class DriverController {
@@ -119,7 +116,6 @@ public class DriverController {
         var swerve = subsystems.swerve;
         var shooter = subsystems.shooter;
         var indexer = subsystems.indexer;
-        var climber = subsystems.climber;
 
         if (debugType == DebugType.SWERVE) {
             this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
@@ -135,19 +131,17 @@ public class DriverController {
                                     FieldConstants.Y_FIELD / 2,
                                     new Rotation2d())));
         } else if (debugType == DebugType.SHOOTER) {
-            this.A.whileTrue(
-                    ShooterCommands.targetState(shooter, 5000, 90, kHood.MIN_ANGLE_DEGREES));
+            this.A.whileTrue(ShooterCommands.targetState(shooter, 5000, 90, 25));
             this.B.whileTrue(ShooterCommands.targetState(shooter, 5000, 180, 30));
             this.X.whileTrue(ShooterCommands.targetState(shooter, 5000, 270, 35));
             this.Y.whileTrue(ShooterCommands.targetState(shooter, 5000, 360, 40));
             // this.RT.whileTrue(IndexerCommands.dispense(indexer));
             // this.LT.whileTrue(IndexerCommands.stopDispensing(indexer));
             this.RT.whileTrue(
-                    ShooterCommands.shootWithMaxHeightIterative(
+                    AimingCommands.shootWithProtection(
                             subsystems.shooter,
                             () -> swerve.getState().Pose,
-                            swerve::getFieldRelativeSpeeds,
-                            5.0));
+                            swerve::getFieldRelativeSpeeds));
             this.LT.whileTrue(IndexerCommands.dispense(indexer));
 
             // this.DPD.whileTrue(ShooterCommands.targetState(shooter, 0, 0,
@@ -194,13 +188,6 @@ public class DriverController {
         this.LB.whileTrue(HigherOrderCommands.aggregiouslyHighRapidFireStream(subsystems));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
         this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
-        this.Y.whileTrue(
-                ShooterCommands.targetState(
-                        subsystems.shooter,
-                        new ShooterState(
-                                RPM.of(0.0),
-                                Degrees.of(0.0),
-                                Degrees.of(kHood.MIN_ANGLE_DEGREES))));
         this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
     }
 

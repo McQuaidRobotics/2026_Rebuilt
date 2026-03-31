@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import igknighters.constants.SubsystemConstants;
+import igknighters.Robot;
 import igknighters.util.log.Log;
 
 public class RepulsorVisualizer {
@@ -49,7 +49,7 @@ public class RepulsorVisualizer {
 
     public static void update(
             double goalTheta, double repulseTheta, double goalStrength, double repulseStrength) {
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs()) {
             Log.log("ROBOT/Commands/repulsor/repulse theta", repulseTheta);
             Log.log("ROBOT/Commands/repulsor/goal theta", goalTheta);
             Log.log("ROBOT/Commands/repulsor/repulse strength", repulseStrength);

@@ -26,20 +26,22 @@ import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
-import igknighters.constants.SubsystemConstants;
-import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
+import igknighters.constants.GeminiRobotConsts;
+import igknighters.constants.RobotConsts;
+import igknighters.constants.RobotIdentity;
+import igknighters.constants.SecondBotRobotConsts;
 import igknighters.controllers.DriverController;
 import igknighters.controllers.DriverController.DebugType;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.climber.Climber;
 import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.FuelSim;
+import igknighters.util.RobotPosePredError;
 import igknighters.util.RobotPosePredictor;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
@@ -55,12 +57,15 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
 
     private Command m_autonomousCommand;
+
+    public static RobotConsts consts;
     private AutoFactory autoFactory;
     public final AutoChooser autoChooser = new AutoChooser();
     double i = 0;
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
-    public static RobotPosePredictor pose_pred = new RobotPosePredictor(.4, .6);
+    public static RobotPosePredictor pose_pred = new RobotPosePredictor();
+    public static RobotPosePredError pose_pred_error = new RobotPosePredError();
 
     private final DriverController driverController = new DriverController(0);
 
@@ -78,7 +83,7 @@ public class Robot extends LoggedRobot {
     TunableDouble targetingD = TunableValues.getDouble("Tunables/TargetingD", 0.00);
 
     public void setUpCommandLogging() {
-        if (!SubsystemConstants.disableAllLogs) {
+        if (!Robot.consts.disableAllLogs()) {
             scheduler.onCommandInitialize(
                     command ->
                             Log.log(
@@ -122,9 +127,24 @@ public class Robot extends LoggedRobot {
         }
     }
 
+    public void setUpRobotConsts() {
+
+        // THE IDS WILL BE WRONG SINCE SN IS WRONG WILL DEFAULT TO SECOND BOT
+        if (RobotIdentity.isGemini()) {
+            consts = new GeminiRobotConsts();
+        } else if (RobotIdentity.isSecondBot()) {
+            consts = new SecondBotRobotConsts();
+        } else if (Robot.isReal()) {
+            throw new IllegalStateException(
+                    "Unknown robot identity ENSURE SERIAL NUMBERS MATCH"); // only problem irl
+        } else {
+            consts = new GeminiRobotConsts(); // in sim with unknown sn we should pick something
+        }
+    }
+
     public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsystems.swerve.createAutoFactory();
-        final var routines = new AutoRoutines(subsystems, autoFactory);
+        final var routines = new AutoRoutines(subsystems, autoFactory, consts);
         autoChooser.addRoutine("LEFT NUETRAL HIPPO", routines::leftNuetralHippo);
         autoChooser.addRoutine("RIGHT NUETRAL HIPPO", routines::rightNuetralHippo);
         autoChooser.addRoutine("Right Orbit", routines::orbitRight);
@@ -132,6 +152,7 @@ public class Robot extends LoggedRobot {
         autoChooser.addRoutine("Single Swipe Right", routines::singleSwipeRight);
         autoChooser.addRoutine("Single Swipe Left", routines::singleSwipeLeft);
         autoChooser.addRoutine("Center Depot", routines::centerPreload);
+        autoChooser.addRoutine("SOTM TEST", routines::SOTMTEST);
         autoChooser.addRoutine(
                 "Pass to Self Right with Depot and Human Player",
                 routines::PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER);
@@ -201,6 +222,7 @@ public class Robot extends LoggedRobot {
     }
 
     public Robot() {
+        setUpRobotConsts();
         setUpAdvantageScope();
         setUpCommandLogging();
         subsystems =
@@ -211,7 +233,6 @@ public class Robot extends LoggedRobot {
                         new Shooter(),
                         new Indexer(),
                         new Intake(),
-                        new Climber(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
         publishCommandsAndSubystems(subsystems);
@@ -227,6 +248,7 @@ public class Robot extends LoggedRobot {
     }
 
     public Robot(boolean isSwerveDisabled) {
+        setUpRobotConsts();
         setUpAdvantageScope();
         setUpCommandLogging();
         subsystems =
@@ -237,7 +259,6 @@ public class Robot extends LoggedRobot {
                         new Shooter(),
                         new Indexer(),
                         new Intake(),
-                        new Climber(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
         publishCommandsAndSubystems(subsystems);
@@ -285,8 +306,9 @@ public class Robot extends LoggedRobot {
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
-        pose_pred.setNewPose(subsystems.swerve.getFieldRelativeSpeeds());
-        if (Robot.isReal() && !SubsystemConstants.disableAllLogs) {
+        pose_pred.setVelocitiesAndPose(subsystems.swerve);
+        pose_pred_error.logPose(subsystems.swerve.getState().Pose);
+        if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()
                     .updateTurret(
                             -subsystems.shooter.getTurretAngleDegrees(),
@@ -330,11 +352,11 @@ public class Robot extends LoggedRobot {
                         subsystems.vision
                                 .getLastTimeStamp()); // trusts vision rotation less. Needs tuning
                 // increase the std devs to trust vision less
-                if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+                if (!Robot.consts.limelightVision().disableVisionLogs()) {
                     Log.log("ROBOT/Subsystems/Vision/Null Pose", false);
                 }
             } else {
-                if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
+                if (!Robot.consts.limelightVision().disableVisionLogs()) {
                     Log.log("ROBOT/Subsystems/Vision/Null Pose", true);
                 }
             }
@@ -429,17 +451,21 @@ public class Robot extends LoggedRobot {
                 // AimSolver)
                 double flywheelRadius = 0.0508; // 2 inches
                 double launchVelocity =
-                        (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.0;
+                        (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.1;
 
                 fuelSim.launchFuel(
                         MetersPerSecond.of(launchVelocity),
                         Radians.of(Math.PI / 2 - shooterState.hoodAngle.in(Radian)),
                         shooterState.turretAngle,
-                        Meters.of(kFlywheels.ShooterHeightMeters) // height of shooter exit
+                        Meters.of(
+                                Robot.consts
+                                        .shooter()
+                                        .kFlywheels()
+                                        .ShooterHeightMeters()) // height of shooter exit
                         );
 
                 lastShotTime = currentTime;
-                if (!SubsystemConstants.disableAllLogs) {
+                if (!Robot.consts.shooter().kFlywheels().disableFlywheelsLogs()) {
                     Log.log("ROBOT/Simulation/FuelLaunched", true);
                 }
             }
@@ -493,7 +519,7 @@ public class Robot extends LoggedRobot {
         } else {
             // Default to blue if alliance is unknown (e.g., in simulation without alliance set)
             // Log this so we know why things might be going to the blue side.
-            if (!SubsystemConstants.disableAllLogs) {
+            if (!Robot.consts.disableAllLogs()) {
                 Log.log("ROBOT/System/AllianceUnknown", true);
             }
             return true;

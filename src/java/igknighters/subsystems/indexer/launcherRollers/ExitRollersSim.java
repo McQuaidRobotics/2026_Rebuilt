@@ -7,6 +7,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import igknighters.Robot;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kIndexer.kExitRollers;
 import igknighters.util.log.Log;
@@ -96,7 +97,7 @@ public class ExitRollersSim extends ExitRollers {
         voltage = MathUtil.clamp(voltage, -12.0, 12.0);
 
         // Logging
-        if (!SubsystemConstants.kIndexer.kExitRollers.disableExitRollersLogs) {
+        if (!Robot.consts.indexer().kExitRollers().disableExitRollersLogs()) {
             Log.log("ROBOT/Subsystems/Indexer/ExitRollers/SimVoltage", voltage);
             Log.log("ROBOT/Subsystems/Indexer/ExitRollers/SimSpeedRPM", currentRPM);
             Log.log("ROBOT/Subsystems/Indexer/ExitRollers/GoalSpeedRPM", goalRPM);
