@@ -53,13 +53,13 @@ public class AimingCommands {
             boolean under1 =
                     isBetween(
                             turretPose,
-                            FieldConstants.BUMP.BUMP_1_X_METERS - 0.36,
-                            FieldConstants.BUMP.BUMP_1_X_METERS + 0.36);
+                            FieldConstants.BUMP.BUMP_1_X_METERS - 0.45,
+                            FieldConstants.BUMP.BUMP_1_X_METERS + 0.45);
             boolean under2 =
                     isBetween(
                             turretPose,
-                            FieldConstants.BUMP.BUMP_2_X_METERS - 0.36,
-                            FieldConstants.BUMP.BUMP_2_X_METERS + 0.36);
+                            FieldConstants.BUMP.BUMP_2_X_METERS - 0.45,
+                            FieldConstants.BUMP.BUMP_2_X_METERS + 0.45);
 
             boolean isUnder = under1 || under2;
             if (!Robot.consts.disableAllLogs()) {
