@@ -83,6 +83,14 @@ public class IntakeCommands {
                 .withName("Slight Jork");
     }
 
+    public static Command intakeWhileSlightJorking(Intake intake) {
+        return Commands.sequence(
+                        holdAtIntake(intake).withTimeout(.4),
+                        holdAtState(intake, IntakeState.slightJork).withTimeout(.2))
+                .repeatedly()
+                .withName("Slight Jork-y Intake-y");
+    }
+
     public static Command protectedIntake(Intake intake, Supplier<Pose2d> poseSupplier) {
         return intake.run(
                 () -> {
