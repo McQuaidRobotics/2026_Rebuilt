@@ -138,6 +138,35 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine ORBIT_LEFT() {
+        AutoRoutine routine = autoFactory.newRoutine("Orbit Left");
+        AutoTrajectory swipe1Out = routine.trajectory("ORBIT_LEFT_1.traj");
+        AutoTrajectory swipe1In = routine.trajectory("ORBIT_LEFT_2.traj");
+        AutoTrajectory loopDiDoop = routine.trajectory("ORBIT_LEFT_3.traj");
+
+        routine.active().onTrue(Commands.sequence(swipe1Out.resetOdometry(), swipe1Out.cmd()));
+
+        swipe1Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
+        swipe1Out.done().onTrue(swipe1In.cmd());
+
+        swipe1In.done()
+                .onTrue(
+                        HigherOrderCommands.shootTillEmpty(subsystems, 3.5)
+                                .andThen(
+                                        Commands.parallel(
+                                                loopDiDoop.cmd(),
+                                                IntakeCommands.holdAtIntake(subsystems.intake))));
+
+        loopDiDoop
+                .done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .andThen(HigherOrderCommands.shootTillEmpty(subsystems, 6)));
+
+        return routine;
+    }
+
     public AutoRoutine BUMP_PASS_TO_SELF_LEFT() {
         AutoRoutine routine = autoFactory.newRoutine("Bump Pass to Self Left");
         AutoTrajectory trajectory = routine.trajectory("BUMP_PASS_TO_SELF_LEFT.traj");

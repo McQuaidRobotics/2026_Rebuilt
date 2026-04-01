@@ -145,6 +145,7 @@ public class Robot extends LoggedRobot {
         autoFactory = subsystems.swerve.createAutoFactory();
         final var routines = new AutoRoutines(subsystems, autoFactory, consts);
         autoChooser.addRoutine("Right Orbit", routines::orbitRight);
+        autoChooser.addRoutine("Left Orbit", routines::ORBIT_LEFT);
         autoChooser.addRoutine("Orbit Pass to Self Right", routines::ORBIT_PASS_TO_SELF_RIGHT);
         autoChooser.addRoutine("Pass to self left", routines::passToSelfLeft);
         autoChooser.addRoutine("Single Swipe Right", routines::singleSwipeRight);
