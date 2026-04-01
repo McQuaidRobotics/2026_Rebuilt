@@ -36,6 +36,17 @@ public class IntakeCommands {
         return intake.run(() -> intake.goTo(IntakeState.Stowed)).withName("Stow Intake");
     }
 
+    /**
+     * Holds the intake in the half stowed position. This will not end unless a new command is called on
+     * the intake
+     *
+     * @param intake
+     * @return
+     */
+    public static Command holdAtHalfStow(Intake intake) {
+        return intake.run(() -> intake.goTo(IntakeState.HalfStowed)).withName("Half Stow Intake");
+    }
+
     public static Command expell(Intake intake) {
         return intake.run(() -> intake.setRollerSpeed(RPM.of(3000))).withName("Expell Balls");
     }

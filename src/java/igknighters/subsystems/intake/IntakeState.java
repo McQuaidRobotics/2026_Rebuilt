@@ -11,6 +11,7 @@ public enum IntakeState implements StructSerializable {
     Intake(Degrees.of(66), RPM.of(3500), Degrees.of(5)),
     slightJork(Degrees.of(55), RPM.of(3500), Degrees.of(5)),
     PREP_TO_STOW(Degrees.of(30), RPM.of(500), Degrees.of(10)),
+    HalfStowed(Degrees.of(33), RPM.of(100), Degrees.of(5)),
     Stowed(Degrees.of(0), RPM.of(100), Degrees.of(5));
 
     public final Angle pivotDegrees;
