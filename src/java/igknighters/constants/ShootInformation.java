@@ -84,14 +84,14 @@ public class ShootInformation {
         }
     }
 
-    public Pose3d getPassTarget(Supplier<Pose2d> robotPoSupplier) {
+    public Pose3d getPassTarget(Supplier<Pose2d> robotPoseSupplier) {
         if (Robot.isBlue()) {
-            Pose2d robotPose2d = robotPoSupplier.get();
+            Pose2d robotPose2d = robotPoseSupplier.get();
             return robotPose2d.getY() > FieldConstants.Y_FIELD / 2
                     ? FieldConstants.PASS.POSITION_LEFT_BLUE
                     : FieldConstants.PASS.POSITION_RIGHT_BLUE;
         } else {
-            Pose2d robotPose2d = robotPoSupplier.get();
+            Pose2d robotPose2d = robotPoseSupplier.get();
             return robotPose2d.getY() > FieldConstants.Y_FIELD / 2
                     ? FieldConstants.PASS.POSITION_LEFT_RED
                     : FieldConstants.PASS.POSITION_RIGHT_RED;

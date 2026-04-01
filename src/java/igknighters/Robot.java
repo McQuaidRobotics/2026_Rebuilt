@@ -44,6 +44,7 @@ import igknighters.util.RobotPosePredError;
 import igknighters.util.RobotPosePredictor;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
+import igknighters.util.TurretPosePredictor;
 import igknighters.util.log.Log;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -64,6 +65,7 @@ public class Robot extends LoggedRobot {
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
     public static RobotPosePredictor pose_pred = new RobotPosePredictor();
+    public static TurretPosePredictor turret_pred = new TurretPosePredictor();
     public static RobotPosePredError pose_pred_error = new RobotPosePredError();
 
     private final DriverController driverController = new DriverController(0);
@@ -306,6 +308,7 @@ public class Robot extends LoggedRobot {
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
         pose_pred.setVelocitiesAndPose(subsystems.swerve);
+        turret_pred.logTurretPose(getTurretPose(subsystems.shooter.getTurretAngleDegrees()));
         pose_pred_error.logPose(subsystems.swerve.getState().Pose);
         if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()

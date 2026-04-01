@@ -3,7 +3,6 @@ package igknighters.util;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
@@ -39,10 +38,6 @@ public class RobotPosePredictor {
     /** Number of poses stored so far, capped at HISTORY_SIZE. */
     public int storedCount = 0;
 
-    /**
-     * @param alpha position smoothing gain, typically 0.5–0.9
-     * @param beta velocity smoothing gain, typically 0.1–0.5
-     */
     public RobotPosePredictor() {
         for (int i = 0; i < HISTORY_SIZE; i++) {
             veloHistory[i] = new ChassisSpeeds(0, 0, 0);
@@ -86,18 +81,6 @@ public class RobotPosePredictor {
         // }
     }
 
-    public Pose3d getPredictedShooterPose3d(Pose3d pose3d) {
-
-        Pose2d pose = getPredictedPose();
-        Pose3d newPose3d =
-                new Pose3d(
-                        pose.getX(),
-                        pose.getY(),
-                        pose3d.getZ(),
-                        new Rotation3d(0, 0, pose.getRotation().getRadians()));
-        return newPose3d;
-    }
-
     public Pose2d getPredictedPose() {
 
         double mostRecentTimestamp =
@@ -128,7 +111,6 @@ public class RobotPosePredictor {
 
         // Predict next pose using predicted velocity (consider changing predicted velo to current
         // velo)
-        ChassisSpeeds predictedAcc = getPredictedAcceleration();
         ChassisSpeeds predictedVelo = getPredictedVelos();
         predicted[0] =
                 currentPose[0]
@@ -163,44 +145,14 @@ public class RobotPosePredictor {
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
         int latestIdx =
                 Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
-        ChassisSpeeds predictedAcc = getPredictedAcceleration();
         predictedVelo.vxMetersPerSecond =
-                veloHistory[latestIdx].vxMetersPerSecond
-                        + predictedAcc.vxMetersPerSecond * predTime;
+                veloHistory[latestIdx].vxMetersPerSecond + accelerationsNow[0] * predTime;
         predictedVelo.vyMetersPerSecond =
-                veloHistory[latestIdx].vyMetersPerSecond
-                        + predictedAcc.vyMetersPerSecond * predTime;
+                veloHistory[latestIdx].vyMetersPerSecond + accelerationsNow[1] * predTime;
         predictedVelo.omegaRadiansPerSecond =
-                veloHistory[latestIdx].omegaRadiansPerSecond
-                        + predictedAcc.omegaRadiansPerSecond * predTime;
+                veloHistory[latestIdx].omegaRadiansPerSecond + accelerationsNow[2] * predTime;
 
         return predictedVelo;
-    }
-
-    public ChassisSpeeds getPredictedAcceleration() {
-        ChassisSpeeds predictedAcc = new ChassisSpeeds();
-        double mostRecentTimestamp =
-                Collections.max(Arrays.stream(timestampHistory).boxed().toList());
-        int latestIdx =
-                Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
-        int prevIdx = 0;
-        if (latestIdx == 0) {
-            prevIdx = HISTORY_SIZE - 1;
-        } else {
-            prevIdx = latestIdx - 1;
-        }
-        double dt = timestampHistory[latestIdx] - timestampHistory[prevIdx];
-        predictedAcc.vxMetersPerSecond =
-                (veloHistory[latestIdx].vxMetersPerSecond - veloHistory[prevIdx].vxMetersPerSecond)
-                        / dt;
-        predictedAcc.vyMetersPerSecond =
-                (veloHistory[latestIdx].vyMetersPerSecond - veloHistory[prevIdx].vyMetersPerSecond)
-                        / dt;
-        predictedAcc.omegaRadiansPerSecond =
-                (veloHistory[latestIdx].omegaRadiansPerSecond
-                                - veloHistory[prevIdx].omegaRadiansPerSecond)
-                        / dt;
-        return predictedAcc;
     }
 
     // -------------------------------------------------------------------------

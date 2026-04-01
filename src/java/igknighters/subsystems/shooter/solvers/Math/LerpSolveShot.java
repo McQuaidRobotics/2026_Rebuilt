@@ -70,7 +70,7 @@ public class LerpSolveShot {
     public static ShooterState solve(
             Pose3d robotPose, Pose3d goalPose, double currentRPM, double latencyCompensation) {
 
-        Pose3d shooterPose = Robot.pose_pred.getPredictedShooterPose3d(robotPose);
+        Pose3d shooterPose = Robot.turret_pred.getPredictedPose().get();
 
         double error = shooterPose.getTranslation().getDistance(robotPose.getTranslation());
 
