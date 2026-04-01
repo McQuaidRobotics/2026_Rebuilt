@@ -14,7 +14,7 @@ import igknighters.subsystems.Subsystems;
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
         return Commands.parallel(
-                        rapidFireStream(subsystems), IntakeCommands.jorkIt(subsystems.intake))
+                        rapidFireStream(subsystems), IntakeCommands.slightJorkIntake(subsystems.intake))
                 .withTimeout(timeout)
                 .andThen(Commands.print("ALL BALLS SHOT CONTINUING")); // this is a placeholder for
         // IndexerCommands.isBallPresent()
@@ -113,8 +113,8 @@ public class HigherOrderCommands {
         }
     }
 
-    public static Command hippoShoot(Subsystems subsystems) {
+    public static Command jorkyHippoShoot(Subsystems subsystems) {
         return Commands.parallel(
-                rapidFireStream(subsystems), IntakeCommands.holdAtIntake(subsystems.intake));
+                rapidFireStream(subsystems), IntakeCommands.intakeWhileSlightJorking(subsystems.intake));
     }
 }

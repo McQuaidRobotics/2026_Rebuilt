@@ -115,7 +115,7 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                 Commands.print("INTAKE BALLS"),
-                                HigherOrderCommands.hippoShoot(subsystems)));
+                                HigherOrderCommands.jorkyHippoShoot(subsystems)));
 
         return routine;
     }
@@ -261,7 +261,7 @@ public class AutoRoutines extends AutoCommands {
                                 trajectory.resetOdometry(),
                                 HigherOrderCommands.shootTillEmpty(subsystems, 3),
                                 Commands.parallel(
-                                        HigherOrderCommands.hippoShoot(subsystems),
+                                        HigherOrderCommands.jorkyHippoShoot(subsystems),
                                         trajectory.cmd())));
 
         trajectory.done().onTrue(SwerveCommands.stopDriving(swerve));
@@ -281,11 +281,11 @@ public class AutoRoutines extends AutoCommands {
         routine.active().onTrue(meanTrajectory.resetOdometry().andThen(meanTrajectory.cmd()));
         // steal balls from them we shouldnt get too many bc intake backwards but any balls shot is
         // better then none
-        meanTrajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+        meanTrajectory.active().onTrue(HigherOrderCommands.jorkyHippoShoot(subsystems));
         // start preserving balls for shots instead of just stealing to our side
         meanTrajectory.atTime("INTAKE").onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
         // back on our side so shoot gathered balls + human player station
-        meanTrajectory.atTime("SCORE").onTrue(HigherOrderCommands.hippoShoot(subsystems));
+        meanTrajectory.atTime("SCORE").onTrue(HigherOrderCommands.jorkyHippoShoot(subsystems));
         return routine;
     }
 
@@ -306,13 +306,13 @@ public class AutoRoutines extends AutoCommands {
 
         intakeTrajectory.done().onTrue(scoringTrajectory.cmd());
 
-        scoringTrajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+        scoringTrajectory.active().onTrue(HigherOrderCommands.jorkyHippoShoot(subsystems));
 
         scoringTrajectory
                 .done()
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
-                                .alongWith(HigherOrderCommands.hippoShoot(subsystems)));
+                                .alongWith(HigherOrderCommands.jorkyHippoShoot(subsystems)));
 
         return routine;
     }
@@ -334,7 +334,7 @@ public class AutoRoutines extends AutoCommands {
 
         intakeTrajectory.done().onTrue(scoringTrajectory.cmd());
 
-        scoringTrajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+        scoringTrajectory.active().onTrue(HigherOrderCommands.jorkyHippoShoot(subsystems));
 
         return routine;
     }
@@ -368,7 +368,7 @@ public class AutoRoutines extends AutoCommands {
 
         swipe2Out.done().onTrue(SwerveCommands.stopDriving(swerve).andThen(swipe2In.cmd()));
 
-        swipe2In.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+        swipe2In.active().onTrue(HigherOrderCommands.jorkyHippoShoot(subsystems));
 
         swipe2In.done()
                 .onTrue(
@@ -388,7 +388,7 @@ public class AutoRoutines extends AutoCommands {
                                 PASS_TRAJECTORY.resetOdometry(),
                                 HigherOrderCommands.shootTillEmpty(subsystems, 5),
                                 Commands.parallel(
-                                        HigherOrderCommands.hippoShoot(subsystems),
+                                        HigherOrderCommands.jorkyHippoShoot(subsystems),
                                         PASS_TRAJECTORY.cmd())));
 
         PASS_TRAJECTORY.active().onTrue(Commands.print("STARTING PASS TRAJECTORY"));
@@ -396,7 +396,7 @@ public class AutoRoutines extends AutoCommands {
                 .done()
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
-                                .andThen(HigherOrderCommands.hippoShoot(subsystems)));
+                                .andThen(HigherOrderCommands.jorkyHippoShoot(subsystems)));
 
         // PASS_TRAJECTORY.atTime("STOW").onTrue(HigherOrderCommands.rapidFireStream(subsystems));
         // PASS_TRAJECTORY.atTime("INTAKE").onTrue(HigherOrderCommands.hippoShoot(subsystems));
@@ -410,7 +410,7 @@ public class AutoRoutines extends AutoCommands {
 
         routine.active().onTrue(Commands.sequence(move_traj.resetOdometry(), move_traj.cmd()));
 
-        move_traj.atTime("SHOOT").onTrue(HigherOrderCommands.hippoShoot(subsystems));
+        move_traj.atTime("SHOOT").onTrue(HigherOrderCommands.jorkyHippoShoot(subsystems));
 
         move_traj.done().onTrue(SwerveCommands.stopDriving(swerve));
         return routine;
@@ -431,7 +431,7 @@ public class AutoRoutines extends AutoCommands {
 
         tangential_traj.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
 
-        tangential_traj.atTime("SHOOT").onTrue(HigherOrderCommands.hippoShoot(subsystems));
+        tangential_traj.atTime("SHOOT").onTrue(HigherOrderCommands.jorkyHippoShoot(subsystems));
 
         tangential_traj
                 .done()
@@ -451,7 +451,7 @@ public class AutoRoutines extends AutoCommands {
                                         Commands.waitSeconds(5),
                                         IntakeCommands.holdAtIntake(subsystems.intake)),
                                 Commands.parallel(
-                                        HigherOrderCommands.hippoShoot(subsystems),
+                                        HigherOrderCommands.jorkyHippoShoot(subsystems),
                                         radial_away_traj.cmd())));
 
         radial_away_traj
@@ -461,7 +461,7 @@ public class AutoRoutines extends AutoCommands {
                                 SwerveCommands.stopDriving(swerve),
                                 Commands.parallel(
                                         radial_towards_traj.cmd(),
-                                        HigherOrderCommands.hippoShoot(subsystems))));
+                                        HigherOrderCommands.jorkyHippoShoot(subsystems))));
 
         radial_towards_traj.done().onTrue(SwerveCommands.stopDriving(swerve));
         return routine;
