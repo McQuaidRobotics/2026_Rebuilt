@@ -27,8 +27,8 @@ public class TurretPosePredictor {
         double yOffset = getYTurretOffsetFieldRelative(predRobotPose.getRotation().getRadians());
         Pose3d predTurretPose =
                 new Pose3d(
-                        predRobotPose.getX() - xOffset,
-                        predRobotPose.getY() - yOffset,
+                        predRobotPose.getX(),
+                        predRobotPose.getY(),
                         Robot.consts.shooter().kFlywheels().ShooterHeightMeters(),
                         currentPose.getRotation());
 
