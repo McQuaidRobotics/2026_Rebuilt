@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.intake.IntakeState;
@@ -14,6 +15,10 @@ import igknighters.util.log.Log;
 import java.util.function.Supplier;
 
 public class IntakeCommands {
+    public static boolean toggledState = true;
+
+    // called
+
     /**
      * Holds the intake in the intake position. This will not end unless a new command is called on
      * the intake
@@ -34,6 +39,11 @@ public class IntakeCommands {
      */
     public static Command holdAtStow(Intake intake) {
         return intake.run(() -> intake.goTo(IntakeState.Stowed)).withName("Stow Intake");
+    }
+
+    public static Command toggleHoldState(Intake intake) {
+        return intake.startRun(() -> toggledState = !toggledState, () -> intake.goTo(toggledState))
+                .withName("Intake Balls");
     }
 
     public static Command expell(Intake intake) {
@@ -61,14 +71,24 @@ public class IntakeCommands {
                 .withTimeout(.5)
                 .andThen(holdAtStow(intake))
                 .withTimeout(.5)
+                .repeatedly()
                 .withName("JORK INTAKE");
     }
 
     public static Command slightJorkIntake(Intake intake) {
-        return holdAtState(intake, IntakeState.Intake)
-                .withTimeout(.5)
-                .andThen(holdAtState(intake, IntakeState.slightJork))
-                .withTimeout(.2);
+        return Commands.sequence(
+                        holdAtIntake(intake).withTimeout(.2),
+                        holdAtState(intake, IntakeState.slightJork).withTimeout(.2))
+                .repeatedly()
+                .withName("Slight Jork");
+    }
+
+    public static Command intakeWhileSlightJorking(Intake intake) {
+        return Commands.sequence(
+                        holdAtIntake(intake).withTimeout(.4),
+                        holdAtState(intake, IntakeState.slightJork).withTimeout(.2))
+                .repeatedly()
+                .withName("Slight Jork-y Intake-y");
     }
 
     public static Command protectedIntake(Intake intake, Supplier<Pose2d> poseSupplier) {

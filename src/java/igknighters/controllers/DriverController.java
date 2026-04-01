@@ -151,7 +151,9 @@ public class DriverController {
             this.B.onTrue(IndexerCommands.justStop(indexer));
         } else if (debugType == DebugType.INTAKE) {
             this.A.whileTrue(IntakeCommands.holdAtIntake(subsystems.intake));
-            this.B.whileTrue(IntakeCommands.holdAtStow(subsystems.intake));
+            this.B.whileTrue(IntakeCommands.jorkIt(subsystems.intake));
+            this.X.whileTrue(IntakeCommands.slightJorkIntake(subsystems.intake));
+            this.Y.onTrue(IntakeCommands.toggleHoldState(subsystems.intake));
         } else {
             System.out.println("UNKNOWN DEBUG TYPE: " + debugType);
             throw new IllegalArgumentException("UNKNOWN DEBUG TYPE: " + debugType);
@@ -170,7 +172,7 @@ public class DriverController {
                 .onFalse(HigherOrderCommands.IdleShooter(subsystems));
         this.DPR.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
         this.RB.whileTrue(HigherOrderCommands.forceDispense(subsystems));
-        this.LB.whileTrue(HigherOrderCommands.aggregiouslyHighRapidFireStream(subsystems));
+        this.LB.whileTrue(IntakeCommands.intakeWhileSlightJorking(intake));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
         this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
         this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
