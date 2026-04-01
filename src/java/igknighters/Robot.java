@@ -147,6 +147,7 @@ public class Robot extends LoggedRobot {
         autoChooser.addRoutine("LEFT NUETRAL HIPPO", routines::leftNuetralHippo);
         autoChooser.addRoutine("RIGHT NUETRAL HIPPO", routines::rightNuetralHippo);
         autoChooser.addRoutine("Right Orbit", routines::orbitRight);
+        autoChooser.addRoutine("Orbit Pass to Self Right", routines::ORBIT_PASS_TO_SELF_RIGHT);
         autoChooser.addRoutine("Pass to self left", routines::passToSelfLeft);
         autoChooser.addRoutine("Single Swipe Right", routines::singleSwipeRight);
         autoChooser.addRoutine("Single Swipe Left", routines::singleSwipeLeft);

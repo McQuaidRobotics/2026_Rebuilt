@@ -1,4 +1,3 @@
-
 package igknighters.subsystems.swerve;
 
 import choreo.Choreo.TrajectoryLogger;
