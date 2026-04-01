@@ -1,6 +1,5 @@
 package igknighters.controllers;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -155,7 +154,6 @@ public class DriverController {
             this.B.whileTrue(IntakeCommands.jorkIt(subsystems.intake));
             this.X.whileTrue(IntakeCommands.slightJorkIntake(subsystems.intake));
             this.Y.onTrue(IntakeCommands.toggleHoldState(subsystems.intake));
-            DogLog.log("ROBOT/Subsystems/Intake/Pivot/Debugtype", "we in debug type");
         } else {
             System.out.println("UNKNOWN DEBUG TYPE: " + debugType);
             throw new IllegalArgumentException("UNKNOWN DEBUG TYPE: " + debugType);
