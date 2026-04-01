@@ -138,6 +138,22 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine BUMP_PASS_TO_SELF_LEFT() {
+        AutoRoutine routine = autoFactory.newRoutine("Bump Pass to Self Left");
+        AutoTrajectory trajectory = routine.trajectory("BUMP_PASS_TO_SELF_LEFT.traj");
+
+        routine.active().onTrue(Commands.sequence(trajectory.resetOdometry(), trajectory.cmd()));
+
+        trajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+
+        trajectory
+                .done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .andThen(HigherOrderCommands.hippoShoot(subsystems)));
+        return routine;
+    }
+
     public AutoRoutine ORBIT_PASS_TO_SELF_RIGHT() {
         AutoRoutine routine = autoFactory.newRoutine("Orbit Pass to Self Right");
         AutoTrajectory trajectory = routine.trajectory("PASS_TO_SELF_BUMP_1.traj");
