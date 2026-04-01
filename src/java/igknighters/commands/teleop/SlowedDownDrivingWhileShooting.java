@@ -1,8 +1,6 @@
 package igknighters.commands.teleop;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -17,13 +15,11 @@ public class SlowedDownDrivingWhileShooting extends TeleopSwerveBaseCmd {
     private final SwerveRequest.FieldCentric m_driveRequest =
             new SwerveRequest.FieldCentric()
                     .withDeadband(knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.1)
-                    .withRotationalDeadband(RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .1)
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
 
     private final SlewRateLimiter xLimiter = new SlewRateLimiter(1);
     private final SlewRateLimiter yLimiter = new SlewRateLimiter(1);
-    private final SlewRateLimiter rotLimiter = new SlewRateLimiter(2);
 
     // changed from 1 to 2
 
@@ -45,6 +41,6 @@ public class SlowedDownDrivingWhileShooting extends TeleopSwerveBaseCmd {
                         .withVelocityY(
                                 yLimiter.calculate(vt.getY())
                                         * knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond))
-                        .withRotationalRate(rotLimiter.calculate(rotationStick().getX())));
+                        .withRotationalRate(rotationStick().getX() * 2));
     }
 }
