@@ -15,7 +15,7 @@ public enum IntakeState implements StructSerializable {
             () -> RPM.of(Robot.consts.intake().kRollers().MAX_SPEED_RPM()),
             () -> Degrees.of(5)),
     slightJork(
-            () -> Degrees.of(55),
+            () -> Degrees.of(40),
             () -> RPM.of(Robot.consts.intake().kRollers().MAX_SPEED_RPM()),
             () -> Degrees.of(5)),
     PREP_TO_STOW(() -> Degrees.of(27), () -> RPM.of(500), () -> Degrees.of(10)),
