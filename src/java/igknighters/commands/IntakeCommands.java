@@ -3,16 +3,15 @@ package igknighters.commands;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import igknighters.Robot;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.intake.IntakeState;
 import igknighters.util.log.Log;
-import java.util.function.Supplier;
 
 public class IntakeCommands {
     public static boolean toggledState = true;
@@ -47,7 +46,7 @@ public class IntakeCommands {
     }
 
     public static Command expell(Intake intake) {
-        return intake.run(() -> intake.setRollerSpeed(RPM.of(3000))).withName("Expell Balls");
+        return intake.run(() -> intake.setRollerSpeed(RPM.of(-3000))).withName("Expell Balls");
     }
 
     /**
@@ -85,22 +84,22 @@ public class IntakeCommands {
 
     public static Command intakeWhileSlightJorking(Intake intake) {
         return Commands.sequence(
-                        holdAtIntake(intake).withTimeout(.4),
+                        holdAtIntake(intake).withTimeout(.7),
                         holdAtState(intake, IntakeState.slightJork).withTimeout(.2))
                 .repeatedly()
                 .withName("Slight Jork-y Intake-y");
     }
 
-    public static Command protectedIntake(Intake intake, Supplier<Pose2d> poseSupplier) {
+    public static Command protectedIntake(Intake intake) {
         return intake.run(
                 () -> {
                     // if on bump we should be stowed
-                    if (FieldConstants.BUMP.isInside(poseSupplier.get())) {
+                    if (FieldConstants.BUMP.isInside(Robot.pose_pred.getPredictedPose())) {
                         Log.log("ROBOT/Commands/Protected Intake", "Inside BUMP, stowing intake");
-                        instantHoldAtState(intake, IntakeState.Stowed);
+                        holdAtStow(intake);
                     } else {
                         Log.log("ROBOT/Commands/Protected Intake", "Outside BUMP, holding intake");
-                        instantHoldAtState(intake, IntakeState.Intake);
+                        holdAtIntake(intake);
                     }
                 });
     }

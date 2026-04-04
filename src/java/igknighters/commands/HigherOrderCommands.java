@@ -14,7 +14,8 @@ import igknighters.subsystems.Subsystems;
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
         return Commands.parallel(
-                        rapidFireStream(subsystems), IntakeCommands.jorkIt(subsystems.intake))
+                        rapidFireStream(subsystems),
+                        IntakeCommands.slightJorkIntake(subsystems.intake))
                 .withTimeout(timeout)
                 .andThen(Commands.print("ALL BALLS SHOT CONTINUING")); // this is a placeholder for
         // IndexerCommands.isBallPresent()

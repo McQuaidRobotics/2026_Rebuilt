@@ -171,15 +171,19 @@ public class AutoRoutines extends AutoCommands {
         AutoRoutine routine = autoFactory.newRoutine("Bump Pass to Self Left");
         AutoTrajectory trajectory = routine.trajectory("BUMP_PASS_TO_SELF_LEFT.traj");
 
-        routine.active().onTrue(Commands.sequence(trajectory.resetOdometry(), trajectory.cmd()));
-
-        trajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
-
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                trajectory.resetOdometry(),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                Commands.parallel(
+                                        trajectory.cmd(),
+                                        HigherOrderCommands.hippoShoot(subsystems))));
         trajectory
                 .done()
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
-                                .andThen(HigherOrderCommands.hippoShoot(subsystems)));
+                                .andThen(HigherOrderCommands.shootTillEmpty(subsystems, 15)));
         return routine;
     }
 
@@ -296,7 +300,7 @@ public class AutoRoutines extends AutoCommands {
         swipe2In.done()
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
-                                .andThen(HigherOrderCommands.rapidFireStream(subsystems)));
+                                .andThen(HigherOrderCommands.shootTillEmpty(subsystems, 8)));
 
         return routine;
     }
@@ -309,17 +313,18 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                 PASS_TRAJECTORY.resetOdometry(),
-                                HigherOrderCommands.shootTillEmpty(subsystems, 5),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
                                 Commands.parallel(
                                         HigherOrderCommands.hippoShoot(subsystems),
                                         PASS_TRAJECTORY.cmd())));
 
         PASS_TRAJECTORY.active().onTrue(Commands.print("STARTING PASS TRAJECTORY"));
+
         PASS_TRAJECTORY
                 .done()
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
-                                .andThen(HigherOrderCommands.hippoShoot(subsystems)));
+                                .andThen(HigherOrderCommands.shootTillEmpty(subsystems, 10)));
 
         // PASS_TRAJECTORY.atTime("STOW").onTrue(HigherOrderCommands.rapidFireStream(subsystems));
         // PASS_TRAJECTORY.atTime("INTAKE").onTrue(HigherOrderCommands.hippoShoot(subsystems));

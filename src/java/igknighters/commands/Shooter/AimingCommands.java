@@ -5,14 +5,11 @@ import static edu.wpi.first.units.Units.RPM;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
 import igknighters.commands.Shooter.ShooterCommands.shotType;
-import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
 import igknighters.subsystems.shooter.AimSolver;
@@ -27,14 +24,7 @@ import java.util.function.Supplier;
 public class AimingCommands {
 
     public static Supplier<Pose2d> getShooterPoseWithOffset(Supplier<Pose2d> robotPose) {
-        return () ->
-                robotPose
-                        .get()
-                        .plus(
-                                new Transform2d(
-                                        -5 * Conv.INCHES_TO_METERS,
-                                        -5 * Conv.INCHES_TO_METERS,
-                                        new Rotation2d()));
+        return () -> robotPose.get();
     }
 
     public static boolean isBetween(Pose2d pose, double a, double b) {
@@ -50,19 +40,19 @@ public class AimingCommands {
 
         return () -> {
             Pose2d turretPose = getTurretPose(robotPoseSupplier);
-            boolean under1 =
-                    isBetween(
-                            turretPose,
-                            FieldConstants.BUMP.BUMP_1_X_METERS - 0.45,
-                            FieldConstants.BUMP.BUMP_1_X_METERS + 0.45);
-            boolean under2 =
-                    isBetween(
-                            turretPose,
-                            FieldConstants.BUMP.BUMP_2_X_METERS - 0.45,
-                            FieldConstants.BUMP.BUMP_2_X_METERS + 0.45);
+
+            double dx1 = Math.abs(turretPose.getX() - FieldConstants.BUMP.BUMP_1_X_METERS);
+            double dx2 = Math.abs(turretPose.getX() - FieldConstants.BUMP.BUMP_2_X_METERS);
+
+            boolean under1 = dx1 <= .5;
+            boolean under2 = dx2 <= .5;
 
             boolean isUnder = under1 || under2;
             if (!Robot.consts.disableAllLogs()) {
+                Log.log("ROBOT/Commands/Shooter/Trench Protection/DX_BLUE", dx1);
+
+                Log.log("ROBOT/Commands/Shooter/Trench Protection/DX_RED", dx2);
+
                 Log.log("ROBOT/Commands/Shooter/Trench Protection/isUnderTrench", isUnder);
                 Log.log("ROBOT/Commands/Shooter/Trench Protection/Under 1", under1);
                 Log.log("ROBOT/Commands/Shooter/Trench Protection/Under 2", under2);
