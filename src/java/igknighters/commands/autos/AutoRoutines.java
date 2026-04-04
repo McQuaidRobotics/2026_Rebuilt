@@ -18,6 +18,7 @@ import igknighters.commands.IntakeCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.constants.RobotConsts;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.intake.IntakeState;
 import java.util.function.Supplier;
 
 public class AutoRoutines extends AutoCommands {
@@ -169,17 +170,33 @@ public class AutoRoutines extends AutoCommands {
 
     public AutoRoutine BUMP_PASS_TO_SELF_LEFT() {
         AutoRoutine routine = autoFactory.newRoutine("Bump Pass to Self Left");
-        AutoTrajectory trajectory = routine.trajectory("BUMP_PASS_TO_SELF_LEFT.traj");
+
+        AutoTrajectory trajectory = routine.trajectory("BUMP_PASS_TO_SELF_LEFT_1.traj");
 
         routine.active().onTrue(Commands.sequence(trajectory.resetOdometry(), trajectory.cmd()));
 
-        trajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+        trajectory.atTime("HIPPO").onTrue(HigherOrderCommands.hippoShoot(subsystems));
+
+        trajectory.atTime("JUST INTAKE").onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
+        trajectory
+                .atTime("PROTECT INTAKE")
+                .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
+
+        trajectory
+                .atTime("START SHOOTING AGAIN")
+                .onTrue(HigherOrderCommands.hippoShoot(subsystems));
+        trajectory
+                .atTime("NO MUNCH HIPPO")
+                .onTrue(
+                        HigherOrderCommands.rapidFireStream(subsystems)
+                                .alongWith(IntakeCommands.holdAtIntake(subsystems.intake)));
 
         trajectory
                 .done()
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
-                                .andThen(HigherOrderCommands.hippoShoot(subsystems)));
+                                .andThen(HigherOrderCommands.shootTillEmpty(subsystems, 15)));
         return routine;
     }
 
@@ -272,31 +289,29 @@ public class AutoRoutines extends AutoCommands {
 
         AutoTrajectory swipe1Out = routine.trajectory("ORBIT_RIGHT_1.traj");
         AutoTrajectory swipe1In = routine.trajectory("ORBIT_RIGHT_2.traj");
-        AutoTrajectory swipe2Out = routine.trajectory("ORBIT_RIGHT_3.traj");
-        AutoTrajectory swipe2In = routine.trajectory("ORBIT_RIGHT_4.traj");
+        AutoTrajectory swipe2Loop = routine.trajectory("ORBIT_RIGHT_3.traj");
         routine.active().onTrue(Commands.sequence(swipe1Out.resetOdometry(), swipe1Out.cmd()));
 
         swipe1Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
         swipe1Out.done().onTrue(swipe1In.cmd());
 
-        swipe1In.active().onTrue(IntakeCommands.holdAtStow(subsystems.intake));
+        swipe1In.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
 
         swipe1In.done()
                 .onTrue(
                         Commands.sequence(
                                 SwerveCommands.stopDriving(swerve),
-                                HigherOrderCommands.shootTillEmpty(subsystems, 4),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 5),
                                 Commands.parallel(
-                                        swipe2Out.cmd(),
+                                        swipe2Loop.cmd(),
                                         IntakeCommands.holdAtIntake(subsystems.intake),
                                         HigherOrderCommands.IdleShooter(subsystems))));
 
-        swipe2Out.done().onTrue(SwerveCommands.stopDriving(swerve).andThen(swipe2In.cmd()));
-
-        swipe2In.done()
+        swipe2Loop
+                .done()
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
-                                .andThen(HigherOrderCommands.rapidFireStream(subsystems)));
+                                .andThen(HigherOrderCommands.shootTillEmpty(subsystems, 9)));
 
         return routine;
     }
@@ -309,17 +324,18 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                 PASS_TRAJECTORY.resetOdometry(),
-                                HigherOrderCommands.shootTillEmpty(subsystems, 5),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
                                 Commands.parallel(
                                         HigherOrderCommands.hippoShoot(subsystems),
                                         PASS_TRAJECTORY.cmd())));
 
         PASS_TRAJECTORY.active().onTrue(Commands.print("STARTING PASS TRAJECTORY"));
+
         PASS_TRAJECTORY
                 .done()
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
-                                .andThen(HigherOrderCommands.hippoShoot(subsystems)));
+                                .andThen(HigherOrderCommands.shootTillEmpty(subsystems, 10)));
 
         // PASS_TRAJECTORY.atTime("STOW").onTrue(HigherOrderCommands.rapidFireStream(subsystems));
         // PASS_TRAJECTORY.atTime("INTAKE").onTrue(HigherOrderCommands.hippoShoot(subsystems));
