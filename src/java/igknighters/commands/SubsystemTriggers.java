@@ -21,6 +21,8 @@ import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.climber.Climber;
 import igknighters.subsystems.climber.ClimberState;
+import igknighters.subsystems.intake.Intake;
+import igknighters.subsystems.intake.IntakeState;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
 import igknighters.subsystems.shooter.Shooter;
@@ -198,14 +200,25 @@ public class SubsystemTriggers {
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
         Led led = subsystems.led;
         Swerve swerve = subsystems.swerve;
+        Intake intake = subsystems.intake;
         Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
 
         SetupOperatorController(subsystems);
 
+        //onBump.and(teleop)
+        //        .whileTrue(
+        //                Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true))
+        //                        .andThen(new AutoRotateOnBump(swerve, driverController)));
+        //onBump.onFalse(Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(false)));
+
         onBump.and(teleop)
                 .whileTrue(
-                        Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true))
-                                .andThen(new AutoRotateOnBump(swerve, driverController)));
+                        Commands.sequence(
+                                Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true)),
+                                Commands.parallel(
+                                        new AutoRotateOnBump(swerve, driverController),
+                                        IntakeCommands.holdAtState(intake, IntakeState.slightJork)
+                                )));
         onBump.onFalse(Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(false)));
 
         falseOnce().and(disabled).whileTrue(disabledLED(led));
