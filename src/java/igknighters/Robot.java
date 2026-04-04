@@ -342,7 +342,7 @@ public class Robot extends LoggedRobot {
     }
 
     public void bindDriverController() {
-        driverController.bind(subsystems, DebugType.INTAKE);
+        driverController.bind(subsystems);
     }
 
     @Override
