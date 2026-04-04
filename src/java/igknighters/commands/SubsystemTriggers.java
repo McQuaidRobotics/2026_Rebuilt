@@ -189,6 +189,8 @@ public class SubsystemTriggers {
         Swerve swerve = subsystems.swerve;
         Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
 
+        Trigger trenchProtection = new Trigger(AimingCommands.isUnderTrench());
+
         SetupOperatorController(subsystems);
 
         onBump.and(teleop)
@@ -196,7 +198,7 @@ public class SubsystemTriggers {
                         Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true))
                                 .andThen(new AutoRotateOnBump(swerve, driverController)));
         onBump.onFalse(Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(false)));
-        
+
         falseOnce().and(disabled).whileTrue(disabledLED(led));
 
         autonomous.onTrue(autoLED(led));
@@ -207,7 +209,9 @@ public class SubsystemTriggers {
         ShootInformation ableToShootState = ShootInformation.getInstance();
 
         // Bind LED commands to the canShootTrigger
-
+        trenchProtection
+                .onTrue(LEDCommands.run(led, LEDPattern.solid(Color.kBlue)))
+                .onFalse(getLEDCommandByMode(led));
         ableToShootState
                 .canShoot()
                 .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kYellow)))

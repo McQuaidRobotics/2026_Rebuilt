@@ -27,11 +27,11 @@ public class LerpSolveShot {
     static LerpTable RADIAL_TOWARDS =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, .5),
-                        new LerpTableEntry(2.0, .6),
-                        new LerpTableEntry(3, .7),
-                        new LerpTableEntry(4.5, .8),
-                        new LerpTableEntry(5, .9)
+                        new LerpTableEntry(1.0, .6),
+                        new LerpTableEntry(2.0, .7),
+                        new LerpTableEntry(3, .8),
+                        new LerpTableEntry(4.5, .9),
+                        new LerpTableEntry(5, 1.0)
                     });
 
     static LerpTable TANGENTIAL =
@@ -59,7 +59,7 @@ public class LerpSolveShot {
                     new LerpTableEntry[] {
                         new LerpTableEntry(1.5, kHood.MIN_ANGLE_DEGREES),
                         new LerpTableEntry(2.5, 25.0),
-                        new LerpTableEntry(3.5, 32.0),
+                        new LerpTableEntry(3.5, 30.0),
                         new LerpTableEntry(4.5, 33.0),
                         new LerpTableEntry(6.0, 33.0),
                         new LerpTableEntry(10.0, 45)
@@ -71,7 +71,7 @@ public class LerpSolveShot {
                         new LerpTableEntry(1.5, 2500),
                         new LerpTableEntry(2.0, 2750),
                         new LerpTableEntry(2.5, 2800),
-                        new LerpTableEntry(3.5, 3000),
+                        new LerpTableEntry(3.5, 3100),
                         new LerpTableEntry(4.0, 3200),
                         new LerpTableEntry(4.5, 3300),
                         new LerpTableEntry(5.0, 3680),
