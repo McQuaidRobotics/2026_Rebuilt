@@ -157,6 +157,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public double getRotationalVelocity() {
-        return drivetrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble() * Conv.DEGREES_TO_RADIANS;
+        return drivetrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble()
+                * Conv.DEGREES_TO_RADIANS;
     }
 }

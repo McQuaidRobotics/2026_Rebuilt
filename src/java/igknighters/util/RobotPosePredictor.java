@@ -63,10 +63,10 @@ public class RobotPosePredictor {
         ChassisSpeeds chassisSpeeds = swerve.getFieldRelativeSpeeds();
         accelerationsNow[0] = swerve.getXAcceleration();
         accelerationsNow[1] = swerve.getYAcceleration();
+        veloHistory[writeIndex].omegaRadiansPerSecond = swerve.getRotationalVelocity();
         // Write into circular buffer
         veloHistory[writeIndex].vxMetersPerSecond = chassisSpeeds.vxMetersPerSecond;
         veloHistory[writeIndex].vyMetersPerSecond = chassisSpeeds.vyMetersPerSecond;
-        veloHistory[writeIndex].omegaRadiansPerSecond = swerve.getRotationalVelocity();
         timestampHistory[writeIndex] = now;
         double mostRecentTimestamp =
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
@@ -122,20 +122,19 @@ public class RobotPosePredictor {
 
         // Predict next pose using predicted velocity (consider changing predicted velo to current
         // velo)
-        double predictedRotAcc = getPredictedRotAcceleration();
-        ChassisSpeeds predictedVelo = getPredictedVelos();
+        double predictedRotAcc = getCalculatedRotAcceleration();
         predicted[0] =
                 currentPose[0]
-                        + predictedVelo.vxMetersPerSecond * predTime
+                        + veloHistory[latestIdx].vxMetersPerSecond * predTime
                         + 1 / 2 * accelerationsNow[0] * Math.pow(predTime, 2);
         predicted[1] =
                 currentPose[1]
-                        + predictedVelo.vyMetersPerSecond * predTime
+                        + veloHistory[latestIdx].vyMetersPerSecond * predTime
                         + 1 / 2 * accelerationsNow[1] * Math.pow(predTime, 2);
         // handle wrapping
         double predOmega =
                 currentPose[2]
-                        + predictedVelo.omegaRadiansPerSecond * 0.07
+                        + veloHistory[latestIdx].omegaRadiansPerSecond * 0.07
                         + 1 / 2 * predictedRotAcc * Math.pow(0.07, 2);
 
         if (predOmega > Math.PI) {
@@ -157,21 +156,18 @@ public class RobotPosePredictor {
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
         int latestIdx =
                 Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
-        double predictedRotAcc = getPredictedRotAcceleration();
+        double predictedRotAcc = getCalculatedRotAcceleration();
         predictedVelo.vxMetersPerSecond =
-                veloHistory[latestIdx].vxMetersPerSecond
-                        + accelerationsNow[0] * predTime;
+                veloHistory[latestIdx].vxMetersPerSecond + accelerationsNow[0] * predTime;
         predictedVelo.vyMetersPerSecond =
-                veloHistory[latestIdx].vyMetersPerSecond
-                        + accelerationsNow[1] * predTime;
+                veloHistory[latestIdx].vyMetersPerSecond + accelerationsNow[1] * predTime;
         predictedVelo.omegaRadiansPerSecond =
-                veloHistory[latestIdx].omegaRadiansPerSecond
-                        + predictedRotAcc * predTime;
+                veloHistory[latestIdx].omegaRadiansPerSecond + predictedRotAcc * predTime;
 
         return predictedVelo;
     }
 
-    public double getPredictedRotAcceleration() {
+    public double getCalculatedRotAcceleration() {
         ChassisSpeeds predictedAcc = new ChassisSpeeds();
         double mostRecentTimestamp =
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
