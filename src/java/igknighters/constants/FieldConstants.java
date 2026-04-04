@@ -194,14 +194,14 @@ public class FieldConstants {
     }
 
     public static final double Y_FIELD = 316.64 * Conv.INCHES_TO_METERS; // meters
-    public static final double X_FIELD = 650.12 * Conv.INCHES_TO_METERS; // meters
+    public static final double X_FIELD = 651.12 * Conv.INCHES_TO_METERS; // meters
     public static final double ALIANCE_ZONE_BLUE = 181.56 * Conv.INCHES_TO_METERS; // meters
     public static final double ALIANCE_ZONE_RED = X_FIELD - ALIANCE_ZONE_BLUE;
 
     public static class TRENCH {
 
         public static final double TRENCH_1_X_METERS = 182.11 * Conv.INCHES_TO_METERS;
-        public static final double TRENCH_2_X_METERS = X_FIELD - (182.11) * Conv.INCHES_TO_METERS;
+        public static final double TRENCH_2_X_METERS = 468.89 * Conv.INCHES_TO_METERS; // 13.4
 
         // all trench protection commands are fine to use if on bump to so no need to check for the
         // y cord
@@ -225,7 +225,7 @@ public class FieldConstants {
         public static final double HALF_HEIGHT_METERS = 109 * Conv.INCHES_TO_METERS;
 
         public static final double BUMP_1_X_METERS = 182.11 * Conv.INCHES_TO_METERS;
-        public static final double BUMP_2_X_METERS = X_FIELD - (182.11) * Conv.INCHES_TO_METERS;
+        public static final double BUMP_2_X_METERS = 468.89 * Conv.INCHES_TO_METERS;
 
         public static final double BUMP_1_Y_METERS = 158.32 * Conv.INCHES_TO_METERS;
         public static final double BUMP_2_Y_METERS = 158.32 * Conv.INCHES_TO_METERS;

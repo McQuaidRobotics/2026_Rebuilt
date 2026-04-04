@@ -452,12 +452,12 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public double kP() {
-            return 45.0;
+            return 65.0;
         }
 
         @Override
         public double kI() {
-            return 0.0;
+            return 0.05;
         }
 
         @Override
