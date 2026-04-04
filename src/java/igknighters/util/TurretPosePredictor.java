@@ -39,12 +39,14 @@ public class TurretPosePredictor {
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
         int latestIdx =
                 Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
+        Pose3d offsets = getTurretPoseFieldRelativeOffset(predRobotPose);
         Pose3d predTurretPose =
                 new Pose3d(
-                        predRobotPose.getX(),
-                        predRobotPose.getY(),
+                        predRobotPose.getX() + offsets.getX(),
+                        predRobotPose.getY() + offsets.getY(),
                         .3,
                         new Rotation3d(0, 0, currentPose[latestIdx].getRotation().getZ()));
+        Robot.turret_pred_error.findError(currentPose[latestIdx]);
         return () -> predTurretPose;
     }
 
@@ -62,5 +64,21 @@ public class TurretPosePredictor {
                 predRobotVelos.vyMetersPerSecond
                         + predRobotVelos.omegaRadiansPerSecond * 5 * Conv.INCHES_TO_METERS;
         return () -> predTurretVelos;
+    }
+
+    public Pose3d getTurretPoseFieldRelativeOffset(Pose2d robotPose) {
+        double xMeterOffset =
+                7.0710678118655
+                        * Conv.INCHES_TO_METERS
+                        * Math.cos(
+                                robotPose.getRotation().getRadians()
+                                        - 3*Math.PI/2);
+        double yMeterOffset =
+                7.0710678118655
+                        * Conv.INCHES_TO_METERS
+                        * Math.sin(
+                                robotPose.getRotation().getRadians()
+                                        - 3*Math.PI/2);
+        return new Pose3d(xMeterOffset, yMeterOffset, 0, new Rotation3d(0, 0, 0));
     }
 }
