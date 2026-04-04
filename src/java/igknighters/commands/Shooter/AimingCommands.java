@@ -84,6 +84,7 @@ public class AimingCommands {
         Pose2d robotPose2d = getTurretPose();
         ShootingData shootingData = info.getData();
         ChassisSpeeds robotVel = robotVelocitySupplier.get();
+        info.setBeingControlled(false);
 
         Pose3d shooterPose =
                 new Pose3d(
@@ -110,6 +111,7 @@ public class AimingCommands {
     public static void shootOnce(Shooter shooter, Supplier<ChassisSpeeds> robotVelocitySupplier) {
 
         ShootInformation info = ShootInformation.getInstance();
+        info.setBeingControlled(true);
         Pose2d shooterPoseWithOffset = getTurretPose();
         ShootingData shootingData = info.getData();
         ChassisSpeeds robotVel = robotVelocitySupplier.get();
@@ -148,7 +150,6 @@ public class AimingCommands {
         BooleanSupplier underTrenchCheck = isUnderTrench();
         return shooter.run(
                 () -> {
-                    info.setBeingControlled(true);
                     if (underTrenchCheck.getAsBoolean()) {
                         idleOnce(shooter, robotVelocitySupplier);
                     } else {
@@ -164,7 +165,6 @@ public class AimingCommands {
 
         return shooter.run(
                 () -> {
-                    info.setBeingControlled(true);
                     if (underTrenchCheck.getAsBoolean()) {
                         idleOnce(shooter, robotVelocitySupplier);
                     } else {
