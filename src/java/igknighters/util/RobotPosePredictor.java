@@ -124,7 +124,7 @@ public class RobotPosePredictor {
         double predOmega =
                 currentPose[2]
                         + predictedVelo.omegaRadiansPerSecond * 0.07
-                        + 1 / 2 * predictedAcc.omegaRadiansPerSecond * Math.pow(0.07, 2);
+                        + 1 / 2 * accelerationsNow[2] * Math.pow(0.07, 2);
 
         if (predOmega > Math.PI) {
             predicted[2] = predOmega - 2 * Math.PI;
