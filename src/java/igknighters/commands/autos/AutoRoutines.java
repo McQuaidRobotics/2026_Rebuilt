@@ -18,6 +18,7 @@ import igknighters.commands.IntakeCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.constants.RobotConsts;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.intake.IntakeState;
 import java.util.function.Supplier;
 
 public class AutoRoutines extends AutoCommands {
@@ -169,19 +170,24 @@ public class AutoRoutines extends AutoCommands {
 
     public AutoRoutine BUMP_PASS_TO_SELF_LEFT() {
         AutoRoutine routine = autoFactory.newRoutine("Bump Pass to Self Left");
-        AutoTrajectory trajectory = routine.trajectory("BUMP_PASS_TO_SELF_LEFT.traj");
 
-        routine.active()
-                .onTrue(
-                        Commands.sequence(
-                                trajectory.resetOdometry(),
-                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
-                                trajectory.cmd()));
+        AutoTrajectory trajectory = routine.trajectory("BUMP_PASS_TO_SELF_LEFT_1.traj");
+
+        routine.active().onTrue(Commands.sequence(trajectory.resetOdometry(), trajectory.cmd()));
 
         trajectory.atTime("HIPPO").onTrue(HigherOrderCommands.hippoShoot(subsystems));
 
+        trajectory.atTime("JUST INTAKE").onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
         trajectory
-                .atTime("STOP HIPPO")
+                .atTime("PROTECT INTAKE")
+                .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
+
+        trajectory
+                .atTime("START SHOOTING AGAIN")
+                .onTrue(HigherOrderCommands.hippoShoot(subsystems));
+        trajectory
+                .atTime("NO MUNCH HIPPO")
                 .onTrue(
                         HigherOrderCommands.rapidFireStream(subsystems)
                                 .alongWith(IntakeCommands.holdAtIntake(subsystems.intake)));

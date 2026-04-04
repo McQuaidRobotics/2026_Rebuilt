@@ -25,6 +25,7 @@ public class PivotSim extends Pivot {
     @Override
     public void goToAngle(Angle angle) {
         super.targetDegrees = angle.in(Degrees);
+        currentAngle = angle;
         isControlledThisCycle = true;
     }
 

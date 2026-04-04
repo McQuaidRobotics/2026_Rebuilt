@@ -10,7 +10,6 @@ import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.intake.Intake;
 
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
@@ -114,7 +113,6 @@ public class HigherOrderCommands {
     public static Command hippoShoot(Subsystems subsystems) {
         return Commands.parallel(
                 rapidFireStream(subsystems),
-                IntakeCommands.intakeWhileSlightJorking(subsystems.intake)
-            );
+                IntakeCommands.intakeWhileSlightJorking(subsystems.intake));
     }
 }
