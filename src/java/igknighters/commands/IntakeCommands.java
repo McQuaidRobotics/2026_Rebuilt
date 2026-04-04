@@ -82,6 +82,14 @@ public class IntakeCommands {
                 .withName("Slight Jork");
     }
 
+    public static Command largeJorkIntake(Intake intake) {
+        return Commands.sequence(
+                        holdAtIntake(intake).withTimeout(.2),
+                        holdAtState(intake, IntakeState.largeJork).withTimeout(.2))
+                .repeatedly()
+                .withName("Large Jork");
+    }
+
     public static Command intakeWhileSlightJorking(Intake intake) {
         return Commands.sequence(
                         holdAtIntake(intake).withTimeout(.7),

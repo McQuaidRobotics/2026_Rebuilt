@@ -15,7 +15,7 @@ public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
         return Commands.parallel(
                         rapidFireStream(subsystems),
-                        IntakeCommands.slightJorkIntake(subsystems.intake))
+                        IntakeCommands.largeJorkIntake(subsystems.intake))
                 .withTimeout(timeout)
                 .andThen(Commands.print("ALL BALLS SHOT CONTINUING")); // this is a placeholder for
         // IndexerCommands.isBallPresent()
