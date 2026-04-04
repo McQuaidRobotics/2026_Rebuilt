@@ -53,7 +53,7 @@ public class IntakeCommands {
      * @return
      */
     public static Command holdAtHalfStow(Intake intake) {
-        return intake.run(() -> intake.goTo(IntakeState.HalfStowed)).withName("Half Stow Intake");
+        return intake.run(() -> intake.goTo(IntakeState.partialStow)).withName("Half Stow Intake");
     }
 
     public static Command expell(Intake intake) {
