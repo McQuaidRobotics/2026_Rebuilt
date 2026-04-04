@@ -53,13 +53,13 @@ public class AimingCommands {
             boolean under1 =
                     isBetween(
                             turretPose,
-                            FieldConstants.BUMP.BUMP_1_X_METERS - 0.36,
-                            FieldConstants.BUMP.BUMP_1_X_METERS + 0.36);
+                            FieldConstants.BUMP.BUMP_1_X_METERS - 0.45,
+                            FieldConstants.BUMP.BUMP_1_X_METERS + 0.45);
             boolean under2 =
                     isBetween(
                             turretPose,
-                            FieldConstants.BUMP.BUMP_2_X_METERS - 0.36,
-                            FieldConstants.BUMP.BUMP_2_X_METERS + 0.36);
+                            FieldConstants.BUMP.BUMP_2_X_METERS - 0.45,
+                            FieldConstants.BUMP.BUMP_2_X_METERS + 0.45);
 
             boolean isUnder = under1 || under2;
             if (!Robot.consts.disableAllLogs()) {
@@ -98,6 +98,7 @@ public class AimingCommands {
         Pose2d robotPose2d = robotPoseSupplier.get();
         ShootingData shootingData = info.getData(robotPoseSupplier);
         ChassisSpeeds robotVel = robotVelocitySupplier.get();
+        info.setBeingControlled(false);
 
         Pose3d shooterPose =
                 new Pose3d(
@@ -127,6 +128,7 @@ public class AimingCommands {
             Supplier<ChassisSpeeds> robotVelocitySupplier) {
 
         ShootInformation info = ShootInformation.getInstance();
+        info.setBeingControlled(true);
         Supplier<Pose2d> shooterPoseWithOffset = getShooterPoseWithOffset(robotPoseSupplier);
         Pose2d shooterPose2d = shooterPoseWithOffset.get();
         ShootingData shootingData = info.getData(shooterPoseWithOffset);
@@ -166,7 +168,6 @@ public class AimingCommands {
         BooleanSupplier underTrenchCheck = isUnderTrench(robotPoseSupplier);
         return shooter.run(
                 () -> {
-                    info.setBeingControlled(true);
                     if (underTrenchCheck.getAsBoolean()) {
                         idleOnce(shooter, robotPoseSupplier, robotVelocitySupplier);
                     } else {
@@ -184,7 +185,6 @@ public class AimingCommands {
 
         return shooter.run(
                 () -> {
-                    info.setBeingControlled(true);
                     if (underTrenchCheck.getAsBoolean()) {
                         idleOnce(shooter, robotPoseSupplier, robotVelocitySupplier);
                     } else {
