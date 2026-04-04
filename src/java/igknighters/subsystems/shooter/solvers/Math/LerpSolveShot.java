@@ -17,7 +17,6 @@ import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.util.*;
 import igknighters.util.LerpTable.LerpTableEntry;
-import igknighters.util.log.Log;
 
 public class LerpSolveShot {
     // minimal change in RPM most of the change will come from the hood
@@ -92,11 +91,7 @@ public class LerpSolveShot {
     public static ShooterState solve(
             Pose3d robotPose, Pose3d goalPose, double currentRPM, double latencyCompensation) {
 
-        Pose3d shooterPose = Robot.turret_pred.getPredictedPose();
-
-        double error = shooterPose.getTranslation().getDistance(robotPose.getTranslation());
-
-        Log.log("ROBOT/POSE_PREDICTOR/TOTAL_ERROR", error);
+        Pose3d shooterPose = Robot.turret_pred.getPredictedPose().get();
 
         ChassisSpeeds robotSpeeds = Robot.pose_pred.getPredictedVelos();
         Translation2d rawRobotVelocity =
