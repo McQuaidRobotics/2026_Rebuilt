@@ -7,7 +7,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
-import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.intake.pivot.Pivot;
 import igknighters.subsystems.intake.pivot.PivotReal;
 import igknighters.subsystems.intake.pivot.PivotSim;
@@ -42,7 +41,15 @@ public class Intake extends SubsystemBase {
     }
 
     public void goTo(IntakeState state) {
-        goTo(state.pivotDegrees, state.rollerSpeedRPM);
+        goTo(state.getPivotAngle(), state.getRollerSpeed());
+    }
+
+    public void goTo(boolean toggledState) {
+        if (toggledState) {
+            goTo(IntakeState.Stowed.getPivotAngle(), IntakeState.Stowed.getRollerSpeed());
+        } else {
+            goTo(IntakeState.Intake.getPivotAngle(), IntakeState.Intake.getRollerSpeed());
+        }
     }
 
     public Angle getPivotAngle() {
@@ -73,7 +80,7 @@ public class Intake extends SubsystemBase {
         boolean isAtSpeed =
                 Math.abs(rollers.getSpeed().in(RPM) - speedRPM.in(RPM)) < speedTolerance.in(RPM);
 
-        if (!SubsystemConstants.kIntake.kPivot.disablePivotLogs) {
+        if (!Robot.consts.intake().kPivot().disablePivotLogs()) {
 
             Log.log("ROBOT/Subsystems/Intake/AT STATE/Is At Speed", isAtSpeed);
             Log.log("ROBOT/Subsystems/Intake/AT STATE/Is At Angle", isAtAngle);

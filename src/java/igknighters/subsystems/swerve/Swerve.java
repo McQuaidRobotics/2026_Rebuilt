@@ -146,4 +146,16 @@ public class Swerve extends SubsystemBase {
     public double getMaxSpeedMetersPerSecond() {
         return swerveConsts.getSwerveConsts().getMaxSpeedMetersPerSecond();
     }
+
+    public double getXAcceleration() {
+        return drivetrain.getPigeon2().getAccelerationX().getValueAsDouble();
+    }
+
+    public double getYAcceleration() {
+        return drivetrain.getPigeon2().getAccelerationY().getValueAsDouble();
+    }
+
+    public double getRotationalAcceleration() {
+        return 0.0;
+    }
 }

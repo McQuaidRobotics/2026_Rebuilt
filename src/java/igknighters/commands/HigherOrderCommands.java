@@ -5,16 +5,17 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
+import igknighters.commands.Shooter.AimingCommands;
+import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.climber.ClimberState;
-import java.util.Set;
 
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
         return Commands.parallel(
-                        rapidFireStream(subsystems), IntakeCommands.jorkIt(subsystems.intake))
+                        rapidFireStream(subsystems),
+                        IntakeCommands.largeJorkIntake(subsystems.intake))
                 .withTimeout(timeout)
                 .andThen(Commands.print("ALL BALLS SHOT CONTINUING")); // this is a placeholder for
         // IndexerCommands.isBallPresent()
@@ -24,10 +25,7 @@ public class HigherOrderCommands {
 
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
-                ShooterCommands.shootWithProtection(
-                                subsystems.shooter,
-                                () -> subsystems.swerve.getState().Pose,
-                                subsystems.swerve::getFieldRelativeSpeeds)
+                AimingCommands.shootWithProtection(subsystems.shooter)
                         .withName("Active Spool & Aim");
 
         return Commands.parallel(
@@ -40,10 +38,7 @@ public class HigherOrderCommands {
 
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
-                ShooterCommands.shootWithProtectionAndAgregiousMaxHeight(
-                                subsystems.shooter,
-                                () -> subsystems.swerve.getState().Pose,
-                                subsystems.swerve::getFieldRelativeSpeeds)
+                AimingCommands.shootWithProtectionAndAgregiousMaxHeight(subsystems.shooter)
                         .withName("Active Spool & Aim");
 
         return Commands.parallel(
@@ -54,7 +49,7 @@ public class HigherOrderCommands {
 
     public static Command fireAtTarget(Subsystems subsystems, Pose3d targetPose) {
         Command shooterCommand =
-                ShooterCommands.SHOOT_MAX_MIN_NO_AUTO_PICKED_TARGET(
+                AimingCommands.SHOOT_AT_TARGET(
                                 subsystems.shooter,
                                 targetPose,
                                 () -> subsystems.swerve.getState().Pose,
@@ -80,10 +75,7 @@ public class HigherOrderCommands {
     public static Command forceDispense(Subsystems subsystems) {
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
-                ShooterCommands.shoot(
-                                subsystems.shooter,
-                                () -> subsystems.swerve.getState().Pose,
-                                subsystems.swerve::getFieldRelativeSpeeds)
+                AimingCommands.shootWithProtection(subsystems.shooter)
                         .withName("Active Spool & Aim");
 
         return Commands.parallel(
@@ -115,66 +107,7 @@ public class HigherOrderCommands {
 
     public static Command hippoShoot(Subsystems subsystems) {
         return Commands.parallel(
-                rapidFireStream(subsystems), IntakeCommands.holdAtIntake(subsystems.intake));
-    }
-
-    public static Command unClimbCommand(Subsystems subsystems) {
-        return Commands.sequence(
-                ClimberCommands.goToState(subsystems.climber, ClimberState.LATCH_ON),
-                Repulsor.moveWithRepulsor(subsystems.swerve, getClimbStartPose()),
-                ClimberCommands.goToState(subsystems.climber, ClimberState.STOW));
-    }
-
-    public static Command prepToClimbFirstRung(Subsystems subsystems) {
-        return Commands.defer(
-                        () -> {
-                            Pose2d startPose = getClimbStartPose();
-                            Pose2d endPose = getClimbEndPose();
-                            return Commands.parallel(
-                                    IntakeCommands.holdAtStow(subsystems.intake),
-                                    Commands.sequence(
-                                            Commands.parallel(
-                                                            ClimberCommands.holdAtState(
-                                                                    subsystems.climber,
-                                                                    ClimberState.LATCH_ON),
-                                                            Repulsor.moveWithRepulsor(
-                                                                    subsystems.swerve, startPose))
-                                                    .until(
-                                                            SwerveCommands.isAt(
-                                                                    subsystems.swerve,
-                                                                    startPose,
-                                                                    3,
-                                                                    2)),
-                                            Commands.parallel(
-                                                            ClimberCommands.holdAtState(
-                                                                    subsystems.climber,
-                                                                    ClimberState.LATCH_ON),
-                                                            SwerveCommands.moveToSimple(
-                                                                    subsystems.swerve, startPose))
-                                                    .until(
-                                                            SwerveCommands.isAt(
-                                                                    subsystems.swerve,
-                                                                    startPose,
-                                                                    .02,
-                                                                    .05)),
-                                            Commands.parallel(
-                                                            ClimberCommands.holdAtState(
-                                                                    subsystems.climber,
-                                                                    ClimberState.LATCH_ON),
-                                                            SwerveCommands.moveToSimple(
-                                                                    subsystems.swerve, endPose))
-                                                    .until(
-                                                            () ->
-                                                                    SwerveCommands.isAt(
-                                                                                    subsystems
-                                                                                            .swerve,
-                                                                                    endPose,
-                                                                                    .02,
-                                                                                    .05)
-                                                                            .getAsBoolean()),
-                                            SwerveCommands.stopDriving(subsystems.swerve)));
-                        },
-                        Set.of(subsystems.swerve, subsystems.climber, subsystems.intake))
-                .withName("Moving to Climber and raising to max height");
+                rapidFireStream(subsystems),
+                IntakeCommands.intakeWhileSlightJorking(subsystems.intake));
     }
 }

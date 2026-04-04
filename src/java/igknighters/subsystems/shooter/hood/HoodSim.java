@@ -3,7 +3,7 @@ package igknighters.subsystems.shooter.hood;
 import static edu.wpi.first.units.Units.Degrees;
 
 import edu.wpi.first.units.measure.Angle;
-import igknighters.constants.SubsystemConstants;
+import igknighters.Robot;
 import igknighters.util.log.Log;
 
 public class HoodSim extends Hood {
@@ -12,7 +12,7 @@ public class HoodSim extends Hood {
     @Override
     public void periodic() {
 
-        if (!SubsystemConstants.kShooter.kHood.disableHoodLogs) {
+        if (!Robot.consts.shooter().kHood().disableHoodLogs()) {
             Log.log("ROBOT/Subsystems/Shooter/Hood/AngleDegrees", getAngleDegrees());
             Log.log("ROBOT/Subsystems/Shooter/Hood/TargetDegrees", super.targetDegrees);
         }

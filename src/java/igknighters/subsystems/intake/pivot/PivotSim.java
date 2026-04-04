@@ -3,7 +3,7 @@ package igknighters.subsystems.intake.pivot;
 import static edu.wpi.first.units.Units.Degrees;
 
 import edu.wpi.first.units.measure.Angle;
-import igknighters.constants.SubsystemConstants;
+import igknighters.Robot;
 import igknighters.util.log.Log;
 
 public class PivotSim extends Pivot {
@@ -25,6 +25,7 @@ public class PivotSim extends Pivot {
     @Override
     public void goToAngle(Angle angle) {
         super.targetDegrees = angle.in(Degrees);
+        currentAngle = angle;
         isControlledThisCycle = true;
     }
 
@@ -39,7 +40,7 @@ public class PivotSim extends Pivot {
     @Override
     public void periodic() {
 
-        if (!SubsystemConstants.kIntake.kPivot.disablePivotLogs) {
+        if (!Robot.consts.intake().kPivot().disablePivotLogs()) {
             Log.log("ROBOT/Subsystems/Intake/Pivot/AngleDegrees", getAngle().in(Degrees));
             Log.log("ROBOT/Subsystems/Intake/Pivot/TargetDegrees", super.targetDegrees);
         }
