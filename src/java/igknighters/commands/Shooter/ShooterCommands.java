@@ -141,16 +141,15 @@ public class ShooterCommands {
     }
 
     public static Command homeHood(Shooter shooter) {
-        //return shooter.run(() -> shooter.setHoodVoltage(-1)).until(() -> shooter.isHoodSensorHit());
-if (shooter.isHoodSensorHit()) {
+        // return shooter.run(() -> shooter.setHoodVoltage(-1)).until(() ->
+        // shooter.isHoodSensorHit());
+        if (shooter.isHoodSensorHit()) {
             return shooter.runOnce(() -> shooter.resetHoodEncoder());
         }
-        return shooter
-                .run(() -> shooter.setHoodVoltage(-1))
+        return shooter.run(() -> shooter.setHoodVoltage(-1))
                 .until(() -> shooter.isHoodSensorHit())
                 .andThen(shooter.runOnce(() -> shooter.resetHoodEncoder()));
-    }            
-
+    }
 
     /**
      * aims without changing hood or rpm so that the shooter can go under bump
