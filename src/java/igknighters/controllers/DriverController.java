@@ -133,9 +133,7 @@ public class DriverController {
             this.Y.whileTrue(ShooterCommands.targetState(shooter, 5000, 360, 40));
             // this.RT.whileTrue(IndexerCommands.dispense(indexer));
             // this.LT.whileTrue(IndexerCommands.stopDispensing(indexer));
-            this.RT.whileTrue(
-                    AimingCommands.shootWithProtection(
-                            subsystems.shooter, swerve::getFieldRelativeSpeeds));
+            this.RT.whileTrue(AimingCommands.shootWithProtection(subsystems.shooter));
             this.LT.whileTrue(IndexerCommands.dispense(indexer));
 
             // this.DPD.whileTrue(ShooterCommands.targetState(shooter, 0, 0,

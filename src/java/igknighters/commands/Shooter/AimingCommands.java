@@ -12,7 +12,6 @@ import igknighters.Robot;
 import igknighters.commands.Shooter.ShooterCommands.shotType;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
-import igknighters.subsystems.shooter.AimSolver;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.subsystems.shooter.ShootingData;
@@ -79,11 +78,10 @@ public class AimingCommands {
      * @param robotPoseSupplier
      * @param robotVelocitySupplier
      */
-    public static void idleOnce(Shooter shooter, Supplier<ChassisSpeeds> robotVelocitySupplier) {
+    public static void idleOnce(Shooter shooter) {
         ShootInformation info = ShootInformation.getInstance();
         Pose2d robotPose2d = getTurretPose();
         ShootingData shootingData = info.getData();
-        ChassisSpeeds robotVel = robotVelocitySupplier.get();
         info.setBeingControlled(false);
 
         Pose3d shooterPose =
@@ -93,13 +91,10 @@ public class AimingCommands {
                         Robot.consts.shooter().kFlywheels().ShooterHeightMeters(),
                         new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
         ShooterState targetingData =
-                AimSolver.Solvers.solve_max_and_min_iterative_with_vectors(
+                LerpSolveShot.solve(
                         shooterPose,
                         shootingData.TARGET_POSE,
-                        robotVel,
                         shooter.getCurrentState().flywheelSpeed.in(RPM),
-                        shootingData.MAX_HEIGHT_METERS,
-                        shootingData.MIN_HEIGHT_METERS,
                         0.02);
 
         shooter.targetState(
@@ -108,13 +103,12 @@ public class AimingCommands {
                 Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
     }
 
-    public static void shootOnce(Shooter shooter, Supplier<ChassisSpeeds> robotVelocitySupplier) {
+    public static void shootOnce(Shooter shooter) {
 
         ShootInformation info = ShootInformation.getInstance();
         info.setBeingControlled(true);
         Pose2d shooterPoseWithOffset = getTurretPose();
         ShootingData shootingData = info.getData();
-        ChassisSpeeds robotVel = robotVelocitySupplier.get();
 
         shooter.currentShotType = getShotType();
 
@@ -142,33 +136,27 @@ public class AimingCommands {
 
     public static double maxHeightMeters = 4.8;
 
-    public static Command shootWithProtectionAndAgregiousMaxHeight(
-            Shooter shooter,
-            Supplier<Pose2d> robotPoseSupplier,
-            Supplier<ChassisSpeeds> robotVelocitySupplier) {
-        ShootInformation info = ShootInformation.getInstance();
+    public static Command shootWithProtectionAndAgregiousMaxHeight(Shooter shooter) {
         BooleanSupplier underTrenchCheck = isUnderTrench();
         return shooter.run(
                 () -> {
                     if (underTrenchCheck.getAsBoolean()) {
-                        idleOnce(shooter, robotVelocitySupplier);
+                        idleOnce(shooter);
                     } else {
-                        shootOnce(shooter, robotVelocitySupplier);
+                        shootOnce(shooter);
                     }
                 });
     }
 
-    public static Command shootWithProtection(
-            Shooter shooter, Supplier<ChassisSpeeds> robotVelocitySupplier) {
-        ShootInformation info = ShootInformation.getInstance();
+    public static Command shootWithProtection(Shooter shooter) {
         BooleanSupplier underTrenchCheck = isUnderTrench();
 
         return shooter.run(
                 () -> {
                     if (underTrenchCheck.getAsBoolean()) {
-                        idleOnce(shooter, robotVelocitySupplier);
+                        idleOnce(shooter);
                     } else {
-                        shootOnce(shooter, robotVelocitySupplier);
+                        shootOnce(shooter);
                     }
                 });
     }

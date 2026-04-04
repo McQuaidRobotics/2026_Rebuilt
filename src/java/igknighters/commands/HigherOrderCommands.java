@@ -25,8 +25,7 @@ public class HigherOrderCommands {
 
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
-                AimingCommands.shootWithProtection(
-                                subsystems.shooter, subsystems.swerve::getFieldRelativeSpeeds)
+                AimingCommands.shootWithProtection(subsystems.shooter)
                         .withName("Active Spool & Aim");
 
         return Commands.parallel(
@@ -39,10 +38,7 @@ public class HigherOrderCommands {
 
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
-                AimingCommands.shootWithProtectionAndAgregiousMaxHeight(
-                                subsystems.shooter,
-                                () -> subsystems.swerve.getState().Pose,
-                                subsystems.swerve::getFieldRelativeSpeeds)
+                AimingCommands.shootWithProtectionAndAgregiousMaxHeight(subsystems.shooter)
                         .withName("Active Spool & Aim");
 
         return Commands.parallel(
@@ -79,8 +75,7 @@ public class HigherOrderCommands {
     public static Command forceDispense(Subsystems subsystems) {
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
-                AimingCommands.shootWithProtection(
-                                subsystems.shooter, subsystems.swerve::getFieldRelativeSpeeds)
+                AimingCommands.shootWithProtection(subsystems.shooter)
                         .withName("Active Spool & Aim");
 
         return Commands.parallel(
