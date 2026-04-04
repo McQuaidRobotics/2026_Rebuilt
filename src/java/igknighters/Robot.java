@@ -282,6 +282,23 @@ public class Robot extends LoggedRobot {
                 new Rotation3d(0, 0, turretAngleDegrees * Math.PI / 180));
     }
 
+    public Pose3d getTurretPoseFieldRelative(double turretAngleDegrees, Pose2d robotPose) {
+        double xMeterOffset =
+                Math.sqrt(50)
+                        * Conv.INCHES_TO_METERS
+                        * Math.cos(robotPose.getRotation().getRadians() - 3 * Math.PI / 2);
+        double yMeterOffset =
+                Math.sqrt(50)
+                        * Conv.INCHES_TO_METERS
+                        * Math.sin(robotPose.getRotation().getRadians() - 3 * Math.PI / 2);
+        double zMeterOffset = 0.3; // Height of the turret from the ground
+        return new Pose3d(
+                robotPose.getX() + xMeterOffset,
+                robotPose.getY() + yMeterOffset,
+                zMeterOffset,
+                new Rotation3d(0, 0, turretAngleDegrees * Math.PI / 180));
+    }
+
     public Pose3d getHoodPose(double hoodAngleDegrees) {
         double dx = 0.09; // X offset from turret center to hood
         double dy = 0.0; // Y offset from turret center to hood
@@ -308,7 +325,10 @@ public class Robot extends LoggedRobot {
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
         pose_pred.setVelocitiesAndPose(subsystems.swerve);
-        turret_pred.logTurretPose(getTurretPose(subsystems.shooter.getTurretAngleDegrees()));
+        turret_pred.logTurretPose(
+                getTurretPoseFieldRelative(
+                        subsystems.shooter.getTurretAngleDegrees(),
+                        subsystems.swerve.getState().Pose));
         pose_pred_error.logPose(subsystems.swerve.getState().Pose);
         if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()
