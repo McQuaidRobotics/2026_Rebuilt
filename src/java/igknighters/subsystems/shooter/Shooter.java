@@ -119,6 +119,8 @@ public class Shooter extends SubsystemBase {
         boolean atHoodAngle =
                 Math.abs(hood.getAngleDegrees() - goalHoodAngleDegrees) < toleranceHoodDegrees;
         if (!Robot.consts.shooter().kFlywheels().disableFlywheelsLogs()) {
+            Log.log("ROBOT/Subsystems/Shooter/actual turret degrees", getTurretAngleDegrees());
+            Log.log("ROBOT/Subsystems/Shooter/goal turret degrees", goalTurretAngleDegrees);
             Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT SPEED", atSpeed);
             Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT TURRET ANGLE", atTurretAngle);
             Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT HOOD ANGLE", atHoodAngle);
