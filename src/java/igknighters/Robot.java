@@ -60,6 +60,7 @@ public class Robot extends LoggedRobot {
     public static RobotConsts consts;
     private AutoFactory autoFactory;
     public final AutoChooser autoChooser = new AutoChooser();
+    public final AutoChooser testChooser = new AutoChooser();
     double i = 0;
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
@@ -157,7 +158,10 @@ public class Robot extends LoggedRobot {
                 routines::PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER);
         autoChooser.addRoutine("Aggresive Center Auto Left", routines::meanRoutine);
 
+        testChooser.addRoutine("Test Auto", routines::TEST);
+
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
+        SmartDashboard.putData("TEST CHOOSER", testChooser);
     }
 
     public void setUpSwerve(Subsystems subsystems) {
@@ -423,6 +427,11 @@ public class Robot extends LoggedRobot {
     @Override
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
+        Command autoCommand = testChooser.selectedCommand();
+        if (fuelSim != null) {
+            fuelSim.start();
+        }
+        scheduler.schedule(autoCommand);
     }
 
     @Override
