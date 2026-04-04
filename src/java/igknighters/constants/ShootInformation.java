@@ -84,61 +84,63 @@ public class ShootInformation {
         }
     }
 
-    public Pose3d getPassTarget(Supplier<Pose2d> robotPoseSupplier) {
+    public Pose3d getPassTarget() {
         if (Robot.isBlue()) {
-            Pose2d robotPose2d = robotPoseSupplier.get();
+            Pose2d robotPose2d = Robot.pose_pred.getPredictedPose();
             return robotPose2d.getY() > FieldConstants.Y_FIELD / 2
                     ? FieldConstants.PASS.POSITION_LEFT_BLUE
                     : FieldConstants.PASS.POSITION_RIGHT_BLUE;
         } else {
-            Pose2d robotPose2d = robotPoseSupplier.get();
+            Pose2d robotPose2d = Robot.pose_pred.getPredictedPose();
             return robotPose2d.getY() > FieldConstants.Y_FIELD / 2
                     ? FieldConstants.PASS.POSITION_LEFT_RED
                     : FieldConstants.PASS.POSITION_RIGHT_RED;
         }
     }
 
-    public boolean shouldPass(Supplier<Pose2d> robotPoseSupplier) {
+    public boolean shouldPass() {
+        Pose2d robotPose = Robot.pose_pred.getPredictedPose();
         if (Robot.isBlue()) {
-            return robotPoseSupplier.get().getX() > FieldConstants.ALIANCE_ZONE_BLUE;
+            return robotPose.getX() > FieldConstants.ALIANCE_ZONE_BLUE;
         } else {
-            return robotPoseSupplier.get().getX() < FieldConstants.ALIANCE_ZONE_RED;
+            return robotPose.getX() < FieldConstants.ALIANCE_ZONE_RED;
         }
     }
 
-    public Pose3d getTargetPose(Supplier<Pose2d> robotPoseSupplier) {
-        if (shouldPass(robotPoseSupplier)) {
-            return getPassTarget(robotPoseSupplier);
+    public Pose3d getTargetPose() {
+        if (shouldPass()) {
+            return getPassTarget();
         } else {
             return getHubTarget();
         }
     }
 
-    public ShootingData getData(Supplier<Pose2d> robotPoseSupplier) {
-        if (shouldPass(robotPoseSupplier)) {
+    public ShootingData getData() {
+        if (shouldPass()) {
             if (useOperatorControlLocation) {
                 return getPassData("robot");
             } else {
-                return new ShootingData(4.8, 2, getPassTarget(robotPoseSupplier));
+                return new ShootingData(4.8, 2, getPassTarget());
             }
         }
         return new ShootingData(4.0, 2, getHubTarget());
     }
 
-    public boolean shouldSteal(Supplier<Pose2d> robotPoseSupplier) {
+    public boolean shouldSteal() {
+        Pose2d robotPose = Robot.pose_pred.getPredictedPose();
         if (Robot.isBlue()) { // in red zone on blue so we are stealing
-            return robotPoseSupplier.get().getX() > FieldConstants.ALIANCE_ZONE_RED;
+            return robotPose.getX() > FieldConstants.ALIANCE_ZONE_RED;
         } else { // in blue zone on red so we are stealing
-            return robotPoseSupplier.get().getX() < FieldConstants.ALIANCE_ZONE_BLUE;
+            return robotPose.getX() < FieldConstants.ALIANCE_ZONE_BLUE;
         }
     }
 
-    public Pose3d getShotLocation(Supplier<Pose2d> robotPose) {
-        if (shouldPass(robotPose)) {
+    public Pose3d getShotLocation() {
+        if (shouldPass()) {
             if (useOperatorControlLocation) {
                 return getDashboardPose("robot/passWaypoint");
             } else {
-                return getPassTarget(robotPose);
+                return getPassTarget();
             }
         }
         return getHubTarget();

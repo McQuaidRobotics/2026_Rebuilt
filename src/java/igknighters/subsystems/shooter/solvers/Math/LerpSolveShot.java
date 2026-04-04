@@ -60,7 +60,8 @@ public class LerpSolveShot {
                         new LerpTableEntry(2.5, 25.0),
                         new LerpTableEntry(3.5, 32.0),
                         new LerpTableEntry(4.5, 33.0),
-                        new LerpTableEntry(6.0, 33.0)
+                        new LerpTableEntry(6.0, 33.0),
+                        new LerpTableEntry(10.0, 45)
                     });
 
     static LerpTable RPM_LERP =
@@ -74,7 +75,10 @@ public class LerpSolveShot {
                         new LerpTableEntry(4.5, 3400),
                         new LerpTableEntry(5.0, 3500),
                         new LerpTableEntry(5.5, 3700),
-                        new LerpTableEntry(6.0, 3800)
+                        new LerpTableEntry(6.0, 3800),
+                        new LerpTableEntry(8.0, 4000),
+                        new LerpTableEntry(10.0, 4200),
+                        new LerpTableEntry(20, 5500)
                     });
 
     static LerpTable TIME_OF_FLIGHT_LERP =
