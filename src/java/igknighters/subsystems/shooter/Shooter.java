@@ -194,12 +194,15 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getHoodPosition() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getHoodPosition'");
+
+        return hood.getAngleDegrees();
     }
 
     public void resetHoodEncoder() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'resetHoodEncoder'");
+        if (!Robot.consts.shooter().kHood().disableHoodLogs()) {
+            Log.log("ROBOT/Subsystems/Shooter/Hood/ResetEncoder", true);
+        }
+        hood.setVoltage(0.0);
+        hood.setAngle(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES());
     }
 }
