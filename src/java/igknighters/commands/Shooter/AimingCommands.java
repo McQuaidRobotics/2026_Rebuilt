@@ -32,14 +32,14 @@ public class AimingCommands {
         return x >= a && x <= b;
     }
 
-    public static Pose2d getTurretPose(Supplier<Pose2d> robotPoSupplier) {
+    public static Pose2d getTurretPose() {
         return getShooterPoseWithOffset(() -> Robot.pose_pred.getPredictedPose()).get();
     }
 
-    public static BooleanSupplier isUnderTrench(Supplier<Pose2d> robotPoseSupplier) {
+    public static BooleanSupplier isUnderTrench() {
 
         return () -> {
-            Pose2d turretPose = getTurretPose(robotPoseSupplier);
+            Pose2d turretPose = getTurretPose();
 
             double dx1 = Math.abs(turretPose.getX() - FieldConstants.BUMP.BUMP_1_X_METERS);
             double dx2 = Math.abs(turretPose.getX() - FieldConstants.BUMP.BUMP_2_X_METERS);
@@ -63,9 +63,9 @@ public class AimingCommands {
         };
     }
 
-    public static shotType getShotType(Supplier<Pose2d> robotPoseSupplier) {
+    public static shotType getShotType() {
         ShootInformation info = ShootInformation.getInstance();
-        if (info.shouldPass(robotPoseSupplier)) {
+        if (info.shouldPass()) {
             return shotType.PASS;
         } else {
             return shotType.SHOT;
@@ -79,14 +79,10 @@ public class AimingCommands {
      * @param robotPoseSupplier
      * @param robotVelocitySupplier
      */
-    public static void idleOnce(
-            Shooter shooter,
-            Supplier<Pose2d> robotPoseSupplier,
-            Supplier<ChassisSpeeds> robotVelocitySupplier) {
+    public static void idleOnce(Shooter shooter, Supplier<ChassisSpeeds> robotVelocitySupplier) {
         ShootInformation info = ShootInformation.getInstance();
-
-        Pose2d robotPose2d = robotPoseSupplier.get();
-        ShootingData shootingData = info.getData(robotPoseSupplier);
+        Pose2d robotPose2d = getTurretPose();
+        ShootingData shootingData = info.getData();
         ChassisSpeeds robotVel = robotVelocitySupplier.get();
 
         Pose3d shooterPose =
@@ -111,25 +107,21 @@ public class AimingCommands {
                 Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
     }
 
-    public static void shootOnce(
-            Shooter shooter,
-            Supplier<Pose2d> robotPoseSupplier,
-            Supplier<ChassisSpeeds> robotVelocitySupplier) {
+    public static void shootOnce(Shooter shooter, Supplier<ChassisSpeeds> robotVelocitySupplier) {
 
         ShootInformation info = ShootInformation.getInstance();
-        Supplier<Pose2d> shooterPoseWithOffset = getShooterPoseWithOffset(robotPoseSupplier);
-        Pose2d shooterPose2d = shooterPoseWithOffset.get();
-        ShootingData shootingData = info.getData(shooterPoseWithOffset);
+        Pose2d shooterPoseWithOffset = getTurretPose();
+        ShootingData shootingData = info.getData();
         ChassisSpeeds robotVel = robotVelocitySupplier.get();
 
-        shooter.currentShotType = getShotType(shooterPoseWithOffset);
+        shooter.currentShotType = getShotType();
 
         Pose3d shooterPose3d =
                 new Pose3d(
-                        shooterPose2d.getX(),
-                        shooterPose2d.getY(),
+                        shooterPoseWithOffset.getX(),
+                        shooterPoseWithOffset.getY(),
                         Robot.consts.shooter().kFlywheels().ShooterHeightMeters(),
-                        new Rotation3d(0.0, 0.0, shooterPose2d.getRotation().getRadians()));
+                        new Rotation3d(0.0, 0.0, shooterPoseWithOffset.getRotation().getRadians()));
 
         ShooterState targetingData =
                 LerpSolveShot.solve(shooterPose3d, shootingData.TARGET_POSE, 0.1, 0.0);
@@ -153,32 +145,30 @@ public class AimingCommands {
             Supplier<Pose2d> robotPoseSupplier,
             Supplier<ChassisSpeeds> robotVelocitySupplier) {
         ShootInformation info = ShootInformation.getInstance();
-        BooleanSupplier underTrenchCheck = isUnderTrench(robotPoseSupplier);
+        BooleanSupplier underTrenchCheck = isUnderTrench();
         return shooter.run(
                 () -> {
                     info.setBeingControlled(true);
                     if (underTrenchCheck.getAsBoolean()) {
-                        idleOnce(shooter, robotPoseSupplier, robotVelocitySupplier);
+                        idleOnce(shooter, robotVelocitySupplier);
                     } else {
-                        shootOnce(shooter, robotPoseSupplier, robotVelocitySupplier);
+                        shootOnce(shooter, robotVelocitySupplier);
                     }
                 });
     }
 
     public static Command shootWithProtection(
-            Shooter shooter,
-            Supplier<Pose2d> robotPoseSupplier,
-            Supplier<ChassisSpeeds> robotVelocitySupplier) {
+            Shooter shooter, Supplier<ChassisSpeeds> robotVelocitySupplier) {
         ShootInformation info = ShootInformation.getInstance();
-        BooleanSupplier underTrenchCheck = isUnderTrench(robotPoseSupplier);
+        BooleanSupplier underTrenchCheck = isUnderTrench();
 
         return shooter.run(
                 () -> {
                     info.setBeingControlled(true);
                     if (underTrenchCheck.getAsBoolean()) {
-                        idleOnce(shooter, robotPoseSupplier, robotVelocitySupplier);
+                        idleOnce(shooter, robotVelocitySupplier);
                     } else {
-                        shootOnce(shooter, robotPoseSupplier, robotVelocitySupplier);
+                        shootOnce(shooter, robotVelocitySupplier);
                     }
                 });
     }

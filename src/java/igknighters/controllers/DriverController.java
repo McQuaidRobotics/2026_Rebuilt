@@ -135,9 +135,7 @@ public class DriverController {
             // this.LT.whileTrue(IndexerCommands.stopDispensing(indexer));
             this.RT.whileTrue(
                     AimingCommands.shootWithProtection(
-                            subsystems.shooter,
-                            () -> swerve.getState().Pose,
-                            swerve::getFieldRelativeSpeeds));
+                            subsystems.shooter, swerve::getFieldRelativeSpeeds));
             this.LT.whileTrue(IndexerCommands.dispense(indexer));
 
             // this.DPD.whileTrue(ShooterCommands.targetState(shooter, 0, 0,

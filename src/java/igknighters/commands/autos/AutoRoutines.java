@@ -176,9 +176,16 @@ public class AutoRoutines extends AutoCommands {
                         Commands.sequence(
                                 trajectory.resetOdometry(),
                                 HigherOrderCommands.shootTillEmpty(subsystems, 3),
-                                Commands.parallel(
-                                        trajectory.cmd(),
-                                        HigherOrderCommands.hippoShoot(subsystems))));
+                                trajectory.cmd()));
+
+        trajectory.atTime("HIPPO").onTrue(HigherOrderCommands.hippoShoot(subsystems));
+
+        trajectory
+                .atTime("STOP HIPPO")
+                .onTrue(
+                        HigherOrderCommands.rapidFireStream(subsystems)
+                                .alongWith(IntakeCommands.holdAtIntake(subsystems.intake)));
+
         trajectory
                 .done()
                 .onTrue(

@@ -10,6 +10,7 @@ import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.intake.Intake;
 
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
@@ -26,9 +27,7 @@ public class HigherOrderCommands {
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
                 AimingCommands.shootWithProtection(
-                                subsystems.shooter,
-                                () -> subsystems.swerve.getState().Pose,
-                                subsystems.swerve::getFieldRelativeSpeeds)
+                                subsystems.shooter, subsystems.swerve::getFieldRelativeSpeeds)
                         .withName("Active Spool & Aim");
 
         return Commands.parallel(
@@ -82,9 +81,7 @@ public class HigherOrderCommands {
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
                 AimingCommands.shootWithProtection(
-                                subsystems.shooter,
-                                () -> subsystems.swerve.getState().Pose,
-                                subsystems.swerve::getFieldRelativeSpeeds)
+                                subsystems.shooter, subsystems.swerve::getFieldRelativeSpeeds)
                         .withName("Active Spool & Aim");
 
         return Commands.parallel(
@@ -117,6 +114,7 @@ public class HigherOrderCommands {
     public static Command hippoShoot(Subsystems subsystems) {
         return Commands.parallel(
                 rapidFireStream(subsystems),
-                IntakeCommands.intakeWhileSlightJorking(subsystems.intake));
+                IntakeCommands.intakeWhileSlightJorking(subsystems.intake)
+            );
     }
 }

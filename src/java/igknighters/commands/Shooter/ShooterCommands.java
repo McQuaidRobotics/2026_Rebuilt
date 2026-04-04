@@ -161,7 +161,7 @@ public class ShooterCommands {
                 () -> {
                     info.setBeingControlled(false);
                     Pose2d robotPose2d = robotPoseSupplier.get();
-                    Pose3d targetPose = info.getShotLocation(robotPoseSupplier);
+                    Pose3d targetPose = info.getShotLocation();
                     ChassisSpeeds robotVel = robotVelocitySupplier.get();
 
                     Pose3d shooterPose =
