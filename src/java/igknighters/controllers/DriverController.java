@@ -173,7 +173,7 @@ public class DriverController {
         this.LB.whileTrue(HigherOrderCommands.aggregiouslyHighRapidFireStream(subsystems));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
         this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
-        this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
+        this.DPD.onTrue(ShooterCommands.homeHood(subsystems.shooter));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {
