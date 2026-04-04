@@ -37,8 +37,8 @@ public class IntakeCommands {
     }
 
     /**
-     * Holds the intake in the half stowed position. This will not end unless a new command is called on
-     * the intake
+     * Holds the intake in the half stowed position. This will not end unless a new command is
+     * called on the intake
      *
      * @param intake
      * @return
