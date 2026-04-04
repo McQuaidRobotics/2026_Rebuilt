@@ -142,9 +142,7 @@ public class RobotPosePredictor {
         double predictedRotAcc = getCalculatedRotAcceleration();
         predictedVelo.vxMetersPerSecond =
                 veloHistory[latestIdx].vxMetersPerSecond + accelerationsNow[0] * predTime;
-                veloHistory[latestIdx].vxMetersPerSecond + accelerationsNow[0] * predTime;
         predictedVelo.vyMetersPerSecond =
-                veloHistory[latestIdx].vyMetersPerSecond + accelerationsNow[1] * predTime;
                 veloHistory[latestIdx].vyMetersPerSecond + accelerationsNow[1] * predTime;
         predictedVelo.omegaRadiansPerSecond =
                 veloHistory[latestIdx].omegaRadiansPerSecond + predictedRotAcc * predTime;

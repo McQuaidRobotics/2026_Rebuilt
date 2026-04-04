@@ -60,7 +60,8 @@ public class LerpSolveShot {
                         new LerpTableEntry(2.5, 25.0),
                         new LerpTableEntry(3.5, 30.0),
                         new LerpTableEntry(4.5, 33.0),
-                        new LerpTableEntry(6.0, 33.0),
+                        new LerpTableEntry(5.5, 37.0),
+                        new LerpTableEntry(6.0, 38.0),
                         new LerpTableEntry(10.0, 45)
                     });
 
@@ -74,7 +75,7 @@ public class LerpSolveShot {
                         new LerpTableEntry(4.0, 3200),
                         new LerpTableEntry(4.5, 3300),
                         new LerpTableEntry(5.0, 3680),
-                        new LerpTableEntry(5.5, 3780),
+                        new LerpTableEntry(5.5, 3720),
                         new LerpTableEntry(6.0, 3800),
                         new LerpTableEntry(8.0, 4000),
                         new LerpTableEntry(10.0, 4200),
