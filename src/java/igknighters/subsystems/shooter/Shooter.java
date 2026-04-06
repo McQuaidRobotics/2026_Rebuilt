@@ -3,8 +3,6 @@ package igknighters.subsystems.shooter;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,6 +17,7 @@ import igknighters.subsystems.shooter.turret.TurretSim;
 import igknighters.util.LerpTable;
 import igknighters.util.LerpTable.LerpTableEntry;
 import igknighters.util.log.Log;
+import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
     private final Flywheel rollers;
@@ -189,7 +188,8 @@ public class Shooter extends SubsystemBase {
             Logger.recordOutput("ROBOT/TEST/SHOOTER/GOAL_TURRET_ANGLE", goalTurretAngleDegrees);
             Logger.recordOutput("ROBOT/TEST/SHOOTER/CURRENT_TURRET_ANGLE", getTurretAngleDegrees());
             Logger.recordOutput("ROBOT/TEST/SHOOTER/CURRENT_HOOD_ANGLE", getHoodAngleDegrees());
-            Logger.recordOutput("ROBOT/TEST/SHOOTER/CURRENT_ROLLER_SPEED", rollers.getSpeed().in(RPM));
+            Logger.recordOutput(
+                    "ROBOT/TEST/SHOOTER/CURRENT_ROLLER_SPEED", rollers.getSpeed().in(RPM));
         }
         if (Robot.isReal()) {
             if (currentShotType == shotType.SHOT) {
