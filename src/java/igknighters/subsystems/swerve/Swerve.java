@@ -14,6 +14,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import igknighters.constants.Conv;
 import igknighters.Robot;
 import igknighters.subsystems.swerve.swerveconstants.SwerveConsts;
 import java.util.function.Consumer;
@@ -162,7 +163,8 @@ public class Swerve extends SubsystemBase {
         return drivetrain.getPigeon2().getAccelerationY().getValueAsDouble();
     }
 
-    public double getRotationalAcceleration() {
-        return 0.0;
+    public double getRotationalVelocity() {
+        return drivetrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble()
+                * Conv.DEGREES_TO_RADIANS;
     }
 }
