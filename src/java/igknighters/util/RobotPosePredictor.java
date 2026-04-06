@@ -3,7 +3,6 @@ package igknighters.util;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
@@ -40,10 +39,6 @@ public class RobotPosePredictor {
     /** Number of poses stored so far, capped at HISTORY_SIZE. */
     public int storedCount = 0;
 
-    /**
-     * @param alpha position smoothing gain, typically 0.5–0.9
-     * @param beta velocity smoothing gain, typically 0.1–0.5
-     */
     public RobotPosePredictor() {
         for (int i = 0; i < HISTORY_SIZE; i++) {
             veloHistory[i] = new ChassisSpeeds(0, 0, 0);
@@ -83,18 +78,6 @@ public class RobotPosePredictor {
         // if (veloHistory[HISTORY_SIZE - 1] != null) {
         //     Log.log("ROBOT/veloHistory", veloHistory);
         // }
-    }
-
-    public Pose3d getPredictedShooterPose3d(Pose3d pose3d) {
-
-        Pose2d pose = getPredictedPose();
-        Pose3d newPose3d =
-                new Pose3d(
-                        pose.getX(),
-                        pose.getY(),
-                        pose3d.getZ(),
-                        new Rotation3d(0, 0, pose.getRotation().getRadians()));
-        return newPose3d;
     }
 
     public Pose2d getPredictedPose() {
