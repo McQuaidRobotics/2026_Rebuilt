@@ -282,6 +282,10 @@ public class AutoRoutines extends AutoCommands {
 
         secondLoop.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
 
+        secondLoop
+                .atTime("Protect_intake")
+                .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
+
         secondLoop.done().onTrue(HigherOrderCommands.shootTillEmpty(subsystems, 10));
 
         return routine;
