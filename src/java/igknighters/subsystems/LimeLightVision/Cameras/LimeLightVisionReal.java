@@ -10,6 +10,7 @@ import java.util.List;
 
 public class LimeLightVisionReal extends LimeLights {
 
+    private double previousSampleTime = 0.0;
     private final List<String> cameraNames;
     private double lastTimeStamp = 0.0;
     private final List<Integer> visibleTagIds = new ArrayList<>();
@@ -52,6 +53,7 @@ public class LimeLightVisionReal extends LimeLights {
                 // --- ROTATION SELECTION LOGIC ---
                 Rotation2d rotationToUse;
                 if (mt1Estimate.tagCount >= 2) {
+                    previousSampleTime = mt1Estimate.timestampSeconds;
                     rotationToUse = mt1Estimate.pose.getRotation(); // vision rotation
                 } else {
                     rotationToUse = mt2Estimate.pose.getRotation(); // fallback gyro-based
@@ -108,6 +110,10 @@ public class LimeLightVisionReal extends LimeLights {
     /** Returns a list of visible tag IDs in the current frame. */
     public List<Integer> getVisibleTagIds() {
         return visibleTagIds;
+    }
+
+    public double timeSinceLastSample() {
+        return System.currentTimeMillis() - (previousSampleTime * 1000);
     }
 
     /** Returns the last timestamp from vision measurements. */

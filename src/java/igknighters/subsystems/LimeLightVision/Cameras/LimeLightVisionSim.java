@@ -29,6 +29,11 @@ public class LimeLightVisionSim extends LimeLights {
     }
 
     @Override
+    public double timeSinceLastSample() {
+        return 0.0;
+    }
+
+    @Override
     public List<Integer> getVisibleTagIds() {
         List<Integer> demoTags = new ArrayList<>();
         demoTags.add(15);
