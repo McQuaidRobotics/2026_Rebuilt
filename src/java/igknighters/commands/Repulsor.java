@@ -264,6 +264,7 @@ public class Repulsor {
                                 RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.05)
                         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                         .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
+        @SuppressWarnings("resource")
         final PIDController thetaController = new PIDController(0.1, 0.0, 0.0);
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 

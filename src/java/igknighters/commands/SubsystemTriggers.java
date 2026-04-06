@@ -23,7 +23,6 @@ import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
-import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 import java.util.function.BooleanSupplier;
 
@@ -33,9 +32,6 @@ public class SubsystemTriggers {
     private final Trigger teleop = RobotModeTriggers.teleop();
     private final NetworkTable dashboardTable =
             NetworkTableInstance.getDefault().getTable("dashboard");
-    private boolean shotPossible = false;
-    private boolean atState = false;
-    private boolean beingCommanded = false;
 
     Command disabledLED;
 
@@ -143,7 +139,6 @@ public class SubsystemTriggers {
 
     public void SetupOperatorController(Subsystems subsystems) {
         Swerve swerve = subsystems.swerve;
-        Shooter shooter = subsystems.shooter;
 
         Trigger moveToTrigger =
                 new Trigger(() -> dashboardTable.getEntry("robot/moveTrigger").getBoolean(false));
