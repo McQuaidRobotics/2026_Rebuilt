@@ -55,7 +55,7 @@ public class AimingCommands {
                 Log.log("ROBOT/Commands/Shooter/Trench Protection/isUnderTrench", isUnder);
                 Log.log("ROBOT/Commands/Shooter/Trench Protection/Under 1", under1);
                 Log.log("ROBOT/Commands/Shooter/Trench Protection/Under 2", under2);
-                Log.log("ROBOT/Commands/Shooter/Trench Protection/RobotX", turretPose.get().getX());
+                Log.log("ROBOT/Commands/Shooter/Trench Protection/RobotX", turretPose.getX());
             }
 
             return isUnder;
