@@ -3,6 +3,8 @@ package igknighters.subsystems.intake;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,6 +21,8 @@ public class Intake extends SubsystemBase {
     private final Pivot pivot;
     private final Rollers rollers;
     private final IntakeVisualizer visualizer;
+    private double goalPivotAngleDegrees = 0.0;
+    private double goalRollerSpeed = 0.0;
 
     public Intake() {
         if (Robot.isReal()) {
@@ -32,15 +36,23 @@ public class Intake extends SubsystemBase {
     }
 
     public void setRollerSpeed(AngularVelocity velo) {
+        goalRollerSpeed = velo.in(RPM);
         rollers.goToSpeed(velo);
     }
 
     public void goTo(Angle angle, AngularVelocity speedRPM) {
+        goalPivotAngleDegrees = angle.in(Degrees);
+        goalRollerSpeed = speedRPM.in(RPM);
+
         pivot.goToAngle(angle);
         rollers.goToSpeed(speedRPM);
     }
 
     public void goTo(IntakeState state) {
+
+        goalPivotAngleDegrees = state.getPivotAngle().in(Degrees);
+        goalRollerSpeed = state.getRollerSpeed().in(RPM);
+
         goTo(state.getPivotAngle(), state.getRollerSpeed());
     }
 
@@ -98,6 +110,12 @@ public class Intake extends SubsystemBase {
     public void periodic() {
         pivot.periodic();
         rollers.periodic();
+        if (Robot.isRobotTest()) {
+            Logger.recordOutput("ROBOT/TEST/INTAKE/CURRENT_PIVOT_ANGLE", pivot.getAngle().in(Degrees));
+            Logger.recordOutput("ROBOT/TEST/INTAKE/CURRENT_ROLLER_SPEED", rollers.getSpeed().in(RPM));
+            Logger.recordOutput("ROBOT/TEST/INTAKE/GOAL_PIVOT_ANGLE", goalPivotAngleDegrees);
+            Logger.recordOutput("ROBOT/TEST/INTAKE/GOAL_ROLLER_SPEED", goalRollerSpeed);
+        }
         if (!Robot.isReal()) {
             visualizer.update(pivot.getAngle().in(Degrees), rollers.getSpeed().in(RPM));
         }

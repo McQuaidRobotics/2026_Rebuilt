@@ -3,6 +3,8 @@ package igknighters.subsystems.shooter;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -180,6 +182,14 @@ public class Shooter extends SubsystemBase {
         }
         if (!Robot.isReal()) {
             visualizer.update(getCurrentState(), goalRPM, goalHoodAngleDegrees);
+        }
+        if (Robot.isRobotTest()) {
+            Logger.recordOutput("ROBOT/TEST/SHOOTER/GOAL_RPM", goalRPM);
+            Logger.recordOutput("ROBOT/TEST/SHOOTER/GOAL_HOOD_ANGLE", goalHoodAngleDegrees);
+            Logger.recordOutput("ROBOT/TEST/SHOOTER/GOAL_TURRET_ANGLE", goalTurretAngleDegrees);
+            Logger.recordOutput("ROBOT/TEST/SHOOTER/CURRENT_TURRET_ANGLE", getTurretAngleDegrees());
+            Logger.recordOutput("ROBOT/TEST/SHOOTER/CURRENT_HOOD_ANGLE", getHoodAngleDegrees());
+            Logger.recordOutput("ROBOT/TEST/SHOOTER/CURRENT_ROLLER_SPEED", rollers.getSpeed().in(RPM));
         }
         if (Robot.isReal()) {
             if (currentShotType == shotType.SHOT) {

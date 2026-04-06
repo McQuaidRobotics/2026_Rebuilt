@@ -14,9 +14,12 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import igknighters.Robot;
 import igknighters.subsystems.swerve.swerveconstants.SwerveConsts;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.Logger;
 
 public class Swerve extends SubsystemBase {
     CommandSwerveDrivetrain drivetrain;
@@ -39,6 +42,9 @@ public class Swerve extends SubsystemBase {
     public void periodic() {
         if (!isSwerveDisabled) {
             drivetrain.periodic();
+            if (Robot.isRobotTest()) {
+                Logger.recordOutput("ROBOT/TEST/SWERVE/CURRENT ROTATION DEGREES", drivetrain.getPigeon2().getYaw().getValueAsDouble());
+            }
         }
     }
 
