@@ -201,7 +201,7 @@ public class SubsystemTriggers {
 
         autonomous.onTrue(autoLED(led));
 
-        teleop.onTrue(teleopLED(led));
+        teleop.whileTrue(teleopLED(led));
 
         // Get the AbleToShootSharedState singleton
         ShootInformation ableToShootState = ShootInformation.getInstance();
