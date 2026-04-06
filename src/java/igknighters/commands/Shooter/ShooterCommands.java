@@ -150,7 +150,7 @@ public class ShooterCommands {
                 .until(() -> shooter.isHoodSensorHit())
                 .withTimeout(
                         3.0) // failsafe, can be deleted if needed, might be conflicting with the
-                // below code, needs testing on robot otherwise
+                // below code, needs testing on robot otherwise.
                 .andThen(
                         shooter.runOnce(
                                 () -> {
