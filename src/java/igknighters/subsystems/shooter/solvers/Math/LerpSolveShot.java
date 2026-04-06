@@ -17,6 +17,7 @@ import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.util.*;
 import igknighters.util.LerpTable.LerpTableEntry;
+import igknighters.util.log.Log;
 
 public class LerpSolveShot {
     // minimal change in RPM most of the change will come from the hood
@@ -68,8 +69,8 @@ public class LerpSolveShot {
     static LerpTable RPM_LERP =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.5, 2600),
-                        new LerpTableEntry(2.0, 2700),
+                        new LerpTableEntry(1.5, 2700),
+                        new LerpTableEntry(2.0, 2750),
                         new LerpTableEntry(2.5, 2800),
                         new LerpTableEntry(3.5, 3100),
                         new LerpTableEntry(4.0, 3200),
@@ -98,7 +99,7 @@ public class LerpSolveShot {
 
         Pose3d shooterPose = Robot.turret_pred.getPredictedPose().get();
 
-        ChassisSpeeds robotSpeeds = Robot.pose_pred.getPredictedVelos();
+        ChassisSpeeds robotSpeeds = Robot.turret_pred.getPredictedVelos().get();
         Translation2d rawRobotVelocity =
                 new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
         double kConversion = SubsystemConstants.kShooter.kFlywheels.RPM_TO_METERS_PER_SECOND_FACTOR;
@@ -110,6 +111,7 @@ public class LerpSolveShot {
                         .minus(shooterPose.getTranslation().toTranslation2d());
 
         double actualDistance = vectorToGoal.getNorm();
+        Log.log("ROBOT/COMMANDS/LERPSOLVE/TURRETDISTANCE", actualDistance);
 
         // 1. Find the unit vector pointing straight at the goal
         Translation2d unitVectorToGoal =

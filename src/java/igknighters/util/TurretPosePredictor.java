@@ -70,11 +70,11 @@ public class TurretPosePredictor {
         double xMeterOffset =
                 7.0710678118655
                         * Conv.INCHES_TO_METERS
-                        * Math.cos(robotPose.getRotation().getRadians() - 3 * Math.PI / 2);
+                        * Math.cos(robotPose.getRotation().getRadians() - (Math.PI / 2));
         double yMeterOffset =
                 7.0710678118655
                         * Conv.INCHES_TO_METERS
-                        * Math.sin(robotPose.getRotation().getRadians() - 3 * Math.PI / 2);
+                        * Math.sin(robotPose.getRotation().getRadians() - (Math.PI / 2));
         return new Pose3d(xMeterOffset, yMeterOffset, 0, new Rotation3d(0, 0, 0));
     }
 }
