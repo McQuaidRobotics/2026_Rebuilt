@@ -1,12 +1,17 @@
 package igknighters.commands.autos;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
+import com.ctre.phoenix6.swerve.SwerveModule;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,11 +19,15 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.Robot;
 import igknighters.commands.HigherOrderCommands;
+import igknighters.commands.IndexerCommands;
 import igknighters.commands.IntakeCommands;
+import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.constants.RobotConsts;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.intake.IntakeState;
+import igknighters.subsystems.shooter.ShooterState;
+import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import java.util.function.Supplier;
 
 public class AutoRoutines extends AutoCommands {
@@ -168,12 +177,100 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine TEST() {
+        AutoRoutine routine = autoFactory.newRoutine("Test Routine");
+
+        final SwerveRequest.FieldCentric m_driveRequest =
+                new SwerveRequest.FieldCentric()
+                        .withDeadband(knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.1)
+                        .withRotationalDeadband(
+                                RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .1)
+                        .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
+                        .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                ShooterCommands.targetState(
+                                                subsystems.shooter,
+                                                new ShooterState(
+                                                        RPM.of(500),
+                                                        Degrees.of(270),
+                                                        Degrees.of(
+                                                                Robot.consts
+                                                                        .shooter()
+                                                                        .kHood()
+                                                                        .MAX_ANGLE_DEGREES())))
+                                        .withTimeout(2),
+                                ShooterCommands.targetState(
+                                                subsystems.shooter,
+                                                new ShooterState(
+                                                        RPM.of(2000),
+                                                        Degrees.of(-90),
+                                                        Degrees.of(
+                                                                Robot.consts
+                                                                        .shooter()
+                                                                        .kHood()
+                                                                        .MIN_ANGLE_DEGREES())))
+                                        .withTimeout(2),
+                                // shooter tested
+                                IntakeCommands.holdAtIntake(subsystems.intake).withTimeout(4.0),
+                                // feed ball here
+                                Commands.parallel(
+                                                ShooterCommands.targetState(
+                                                        subsystems.shooter,
+                                                        new ShooterState(
+                                                                RPM.of(500),
+                                                                Degrees.of(0),
+                                                                Degrees.of(
+                                                                        Robot.consts
+                                                                                .shooter()
+                                                                                .kHood()
+                                                                                .MIN_ANGLE_DEGREES()))),
+                                                IndexerCommands.dispense(subsystems.indexer))
+                                        .withTimeout(3),
+                                // test feed and shot
+                                Commands.print("MOVING IN 5"),
+                                Commands.waitSeconds(1),
+                                Commands.print("MOVING IN 4"),
+                                Commands.waitSeconds(1),
+                                Commands.print("MOVING IN 3"),
+                                Commands.waitSeconds(1),
+                                Commands.print("MOVING IN 2"),
+                                Commands.waitSeconds(1),
+                                Commands.print("MOVING IN 1"),
+                                Commands.waitSeconds(1),
+                                Commands.print("MOVING"),
+                                swerve.run(
+                                                () ->
+                                                        subsystems.swerve.setControl(
+                                                                m_driveRequest.withRotationalRate(
+                                                                        RotationsPerSecond.of(.5))))
+                                        .withTimeout(1.0),
+                                swerve.run(
+                                                () ->
+                                                        subsystems.swerve.setControl(
+                                                                m_driveRequest.withRotationalRate(
+                                                                        RotationsPerSecond.of(
+                                                                                -.5))))
+                                        .withTimeout(1.0)
+                                // spin back + forth one half rotation
+
+                                ));
+        return routine;
+    }
+
     public AutoRoutine BUMP_PASS_TO_SELF_LEFT() {
         AutoRoutine routine = autoFactory.newRoutine("Bump Pass to Self Left");
 
         AutoTrajectory trajectory = routine.trajectory("BUMP_PASS_TO_SELF_LEFT_1.traj");
 
-        routine.active().onTrue(Commands.sequence(trajectory.resetOdometry(), trajectory.cmd()));
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                trajectory.resetOdometry(),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                trajectory.spawnCmd()));
 
         trajectory.atTime("HIPPO").onTrue(HigherOrderCommands.hippoShoot(subsystems));
 
