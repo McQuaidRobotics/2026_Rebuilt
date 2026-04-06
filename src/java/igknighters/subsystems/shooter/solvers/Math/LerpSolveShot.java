@@ -68,8 +68,8 @@ public class LerpSolveShot {
     static LerpTable RPM_LERP =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.5, 2500),
-                        new LerpTableEntry(2.0, 2750),
+                        new LerpTableEntry(1.5, 2600),
+                        new LerpTableEntry(2.0, 2700),
                         new LerpTableEntry(2.5, 2800),
                         new LerpTableEntry(3.5, 3100),
                         new LerpTableEntry(4.0, 3300),
