@@ -269,18 +269,18 @@ public class AutoRoutines extends AutoCommands {
 
         routine.active().onTrue(Commands.sequence(firstLoop.resetOdometry(), firstLoop.spawnCmd()));
 
-        firstLoop.active().onTrue(IntakeCommands.protectedIntake(subsystems.intake));
+        firstLoop.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
 
         firstLoop
                 .done()
                 .onTrue(
                         Commands.parallel(
-                                HigherOrderCommands.shootTillEmpty(subsystems, 3.7),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 4.0),
                                 transitionToSecondLoop.cmd()));
 
         transitionToSecondLoop.done().onTrue(secondLoop.cmd());
 
-        secondLoop.active().onTrue(IntakeCommands.protectedIntake(subsystems.intake));
+        secondLoop.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
 
         secondLoop.done().onTrue(HigherOrderCommands.shootTillEmpty(subsystems, 10));
 
