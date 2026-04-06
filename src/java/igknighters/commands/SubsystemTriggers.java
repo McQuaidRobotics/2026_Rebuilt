@@ -189,6 +189,8 @@ public class SubsystemTriggers {
         Swerve swerve = subsystems.swerve;
         Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
 
+        Trigger trenchProtection = new Trigger(AimingCommands.isUnderTrench());
+
         SetupOperatorController(subsystems);
 
         onBump.and(teleop)
@@ -207,10 +209,12 @@ public class SubsystemTriggers {
         ShootInformation ableToShootState = ShootInformation.getInstance();
 
         // Bind LED commands to the canShootTrigger
-
+        trenchProtection
+                .onTrue(LEDCommands.run(led, LEDPattern.solid(Color.kBlue)))
+                .onFalse(getLEDCommandByMode(led));
         ableToShootState
                 .canShoot()
-                .whileTrue(LEDCommands.run(led, LedUtil.makeBounce(Color.kCyan, .3)))
+                .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kYellow)))
                 .onFalse(getLEDCommandByMode(led));
 
         ableToShootState
