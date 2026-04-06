@@ -14,5 +14,7 @@ public abstract class LimeLights {
 
     public abstract double getLastTimeStamp();
 
+    public abstract double timeSinceLastSample();
+
     public abstract List<Integer> getVisibleTagIds();
 }
