@@ -14,7 +14,8 @@ import igknighters.subsystems.Subsystems;
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
         return Commands.parallel(
-                        rapidFireStream(subsystems), IntakeCommands.jorkIt(subsystems.intake))
+                        rapidFireStream(subsystems),
+                        IntakeCommands.largeJorkIntake(subsystems.intake))
                 .withTimeout(timeout)
                 .andThen(Commands.print("ALL BALLS SHOT CONTINUING")); // this is a placeholder for
         // IndexerCommands.isBallPresent()
@@ -24,10 +25,7 @@ public class HigherOrderCommands {
 
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
-                AimingCommands.shootWithProtection(
-                                subsystems.shooter,
-                                () -> subsystems.swerve.getState().Pose,
-                                subsystems.swerve::getFieldRelativeSpeeds)
+                AimingCommands.shootWithProtection(subsystems.shooter)
                         .withName("Active Spool & Aim");
 
         return Commands.parallel(
@@ -40,10 +38,7 @@ public class HigherOrderCommands {
 
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
-                AimingCommands.shootWithProtectionAndAgregiousMaxHeight(
-                                subsystems.shooter,
-                                () -> subsystems.swerve.getState().Pose,
-                                subsystems.swerve::getFieldRelativeSpeeds)
+                AimingCommands.shootWithProtectionAndAgregiousMaxHeight(subsystems.shooter)
                         .withName("Active Spool & Aim");
 
         return Commands.parallel(
@@ -80,10 +75,7 @@ public class HigherOrderCommands {
     public static Command forceDispense(Subsystems subsystems) {
         // 1. The Active Shooter (Tracks and spools continuously)
         Command shooterCommand =
-                AimingCommands.shootWithProtection(
-                                subsystems.shooter,
-                                () -> subsystems.swerve.getState().Pose,
-                                subsystems.swerve::getFieldRelativeSpeeds)
+                AimingCommands.shootWithProtection(subsystems.shooter)
                         .withName("Active Spool & Aim");
 
         return Commands.parallel(
@@ -115,6 +107,7 @@ public class HigherOrderCommands {
 
     public static Command hippoShoot(Subsystems subsystems) {
         return Commands.parallel(
-                rapidFireStream(subsystems), IntakeCommands.holdAtIntake(subsystems.intake));
+                rapidFireStream(subsystems),
+                IntakeCommands.intakeWhileSlightJorking(subsystems.intake));
     }
 }

@@ -40,6 +40,7 @@ import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.FuelSim;
+import igknighters.util.RobotPosePredError;
 import igknighters.util.RobotPosePredictor;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
@@ -62,7 +63,8 @@ public class Robot extends LoggedRobot {
     double i = 0;
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
-    public static RobotPosePredictor pose_pred = new RobotPosePredictor(.4, .6);
+    public static RobotPosePredictor pose_pred = new RobotPosePredictor();
+    public static RobotPosePredError pose_pred_error = new RobotPosePredError();
 
     private final DriverController driverController = new DriverController(0);
 
@@ -142,14 +144,14 @@ public class Robot extends LoggedRobot {
     public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsystems.swerve.createAutoFactory();
         final var routines = new AutoRoutines(subsystems, autoFactory, consts);
-        autoChooser.addRoutine("LEFT NUETRAL HIPPO", routines::leftNuetralHippo);
-        autoChooser.addRoutine("RIGHT NUETRAL HIPPO", routines::rightNuetralHippo);
         autoChooser.addRoutine("Right Orbit", routines::orbitRight);
+        autoChooser.addRoutine("Left Orbit", routines::ORBIT_LEFT);
+        autoChooser.addRoutine("Orbit Pass to Self Right", routines::ORBIT_PASS_TO_SELF_RIGHT);
         autoChooser.addRoutine("Pass to self left", routines::passToSelfLeft);
         autoChooser.addRoutine("Single Swipe Right", routines::singleSwipeRight);
         autoChooser.addRoutine("Single Swipe Left", routines::singleSwipeLeft);
         autoChooser.addRoutine("Center Depot", routines::centerPreload);
-        autoChooser.addRoutine("SOTM TEST", routines::SOTMTEST);
+        autoChooser.addRoutine("LEFT BUMP PASS TO SELF", routines::BUMP_PASS_TO_SELF_LEFT);
         autoChooser.addRoutine(
                 "Pass to Self Right with Depot and Human Player",
                 routines::PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER);
@@ -303,7 +305,8 @@ public class Robot extends LoggedRobot {
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
-        pose_pred.setNewPose(subsystems.swerve.getFieldRelativeSpeeds());
+        pose_pred.setVelocitiesAndPose(subsystems.swerve);
+        pose_pred_error.logPose(subsystems.swerve.getState().Pose);
         if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()
                     .updateTurret(
@@ -447,7 +450,7 @@ public class Robot extends LoggedRobot {
                 // AimSolver)
                 double flywheelRadius = 0.0508; // 2 inches
                 double launchVelocity =
-                        (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.0;
+                        (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.1;
 
                 fuelSim.launchFuel(
                         MetersPerSecond.of(launchVelocity),

@@ -1,5 +1,5 @@
 {
- "name":"PASS_TO_SELF_LEFT_1",
+ "name":"PASS_TO_SELF_LEFT_1_copy1",
  "version":3,
  "snapshot":{
   "waypoints":[
@@ -450,5 +450,6 @@
  },
  "events":[
    {"name":"STOW", "from":{"target":5, "targetTimestamp":8.94718, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"parallel", "data":{"commands":[]}}},
-   {"name":"INTAKE", "from":{"target":8, "targetTimestamp":12.21797, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
+   {"name":"INTAKE", "from":{"target":8, "targetTimestamp":12.21797, "offset":{"exp":"0 s", "val":0.0}}, "event":null},
+   {"name":"SHOOT", "from":{"target":1, "targetTimestamp":1.53967, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
 }

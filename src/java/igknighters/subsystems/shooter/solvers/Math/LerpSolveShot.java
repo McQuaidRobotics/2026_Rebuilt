@@ -17,9 +17,43 @@ import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.util.*;
 import igknighters.util.LerpTable.LerpTableEntry;
+import igknighters.util.log.Log;
 
 public class LerpSolveShot {
     // minimal change in RPM most of the change will come from the hood
+
+    // RADIAL_TOWARDS RADIAL_AWAY TANGENTIAL all the inputs are in hyoptenuse of (VX, VY) of robot
+
+    static LerpTable RADIAL_TOWARDS =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(1.0, .5),
+                        new LerpTableEntry(2.0, .6),
+                        new LerpTableEntry(3, .7),
+                        new LerpTableEntry(4.5, .8),
+                        new LerpTableEntry(5, .9)
+                    });
+
+    static LerpTable TANGENTIAL =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(1.0, .7),
+                        new LerpTableEntry(2.0, .85),
+                        new LerpTableEntry(3, .95),
+                        new LerpTableEntry(4.5, 1.05),
+                        new LerpTableEntry(5, 1.09)
+                    });
+
+    static LerpTable RADIAL_AWAY =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(1.0, .6),
+                        new LerpTableEntry(2.0, .7),
+                        new LerpTableEntry(3, .8),
+                        new LerpTableEntry(4.5, .9),
+                        new LerpTableEntry(5, 1.0)
+                    });
+
     static LerpTable HOOD_LERP =
             new LerpTable(
                     new LerpTableEntry[] {
@@ -27,7 +61,8 @@ public class LerpSolveShot {
                         new LerpTableEntry(2.5, 25.0),
                         new LerpTableEntry(3.5, 32.0),
                         new LerpTableEntry(4.5, 33.0),
-                        new LerpTableEntry(6.0, 33.0)
+                        new LerpTableEntry(6.0, 33.0),
+                        new LerpTableEntry(10.0, 45)
                     });
 
     static LerpTable RPM_LERP =
@@ -41,7 +76,10 @@ public class LerpSolveShot {
                         new LerpTableEntry(4.5, 3400),
                         new LerpTableEntry(5.0, 3500),
                         new LerpTableEntry(5.5, 3700),
-                        new LerpTableEntry(6.0, 3800)
+                        new LerpTableEntry(6.0, 3800),
+                        new LerpTableEntry(8.0, 4000),
+                        new LerpTableEntry(10.0, 4200),
+                        new LerpTableEntry(20, 5500)
                     });
 
     static LerpTable TIME_OF_FLIGHT_LERP =
@@ -55,21 +93,14 @@ public class LerpSolveShot {
                         new LerpTableEntry(6, 1)
                     });
 
-    //     static LerpTable TIME_OF_FLIGHT_LERP =
-    //             new LerpTable(
-    //                     new LerpTableEntry[] {
-    //                         new LerpTableEntry(1, .5),
-    //                         new LerpTableEntry(2.5, .5),
-    //                         new LerpTableEntry(3.5, .5),
-    //                         new LerpTableEntry(4, .5),
-    //                         new LerpTableEntry(5.5, .5),
-    //                         new LerpTableEntry(6, .5)
-    //                     });
-
     public static ShooterState solve(
             Pose3d robotPose, Pose3d goalPose, double currentRPM, double latencyCompensation) {
 
-        Pose3d shooterPose = Robot.pose_pred.getPredictedShooterPose(robotPose);
+        Pose3d shooterPose = Robot.pose_pred.getPredictedShooterPose3d(robotPose);
+
+        double error = shooterPose.getTranslation().getDistance(robotPose.getTranslation());
+
+        Log.log("ROBOT/POSE_PREDICTOR/TOTAL_ERROR", error);
 
         ChassisSpeeds robotSpeeds = Robot.pose_pred.getPredictedVelos();
         Translation2d rawRobotVelocity =
@@ -99,10 +130,15 @@ public class LerpSolveShot {
         Translation2d tangentialVelocity = rawRobotVelocity.minus(radialVelocity);
 
         // 4. TODO: Tune these! Pull them out into TunableDoubles for Glass/AdvantageScope
-        double radialTowardsMultiplier = 0.4;
-        double radialAwayMultiplier = 0.3; // Keep reducing until overshooting away stops
+        double radialTowardsMultiplier = RADIAL_TOWARDS.lerp(rawRobotVelocity.getNorm());
+        double radialAwayMultiplier =
+                RADIAL_AWAY.lerp(
+                        rawRobotVelocity.getNorm()); // Keep reducing until overshooting away stops
         double tangentialMultiplier =
-                0.4; // Tune this if your shots drift left/right while strafing
+                TANGENTIAL.lerp(
+                        rawRobotVelocity
+                                .getNorm()); // Tune this if your shots drift left/right while
+        // strafing
 
         double radialMultiplierToUse =
                 (radialVelocityMag >= 0) ? radialTowardsMultiplier : radialAwayMultiplier;

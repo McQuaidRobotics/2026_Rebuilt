@@ -44,6 +44,14 @@ public class Intake extends SubsystemBase {
         goTo(state.getPivotAngle(), state.getRollerSpeed());
     }
 
+    public void goTo(boolean toggledState) {
+        if (toggledState) {
+            goTo(IntakeState.Stowed.getPivotAngle(), IntakeState.Stowed.getRollerSpeed());
+        } else {
+            goTo(IntakeState.Intake.getPivotAngle(), IntakeState.Intake.getRollerSpeed());
+        }
+    }
+
     public Angle getPivotAngle() {
         return pivot.getAngle();
     }

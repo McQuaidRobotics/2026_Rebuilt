@@ -133,11 +133,7 @@ public class DriverController {
             this.Y.whileTrue(ShooterCommands.targetState(shooter, 5000, 360, 40));
             // this.RT.whileTrue(IndexerCommands.dispense(indexer));
             // this.LT.whileTrue(IndexerCommands.stopDispensing(indexer));
-            this.RT.whileTrue(
-                    AimingCommands.shootWithProtection(
-                            subsystems.shooter,
-                            () -> swerve.getState().Pose,
-                            swerve::getFieldRelativeSpeeds));
+            this.RT.whileTrue(AimingCommands.shootWithProtection(subsystems.shooter));
             this.LT.whileTrue(IndexerCommands.dispense(indexer));
 
             // this.DPD.whileTrue(ShooterCommands.targetState(shooter, 0, 0,
@@ -151,7 +147,9 @@ public class DriverController {
             this.B.onTrue(IndexerCommands.justStop(indexer));
         } else if (debugType == DebugType.INTAKE) {
             this.A.whileTrue(IntakeCommands.holdAtIntake(subsystems.intake));
-            this.B.whileTrue(IntakeCommands.holdAtStow(subsystems.intake));
+            this.B.whileTrue(IntakeCommands.jorkIt(subsystems.intake));
+            this.X.whileTrue(IntakeCommands.slightJorkIntake(subsystems.intake));
+            this.Y.onTrue(IntakeCommands.toggleHoldState(subsystems.intake));
         } else {
             System.out.println("UNKNOWN DEBUG TYPE: " + debugType);
             throw new IllegalArgumentException("UNKNOWN DEBUG TYPE: " + debugType);
@@ -170,10 +168,10 @@ public class DriverController {
                 .onFalse(HigherOrderCommands.IdleShooter(subsystems));
         this.DPR.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
         this.RB.whileTrue(HigherOrderCommands.forceDispense(subsystems));
-        this.LB.whileTrue(HigherOrderCommands.aggregiouslyHighRapidFireStream(subsystems));
+        this.LB.whileTrue(IntakeCommands.intakeWhileSlightJorking(intake));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
         this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
-        this.DPD.onTrue(ShooterCommands.homeHood(subsystems.shooter));
+        this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

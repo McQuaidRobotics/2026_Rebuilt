@@ -219,7 +219,7 @@ public class AimSolver {
                 double periodTime) {
             // 1. Position and Target setup
 
-            Pose2d predictedPose = Robot.pose_pred.getPredictedPose(shooterPose.toPose2d());
+            Pose2d predictedPose = Robot.pose_pred.getPredictedPose();
             double sx = predictedPose.getX();
             double sy = predictedPose.getY();
             double sz = shooterPose.getZ();
@@ -355,7 +355,7 @@ public class AimSolver {
                 double maxHeightMeters,
                 double minHeightMeters,
                 double periodTime) {
-            Pose2d predictedPose = Robot.pose_pred.getPredictedPose(shooterPose.toPose2d());
+            Pose2d predictedPose = Robot.pose_pred.getPredictedPose();
             FieldVisualizer.getInstance().updatePredictedPose(predictedPose);
             double sx = predictedPose.getX();
             double sy = predictedPose.getY();
@@ -489,7 +489,7 @@ public class AimSolver {
 
             // 1. PROJECT ROBOT POSITION
             // Predict where the robot will be based on latency/processing time
-            Pose2d predictedPose = Robot.pose_pred.getPredictedPose(shooterPose.toPose2d());
+            Pose2d predictedPose = Robot.pose_pred.getPredictedPose();
             FieldVisualizer.getInstance().updatePredictedPose(predictedPose);
 
             double sx = predictedPose.getX();
@@ -630,7 +630,7 @@ public class AimSolver {
 
             // 1. PROJECT ROBOT POSITION
             // Predict where the robot will be based on latency/processing time
-            Pose2d predictedPose = Robot.pose_pred.getPredictedPose(shooterPose.toPose2d());
+            Pose2d predictedPose = Robot.pose_pred.getPredictedPose();
             FieldVisualizer.getInstance().updatePredictedPose(predictedPose);
 
             double sx = predictedPose.getX();
