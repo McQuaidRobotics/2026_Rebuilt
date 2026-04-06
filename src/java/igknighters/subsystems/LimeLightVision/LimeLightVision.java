@@ -34,6 +34,10 @@ public class LimeLightVision extends SubsystemBase {
         return vision.getLastTimeStamp();
     }
 
+    public double timeSinceLastSample() {
+        return vision.timeSinceLastSample();
+    }
+
     public Pose2d getRobotPoseFromVision(
             double yaw,
             double yawRate,
