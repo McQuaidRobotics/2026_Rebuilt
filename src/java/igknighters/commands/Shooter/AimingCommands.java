@@ -160,7 +160,7 @@ public class AimingCommands {
                     }
                 });
     }
-    
+
     public static Command SHOOT_AT_TARGET(
             Shooter shooter,
             Pose3d targetPose,
