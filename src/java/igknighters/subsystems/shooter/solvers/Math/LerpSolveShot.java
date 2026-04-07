@@ -37,11 +37,11 @@ public class LerpSolveShot {
     static LerpTable TANGENTIAL =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, .7),
-                        new LerpTableEntry(2.0, .85),
-                        new LerpTableEntry(3, .95),
-                        new LerpTableEntry(4.5, 1.05),
-                        new LerpTableEntry(5, 1.09)
+                        new LerpTableEntry(1.0, .6),
+                        new LerpTableEntry(2.0, .7),
+                        new LerpTableEntry(3, .8),
+                        new LerpTableEntry(4.5, .9),
+                        new LerpTableEntry(5, 1.0)
                     });
 
     static LerpTable RADIAL_AWAY =
