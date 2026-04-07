@@ -272,6 +272,10 @@ public class AutoRoutines extends AutoCommands {
         firstLoop.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
 
         firstLoop
+                .atTime("PROTECT")
+                .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
+
+        firstLoop
                 .done()
                 .onTrue(
                         Commands.parallel(

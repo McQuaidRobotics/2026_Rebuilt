@@ -2,6 +2,7 @@ package igknighters.subsystems.LimeLightVision.Cameras;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotController;
 import igknighters.Robot;
 import igknighters.subsystems.LimeLightVision.Helpers.LimelightHelpers;
 import igknighters.util.log.Log;
@@ -113,6 +114,13 @@ public class LimeLightVisionReal extends LimeLights {
     }
 
     public double timeSinceLastSample() {
+        if (!Robot.consts.disableAllLogs()) {
+            Log.log("CURRENT MILIS", System.currentTimeMillis());
+            Log.log("PREVIOUS SAMPLE TIME", previousSampleTime);
+            Log.log(
+                    "TIME SINCE LAST SAMPLE",
+                    RobotController.getTime() - (previousSampleTime * 1000));
+        }
         return System.currentTimeMillis() - (previousSampleTime * 1000);
     }
 
