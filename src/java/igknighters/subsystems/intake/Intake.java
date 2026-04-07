@@ -3,8 +3,6 @@ package igknighters.subsystems.intake;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -16,6 +14,7 @@ import igknighters.subsystems.intake.rollers.Rollers;
 import igknighters.subsystems.intake.rollers.RollersReal;
 import igknighters.subsystems.intake.rollers.RollersSim;
 import igknighters.util.log.Log;
+import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
     private final Pivot pivot;
@@ -111,8 +110,10 @@ public class Intake extends SubsystemBase {
         pivot.periodic();
         rollers.periodic();
         if (Robot.isRobotTest()) {
-            Logger.recordOutput("ROBOT/TEST/INTAKE/CURRENT_PIVOT_ANGLE", pivot.getAngle().in(Degrees));
-            Logger.recordOutput("ROBOT/TEST/INTAKE/CURRENT_ROLLER_SPEED", rollers.getSpeed().in(RPM));
+            Logger.recordOutput(
+                    "ROBOT/TEST/INTAKE/CURRENT_PIVOT_ANGLE", pivot.getAngle().in(Degrees));
+            Logger.recordOutput(
+                    "ROBOT/TEST/INTAKE/CURRENT_ROLLER_SPEED", rollers.getSpeed().in(RPM));
             Logger.recordOutput("ROBOT/TEST/INTAKE/GOAL_PIVOT_ANGLE", goalPivotAngleDegrees);
             Logger.recordOutput("ROBOT/TEST/INTAKE/GOAL_ROLLER_SPEED", goalRollerSpeed);
         }

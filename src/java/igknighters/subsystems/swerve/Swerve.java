@@ -18,7 +18,6 @@ import igknighters.Robot;
 import igknighters.subsystems.swerve.swerveconstants.SwerveConsts;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 public class Swerve extends SubsystemBase {
@@ -43,7 +42,9 @@ public class Swerve extends SubsystemBase {
         if (!isSwerveDisabled) {
             drivetrain.periodic();
             if (Robot.isRobotTest()) {
-                Logger.recordOutput("ROBOT/TEST/SWERVE/CURRENT ROTATION DEGREES", drivetrain.getPigeon2().getYaw().getValueAsDouble());
+                Logger.recordOutput(
+                        "ROBOT/TEST/SWERVE/CURRENT ROTATION DEGREES",
+                        drivetrain.getPigeon2().getYaw().getValueAsDouble());
             }
         }
     }
