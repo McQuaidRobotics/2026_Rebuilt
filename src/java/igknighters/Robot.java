@@ -393,7 +393,17 @@ public class Robot extends LoggedRobot {
         if (fuelSim != null) {
             fuelSim.start();
         }
-        scheduler.schedule(autoCommand);
+        try {
+            scheduler.schedule(ShooterCommands.homeHood(subsystems.shooter));
+        } catch (Exception e) {
+            if (!Robot.consts.disableAllLogs()) {
+                Log.log("ROBOT/autonomousInit/HomeHoodScheduleFailed", e.toString());
+            }
+        }
+        m_autonomousCommand = autoCommand;
+        if (autoCommand != null) {
+            scheduler.schedule(autoCommand);
+        }
     }
 
     @Override
