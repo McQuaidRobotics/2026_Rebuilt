@@ -219,13 +219,15 @@ public class AimSolver {
                 double periodTime) {
             // 1. Position and Target setup
 
-            Pose2d predictedPose = Robot.pose_pred.getPredictedPose();
-            double sx = predictedPose.getX();
-            double sy = predictedPose.getY();
-            double sz = shooterPose.getZ();
+            Pose3d predictedShooterPose = Robot.turret_pred.getPredictedPose().get();
+            double sx = predictedShooterPose.getX();
+            double sy = predictedShooterPose.getY();
+            double sz = predictedShooterPose.getZ();
+
+            ChassisSpeeds predSpeeds = Robot.turret_pred.getPredictedVelos().get();
 
             double initialDist =
-                    shooterPose.getTranslation().getDistance(targetPose.getTranslation());
+                    predictedShooterPose.getTranslation().getDistance(targetPose.getTranslation());
             double estimatedToF = 1.5;
             // if (initialDist <= 8) {
             //     estimatedToF = initialDist / 1.5; // Assume 5m/s avg horizontal velocity
@@ -240,11 +242,11 @@ public class AimSolver {
             double tx =
                     targetPose.getX()
                             + airResistanceAdder.getX()
-                            - (speeds.vxMetersPerSecond * (estimatedToF));
+                            - (predSpeeds.vxMetersPerSecond * (estimatedToF));
             double ty =
                     targetPose.getY()
                             + airResistanceAdder.getY()
-                            - (speeds.vyMetersPerSecond * (estimatedToF));
+                            - (predSpeeds.vyMetersPerSecond * (estimatedToF));
             double tz = targetPose.getZ();
 
             FieldVisualizer.getInstance()
@@ -301,7 +303,7 @@ public class AimSolver {
 
             // 3. Final Angles
             double absoluteFieldAngle = Math.atan2(dy, dx);
-            double robotYawFuture = predictedPose.getRotation().getRadians();
+            double robotYawFuture = predictedShooterPose.getRotation().getZ();
             double turretAngle =
                     Math.atan2(
                             Math.sin(absoluteFieldAngle - robotYawFuture),
@@ -355,14 +357,15 @@ public class AimSolver {
                 double maxHeightMeters,
                 double minHeightMeters,
                 double periodTime) {
-            Pose2d predictedPose = Robot.pose_pred.getPredictedPose();
-            FieldVisualizer.getInstance().updatePredictedPose(predictedPose);
-            double sx = predictedPose.getX();
-            double sy = predictedPose.getY();
-            double sz = shooterPose.getZ();
+            Pose3d predictedShooterPose = Robot.turret_pred.getPredictedPose().get();
+            FieldVisualizer.getInstance().updatePredictedPose(predictedShooterPose.toPose2d());
+            double sx = predictedShooterPose.getX();
+            double sy = predictedShooterPose.getY();
+            double sz = predictedShooterPose.getZ();
+            ChassisSpeeds predSpeeds = Robot.turret_pred.getPredictedVelos().get();
 
             double initialDist =
-                    shooterPose.getTranslation().getDistance(targetPose.getTranslation());
+                    predictedShooterPose.getTranslation().getDistance(targetPose.getTranslation());
             Log.log("ROBOT/Commands/AimSolver/Distance", initialDist);
             double estimatedToF = 1.5;
             // if (initialDist <= 8) {
@@ -379,11 +382,11 @@ public class AimSolver {
             double tx =
                     targetPose.getX()
                             + airResistanceAdder.getX()
-                            - (speeds.vxMetersPerSecond * (estimatedToF));
+                            - (predSpeeds.vxMetersPerSecond * (estimatedToF));
             double ty =
                     targetPose.getY()
                             + airResistanceAdder.getY()
-                            - (speeds.vyMetersPerSecond * (estimatedToF));
+                            - (predSpeeds.vyMetersPerSecond * (estimatedToF));
             double tz = targetPose.getZ();
 
             FieldVisualizer.getInstance()
@@ -441,7 +444,7 @@ public class AimSolver {
 
             // 3. Final Angles
             double absoluteFieldAngle = Math.atan2(dy, dx);
-            double robotYawFuture = predictedPose.getRotation().getRadians();
+            double robotYawFuture = predictedShooterPose.getRotation().getZ();
             double turretAngle =
                     Math.atan2(
                             Math.sin(absoluteFieldAngle - robotYawFuture),
@@ -489,12 +492,13 @@ public class AimSolver {
 
             // 1. PROJECT ROBOT POSITION
             // Predict where the robot will be based on latency/processing time
-            Pose2d predictedPose = Robot.pose_pred.getPredictedPose();
-            FieldVisualizer.getInstance().updatePredictedPose(predictedPose);
+            Pose3d predictedShooterPose = Robot.turret_pred.getPredictedPose().get();
+            FieldVisualizer.getInstance().updatePredictedPose(predictedShooterPose.toPose2d());
+            ChassisSpeeds predSpeeds = Robot.turret_pred.getPredictedVelos().get();
 
-            double sx = predictedPose.getX();
-            double sy = predictedPose.getY();
-            double sz = shooterPose.getZ();
+            double sx = predictedShooterPose.getX();
+            double sy = predictedShooterPose.getY();
+            double sz = predictedShooterPose.getZ();
 
             // 2. TARGET POSITION (Static Field Position + Air Resistance Offset)
             Translation2d airResistanceAdder =
@@ -584,7 +588,7 @@ public class AimSolver {
                                 * EfficiencyConst;
 
                 // Turret must point in the direction of the COMPENSATED vector
-                double robotYaw = predictedPose.getRotation().getRadians();
+                double robotYaw = predictedShooterPose.getRotation().getZ();
                 turretAngle =
                         Math.atan2(
                                 Math.sin(bestTurretFieldAngle - robotYaw),
@@ -630,12 +634,13 @@ public class AimSolver {
 
             // 1. PROJECT ROBOT POSITION
             // Predict where the robot will be based on latency/processing time
-            Pose2d predictedPose = Robot.pose_pred.getPredictedPose();
-            FieldVisualizer.getInstance().updatePredictedPose(predictedPose);
+            Pose3d predictedShooterPose = Robot.turret_pred.getPredictedPose().get();
+            FieldVisualizer.getInstance().updatePredictedPose(predictedShooterPose.toPose2d());
+            ChassisSpeeds predSpeeds = Robot.turret_pred.getPredictedVelos().get();
 
-            double sx = predictedPose.getX();
-            double sy = predictedPose.getY();
-            double sz = shooterPose.getZ();
+            double sx = predictedShooterPose.getX();
+            double sy = predictedShooterPose.getY();
+            double sz = predictedShooterPose.getZ();
 
             // 2. TARGET POSITION (Static Field Position + Air Resistance Offset)
             Translation2d airResistanceAdder =
@@ -682,8 +687,8 @@ public class AimSolver {
 
                 // 4. VECTOR SUBTRACTION (Shooting on the Move)
                 // We subtract the robot's velocity so the launcher compensates for momentum
-                double vx_shooter = vx_field - speeds.vxMetersPerSecond;
-                double vy_shooter = vy_field - speeds.vyMetersPerSecond;
+                double vx_shooter = vx_field - predSpeeds.vxMetersPerSecond;
+                double vy_shooter = vy_field - predSpeeds.vyMetersPerSecond;
                 double vz_shooter = vz_field; // Vertical velocity is independent of floor speeds
 
                 double v_planar_shooter = Math.hypot(vx_shooter, vy_shooter);
@@ -723,7 +728,7 @@ public class AimSolver {
                                 * EfficiencyConst;
 
                 // Turret must point in the direction of the COMPENSATED vector
-                double robotYaw = predictedPose.getRotation().getRadians();
+                double robotYaw = predictedShooterPose.getRotation().getZ();
                 turretAngle =
                         Math.atan2(
                                 Math.sin(bestTurretFieldAngle - robotYaw),

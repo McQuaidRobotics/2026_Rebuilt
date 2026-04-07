@@ -32,9 +32,15 @@ public class PWMDriver implements Logged {
      * @param appliedBuffer
      */
     public void applyBuffer(AddressableLEDBuffer appliedBuffer) {
+        // OK SO THE REASON THAT RAINBOW DID NOT DISPLAY DYNAMICALLY
+        // WAS BECAUSE OF THIS IF. I MADE IT APPLY EVEN WITH SAME BUFFER
+        // THIS FIXED IT HOWEVER I AM NOT SURE HOW RESOURSE INTENSIVE IT IS
+        // TO APPLY BUFFER EACH CYCLE
+        // IF CRAZY LOOP OVER-RUNS CHECK THIS
         boolean newBuffer = false;
         if (appliedBuffer == previousBuffer) {
             newBuffer = false;
+            led.setData(appliedBuffer);
         } else {
             newBuffer = true;
             previousBuffer = appliedBuffer;

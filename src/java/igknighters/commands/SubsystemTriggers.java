@@ -189,6 +189,8 @@ public class SubsystemTriggers {
         Swerve swerve = subsystems.swerve;
         Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
 
+        Trigger trenchProtection = new Trigger(AimingCommands.isUnderTrench());
+
         SetupOperatorController(subsystems);
 
         onBump.and(teleop)
@@ -201,16 +203,18 @@ public class SubsystemTriggers {
 
         autonomous.onTrue(autoLED(led));
 
-        teleop.onTrue(teleopLED(led));
+        teleop.whileTrue(teleopLED(led));
 
         // Get the AbleToShootSharedState singleton
         ShootInformation ableToShootState = ShootInformation.getInstance();
 
         // Bind LED commands to the canShootTrigger
-
+        trenchProtection
+                .onTrue(LEDCommands.run(led, LEDPattern.solid(Color.kBlue)))
+                .onFalse(getLEDCommandByMode(led));
         ableToShootState
                 .canShoot()
-                .whileTrue(LEDCommands.run(led, LedUtil.makeBounce(Color.kCyan, .3)))
+                .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kYellow)))
                 .onFalse(getLEDCommandByMode(led));
 
         ableToShootState
@@ -218,5 +222,13 @@ public class SubsystemTriggers {
                 .and(teleop)
                 .and(() -> AimingCommands.getShotType() == ShooterCommands.shotType.SHOT)
                 .whileTrue(new SlowedDownDrivingWhileShooting(swerve, driverController));
+
+        // rumble
+        new Trigger(() -> subsystems.vision.timeSinceLastSample() < 0.1)
+                .whileTrue(
+                        Commands.startEnd(
+                                        () -> driverController.rumble(0.03),
+                                        () -> driverController.rumble(0.0))
+                                .withName("RumbleForTag"));
     }
 }
