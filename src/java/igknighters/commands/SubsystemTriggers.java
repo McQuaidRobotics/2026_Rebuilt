@@ -224,11 +224,13 @@ public class SubsystemTriggers {
                 .whileTrue(new SlowedDownDrivingWhileShooting(swerve, driverController));
 
         // rumble
-        new Trigger(() -> subsystems.vision.timeSinceLastSample() < 0.1)
-                .whileTrue(
-                        Commands.startEnd(
-                                        () -> driverController.rumble(0.03),
-                                        () -> driverController.rumble(0.0))
-                                .withName("RumbleForTag"));
+        Trigger shouldRumble =
+                new Trigger(() -> subsystems.vision.timeSinceLastSample() < 0.1)
+                        .and(falseOnce())
+                        .whileTrue(
+                                Commands.startEnd(
+                                                () -> driverController.rumble(0.03),
+                                                () -> driverController.rumble(0.0))
+                                        .withName("RumbleForTag"));
     }
 }
