@@ -5,11 +5,20 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import igknighters.Robot;
 import igknighters.subsystems.swerve.Swerve;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
+
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.RobotCentric;
+
+import choreo.auto.AutoRoutine;
+import choreo.auto.AutoTrajectory;
+import choreo.trajectory.SwerveSample;
+import choreo.trajectory.Trajectory;
 
 /**
  * Estimates the robot's pose on the next loop iteration using an alpha-beta filter applied to a
@@ -21,6 +30,10 @@ import java.util.Collections;
 public class RobotPosePredictor {
 
     private static final int HISTORY_SIZE = 10;
+
+    private static boolean usingAuto = false;
+
+    private static AutoTrajectory autoTrajectory;
 
     public ChassisSpeeds[] veloHistory = new ChassisSpeeds[HISTORY_SIZE];
     public double[] timestampHistory = new double[HISTORY_SIZE];
@@ -131,6 +144,52 @@ public class RobotPosePredictor {
         Robot.pose_pred_error.findError(poseNow);
 
         return componentsToPose(predicted);
+    }
+
+    /**
+     * Gets the predicted velocities from a Choreo trajectory at a specific time.
+     * @param trajectory pass straight from choreo
+     * @param initialTime simply pass RobotController.getFPGATime()
+     * @return predictedSpeeds
+     */
+
+    public ChassisSpeeds getPredictedVelosFromChoreo(AutoTrajectory trajectory, double initialTime) {
+        // Implementation for getting predicted velocities from Choreo trajectory
+
+        autoTrajectory = trajectory;
+
+        usingAuto = true;
+
+        Trajectory<SwerveSample> rawTrajectory = trajectory.getRawTrajectory();
+
+        Optional<SwerveSample> sample = rawTrajectory.sampleAt((1.0 / 1000000.0) * (RobotController.getFPGATime()-initialTime), true); // mili to seconds
+        // this will return the predicted velocities at the specified time if it exists if not will use standard
+        if (sample.isPresent()) {
+            return sample.get().getChassisSpeeds();
+        } else {
+            return getPredictedVelos();
+        }
+    }
+
+    public void takeInitialAutoData(AutoRoutine routine) {
+        
+    }
+
+    public Pose2d getPredictedPoseFromChoreo(AutoTrajectory trajectory, double initialTime) {
+        // Implementation for getting predicted pose from Choreo trajectory
+        autoTrajectory = trajectory;
+        usingAuto = true;
+
+        Pose2d predictedNoChoreo = getPredictedPose();
+        Trajectory<SwerveSample> rawTrajectory = trajectory.getRawTrajectory();
+
+        Optional<SwerveSample> sample = rawTrajectory.sampleAt((1.0 / 1000000.0) * (RobotController.getFPGATime()-initialTime), true); // mili to seconds
+        // this will return the predicted pose at the specified time if it exists if not will use standard
+        if (sample.isPresent()) {
+            return PoseMerger.trustedMerge(sample.get().getPose(), predictedNoChoreo);
+        } else {
+            return predictedNoChoreo;
+        }
     }
 
     public ChassisSpeeds getPredictedVelos() {
