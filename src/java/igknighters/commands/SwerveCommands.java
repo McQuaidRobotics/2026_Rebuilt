@@ -199,6 +199,7 @@ public class SwerveCommands {
                 });
     }
 
+    @SuppressWarnings("resource")
     public static Command moveToSimpleWithVelocityControl(
             Swerve swerve, Pose2d targetPose, Pose2d maxVelocities) {
         final PIDController xController =

@@ -25,13 +25,19 @@ public class HoodSim extends Hood {
 
     @Override
     public void setVoltage(double voltage) {
-        // Do nothing in simulation
+        if (voltage > 0) {
+            currentAngleDegrees += 1;
+        } else if (voltage < 0) {
+            currentAngleDegrees -= 1;
+        } else {
+            currentAngleDegrees += 0;
+        }
     }
 
     @Override
     public boolean isSensorHit() {
 
-        return true;
+        return currentAngleDegrees <= Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES();
     }
 
     @Override
