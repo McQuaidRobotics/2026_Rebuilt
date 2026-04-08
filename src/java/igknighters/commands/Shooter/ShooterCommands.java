@@ -148,15 +148,19 @@ public class ShooterCommands {
         }
         return shooter.run(() -> shooter.setHoodVoltage(-1))
                 .until(() -> shooter.isHoodSensorHit())
-                .withTimeout(
-                        3.0) // failsafe, can be deleted if needed, might be conflicting with the
+                .withTimeout(3.0)
+                .withName("DRIVE DOWN HAS NOT HIT THE SENSOR YET HOME HOOD") // failsafe, can be
+                // deleted if needed,
+                // might be conflicting
+                // with the
                 // below code, needs testing on robot otherwise.
                 .andThen(
                         shooter.runOnce(
                                 () -> {
                                     shooter.setHoodVoltage(0);
                                     shooter.resetHoodEncoder();
-                                }));
+                                }))
+                .withName("HOOD IS DOWN ON SENSOR");
     }
 
     // -> shooter.resetHoodEncoder()));
