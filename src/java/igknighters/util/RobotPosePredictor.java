@@ -243,13 +243,8 @@ public class RobotPosePredictor {
         // Optional: Mix your physics-based prediction with the planned path
         // (Calculates how far you have currently drifted from your physics expectation)
         Pose2d physicsPrediction = getPredictedPose();
-        double xDrift = physicsPrediction.getX() - poseNow.getX();
-        double yDrift = physicsPrediction.getY() - poseNow.getY();
 
-        return new Pose2d(
-                plannedFuturePose.getX() + xDrift,
-                plannedFuturePose.getY() + yDrift,
-                plannedFuturePose.getRotation());
+        return PoseMerger.trustedMerge(plannedFuturePose, physicsPrediction);
     }
 
     /** Extracts the expected speeds from the active AutoTrajectory. */

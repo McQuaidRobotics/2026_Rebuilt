@@ -430,11 +430,13 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousExit() {
+        subsystems.swerve.clearActiveTrajectory();
         scheduler.cancelAll();
     }
 
     @Override
     public void teleopInit() {
+        subsystems.swerve.clearActiveTrajectory();
         if (fuelSim != null) {
             fuelSim.start();
         }
