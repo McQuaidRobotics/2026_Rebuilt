@@ -14,7 +14,6 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import igknighters.Robot;
 import igknighters.constants.Conv;
 import igknighters.subsystems.swerve.swerveconstants.SwerveConsts;
 import java.util.function.Consumer;
@@ -25,10 +24,6 @@ public class Swerve extends SubsystemBase {
     SwerveConsts swerveConsts = new SwerveConsts();
     boolean isSwerveDisabled = false;
     DummySwerve dummySwerve = new DummySwerve();
-
-    public boolean autoControlledThisCycle = false;
-
-    public SwerveSample sample;
 
     public Swerve() {
         this(false);
@@ -43,24 +38,15 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (autoControlledThisCycle) {
-            Robot.pose_pred.updateAutoState(this.sample, true);
-        }
         if (!isSwerveDisabled) {
             drivetrain.periodic();
         }
     }
 
     public void followPath(SwerveSample sample) {
-        this.sample = sample;
-        this.autoControlledThisCycle = true;
         if (!isSwerveDisabled) {
             drivetrain.followPath(sample);
         }
-    }
-
-    public SwerveSample getSwerveSample() {
-        return this.sample;
     }
 
     public void resetPose(Pose2d pose) {
