@@ -12,6 +12,11 @@ import igknighters.util.Merging.PoseMerger;
 import igknighters.util.Merging.SpeedsMerger;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
+
+import choreo.auto.AutoTrajectory;
+import choreo.trajectory.SwerveSample;
+import choreo.trajectory.Trajectory;
 
 /**
  * Estimates the robot's pose on the next loop iteration using an alpha-beta filter applied to a
