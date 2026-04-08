@@ -71,7 +71,7 @@ public class LerpSolveShot {
                     new LerpTableEntry[] {
                         new LerpTableEntry(1.5, 2700),
                         new LerpTableEntry(2.0, 2800),
-                        new LerpTableEntry(2.5, 3000),
+                        new LerpTableEntry(2.5, 2900),
                         new LerpTableEntry(3.5, 3200),
                         new LerpTableEntry(4.0, 3300),
                         new LerpTableEntry(4.5, 3400),
@@ -95,110 +95,110 @@ public class LerpSolveShot {
                     });
 
     public static ShooterState solve(
-        Pose3d robotPose, Pose3d goalPose, double currentRPM, double latencyCompensation) {
+            Pose3d robotPose, Pose3d goalPose, double currentRPM, double latencyCompensation) {
 
-    Pose3d shooterPose = Robot.turret_pred.getPredictedPose().get();
+        Pose3d shooterPose = Robot.turret_pred.getPredictedPose().get();
 
-    ChassisSpeeds robotSpeeds = Robot.turret_pred.getPredictedVelos().get();
-    Translation2d rawRobotVelocity =
-            new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
-    double kConversion = SubsystemConstants.kShooter.kFlywheels.RPM_TO_METERS_PER_SECOND_FACTOR;
+        ChassisSpeeds robotSpeeds = Robot.turret_pred.getPredictedVelos().get();
+        Translation2d rawRobotVelocity =
+                new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
+        double kConversion = SubsystemConstants.kShooter.kFlywheels.RPM_TO_METERS_PER_SECOND_FACTOR;
 
-    Translation2d vectorToGoal =
-            goalPose.getTranslation()
-                    .toTranslation2d()
-                    .minus(shooterPose.getTranslation().toTranslation2d());
+        Translation2d vectorToGoal =
+                goalPose.getTranslation()
+                        .toTranslation2d()
+                        .minus(shooterPose.getTranslation().toTranslation2d());
 
-    double actualDistance = vectorToGoal.getNorm();
-    Log.log("ROBOT/COMMANDS/LERPSOLVE/TURRETDISTANCE", actualDistance);
+        double actualDistance = vectorToGoal.getNorm();
+        Log.log("ROBOT/COMMANDS/LERPSOLVE/TURRETDISTANCE", actualDistance);
 
-    // 1. Find the unit vector pointing straight at the goal
-    Translation2d unitVectorToGoal =
-            actualDistance > 1e-6 ? vectorToGoal.div(actualDistance) : new Translation2d();
+        // 1. Find the unit vector pointing straight at the goal
+        Translation2d unitVectorToGoal =
+                actualDistance > 1e-6 ? vectorToGoal.div(actualDistance) : new Translation2d();
 
-    // 2. Project robot velocity onto the unit vector (Radial magnitude)
-    // Positive = moving towards goal, Negative = moving away
-    double radialVelocityMag =
-            (unitVectorToGoal.getX() * rawRobotVelocity.getX())
-                    + (unitVectorToGoal.getY() * rawRobotVelocity.getY());
+        // 2. Project robot velocity onto the unit vector (Radial magnitude)
+        // Positive = moving towards goal, Negative = moving away
+        double radialVelocityMag =
+                (unitVectorToGoal.getX() * rawRobotVelocity.getX())
+                        + (unitVectorToGoal.getY() * rawRobotVelocity.getY());
 
-    // 3. Separate into radial and tangential vectors
-    Translation2d radialVelocity = unitVectorToGoal.times(radialVelocityMag);
-    Translation2d tangentialVelocity = rawRobotVelocity.minus(radialVelocity);
+        // 3. Separate into radial and tangential vectors
+        Translation2d radialVelocity = unitVectorToGoal.times(radialVelocityMag);
+        Translation2d tangentialVelocity = rawRobotVelocity.minus(radialVelocity);
 
-    // --- UPDATED: Radial and Tangential Speed Inputs ---
-    
-    // Input is the absolute radial speed
-    double radialTowardsMultiplier = RADIAL_TOWARDS.lerp(Math.abs(radialVelocityMag));
-    double radialAwayMultiplier = RADIAL_AWAY.lerp(Math.abs(radialVelocityMag));
-    
-    // Input is the magnitude of the tangential component
-    double tangentialMultiplier = TANGENTIAL.lerp(tangentialVelocity.getNorm());
+        // --- UPDATED: Radial and Tangential Speed Inputs ---
 
-    double radialMultiplierToUse =
-            (radialVelocityMag >= 0) ? radialTowardsMultiplier : radialAwayMultiplier;
+        // Input is the absolute radial speed
+        double radialTowardsMultiplier = RADIAL_TOWARDS.lerp(Math.abs(radialVelocityMag));
+        double radialAwayMultiplier = RADIAL_AWAY.lerp(Math.abs(radialVelocityMag));
 
-    // 5. Apply multipliers and recombine
-    Translation2d tunedRadialVelocity = radialVelocity.times(radialMultiplierToUse);
-    Translation2d tunedTangentialVelocity = tangentialVelocity.times(tangentialMultiplier);
+        // Input is the magnitude of the tangential component
+        double tangentialMultiplier = TANGENTIAL.lerp(tangentialVelocity.getNorm());
 
-    Translation2d tunedRobotVelocity = tunedRadialVelocity.plus(tunedTangentialVelocity);
-    // --------------------------------------------------
+        double radialMultiplierToUse =
+                (radialVelocityMag >= 0) ? radialTowardsMultiplier : radialAwayMultiplier;
 
-    // --- STEP 1: Initial Estimate ---
-    double tof = TIME_OF_FLIGHT_LERP.lerp(actualDistance);
+        // 5. Apply multipliers and recombine
+        Translation2d tunedRadialVelocity = radialVelocity.times(radialMultiplierToUse);
+        Translation2d tunedTangentialVelocity = tangentialVelocity.times(tangentialMultiplier);
 
-    double requiredTableRpm = 0;
-    Rotation2d fieldRelativeTurretAngle = new Rotation2d();
+        Translation2d tunedRobotVelocity = tunedRadialVelocity.plus(tunedTangentialVelocity);
+        // --------------------------------------------------
 
-    for (int i = 0; i < 2; i++) {
-        // Find where the goal "will be" relative to the ball
-        Translation2d movingCompensation = tunedRobotVelocity.times(tof + latencyCompensation);
-        Translation2d relativeGoal2d = vectorToGoal;
+        // --- STEP 1: Initial Estimate ---
+        double tof = TIME_OF_FLIGHT_LERP.lerp(actualDistance);
 
-        Translation2d compensatedVector = relativeGoal2d.minus(movingCompensation);
+        double requiredTableRpm = 0;
+        Rotation2d fieldRelativeTurretAngle = new Rotation2d();
 
-        FieldVisualizer.getInstance()
-                .updateShootingTarget(
-                        new Pose2d(
-                                goalPose.getTranslation()
-                                        .toTranslation2d()
-                                        .minus(movingCompensation),
-                                new Rotation2d()));
-        double virtualDistance = compensatedVector.getNorm();
+        for (int i = 0; i < 2; i++) {
+            // Find where the goal "will be" relative to the ball
+            Translation2d movingCompensation = tunedRobotVelocity.times(tof + latencyCompensation);
+            Translation2d relativeGoal2d = vectorToGoal;
 
-        double baselineRpm = RPM_LERP.lerp(virtualDistance);
-        double baselineExitVelocity = baselineRpm * kConversion;
+            Translation2d compensatedVector = relativeGoal2d.minus(movingCompensation);
 
-        Translation2d targetDirection = compensatedVector.div(virtualDistance);
-        Translation2d fieldRelativeVelocityVector = targetDirection.times(baselineExitVelocity);
+            FieldVisualizer.getInstance()
+                    .updateShootingTarget(
+                            new Pose2d(
+                                    goalPose.getTranslation()
+                                            .toTranslation2d()
+                                            .minus(movingCompensation),
+                                    new Rotation2d()));
+            double virtualDistance = compensatedVector.getNorm();
 
-        // Vector Subtraction: V_shot = V_target - V_robot
-        Translation2d requiredShooterVector =
-                fieldRelativeVelocityVector.minus(tunedRobotVelocity);
+            double baselineRpm = RPM_LERP.lerp(virtualDistance);
+            double baselineExitVelocity = baselineRpm * kConversion;
 
-        double requiredExitVelocity = requiredShooterVector.getNorm();
-        requiredTableRpm = requiredExitVelocity / kConversion;
-        fieldRelativeTurretAngle = requiredShooterVector.getAngle();
+            Translation2d targetDirection = compensatedVector.div(virtualDistance);
+            Translation2d fieldRelativeVelocityVector = targetDirection.times(baselineExitVelocity);
 
-        // RE-CALCULATE TOF based on the RPM we are actually shooting at
-        double effectiveDistance = RPM_LERP.inverseLerp(requiredTableRpm);
-        tof = TIME_OF_FLIGHT_LERP.lerp(effectiveDistance);
+            // Vector Subtraction: V_shot = V_target - V_robot
+            Translation2d requiredShooterVector =
+                    fieldRelativeVelocityVector.minus(tunedRobotVelocity);
+
+            double requiredExitVelocity = requiredShooterVector.getNorm();
+            requiredTableRpm = requiredExitVelocity / kConversion;
+            fieldRelativeTurretAngle = requiredShooterVector.getAngle();
+
+            // RE-CALCULATE TOF based on the RPM we are actually shooting at
+            double effectiveDistance = RPM_LERP.inverseLerp(requiredTableRpm);
+            tof = TIME_OF_FLIGHT_LERP.lerp(effectiveDistance);
+        }
+
+        // --- STEP 3: Final Outputs ---
+        double finalEffectiveDistance = RPM_LERP.inverseLerp(requiredTableRpm);
+        double finalHoodAngle = HOOD_LERP.lerp(finalEffectiveDistance);
+
+        // Assuming turret zero is field-relative or robot-relative based on your pose provider
+        Rotation2d robotRelativeTurretAngle =
+                fieldRelativeTurretAngle.minus(shooterPose.getRotation().toRotation2d());
+
+        ShootInformation.getInstance().setPossibleShot(requiredTableRpm < 6000);
+
+        return new ShooterState(
+                RPM.of(requiredTableRpm),
+                Radians.of(-robotRelativeTurretAngle.getRadians()),
+                Degrees.of(finalHoodAngle));
     }
-
-    // --- STEP 3: Final Outputs ---
-    double finalEffectiveDistance = RPM_LERP.inverseLerp(requiredTableRpm);
-    double finalHoodAngle = HOOD_LERP.lerp(finalEffectiveDistance);
-    
-    // Assuming turret zero is field-relative or robot-relative based on your pose provider
-    Rotation2d robotRelativeTurretAngle =
-            fieldRelativeTurretAngle.minus(shooterPose.getRotation().toRotation2d());
-
-    ShootInformation.getInstance().setPossibleShot(requiredTableRpm < 6000);
-
-    return new ShooterState(
-            RPM.of(requiredTableRpm),
-            Radians.of(-robotRelativeTurretAngle.getRadians()),
-            Degrees.of(finalHoodAngle));
-}
 }
