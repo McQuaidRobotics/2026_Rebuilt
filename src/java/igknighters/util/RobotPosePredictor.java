@@ -25,13 +25,31 @@ import java.util.Optional;
  */
 public class RobotPosePredictor {
 
+    /**
+ * Returns the best possible pose prediction based on current state.
+ * Automatically switches to Auto prediction if a trajectory is active.
+ */
+public Pose2d getDynamicPredictedPose(Swerve swerve) {
+    if (swerve.getActiveTrajectory() != null) {
+        return getPredictedAutoPose(swerve);
+    } else {
+        return getPredictedPose();
+    }
+}
+
+/**
+ * Returns the best possible velocity prediction based on current state.
+ * Automatically switches to Auto speeds if a trajectory is active.
+ */
+public ChassisSpeeds getDynamicPredictedSpeeds(Swerve swerve) {
+    if (swerve.getActiveTrajectory() != null) {
+        return getPredictedAutoSpeeds(swerve);
+    } else {
+        return getPredictedVelos();
+    }
+}
+
     private static final int HISTORY_SIZE = 10;
-
-    private static boolean usingAuto = false;
-
-    private static SwerveSample swerveSample;
-
-    private static AutoTrajectory autoTrajectory;
 
     public ChassisSpeeds[] veloHistory = new ChassisSpeeds[HISTORY_SIZE];
     public double[] timestampHistory = new double[HISTORY_SIZE];
@@ -54,11 +72,6 @@ public class RobotPosePredictor {
         for (int i = 0; i < HISTORY_SIZE; i++) {
             veloHistory[i] = new ChassisSpeeds(0, 0, 0);
         }
-    }
-
-    public void updateAutoState(SwerveSample sample, boolean isSwerveMoving) {
-        swerveSample = sample;
-        usingAuto = isSwerveMoving;
     }
 
     /**
@@ -149,63 +162,6 @@ public class RobotPosePredictor {
         return componentsToPose(predicted);
     }
 
-    /**
-     * Gets the predicted velocities from a Choreo trajectory at a specific time.
-     *
-     * @param trajectory pass straight from choreo
-     * @param initialTime simply pass RobotController.getFPGATime()
-     * @return predictedSpeeds
-     */
-    public ChassisSpeeds getPredictedVelosFromChoreo(
-            AutoTrajectory trajectory, double initialTime) {
-        // Implementation for getting predicted velocities from Choreo trajectory
-
-        if (!usingAuto) {
-            return new ChassisSpeeds();
-        }
-
-        autoTrajectory = trajectory;
-
-        usingAuto = true;
-
-        Trajectory<SwerveSample> rawTrajectory = trajectory.getRawTrajectory();
-
-        Optional<SwerveSample> sample =
-                rawTrajectory.sampleAt(
-                        (1.0 / 1000000.0) * (RobotController.getFPGATime() - initialTime),
-                        true); // mili to seconds
-        // this will return the predicted velocities at the specified time if it exists if not will
-        // use standard
-        if (sample.isPresent()) {
-            return sample.get().getChassisSpeeds();
-        } else {
-            return getPredictedVelos();
-        }
-    }
-
-    public Pose2d getPredictedPoseFromChoreo(AutoTrajectory trajectory, double initialTime) {
-        // Implementation for getting predicted pose from Choreo trajectory
-
-        if (!usingAuto) {
-            return new Pose2d();
-        }
-
-        Pose2d predictedNoChoreo = getPredictedPose();
-        Trajectory<SwerveSample> rawTrajectory = trajectory.getRawTrajectory();
-
-        Optional<SwerveSample> sample =
-                rawTrajectory.sampleAt(
-                        (1.0 / 1000000.0) * (RobotController.getFPGATime() - initialTime),
-                        true); // mili to seconds
-        // this will return the predicted pose at the specified time if it exists if not will use
-        // standard
-        if (sample.isPresent()) {
-            return PoseMerger.trustedMerge(sample.get().getPose(), predictedNoChoreo);
-        } else {
-            return predictedNoChoreo;
-        }
-    }
-
     public ChassisSpeeds getPredictedVelos() {
         ChassisSpeeds predictedVelo = new ChassisSpeeds();
         double mostRecentTimestamp =
@@ -259,5 +215,57 @@ public class RobotPosePredictor {
     /** Reconstructs a Pose2d from [x, y, roll, pitch]. */
     private static Pose2d componentsToPose(double[] c) {
         return new Pose2d(new Translation2d(c[0], c[1]), new Rotation2d(c[2]));
+    }
+
+
+    /**
+     * Automatically pulls the active AutoTrajectory from Swerve and predicts 
+     * where the robot should be, adjusted by current physics.
+     */
+    public Pose2d getPredictedAutoPose(Swerve swerve) {
+        AutoTrajectory activeTraj = swerve.getActiveTrajectory();
+        
+        // If we aren't running an auto path, just return the physics prediction
+        if (activeTraj == null) {
+            return getPredictedPose(); 
+        }
+
+        // Look ahead in the Choreo path
+        double futureTime = swerve.getAutoTime() + predTime;
+        
+        // Extract the underlying trajectory data and sample it
+        // Note: Choreo clamps the sample time internally if it exceeds the path length
+        Trajectory<SwerveSample> trajectory = activeTraj.getRawTrajectory();
+        Optional<SwerveSample> futureSampleOptional = trajectory.sampleAt(futureTime, true);
+        Pose2d plannedFuturePose = futureSampleOptional.map(SwerveSample::getPose).orElseGet(() -> getPredictedPose());
+
+        // Optional: Mix your physics-based prediction with the planned path
+        // (Calculates how far you have currently drifted from your physics expectation)
+        Pose2d physicsPrediction = getPredictedPose();
+        double xDrift = physicsPrediction.getX() - poseNow.getX();
+        double yDrift = physicsPrediction.getY() - poseNow.getY();
+
+        return new Pose2d(
+            plannedFuturePose.getX() + xDrift,
+            plannedFuturePose.getY() + yDrift,
+            plannedFuturePose.getRotation()
+        );
+    }
+    
+    /**
+     * Extracts the expected speeds from the active AutoTrajectory.
+     */
+    public ChassisSpeeds getPredictedAutoSpeeds(Swerve swerve) {
+        AutoTrajectory activeTraj = swerve.getActiveTrajectory();
+        if (activeTraj == null) return getPredictedVelos();
+
+        Trajectory<SwerveSample> trajectory = activeTraj.getRawTrajectory();
+        Optional<SwerveSample> futureSampleOptional = trajectory.sampleAt(swerve.getAutoTime() + predTime, true);
+        if (futureSampleOptional.isPresent()) {
+            return futureSampleOptional.get().getChassisSpeeds();
+        } else {
+            return getPredictedVelos();
+        }
+        
     }
 }

@@ -2,6 +2,7 @@ package igknighters.subsystems.swerve;
 
 import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
+import choreo.auto.AutoTrajectory;
 import choreo.trajectory.SwerveSample;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
@@ -11,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -43,9 +45,6 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (autoControlledThisCycle) {
-            Robot.pose_pred.updateAutoState(this.sample, true);
-        }
         if (!isSwerveDisabled) {
             drivetrain.periodic();
         }
@@ -174,4 +173,25 @@ public class Swerve extends SubsystemBase {
         return drivetrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble()
                 * Conv.DEGREES_TO_RADIANS;
     }
+    private AutoTrajectory activeTrajectory = null;
+    private final Timer autoTimer = new Timer();
+
+    public void setActiveTrajectory(AutoTrajectory trajectory) {
+        this.activeTrajectory = trajectory;
+        autoTimer.restart(); // Reset and start the timer
+    }
+
+    public void clearActiveTrajectory() {
+        this.activeTrajectory = null;
+        autoTimer.stop();
+    }
+
+    public AutoTrajectory getActiveTrajectory() {
+        return activeTrajectory;
+    }
+
+    public double getAutoTime() {
+        return autoTimer.get();
+    }
+
 }
