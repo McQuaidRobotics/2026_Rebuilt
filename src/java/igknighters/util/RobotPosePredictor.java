@@ -33,6 +33,8 @@ public class RobotPosePredictor {
 
     private static boolean usingAuto = false;
 
+    private static SwerveSample swerveSample;
+
     private static AutoTrajectory autoTrajectory;
 
     public ChassisSpeeds[] veloHistory = new ChassisSpeeds[HISTORY_SIZE];
@@ -56,6 +58,11 @@ public class RobotPosePredictor {
         for (int i = 0; i < HISTORY_SIZE; i++) {
             veloHistory[i] = new ChassisSpeeds(0, 0, 0);
         }
+    }
+
+    public void updateAutoState(SwerveSample sample, boolean isSwerveMoving) {
+        swerveSample = sample;
+        usingAuto = isSwerveMoving;
     }
 
     /**
@@ -145,7 +152,6 @@ public class RobotPosePredictor {
 
         return componentsToPose(predicted);
     }
-
     /**
      * Gets the predicted velocities from a Choreo trajectory at a specific time.
      * @param trajectory pass straight from choreo
@@ -155,6 +161,10 @@ public class RobotPosePredictor {
 
     public ChassisSpeeds getPredictedVelosFromChoreo(AutoTrajectory trajectory, double initialTime) {
         // Implementation for getting predicted velocities from Choreo trajectory
+
+        if(!usingAuto) {
+            return new ChassisSpeeds();
+        }
 
         autoTrajectory = trajectory;
 
@@ -171,14 +181,13 @@ public class RobotPosePredictor {
         }
     }
 
-    public void takeInitialAutoData(AutoRoutine routine) {
-        
-    }
 
     public Pose2d getPredictedPoseFromChoreo(AutoTrajectory trajectory, double initialTime) {
         // Implementation for getting predicted pose from Choreo trajectory
-        autoTrajectory = trajectory;
-        usingAuto = true;
+
+        if(!usingAuto) {
+            return new Pose2d();
+        }
 
         Pose2d predictedNoChoreo = getPredictedPose();
         Trajectory<SwerveSample> rawTrajectory = trajectory.getRawTrajectory();
