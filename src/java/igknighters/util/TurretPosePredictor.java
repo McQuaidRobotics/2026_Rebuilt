@@ -33,7 +33,7 @@ public class TurretPosePredictor {
     // rotation of the turret may require rewriting shooter commands
     public Supplier<Pose3d> getPredictedPose() {
 
-        Pose2d predRobotPose = Robot.pose_pred.getPredictedPose();
+        Pose2d predRobotPose = Robot.pose_pred.getDynamicPredictedPose();
         Log.log("ROBOT/pose", predRobotPose);
         double mostRecentTimestamp =
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
@@ -49,7 +49,7 @@ public class TurretPosePredictor {
     }
 
     public Supplier<ChassisSpeeds> getPredictedVelos() {
-        ChassisSpeeds predRobotVelos = Robot.pose_pred.getPredictedVelos();
+        ChassisSpeeds predRobotVelos = Robot.pose_pred.getDynamicPredictedSpeeds();
         ChassisSpeeds predTurretVelos = new ChassisSpeeds();
         predTurretVelos.vxMetersPerSecond =
                 predRobotVelos.vxMetersPerSecond

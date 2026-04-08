@@ -86,12 +86,12 @@ public class ShootInformation {
 
     public Pose3d getPassTarget() {
         if (Robot.isBlue()) {
-            Pose2d robotPose2d = Robot.pose_pred.getPredictedPose();
+            Pose2d robotPose2d = Robot.pose_pred.getDynamicPredictedPose();
             return robotPose2d.getY() > FieldConstants.Y_FIELD / 2
                     ? FieldConstants.PASS.POSITION_LEFT_BLUE
                     : FieldConstants.PASS.POSITION_RIGHT_BLUE;
         } else {
-            Pose2d robotPose2d = Robot.pose_pred.getPredictedPose();
+            Pose2d robotPose2d = Robot.pose_pred.getDynamicPredictedPose();
             return robotPose2d.getY() > FieldConstants.Y_FIELD / 2
                     ? FieldConstants.PASS.POSITION_LEFT_RED
                     : FieldConstants.PASS.POSITION_RIGHT_RED;
@@ -99,7 +99,7 @@ public class ShootInformation {
     }
 
     public boolean shouldPass() {
-        Pose2d robotPose = Robot.pose_pred.getPredictedPose();
+        Pose2d robotPose = Robot.pose_pred.getDynamicPredictedPose();
         if (Robot.isBlue()) {
             return robotPose.getX() > FieldConstants.ALIANCE_ZONE_BLUE;
         } else {
@@ -127,7 +127,7 @@ public class ShootInformation {
     }
 
     public boolean shouldSteal() {
-        Pose2d robotPose = Robot.pose_pred.getPredictedPose();
+        Pose2d robotPose = Robot.pose_pred.getDynamicPredictedPose();
         if (Robot.isBlue()) { // in red zone on blue so we are stealing
             return robotPose.getX() > FieldConstants.ALIANCE_ZONE_RED;
         } else { // in blue zone on red so we are stealing

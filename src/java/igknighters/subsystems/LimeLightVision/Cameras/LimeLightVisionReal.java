@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotController;
 import igknighters.Robot;
 import igknighters.subsystems.LimeLightVision.Helpers.LimelightHelpers;
-import igknighters.subsystems.LimeLightVision.Helpers.PoseAverager;
+import igknighters.util.Merging.PoseAverager;
 import igknighters.util.log.Log;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +55,9 @@ public class LimeLightVisionReal extends LimeLights {
                 // --- ROTATION SELECTION LOGIC ---
                 Rotation2d rotationToUse;
                 if (mt1Estimate.tagCount >= 2) {
-                    if (RobotController.getFPGATime() - previousSampleTime > 0.0){
-                        // only accept the newer ones. This makes it so that if the last camera is behind the others it will still work
+                    if (RobotController.getFPGATime() - previousSampleTime > 0.0) {
+                        // only accept the newer ones. This makes it so that if the last camera is
+                        // behind the others it will still work
                         previousSampleTime = RobotController.getFPGATime();
                     }
                     rotationToUse = mt1Estimate.pose.getRotation(); // vision rotation
@@ -118,7 +119,8 @@ public class LimeLightVisionReal extends LimeLights {
     }
 
     public double timeSinceLastSample() {
-        return (RobotController.getFPGATime() - previousSampleTime) * (1/ 1000000.0); // microseconds to seconds
+        return (RobotController.getFPGATime() - previousSampleTime)
+                * (1 / 1000000.0); // microseconds to seconds
     }
 
     /** Returns the last timestamp from vision measurements. */
