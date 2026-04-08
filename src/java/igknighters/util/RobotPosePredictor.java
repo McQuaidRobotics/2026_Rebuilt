@@ -11,6 +11,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import igknighters.Robot;
 import igknighters.subsystems.swerve.Swerve;
+import igknighters.util.Merging.PoseMerger;
+import igknighters.util.Merging.SpeedsMerger;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
@@ -240,11 +243,11 @@ public class RobotPosePredictor {
         Pose2d plannedFuturePose =
                 futureSampleOptional.map(SwerveSample::getPose).orElseGet(() -> getPredictedPose());
 
-        // Optional: Mix your physics-based prediction with the planned path
-        // (Calculates how far you have currently drifted from your physics expectation)
         Pose2d physicsPrediction = getPredictedPose();
+        // even though in theory the choreo is better in every way the real pose will always be more
+        // important to care about we should just slightly modify real pose by infusing with choreo
 
-        return PoseMerger.trustedMerge(plannedFuturePose, physicsPrediction);
+        return PoseMerger.trustedMerge(physicsPrediction, plannedFuturePose);
     }
 
     /** Extracts the expected speeds from the active AutoTrajectory. */
@@ -255,8 +258,10 @@ public class RobotPosePredictor {
         Trajectory<SwerveSample> trajectory = activeTraj.getRawTrajectory();
         Optional<SwerveSample> futureSampleOptional =
                 trajectory.sampleAt(swerve.getAutoTime() + predTime, true);
+
+        ChassisSpeeds predictedSpeeds = getPredictedVelos();
         if (futureSampleOptional.isPresent()) {
-            return futureSampleOptional.get().getChassisSpeeds();
+            return SpeedsMerger.trustedMerge(predictedSpeeds, futureSampleOptional.get().getChassisSpeeds());
         } else {
             return getPredictedVelos();
         }
