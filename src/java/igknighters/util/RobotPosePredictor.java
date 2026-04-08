@@ -13,7 +13,6 @@ import igknighters.Robot;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.Merging.PoseMerger;
 import igknighters.util.Merging.SpeedsMerger;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
@@ -261,7 +260,8 @@ public class RobotPosePredictor {
 
         ChassisSpeeds predictedSpeeds = getPredictedVelos();
         if (futureSampleOptional.isPresent()) {
-            return SpeedsMerger.trustedMerge(predictedSpeeds, futureSampleOptional.get().getChassisSpeeds());
+            return SpeedsMerger.trustedMerge(
+                    predictedSpeeds, futureSampleOptional.get().getChassisSpeeds());
         } else {
             return getPredictedVelos();
         }

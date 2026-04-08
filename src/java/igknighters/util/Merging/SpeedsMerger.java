@@ -3,11 +3,15 @@ package igknighters.util.Merging;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class SpeedsMerger {
-    public static ChassisSpeeds simpleMerge(ChassisSpeeds speeds1, ChassisSpeeds speeds2, double weight1, double weight2) {
+    public static ChassisSpeeds simpleMerge(
+            ChassisSpeeds speeds1, ChassisSpeeds speeds2, double weight1, double weight2) {
         return new ChassisSpeeds(
-                (speeds1.vxMetersPerSecond * weight1 + speeds2.vxMetersPerSecond * weight2) / (weight1 + weight2),
-                (speeds1.vyMetersPerSecond * weight1 + speeds2.vyMetersPerSecond * weight2) / (weight1 + weight2),
-                (speeds1.omegaRadiansPerSecond * weight1 + speeds2.omegaRadiansPerSecond * weight2) / (weight1 + weight2));
+                (speeds1.vxMetersPerSecond * weight1 + speeds2.vxMetersPerSecond * weight2)
+                        / (weight1 + weight2),
+                (speeds1.vyMetersPerSecond * weight1 + speeds2.vyMetersPerSecond * weight2)
+                        / (weight1 + weight2),
+                (speeds1.omegaRadiansPerSecond * weight1 + speeds2.omegaRadiansPerSecond * weight2)
+                        / (weight1 + weight2));
     }
 
     public static ChassisSpeeds trustedMerge(ChassisSpeeds speeds1, ChassisSpeeds speeds2) {
