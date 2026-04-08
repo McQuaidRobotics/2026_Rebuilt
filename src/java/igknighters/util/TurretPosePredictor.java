@@ -33,19 +33,13 @@ public class TurretPosePredictor {
     // rotation of the turret may require rewriting shooter commands
     public Supplier<Pose3d> getPredictedPose() {
 
-        Pose2d predRobotPose = Robot.pose_pred.getPredictedPose();
+        Pose2d predRobotPose = Robot.pose_pred.getDynamicPredictedPose();
         Log.log("ROBOT/pose", predRobotPose);
         double mostRecentTimestamp =
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
         int latestIdx =
                 Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
-        Pose3d offsets = getTurretPoseFieldRelativeOffset(predRobotPose);
-        Pose3d predTurretPose =
-                new Pose3d(
-                        predRobotPose.getX() + offsets.getX(),
-                        predRobotPose.getY() + offsets.getY(),
-                        .3,
-                        new Rotation3d(0, 0, currentPose[latestIdx].getRotation().getZ()));
+        Pose3d predTurretPose = getTurretPoseFieldRelativeOffset(predRobotPose);
         Robot.turret_pred_error.findError(currentPose[latestIdx]);
         return () -> predTurretPose;
     }
@@ -55,7 +49,7 @@ public class TurretPosePredictor {
     }
 
     public Supplier<ChassisSpeeds> getPredictedVelos() {
-        ChassisSpeeds predRobotVelos = Robot.pose_pred.getPredictedVelos();
+        ChassisSpeeds predRobotVelos = Robot.pose_pred.getDynamicPredictedSpeeds();
         ChassisSpeeds predTurretVelos = new ChassisSpeeds();
         predTurretVelos.vxMetersPerSecond =
                 predRobotVelos.vxMetersPerSecond
@@ -70,11 +64,16 @@ public class TurretPosePredictor {
         double xMeterOffset =
                 7.0710678118655
                         * Conv.INCHES_TO_METERS
-                        * Math.cos(robotPose.getRotation().getRadians() - 3 * (Math.PI / 4));
+                        * Math.cos(robotPose.getRotation().getRadians() - 3 * Math.PI / 4);
         double yMeterOffset =
                 7.0710678118655
                         * Conv.INCHES_TO_METERS
-                        * Math.sin(robotPose.getRotation().getRadians() - 3 * (Math.PI / 4));
-        return new Pose3d(xMeterOffset, yMeterOffset, 0, new Rotation3d(0, 0, 0));
+                        * Math.sin(robotPose.getRotation().getRadians() - 3 * Math.PI / 4);
+        double zMeterOffset = 0.3; // Height of the turret from the ground
+        return new Pose3d(
+                robotPose.getX() + xMeterOffset,
+                robotPose.getY() + yMeterOffset,
+                zMeterOffset,
+                new Rotation3d(0, 0, robotPose.getRotation().getRadians()));
     }
 }

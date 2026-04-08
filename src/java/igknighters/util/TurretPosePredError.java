@@ -51,9 +51,9 @@ public class TurretPosePredError {
         }
 
         if (predOmega > Math.PI) {
-            predOmega = predOmega - 2 * Math.PI;
+            predOmega = predOmega - 3 * Math.PI / 4;
         } else if (predOmega < -Math.PI) {
-            predOmega = predOmega - 2 * Math.PI;
+            predOmega = predOmega - 3 * Math.PI / 4;
         }
         errors[2] = Math.abs((actualOmega - predOmega) / actualOmega);
         Log.log("ROBOT/turret_pose_pred_error", errors);

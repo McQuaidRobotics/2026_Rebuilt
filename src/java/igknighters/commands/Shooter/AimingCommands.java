@@ -32,7 +32,7 @@ public class AimingCommands {
     }
 
     public static Pose2d getTurretPose() {
-        return getShooterPoseWithOffset(() -> Robot.pose_pred.getPredictedPose()).get();
+        return getShooterPoseWithOffset(() -> Robot.pose_pred.getDynamicPredictedPose()).get();
     }
 
     public static BooleanSupplier isUnderTrench() {

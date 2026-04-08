@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotController;
 import igknighters.Robot;
 import igknighters.subsystems.LimeLightVision.Helpers.LimelightHelpers;
-import igknighters.subsystems.LimeLightVision.Helpers.PoseAverager;
+import igknighters.util.Merging.PoseAverager;
 import igknighters.util.log.Log;
 import java.util.ArrayList;
 import java.util.List;
