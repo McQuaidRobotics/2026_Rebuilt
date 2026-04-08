@@ -27,10 +27,6 @@ public class Swerve extends SubsystemBase {
     boolean isSwerveDisabled = false;
     DummySwerve dummySwerve = new DummySwerve();
 
-    public boolean autoControlledThisCycle = false;
-
-    public SwerveSample sample;
-
     public Swerve() {
         this(false);
     }
@@ -50,15 +46,9 @@ public class Swerve extends SubsystemBase {
     }
 
     public void followPath(SwerveSample sample) {
-        this.sample = sample;
-        this.autoControlledThisCycle = true;
         if (!isSwerveDisabled) {
             drivetrain.followPath(sample);
         }
-    }
-
-    public SwerveSample getSwerveSample() {
-        return this.sample;
     }
 
     public void resetPose(Pose2d pose) {

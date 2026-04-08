@@ -7,6 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LimeLightVisionSim extends LimeLights {
+    List<VisionSimulator> visionSimulators;
+    List<Pose2d> estimatedPoses;
+    List<Double[]> cameraRotations;
+    List<Integer> visibleTagIds = new ArrayList<>();
+    double timesum = 0.0;
+    double camerasThatSeeStuff = 0.0;
+
+    double cameraFOV = 60;
 
     public LimeLightVisionSim(String... cameraNames) {
     }
@@ -19,7 +27,20 @@ public class LimeLightVisionSim extends LimeLights {
             double pitchRate,
             double roll,
             double rollRate) {
-        return null;
+        estimatedPoses.clear();
+        visibleTagIds.clear();
+        timesum = 0.0;
+        camerasThatSeeStuff = 0.0;
+        for (VisionSimulator simulator : visionSimulators) {
+            Pose2d estimatedPose = simulator.getEstimatedPose();
+            if (estimatedPose != null) {
+                estimatedPoses.add(estimatedPose);
+                timesum += simulator.getTime();
+                camerasThatSeeStuff++;
+                visibleTagIds.addAll(simulator.getVisibleTagIds());
+            }
+        }
+        return PoseAverager.averagePose2ds(estimatedPoses);
     }
 
     @Override
@@ -35,8 +56,6 @@ public class LimeLightVisionSim extends LimeLights {
 
     @Override
     public List<Integer> getVisibleTagIds() {
-        List<Integer> demoTags = new ArrayList<>();
-        demoTags.add(15);
-        return demoTags;
+        return visibleTagIds;
     }
 }

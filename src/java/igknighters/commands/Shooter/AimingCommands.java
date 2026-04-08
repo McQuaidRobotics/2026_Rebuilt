@@ -171,7 +171,6 @@ public class AimingCommands {
         return shooter.run(
                 () -> {
                     Pose2d robotPose2d = robotPose.get();
-                    ChassisSpeeds robotVel = robotVeloSupplier.get();
 
                     Pose3d shooterPose =
                             new Pose3d(
