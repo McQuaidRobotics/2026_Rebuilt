@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import igknighters.commands.IndexerCommands;
+import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.commands.SubsystemTriggers;
 import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
@@ -421,7 +422,17 @@ public class Robot extends LoggedRobot {
         if (fuelSim != null) {
             fuelSim.start();
         }
-        scheduler.schedule(autoCommand);
+        try {
+            scheduler.schedule(ShooterCommands.homeHood(subsystems.shooter));
+        } catch (Exception e) {
+            if (!Robot.consts.disableAllLogs()) {
+                Log.log("ROBOT/autonomousInit/HomeHoodScheduleFailed", e.toString());
+            }
+        }
+        m_autonomousCommand = autoCommand;
+        if (autoCommand != null) {
+            scheduler.schedule(autoCommand);
+        }
     }
 
     @Override
@@ -440,6 +451,17 @@ public class Robot extends LoggedRobot {
         scheduler.cancelAll();
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
+        }
+        // Schedule a homing command for the hood when teleop starts so the hood is
+        // zeroed before driver control. This will be a no-op if the hood sensor is
+        // already triggered because homeHood handles the short-circuit case.
+        try {
+            scheduler.schedule(ShooterCommands.homeHood(subsystems.shooter));
+        } catch (Exception e) {
+            // Log but don't crash the robot if scheduling fails for any reason.
+            if (!Robot.consts.disableAllLogs()) {
+                Log.log("ROBOT/teleopInit/HomeHoodScheduleFailed", e.toString());
+            }
         }
     }
 
