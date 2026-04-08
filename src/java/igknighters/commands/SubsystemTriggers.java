@@ -31,6 +31,8 @@ public class SubsystemTriggers {
     private final Trigger disabled = RobotModeTriggers.disabled();
     private final Trigger autonomous = RobotModeTriggers.autonomous();
     private final Trigger teleop = RobotModeTriggers.teleop();
+
+    private Trigger shouldRumble;
     private final NetworkTable dashboardTable =
             NetworkTableInstance.getDefault().getTable("dashboard");
     private boolean shotPossible = false;
@@ -224,13 +226,14 @@ public class SubsystemTriggers {
                 .whileTrue(new SlowedDownDrivingWhileShooting(swerve, driverController));
 
         // rumble
-        Trigger shouldRumble =
+        shouldRumble =
                 new Trigger(() -> subsystems.vision.timeSinceLastSample() < 0.1)
                         .and(falseOnce())
                         .whileTrue(
                                 Commands.startEnd(
                                                 () -> driverController.rumble(0.03),
                                                 () -> driverController.rumble(0.0))
+                                        .ignoringDisable(true)
                                         .withName("RumbleForTag"));
     }
 }
