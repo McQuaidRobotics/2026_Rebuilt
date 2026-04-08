@@ -60,8 +60,6 @@ public class FlywheelReal extends Flywheel {
         config.CurrentLimits.SupplyCurrentLimit =
                 SubsystemConstants.kShooter.kFlywheels.SUPPLY_CURRENT_LIMIT;
         config.MotorOutput.PeakReverseDutyCycle = 0.0; // do not allow the motor to run in reverse
-        config.TorqueCurrent.PeakForwardTorqueCurrent =
-                SubsystemConstants.kShooter.kFlywheels.PEAK_CURRENT_LIMIT;
 
         return config;
     }

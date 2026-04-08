@@ -335,7 +335,7 @@ public class AutoRoutines extends AutoCommands {
                 .onTrue(
                         Commands.sequence(
                                 swipe1Out.resetOdometry(),
-                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 4),
                                 swipe1Out.cmd()));
 
         swipe1Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
@@ -346,12 +346,60 @@ public class AutoRoutines extends AutoCommands {
         swipe1In.done()
                 .onTrue(
                         SwerveCommands.stopDriving(swerve)
-                                .alongWith(HigherOrderCommands.shootTillEmpty(subsystems, 2))
+                                .alongWith(HigherOrderCommands.shootTillEmpty(subsystems, 4))
                                 .andThen(swipe2Out.cmd()));
 
         swipe2Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
 
         swipe2Out.done().onTrue(SwerveCommands.stopDriving(swerve).andThen(swipe2In.cmd()));
+
+        swipe2In.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+
+        swipe2In.done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .andThen(HigherOrderCommands.rapidFireStream(subsystems)));
+
+        return routine;
+    }
+
+    public AutoRoutine orbitLeft() {
+        AutoRoutine routine = autoFactory.newRoutine("Orbit Left");
+
+        AutoTrajectory swipe1Out = routine.trajectory("ORBIT_LEFT_1.traj");
+        AutoTrajectory swipe1In = routine.trajectory("ORBIT_LEFT_2.traj");
+        AutoTrajectory swipe2Out = routine.trajectory("ORBIT_LEFT_3.traj");
+        AutoTrajectory swipe2In = routine.trajectory("ORBIT_LEFT_4.traj");
+
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                swipe1Out.resetOdometry(),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 4),
+                                Commands.parallel(
+                                        IntakeCommands.holdAtIntake(subsystems.intake),
+                                        swipe1Out.cmd())));
+
+        swipe1Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+        swipe1Out.done().onTrue(swipe1In.cmd());
+
+        swipe1In.active().onTrue(IntakeCommands.holdAtStow(subsystems.intake));
+
+        swipe1In.done()
+                .onTrue(
+                        Commands.parallel(
+                                SwerveCommands.stopDriving(swerve)
+                                        .alongWith(
+                                                HigherOrderCommands.shootTillEmpty(subsystems, 3))
+                                        .andThen(swipe2Out.cmd())));
+
+        swipe2Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
+        swipe2Out
+                .done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .andThen(Commands.parallel(swipe2In.cmd())));
 
         swipe2In.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
 

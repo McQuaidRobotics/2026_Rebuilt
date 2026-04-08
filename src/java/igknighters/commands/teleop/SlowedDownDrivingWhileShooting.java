@@ -35,11 +35,11 @@ public class SlowedDownDrivingWhileShooting extends TeleopSwerveBaseCmd {
                         .withVelocityX(
                                 vt.getX()
                                         * knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond)
-                                        * .8)
+                                        * .5)
                         .withVelocityY(
                                 vt.getY()
                                         * knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond)
-                                        * .8)
+                                        * .5)
                         .withRotationalRate(
                                 .4
                                         * RotationsPerSecond.of(0.75).in(RadiansPerSecond)

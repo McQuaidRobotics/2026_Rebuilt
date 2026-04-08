@@ -208,6 +208,9 @@ public class SubsystemConstants {
             public static final double SUPPLY_CURRENT_LIMIT = 30;
             public static boolean disableFlywheelsLogs = false;
 
+            public static double RPM_TO_METERS_PER_SECOND_FACTOR =
+                    (2.0 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS) / 60.0;
+
             static {
                 if (disableAllLogs) {
                     disableFlywheelsLogs = true;
@@ -218,7 +221,7 @@ public class SubsystemConstants {
         public static class kTurret {
             public static final int MOTOR_ID = 24;
             public static final int CANCODER_ID = 25;
-            public static final double CANCODER_OFFSET_ROTATIONS = -0.72314453125 + 1.0;
+            public static final double CANCODER_OFFSET_ROTATIONS = -0.747314453125;
             public static final double GEAR_RATIO = 16.2;
             public static final double MAX_ANGLE_DEGREES = 270.0;
             public static final double MIN_ANGLE_DEGREES = -90.0;
@@ -233,7 +236,7 @@ public class SubsystemConstants {
             public static final double kS = 0.0;
             public static final double kV = 0.0;
             public static final double kA = 0.0;
-            public static boolean disableTurretLogs = true;
+            public static boolean disableTurretLogs = false;
 
             static {
                 if (disableAllLogs) {

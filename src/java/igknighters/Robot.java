@@ -127,6 +127,7 @@ public class Robot extends LoggedRobot {
         autoChooser.addRoutine("LEFT NUETRAL HIPPO", routines::leftNuetralHippo);
         autoChooser.addRoutine("RIGHT NUETRAL HIPPO", routines::rightNuetralHippo);
         autoChooser.addRoutine("Right Orbit", routines::orbitRight);
+        autoChooser.addRoutine("Orbit Left", routines::orbitLeft);
         autoChooser.addRoutine("Pass to self left", routines::passToSelfLeft);
         autoChooser.addRoutine("Single Swipe Right", routines::singleSwipeRight);
         autoChooser.addRoutine("Single Swipe Left", routines::singleSwipeLeft);
@@ -284,7 +285,7 @@ public class Robot extends LoggedRobot {
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
-        pose_pred.setNewPose(subsystems.swerve.getState().Speeds);
+        pose_pred.setNewPose(subsystems.swerve.getFieldRelativeSpeeds());
         if (Robot.isReal() && !SubsystemConstants.disableAllLogs) {
             FieldVisualizer.getInstance()
                     .updateTurret(
