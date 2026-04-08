@@ -20,7 +20,7 @@ public class RobotPosePredError {
     }
 
     public void logPose(Pose2d currentPose) {
-        predictionHistory[writeIndex] = Robot.pose_pred.getPredictedPose();
+        predictionHistory[writeIndex] = Robot.pose_pred.getDynamicPredictedPose();
         timestampHistory[writeIndex] = Timer.getFPGATimestamp();
         if (writeIndex != 1) {
             writeIndex++;

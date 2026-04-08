@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import igknighters.Robot;
 import igknighters.constants.Conv;
 import igknighters.subsystems.swerve.swerveconstants.SwerveConsts;
 import java.util.function.Consumer;
@@ -173,6 +172,7 @@ public class Swerve extends SubsystemBase {
         return drivetrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble()
                 * Conv.DEGREES_TO_RADIANS;
     }
+
     private AutoTrajectory activeTrajectory = null;
     private final Timer autoTimer = new Timer();
 
@@ -193,5 +193,4 @@ public class Swerve extends SubsystemBase {
     public double getAutoTime() {
         return autoTimer.get();
     }
-
 }

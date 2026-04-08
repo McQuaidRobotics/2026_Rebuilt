@@ -66,7 +66,7 @@ public class Robot extends LoggedRobot {
     double i = 0;
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
-    public static RobotPosePredictor pose_pred = new RobotPosePredictor();
+    public static RobotPosePredictor pose_pred;
     public static TurretPosePredictor turret_pred = new TurretPosePredictor();
     public static RobotPosePredError pose_pred_error = new RobotPosePredError();
     public static TurretPosePredError turret_pred_error = new TurretPosePredError();
@@ -247,6 +247,8 @@ public class Robot extends LoggedRobot {
         setUpTest(subsystems);
         bindDriverController();
 
+        pose_pred = new RobotPosePredictor(subsystems.swerve);
+
         subsystemTriggers.SetupTriggers(subsystems, driverController);
 
         if (isSimulation()) {
@@ -268,6 +270,7 @@ public class Robot extends LoggedRobot {
                         new Intake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
+        pose_pred = new RobotPosePredictor(subsystems.swerve);
         publishCommandsAndSubystems(subsystems);
         setUpAutos(subsystems);
         setUpTest(subsystems);
@@ -330,7 +333,7 @@ public class Robot extends LoggedRobot {
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
-        pose_pred.setVelocitiesAndPose(subsystems.swerve);
+        pose_pred.setVelocitiesAndPose();
         turret_pred.logTurretPose(getTurretPoseFieldRelative(subsystems.swerve.getState().Pose));
         pose_pred_error.logPose(subsystems.swerve.getState().Pose);
         turret_pred_error.logPose(getTurretPoseFieldRelative(subsystems.swerve.getState().Pose));

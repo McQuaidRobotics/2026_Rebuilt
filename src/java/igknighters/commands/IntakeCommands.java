@@ -102,7 +102,7 @@ public class IntakeCommands {
         return intake.run(
                 () -> {
                     // if on bump we should be stowed
-                    if (FieldConstants.BUMP.isInside(Robot.pose_pred.getPredictedPose())) {
+                    if (FieldConstants.BUMP.isInside(Robot.pose_pred.getDynamicPredictedPose())) {
                         Log.log("ROBOT/Commands/Protected Intake", "Inside BUMP, stowing intake");
                         holdAtStow(intake);
                     } else {

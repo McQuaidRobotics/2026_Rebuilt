@@ -67,7 +67,7 @@ public class VisionSimulator {
     /** Processes a ground-truth pose and returns a fuzzed estimate if a tag is visible. */
     public Pose2d getEstimatedPose() {
 
-        Pose2d truePose = Robot.pose_pred.getPredictedPose();
+        Pose2d truePose = Robot.pose_pred.getDynamicPredictedPose();
         // 1. Random hardware dropout
         if (random.nextDouble() < dropoutRate) {
             return null;
