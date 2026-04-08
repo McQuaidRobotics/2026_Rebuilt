@@ -39,13 +39,7 @@ public class TurretPosePredictor {
                 Collections.max(Arrays.stream(timestampHistory).boxed().toList());
         int latestIdx =
                 Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
-        Pose3d offsets = getTurretPoseFieldRelativeOffset(predRobotPose);
-        Pose3d predTurretPose =
-                new Pose3d(
-                        predRobotPose.getX() + offsets.getX(),
-                        predRobotPose.getY() + offsets.getY(),
-                        .3,
-                        new Rotation3d(0, 0, currentPose[latestIdx].getRotation().getZ()));
+        Pose3d predTurretPose = getTurretPoseFieldRelativeOffset(predRobotPose);
         Robot.turret_pred_error.findError(currentPose[latestIdx]);
         return () -> predTurretPose;
     }
@@ -70,11 +64,16 @@ public class TurretPosePredictor {
         double xMeterOffset =
                 7.0710678118655
                         * Conv.INCHES_TO_METERS
-                        * Math.cos(robotPose.getRotation().getRadians() - 3 * Math.PI / 2);
+                        * Math.cos(robotPose.getRotation().getRadians() - 3 * Math.PI / 4);
         double yMeterOffset =
                 7.0710678118655
                         * Conv.INCHES_TO_METERS
-                        * Math.sin(robotPose.getRotation().getRadians() - 3 * Math.PI / 2);
-        return new Pose3d(xMeterOffset, yMeterOffset, 0, new Rotation3d(0, 0, 0));
+                        * Math.sin(robotPose.getRotation().getRadians() - 3 * Math.PI / 4);
+        double zMeterOffset = 0.3; // Height of the turret from the ground
+        return new Pose3d(
+                robotPose.getX() + xMeterOffset,
+                robotPose.getY() + yMeterOffset,
+                zMeterOffset,
+                new Rotation3d(0, 0, robotPose.getRotation().getRadians()));
     }
 }
