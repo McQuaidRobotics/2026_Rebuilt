@@ -2,13 +2,14 @@ package igknighters.subsystems.LimeLightVision.Helpers;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.RobotController;
 import igknighters.Robot;
 import igknighters.util.AprilTagLayout;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -27,6 +28,8 @@ public class VisionSimulator {
     private final double baseXyStdDev;
     private final double baseThetaStdDev;
     private final double dropoutRate;
+
+    private final List<Integer> visibleTagIds = new ArrayList<>();
 
     private final Random random = new Random();
 
@@ -67,6 +70,8 @@ public class VisionSimulator {
     /** Processes a ground-truth pose and returns a fuzzed estimate if a tag is visible. */
     public Pose2d getEstimatedPose() {
 
+        visibleTagIds.clear();
+
         Pose2d truePose = Robot.pose_pred.getPredictedPose();
         // 1. Random hardware dropout
         if (random.nextDouble() < dropoutRate) {
@@ -77,8 +82,8 @@ public class VisionSimulator {
         double minDistance = Double.MAX_VALUE;
         boolean canSeeTag = false;
 
-        for (Pose3d tag : fieldLayout.getTagPoses().values()) {
-            Pose2d tagPose = tag.toPose2d();
+        for (int tag : fieldLayout.getTagPoses().keySet()) {
+            Pose2d tagPose = fieldLayout.getTagPoses().get(tag).toPose2d();
 
             double distance = truePose.getTranslation().getDistance(tagPose.getTranslation());
 
@@ -105,6 +110,7 @@ public class VisionSimulator {
 
             if (inFov) {
                 canSeeTag = true;
+                visibleTagIds.add(tag);
                 if (distance < minDistance) {
                     minDistance = distance;
                 }
@@ -133,5 +139,9 @@ public class VisionSimulator {
 
     public double getTime() {
         return RobotController.getTime() / 1000000.0;
+    }
+
+    public List<Integer> getVisibleTagIds() {
+        return visibleTagIds;
     }
 }
