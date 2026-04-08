@@ -168,9 +168,8 @@ spotless {
         toggleOffOn()
         importOrder()
         googleJavaFormat().aosp().reflowLongStrings()
-        // removeUnusedImports()
-        indentWithSpaces(4)
         removeUnusedImports()
+        indentWithSpaces(4)
         trimTrailingWhitespace()
         endWithNewline()
     }
