@@ -45,6 +45,38 @@ public class SwerveCommands {
         return swerve.getState().Pose;
     }
 
+    public static Command wiggle(Swerve swerve) {
+        SwerveRequest.FieldCentric m_driveRequest =
+                new SwerveRequest.FieldCentric()
+                        .withDeadband(knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.1)
+                        .withRotationalDeadband(
+                                RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .1)
+                        .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
+                        .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
+
+        return Commands.sequence(
+                        swerve.run(
+                                        () ->
+                                                swerve.setControl(
+                                                        m_driveRequest.withRotationalRate(
+                                                                RotationsPerSecond.of(.5))))
+                                .withTimeout(.06),
+                        swerve.run(
+                                        () ->
+                                                swerve.setControl(
+                                                        m_driveRequest.withRotationalRate(
+                                                                RotationsPerSecond.of(-.5))))
+                                .withTimeout(.12),
+                        swerve.run(
+                                        () ->
+                                                swerve.setControl(
+                                                        m_driveRequest.withRotationalRate(
+                                                                RotationsPerSecond.of(.5))))
+                                .withTimeout(.06))
+                .repeatedly()
+                .withName("WIGGLE SWERVE");
+    }
+
     /**
      * Checks if the swerve is at the target velocity and not at the start pose. This was made so
      * that we can see if velocity is 0 but not when we start. Because at the start of climb

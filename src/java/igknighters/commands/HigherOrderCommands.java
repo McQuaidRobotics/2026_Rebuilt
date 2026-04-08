@@ -21,6 +21,11 @@ public class HigherOrderCommands {
         // IndexerCommands.isBallPresent()
     }
 
+    public static Command shootTillEmptyWithWiggle(Subsystems subsystems, double timeout) {
+        return Commands.parallel(
+                shootTillEmpty(subsystems, timeout), SwerveCommands.wiggle(subsystems.swerve));
+    }
+
     public static Command rapidFireStream(Subsystems subsystems) {
 
         // 1. The Active Shooter (Tracks and spools continuously)

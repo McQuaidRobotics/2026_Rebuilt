@@ -290,7 +290,7 @@ public class AutoRoutines extends AutoCommands {
                 .atTime("Protect_intake")
                 .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
 
-        secondLoop.done().onTrue(HigherOrderCommands.shootTillEmpty(subsystems, 10));
+        secondLoop.done().onTrue(HigherOrderCommands.shootTillEmptyWithWiggle(subsystems, 10));
 
         return routine;
     }
