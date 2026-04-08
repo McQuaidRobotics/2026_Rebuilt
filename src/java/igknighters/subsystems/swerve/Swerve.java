@@ -62,6 +62,7 @@ public class Swerve extends SubsystemBase {
     public SwerveSample getSwerveSample() {
         return this.sample;
     }
+
     public void resetPose(Pose2d pose) {
         if (!isSwerveDisabled) {
             drivetrain.resetPose(pose);
