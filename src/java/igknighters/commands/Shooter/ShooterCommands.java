@@ -141,8 +141,29 @@ public class ShooterCommands {
     }
 
     public static Command homeHood(Shooter shooter) {
-        return shooter.run(() -> shooter.setHoodVoltage(-1)).until(() -> shooter.isHoodSensorHit());
+        // return shooter.run(() -> shooter.setHoodVoltage(-1)).until(()
+        // ->shooter.isHoodSensorHit());
+        if (shooter.isHoodSensorHit()) {
+            return shooter.runOnce(() -> shooter.resetHoodEncoder());
+        }
+        return shooter.run(() -> shooter.setHoodVoltage(-1))
+                .until(() -> shooter.isHoodSensorHit())
+                .withTimeout(3.0)
+                .withName("DRIVE DOWN HAS NOT HIT THE SENSOR YET HOME HOOD") // failsafe, can be
+                // deleted if needed,
+                // might be conflicting
+                // with the
+                // below code, needs testing on robot otherwise.
+                .andThen(
+                        shooter.runOnce(
+                                () -> {
+                                    shooter.setHoodVoltage(0);
+                                    shooter.resetHoodEncoder();
+                                }))
+                .withName("HOOD IS DOWN ON SENSOR");
     }
+
+    // -> shooter.resetHoodEncoder()));
 
     /**
      * aims without changing hood or rpm so that the shooter can go under bump
