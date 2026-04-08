@@ -22,7 +22,7 @@ public class LimeLightVision extends SubsystemBase {
                             SubsystemConstants.kLimelightVision.turretCam,
                             SubsystemConstants.kLimelightVision.intakeCam);
         } else {
-            vision = new LimeLightVisionSim();
+            vision = new LimeLightVisionSim("1", "2", "3", "4");
         }
     }
 

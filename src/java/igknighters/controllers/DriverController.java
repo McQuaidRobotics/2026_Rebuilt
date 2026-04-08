@@ -172,8 +172,6 @@ public class DriverController {
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
         this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
         this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
-
-        this.Y.onTrue(IntakeCommands.protectedIntake(subsystems.intake));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {
