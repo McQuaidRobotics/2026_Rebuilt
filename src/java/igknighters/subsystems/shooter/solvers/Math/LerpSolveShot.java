@@ -99,7 +99,7 @@ public class LerpSolveShot {
 
         Pose3d shooterPose = Robot.turret_pred.getPredictedPose().get();
 
-        ChassisSpeeds robotSpeeds = Robot.turret_pred.getPredictedVelos().get();
+        ChassisSpeeds robotSpeeds = Robot.turret_pred.getPredictedVelos();
         Translation2d rawRobotVelocity =
                 new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
         double kConversion = SubsystemConstants.kShooter.kFlywheels.RPM_TO_METERS_PER_SECOND_FACTOR;
