@@ -18,6 +18,25 @@ public class LimeLightVisionSim extends LimeLights {
     double cameraFOV = 60;
 
     public LimeLightVisionSim(String... cameraNames) {
+        visionSimulators = new ArrayList<>();
+        estimatedPoses = new ArrayList<>();
+        cameraRotations = new ArrayList<>();
+        cameraRotations.add(new Double[] {60.0, 120.0}); // intake Cam
+        cameraRotations.add(new Double[] {135.0, 195.0});
+        cameraRotations.add(new Double[] {150.0, 210.0});
+        cameraRotations.add(new Double[] {240.0, 300.0});
+        // these are how far they should be off from irl
+        for (int i = 0; i < cameraRotations.size(); i++) {
+            // Initialize each camera
+            visionSimulators.add(
+                    new VisionSimulator(
+                            cameraRotations.get(i)[0],
+                            cameraRotations.get(i)[1],
+                            5,
+                            0.01,
+                            0.0,
+                            0.1));
+        }
     }
 
     @Override
@@ -47,7 +66,7 @@ public class LimeLightVisionSim extends LimeLights {
     @Override
     public double getLastTimeStamp() {
         // In simulation, we can get the timestamp from the latest results
-        return 0.0;
+        return timesum / camerasThatSeeStuff;
     }
 
     @Override
