@@ -7,6 +7,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import igknighters.Robot;
 import igknighters.constants.Conv;
+import igknighters.constants.RobotConsts;
 import igknighters.util.log.Log;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,11 +63,11 @@ public class TurretPosePredictor {
 
     public Pose3d getTurretPoseFieldRelativeOffset(Pose2d robotPose) {
         double xMeterOffset =
-                7.0710678118655
+                Robot.consts.shooter().kTurret().TURRET_ROBOT_DISTANCE_FROM_CENTERS()
                         * Conv.INCHES_TO_METERS
                         * Math.cos(robotPose.getRotation().getRadians() - 3 * Math.PI / 4);
         double yMeterOffset =
-                7.0710678118655
+                Robot.consts.shooter().kTurret().TURRET_ROBOT_DISTANCE_FROM_CENTERS()
                         * Conv.INCHES_TO_METERS
                         * Math.sin(robotPose.getRotation().getRadians() - 3 * Math.PI / 4);
         double zMeterOffset = 0.3; // Height of the turret from the ground
