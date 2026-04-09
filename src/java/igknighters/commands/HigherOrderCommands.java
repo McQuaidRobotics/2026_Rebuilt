@@ -51,11 +51,7 @@ public class HigherOrderCommands {
         Command shooterCommand =
                 AimingCommands.SHOOT_AT_TARGET(
                                 subsystems.shooter,
-                                targetPose,
-                                () -> subsystems.swerve.getState().Pose,
-                                subsystems.swerve::getFieldRelativeSpeeds,
-                                5,
-                                3)
+                                targetPose)
                         .withName("Active Spool & Aim");
 
         return Commands.parallel(shooterCommand, IndexerCommands.smartDispense(subsystems.indexer))
@@ -63,10 +59,8 @@ public class HigherOrderCommands {
     }
 
     public static Command IdleShooter(Subsystems subsystems) {
-        return ShooterCommands.idleCommand(
-                        subsystems.shooter,
-                        () -> subsystems.swerve.getState().Pose,
-                        subsystems.swerve::getFieldRelativeSpeeds)
+        return AimingCommands.idleCommand(
+                        subsystems.shooter)
                 .alongWith(IndexerCommands.jorkIt(subsystems.indexer).repeatedly())
                 .alongWith(Commands.runOnce(() -> DrivingSharedState.getInstance().setDetune(1.0)))
                 .withName("IDLING THE SHOOTER");

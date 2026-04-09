@@ -35,6 +35,38 @@ public class AimingCommands {
         return getShooterPoseWithOffset(() -> Robot.pose_pred.getDynamicPredictedPose()).get();
     }
 
+    /**
+     * aims without changing hood or rpm so that the shooter can go under bump
+     *
+     * @param shooter
+     * @param robotPoseSupplier
+     * @param robotVelocitySupplier
+     * @return
+     */
+    public static Command idleCommand(Shooter shooter) {
+
+
+        ShootInformation info = ShootInformation.getInstance();
+        return shooter.run(
+                () -> {
+
+                    info.setBeingControlled(false);
+                    Pose3d targetPose = info.getShotLocation();
+
+                    ShooterState targetingData =
+                            LerpSolveShot.solve(
+                                    targetPose,
+                                    shooter.getCurrentState().flywheelSpeed.in(RPM),
+                                    0.0);
+
+                    shooter.targetState(
+                            RPM.of(3000),
+                            targetingData.turretAngle,
+                            Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
+                });
+    }
+
+
     public static BooleanSupplier isUnderTrench() {
 
         return () -> {
@@ -80,19 +112,11 @@ public class AimingCommands {
      */
     public static void idleOnce(Shooter shooter) {
         ShootInformation info = ShootInformation.getInstance();
-        Pose2d robotPose2d = getTurretPose();
         ShootingData shootingData = info.getData();
         info.setBeingControlled(false);
 
-        Pose3d shooterPose =
-                new Pose3d(
-                        robotPose2d.getX(),
-                        robotPose2d.getY(),
-                        Robot.consts.shooter().kFlywheels().ShooterHeightMeters(),
-                        new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
         ShooterState targetingData =
                 LerpSolveShot.solve(
-                        shooterPose,
                         shootingData.TARGET_POSE,
                         shooter.getCurrentState().flywheelSpeed.in(RPM),
                         0.02);
@@ -107,20 +131,12 @@ public class AimingCommands {
 
         ShootInformation info = ShootInformation.getInstance();
         info.setBeingControlled(true);
-        Pose2d shooterPoseWithOffset = getTurretPose();
         ShootingData shootingData = info.getData();
 
         shooter.currentShotType = getShotType();
 
-        Pose3d shooterPose3d =
-                new Pose3d(
-                        shooterPoseWithOffset.getX(),
-                        shooterPoseWithOffset.getY(),
-                        Robot.consts.shooter().kFlywheels().ShooterHeightMeters(),
-                        new Rotation3d(0.0, 0.0, shooterPoseWithOffset.getRotation().getRadians()));
-
         ShooterState targetingData =
-                LerpSolveShot.solve(shooterPose3d, shootingData.TARGET_POSE, 0.1, 0.0);
+                LerpSolveShot.solve(shootingData.TARGET_POSE, 0.1, 0.0);
 
         if (targetingData.flywheelSpeed.in(RPM) != 0) {
             // possible shot so follow its instructions
@@ -163,25 +179,11 @@ public class AimingCommands {
 
     public static Command SHOOT_AT_TARGET(
             Shooter shooter,
-            Pose3d targetPose,
-            Supplier<Pose2d> robotPose,
-            Supplier<ChassisSpeeds> robotVeloSupplier,
-            double maxHeightMeters,
-            double minHeightMeters) {
+            Pose3d targetPose) {
         return shooter.run(
                 () -> {
-                    Pose2d robotPose2d = robotPose.get();
-
-                    Pose3d shooterPose =
-                            new Pose3d(
-                                    robotPose2d.getX(),
-                                    robotPose2d.getY(),
-                                    Robot.consts.shooter().kFlywheels().ShooterHeightMeters(),
-                                    new Rotation3d(
-                                            0.0, 0.0, robotPose2d.getRotation().getRadians()));
                     ShooterState targetingData =
                             LerpSolveShot.solve(
-                                    shooterPose,
                                     targetPose,
                                     shooter.getCurrentState().flywheelSpeed.in(RPM),
                                     0.02);
