@@ -93,7 +93,8 @@ public class LerpSolveShot {
                         new LerpTableEntry(6, 1)
                     });
 
-    public static ShooterState solve(Pose3d goalPose, double currentRPM, double latencyCompensation) {
+    public static ShooterState solve(
+            Pose3d goalPose, double currentRPM, double latencyCompensation) {
 
         Pose3d shooterPose = Robot.turret_pred.getPredictedPose().get();
 

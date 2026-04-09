@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
 import igknighters.commands.Shooter.AimingCommands;
-import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
@@ -49,9 +48,7 @@ public class HigherOrderCommands {
 
     public static Command fireAtTarget(Subsystems subsystems, Pose3d targetPose) {
         Command shooterCommand =
-                AimingCommands.SHOOT_AT_TARGET(
-                                subsystems.shooter,
-                                targetPose)
+                AimingCommands.SHOOT_AT_TARGET(subsystems.shooter, targetPose)
                         .withName("Active Spool & Aim");
 
         return Commands.parallel(shooterCommand, IndexerCommands.smartDispense(subsystems.indexer))
@@ -59,8 +56,7 @@ public class HigherOrderCommands {
     }
 
     public static Command IdleShooter(Subsystems subsystems) {
-        return AimingCommands.idleCommand(
-                        subsystems.shooter)
+        return AimingCommands.idleCommand(subsystems.shooter)
                 .alongWith(IndexerCommands.jorkIt(subsystems.indexer).repeatedly())
                 .alongWith(Commands.runOnce(() -> DrivingSharedState.getInstance().setDetune(1.0)))
                 .withName("IDLING THE SHOOTER");

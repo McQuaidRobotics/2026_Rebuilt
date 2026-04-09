@@ -5,12 +5,8 @@ import static edu.wpi.first.units.Units.RPM;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
-import igknighters.constants.ShootInformation;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.subsystems.shooter.solvers.Math.LerpSolveShot;
@@ -110,15 +106,12 @@ public class ShooterCommands {
                 .withName("HOOD IS DOWN ON SENSOR");
     }
 
-    
     public static enum shotType {
         PASS,
         SHOT
     }
 
-    public static Command shootAt(
-            Shooter shooter,
-            Supplier<Pose2d> targetPoseSupplier) {
+    public static Command shootAt(Shooter shooter, Supplier<Pose2d> targetPoseSupplier) {
         return shooter.run(
                         () -> {
                             Pose2d targetPose = targetPoseSupplier.get();

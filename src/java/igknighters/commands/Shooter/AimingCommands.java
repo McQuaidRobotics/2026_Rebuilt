@@ -5,8 +5,6 @@ import static edu.wpi.first.units.Units.RPM;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
 import igknighters.commands.Shooter.ShooterCommands.shotType;
@@ -45,11 +43,9 @@ public class AimingCommands {
      */
     public static Command idleCommand(Shooter shooter) {
 
-
         ShootInformation info = ShootInformation.getInstance();
         return shooter.run(
                 () -> {
-
                     info.setBeingControlled(false);
                     Pose3d targetPose = info.getShotLocation();
 
@@ -65,7 +61,6 @@ public class AimingCommands {
                             Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
                 });
     }
-
 
     public static BooleanSupplier isUnderTrench() {
 
@@ -135,8 +130,7 @@ public class AimingCommands {
 
         shooter.currentShotType = getShotType();
 
-        ShooterState targetingData =
-                LerpSolveShot.solve(shootingData.TARGET_POSE, 0.1, 0.0);
+        ShooterState targetingData = LerpSolveShot.solve(shootingData.TARGET_POSE, 0.1, 0.0);
 
         if (targetingData.flywheelSpeed.in(RPM) != 0) {
             // possible shot so follow its instructions
@@ -177,9 +171,7 @@ public class AimingCommands {
                 });
     }
 
-    public static Command SHOOT_AT_TARGET(
-            Shooter shooter,
-            Pose3d targetPose) {
+    public static Command SHOOT_AT_TARGET(Shooter shooter, Pose3d targetPose) {
         return shooter.run(
                 () -> {
                     ShooterState targetingData =

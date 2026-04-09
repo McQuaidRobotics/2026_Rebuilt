@@ -22,8 +22,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.Shooter.ShooterCommands;
-import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.SubsystemTriggers;
+import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
@@ -326,7 +326,7 @@ public class Robot extends LoggedRobot {
         if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()
                     .updateTurret(
-                            -subsystems.shooter.getTurretAngleDegrees(),
+                            subsystems.shooter.getTurretAngleDegrees(),
                             subsystems.swerve.getState().Pose);
             Logger.recordOutput(
                     "componentPoses",
@@ -494,7 +494,7 @@ public class Robot extends LoggedRobot {
                 // AimSolver)
                 double flywheelRadius = 0.0508; // 2 inches
                 double launchVelocity =
-                        (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.1;
+                        (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.0;
 
                 fuelSim.launchFuel(
                         MetersPerSecond.of(launchVelocity),

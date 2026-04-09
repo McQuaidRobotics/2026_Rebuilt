@@ -58,7 +58,8 @@ public class TurretReal extends Turret {
                 Robot.consts.shooter().kTurret().SUPPLY_CURRENT_LIMIT();
 
         cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        cfg.MotorOutput.Inverted =
+                InvertedValue.CounterClockwise_Positive; // inverted used to be c p
 
         return cfg;
     }
@@ -70,7 +71,7 @@ public class TurretReal extends Turret {
                 Robot.consts.shooter().kTurret().CANCODER_OFFSET_ROTATIONS();
         cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.75;
         cfg.MagnetSensor.SensorDirection =
-                SensorDirectionValue.Clockwise_Positive; // Adjust as needed
+                SensorDirectionValue.CounterClockwise_Positive; // used to be c p
 
         return cfg;
     }
