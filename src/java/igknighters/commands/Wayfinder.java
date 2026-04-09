@@ -10,7 +10,7 @@ import vroom.PathFollower;
 import vroom.PathPlanner;
 
 public class Wayfinder {
-    static PathPlanner pathPlanner = new PathPlanner(new Field(), 2);
+    static PathPlanner pathPlanner = new PathPlanner(new Field(), 4);
     static PathFollower pathFollower = new PathFollower(1.0, 0, 0);
     static Pose2d[] path;
 

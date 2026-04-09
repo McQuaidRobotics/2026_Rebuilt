@@ -47,7 +47,7 @@ public class PathFollower {
     public ChassisSpeeds calculateSpeeds(
             Pose2d currentPose, Pose2d[] path, double timeSeconds, PathPlanner planner) {
         // 1. Determine where we SHOULD be right now
-        Pose2d setpoint = planner.getPoseAtTime(path, timeSeconds);
+        Pose2d setpoint = planner.getPoseAtTime(path, timeSeconds, 0.0);
 
         // 2. Use PID to calculate required velocity in m/s to close the gap
         double xVelocity = xController.calculate(currentPose.getX(), setpoint.getX());

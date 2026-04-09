@@ -1,11 +1,16 @@
 package vroom;
 
 import java.util.ArrayList;
+import vroom.Obstacles.CircleObstacle;
+import vroom.Obstacles.Obstacle;
+import vroom.Obstacles.StuddedRectangle;
+import vroom.Obstacles.WallObstacle;
 
 public class Field {
     public enum obstacleType {
         CIRCLE,
         RECTANGLE,
+        STUDDEDRECT,
         WALL;
     }
 
@@ -26,6 +31,8 @@ public class Field {
 
     public ArrayList<obstacle> obstacles = new ArrayList<>();
 
+    public ArrayList<Obstacle> obstacleObjects = new ArrayList<>();
+
     public void setUpObstacles() {
         // walls
         obstacles.add(new obstacle(0, 0, .3, 16.540988, 0.0, obstacleType.WALL)); // bottom
@@ -41,7 +48,7 @@ public class Field {
                         .2,
                         0.6477,
                         2.5411,
-                        obstacleType.RECTANGLE)); // bump blue
+                        obstacleType.STUDDEDRECT)); // bump blue
         obstacles.add(
                 new obstacle(
                         11.915394,
@@ -49,14 +56,46 @@ public class Field {
                         .2,
                         0.6477,
                         2.4511,
-                        obstacleType.RECTANGLE)); // bump red
+                        obstacleType.STUDDEDRECT)); // bump red
     }
 
     public Field() {
         setUpObstacles();
+        initializeObstacleObjects();
     }
 
-    public ArrayList<obstacle> getObstacles() {
-        return obstacles;
+    public void initializeObstacleObjects() {
+        for (obstacle obs : obstacles) {
+            switch (obs.type()) {
+                case CIRCLE:
+                    obstacleObjects.add(
+                            new CircleObstacle(obs.x(), obs.y(), obs.width(), obs.strength()));
+                    break;
+                case RECTANGLE:
+                    obstacleObjects.add(
+                            new vroom.Obstacles.Rectangle(
+                                    obs.x(), obs.y(), obs.width(), obs.height(), obs.strength()));
+                    break;
+                case STUDDEDRECT:
+                    obstacleObjects.add(
+                            new StuddedRectangle(
+                                    obs.x(),
+                                    obs.y(),
+                                    obs.width(),
+                                    obs.height(),
+                                    obs.strength(),
+                                    1.5));
+                    break;
+                case WALL:
+                    obstacleObjects.add(
+                            new WallObstacle(
+                                    obs.x(), obs.y(), obs.width(), obs.height(), obs.strength()));
+                    break;
+            }
+        }
+    }
+
+    public ArrayList<Obstacle> getObstacles() {
+        return obstacleObjects;
     }
 }
