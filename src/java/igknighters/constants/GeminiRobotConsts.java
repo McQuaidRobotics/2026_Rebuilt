@@ -427,17 +427,17 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_SPEED_RPM() {
-            return 600.0;
+            return 300.0;
         }
 
         @Override
         public double MAX_ACCELERATION_RPM() {
-            return 800.0;
+            return 500.0;
         }
 
         @Override
         public double MAX_JERK() {
-            return 300;
+            return 500;
         }
 
         @Override
@@ -452,12 +452,12 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public double kP() {
-            return 65.0;
+            return 75.0;
         }
 
         @Override
         public double kI() {
-            return 0.05;
+            return 0.15;
         }
 
         @Override

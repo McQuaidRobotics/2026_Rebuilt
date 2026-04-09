@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import igknighters.Robot;
 import igknighters.subsystems.swerve.Swerve;
+import igknighters.util.LerpTable.LerpTableEntry;
 import igknighters.util.Merging.PoseMerger;
 import igknighters.util.Merging.SpeedsMerger;
 import java.util.Arrays;
@@ -26,6 +27,18 @@ import java.util.Optional;
  */
 public class RobotPosePredictor {
     Swerve swerve;
+    // input is rotational speed
+    static LerpTable MAGIC =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(.5, .1),
+                        new LerpTableEntry(1.0, .15),
+                        new LerpTableEntry(2.0, .15),
+                        new LerpTableEntry(3, .15),
+                        new LerpTableEntry(4.5, .2),
+                        new LerpTableEntry(5, .25),
+                        new LerpTableEntry(7, .3)
+                    });
 
     /**
      * Returns the best possible pose prediction based on current state. Automatically switches to
@@ -149,8 +162,14 @@ public class RobotPosePredictor {
         // handle wrapping
         double predOmega =
                 currentPose[2]
-                        + veloHistory[latestIdx].omegaRadiansPerSecond * 0.1
-                        + 1 / 2 * predictedRotAcc * Math.pow(0.1, 2);
+                        - veloHistory[latestIdx].omegaRadiansPerSecond
+                                * MAGIC.lerp(veloHistory[latestIdx].omegaRadiansPerSecond)
+                        - 1
+                                / 2
+                                * predictedRotAcc
+                                * Math.pow(
+                                        MAGIC.lerp(veloHistory[latestIdx].omegaRadiansPerSecond),
+                                        2);
 
         if (predOmega > Math.PI) {
             predicted[2] = predOmega - 2 * Math.PI;

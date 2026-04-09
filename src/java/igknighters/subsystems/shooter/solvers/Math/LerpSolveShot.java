@@ -37,7 +37,7 @@ public class LerpSolveShot {
     static LerpTable TANGENTIAL =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, .6),
+                        new LerpTableEntry(1.0, .7),
                         new LerpTableEntry(2.0, .8),
                         new LerpTableEntry(3, .9),
                         new LerpTableEntry(4.5, 1.0),
@@ -75,7 +75,7 @@ public class LerpSolveShot {
                         new LerpTableEntry(3.5, 3200),
                         new LerpTableEntry(4.0, 3300),
                         new LerpTableEntry(4.5, 3400),
-                        new LerpTableEntry(5.0, 3680),
+                        new LerpTableEntry(5.2, 3680),
                         new LerpTableEntry(5.5, 3780),
                         new LerpTableEntry(6.0, 3800),
                         new LerpTableEntry(8.0, 4000),
@@ -128,6 +128,8 @@ public class LerpSolveShot {
         Translation2d tangentialVelocity = rawRobotVelocity.minus(radialVelocity);
 
         // --- UPDATED: Radial and Tangential Speed Inputs ---
+        Log.log("ROBOT/COMMANDS/LERPSOLVE/RADIAL VELO", radialVelocity.getNorm());
+        Log.log("ROBOT/COMMANDS/LERPSOLVE/TANGENTIAL VELO", tangentialVelocity.getNorm());
 
         // Input is the absolute radial speed
         double radialTowardsMultiplier = RADIAL_TOWARDS.lerp(Math.abs(radialVelocityMag));
