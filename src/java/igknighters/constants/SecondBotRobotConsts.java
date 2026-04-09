@@ -421,12 +421,12 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_ANGLE_DEGREES() {
-            return 270.0;
+            return 90;
         }
 
         @Override
         public double MIN_ANGLE_DEGREES() {
-            return -90.0;
+            return -270.0;
         }
 
         @Override
