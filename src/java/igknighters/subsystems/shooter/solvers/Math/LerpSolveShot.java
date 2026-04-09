@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -99,9 +101,9 @@ public class LerpSolveShot {
 
         Pose3d shooterPose = Robot.turret_pred.getPredictedPose().get();
 
-        ChassisSpeeds robotSpeeds = Robot.turret_pred.getPredictedVelos();
+        Supplier<ChassisSpeeds> robotSpeeds = Robot.turret_pred.getPredictedVelos();
         Translation2d rawRobotVelocity =
-                new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
+                new Translation2d(robotSpeeds.get().vxMetersPerSecond, robotSpeeds.get().vyMetersPerSecond);
         double kConversion = SubsystemConstants.kShooter.kFlywheels.RPM_TO_METERS_PER_SECOND_FACTOR;
 
         // --- NEW: Radial and Tangential Separation ---
