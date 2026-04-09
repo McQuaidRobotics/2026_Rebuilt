@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
-import java.util.List;
 
 public class PathFollower {
     private final PIDController xController;
@@ -46,7 +45,7 @@ public class PathFollower {
      * @return ChassisSpeeds in meters per second and radians per second.
      */
     public ChassisSpeeds calculateSpeeds(
-            Pose2d currentPose, List<Pose2d> path, double timeSeconds, PathPlanner planner) {
+            Pose2d currentPose, Pose2d[] path, double timeSeconds, PathPlanner planner) {
         // 1. Determine where we SHOULD be right now
         Pose2d setpoint = planner.getPoseAtTime(path, timeSeconds);
 
@@ -62,22 +61,27 @@ public class PathFollower {
 
         // 4. Return as ChassisSpeeds (Field Relative)
         // If your drive code expects robot-relative, use ChassisSpeeds.fromFieldRelativeSpeeds
-        return new ChassisSpeeds(xVelocity, yVelocity, omega);
+        return new ChassisSpeeds(-xVelocity, -yVelocity, omega);
     }
 
-    public Command createFollowPathCommand(Swerve swerve, List<Pose2d> path, PathPlanner planner) {
+    public Command createFollowPathCommand(Swerve swerve, Pose2d[] path, PathPlanner planner) {
         Timer timer = new Timer();
         return swerve.startRun(
-                () -> timer.start(),
-                () -> {
-                    ChassisSpeeds speeds =
-                            calculateSpeeds(swerve.getState().Pose, path, timer.get(), planner);
-                    swerve.setControl(
-                            m_driveRequest
-                                    .withVelocityX(MetersPerSecond.of(speeds.vxMetersPerSecond))
-                                    .withVelocityY(MetersPerSecond.of(speeds.vyMetersPerSecond))
-                                    .withRotationalRate(
-                                            RadiansPerSecond.of(speeds.omegaRadiansPerSecond)));
-                });
+                        () -> timer.start(),
+                        () -> {
+                            ChassisSpeeds speeds =
+                                    calculateSpeeds(
+                                            swerve.getState().Pose, path, timer.get(), planner);
+                            swerve.setControl(
+                                    m_driveRequest
+                                            .withVelocityX(
+                                                    MetersPerSecond.of(speeds.vxMetersPerSecond))
+                                            .withVelocityY(
+                                                    MetersPerSecond.of(speeds.vyMetersPerSecond))
+                                            .withRotationalRate(
+                                                    RadiansPerSecond.of(
+                                                            speeds.omegaRadiansPerSecond)));
+                        })
+                .finallyDo(() -> timer.reset());
     }
 }

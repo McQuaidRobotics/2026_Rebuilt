@@ -13,10 +13,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.LEDCommands.LEDSection;
 import igknighters.commands.Shooter.AimingCommands;
 import igknighters.commands.Shooter.ShooterCommands;
-import igknighters.commands.teleop.AutoRotateOnBump;
 import igknighters.commands.teleop.SlowedDownDrivingWhileShooting;
 import igknighters.constants.Conv;
-import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
 import igknighters.controllers.DriverController;
@@ -190,11 +188,12 @@ public class SubsystemTriggers {
 
         SetupOperatorController(subsystems);
 
-        onBump.and(teleop)
-                .whileTrue(
-                        Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true))
-                                .andThen(new AutoRotateOnBump(swerve, driverController)));
-        onBump.onFalse(Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(false)));
+        // onBump.and(teleop)
+        //         .whileTrue(
+        //                 Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true))
+        //                         .andThen(new AutoRotateOnBump(swerve, driverController)));
+        // onBump.onFalse(Commands.runOnce(() ->
+        // DrivingSharedState.getInstance().setOnBump(false)));
 
         falseOnce().and(disabled).whileTrue(disabledLED(led));
 

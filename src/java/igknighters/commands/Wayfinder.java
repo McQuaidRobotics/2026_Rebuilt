@@ -1,0 +1,29 @@
+package igknighters.commands;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import igknighters.subsystems.swerve.Swerve;
+import java.util.Set;
+import vroom.Field;
+import vroom.PathFollower;
+import vroom.PathPlanner;
+
+public class Wayfinder {
+    static PathPlanner pathPlanner = new PathPlanner(new Field(), 2);
+    static PathFollower pathFollower = new PathFollower(1.0, 0, 0);
+    static Pose2d[] path;
+
+    public static Command driveToTarget(Swerve swerve, Pose2d target) {
+
+        path = pathPlanner.generatePath(swerve.getState().Pose, target);
+        return Commands.defer(
+                () -> {
+                    return pathFollower.createFollowPathCommand(
+                            swerve,
+                            pathPlanner.generatePath(swerve.getState().Pose, target),
+                            pathPlanner);
+                },
+                Set.of(swerve));
+    }
+}

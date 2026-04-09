@@ -9,13 +9,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.IntakeCommands;
-import igknighters.commands.Repulsor;
 import igknighters.commands.Shooter.AimingCommands;
 import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.commands.SwerveCommands;
-import igknighters.commands.teleop.TeleopSwerveHeadingCmd;
+import igknighters.commands.Wayfinder;
 import igknighters.constants.DrivingSharedState;
-import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
 import java.util.function.DoubleSupplier;
 
@@ -114,18 +112,7 @@ public class DriverController {
         var indexer = subsystems.indexer;
 
         if (debugType == DebugType.SWERVE) {
-            this.Start.whileTrue(SwerveCommands.zeroGyro(swerve));
-            this.A.whileTrue(
-                    new TeleopSwerveHeadingCmd(swerve, this, 45.0, state.kP, state.kI, state.kD));
-            this.B.whileTrue(
-                    new TeleopSwerveHeadingCmd(swerve, this, 180.0, state.kP, state.kI, state.kD));
-            this.Y.whileTrue(
-                    Repulsor.moveWithRepulsor(
-                            swerve,
-                            new Pose2d(
-                                    FieldConstants.X_FIELD / 2,
-                                    FieldConstants.Y_FIELD / 2,
-                                    new Rotation2d())));
+            this.A.whileTrue(Wayfinder.driveToTarget(swerve, new Pose2d(0, 0, new Rotation2d(0))));
         } else if (debugType == DebugType.SHOOTER) {
             this.A.whileTrue(ShooterCommands.targetState(shooter, 5000, 90, 25));
             this.B.whileTrue(ShooterCommands.targetState(shooter, 5000, 180, 30));

@@ -28,27 +28,27 @@ public class Field {
 
     public void setUpObstacles() {
         // walls
-        obstacles.add(new obstacle(0, 0, 1.0, 16.540988, 0.0, obstacleType.WALL)); // bottom
-        obstacles.add(new obstacle(16.540988, 0, 1.0, 0.0, 8.069326, obstacleType.WALL)); // right
-        obstacles.add(new obstacle(0, 16.540988, 1.0, 16.540988, 0.0, obstacleType.WALL)); // top
-        obstacles.add(new obstacle(0.0, 0.0, 1.0, 0.0, 8.069326, obstacleType.WALL)); // left
+        obstacles.add(new obstacle(0, 0, .3, 16.540988, 0.0, obstacleType.WALL)); // bottom
+        obstacles.add(new obstacle(16.540988, 0, .3, 0.0, 8.069326, obstacleType.WALL)); // right
+        obstacles.add(new obstacle(0, 16.540988, .3, 16.540988, 0.0, obstacleType.WALL)); // top
+        obstacles.add(new obstacle(0.0, 0.0, .3, 0.0, 8.069326, obstacleType.WALL)); // left
 
         // bump
         obstacles.add(
                 new obstacle(
                         4.625594,
                         4.034663,
-                        1.0,
+                        .2,
                         0.6477,
-                        4.9022,
+                        2.5411,
                         obstacleType.RECTANGLE)); // bump blue
         obstacles.add(
                 new obstacle(
                         11.915394,
                         4.034663,
-                        1.0,
+                        .2,
                         0.6477,
-                        4.9022,
+                        2.4511,
                         obstacleType.RECTANGLE)); // bump red
     }
 
