@@ -44,23 +44,23 @@ public class PathFollower {
      * @param planner The PathPlanner instance used to find the setpoint.
      * @return ChassisSpeeds in meters per second and radians per second.
      */
-    public ChassisSpeeds calculateSpeeds(
-            Pose2d currentPose, Pose2d[] path, double timeSeconds, PathPlanner planner) {
-        // 1. Determine where we SHOULD be right now
-        Pose2d setpoint = planner.getPoseAtTime(path, timeSeconds, 0.0);
+    public ChassisSpeeds calculateSpeeds(Pose2d currentPose, Pose2d[] path, PathPlanner planner) {
+        if (path.length == 0) return new ChassisSpeeds();
 
-        // 2. Use PID to calculate required velocity in m/s to close the gap
+        // Use a physical distance lookahead (e.g., 0.4 meters)
+        // instead of a time-based one.
+        double lookaheadMeters = 1.2;
+        Pose2d setpoint = planner.getLookaheadPose(currentPose, path, lookaheadMeters);
+
+        // Standard PID calculation
         double xVelocity = xController.calculate(currentPose.getX(), setpoint.getX());
         double yVelocity = yController.calculate(currentPose.getY(), setpoint.getY());
 
-        // 3. Calculate rotation speed (rad/s) to match the path heading
         double omega =
                 thetaController.calculate(
                         currentPose.getRotation().getRadians(),
                         setpoint.getRotation().getRadians());
 
-        // 4. Return as ChassisSpeeds (Field Relative)
-        // If your drive code expects robot-relative, use ChassisSpeeds.fromFieldRelativeSpeeds
         return new ChassisSpeeds(-xVelocity, -yVelocity, omega);
     }
 
@@ -70,8 +70,7 @@ public class PathFollower {
                         () -> timer.start(),
                         () -> {
                             ChassisSpeeds speeds =
-                                    calculateSpeeds(
-                                            swerve.getState().Pose, path, timer.get(), planner);
+                                    calculateSpeeds(swerve.getState().Pose, path, planner);
                             swerve.setControl(
                                     m_driveRequest
                                             .withVelocityX(

@@ -62,7 +62,7 @@ public class StuddedRectangle implements Obstacle {
         // 2. CORNER STUDS (Radial Kicker)
         // We check corners REGARDLESS of the faces to ensure a smooth transition
         double[][] corners = {{minX, minY}, {minX, maxY}, {maxX, minY}, {maxX, maxY}};
-        double studInfluence = .75;
+        double studInfluence = 1.0;
 
         for (double[] corner : corners) {
             Translation2d cornerPos = new Translation2d(corner[0], corner[1]);

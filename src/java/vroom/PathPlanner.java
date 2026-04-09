@@ -90,4 +90,27 @@ public class PathPlanner {
         Logger.recordOutput("POSITION LOOKED UP", path[Math.max(0, index)]);
         return path[Math.max(0, index)];
     }
+
+    public Pose2d getLookaheadPose(Pose2d currentPose, Pose2d[] path, double lookaheadDist) {
+        if (path.length == 0) return currentPose;
+
+        // 1. Find the index of the point on the path closest to the robot
+        int closestIndex = 0;
+        double minDistance = Double.MAX_VALUE;
+
+        for (int i = 0; i < path.length; i++) {
+            double dist = currentPose.getTranslation().getDistance(path[i].getTranslation());
+            if (dist < minDistance) {
+                minDistance = dist;
+                closestIndex = i;
+            }
+        }
+
+        // 2. Calculate how many steps to look ahead
+        // Since each step in our path is 'lookaheadDistance' (0.1m) apart:
+        int stepsAhead = (int) Math.round(lookaheadDist / this.lookaheadDistance);
+        int targetIndex = Math.min(closestIndex + stepsAhead, path.length - 1);
+
+        return path[targetIndex];
+    }
 }

@@ -45,7 +45,7 @@ public class Field {
                 new obstacle(
                         4.625594,
                         4.034663,
-                        .2,
+                        1.0,
                         0.6477,
                         2.5411,
                         obstacleType.STUDDEDRECT)); // bump blue
@@ -53,7 +53,7 @@ public class Field {
                 new obstacle(
                         11.915394,
                         4.034663,
-                        .2,
+                        1.0,
                         0.6477,
                         2.4511,
                         obstacleType.STUDDEDRECT)); // bump red
