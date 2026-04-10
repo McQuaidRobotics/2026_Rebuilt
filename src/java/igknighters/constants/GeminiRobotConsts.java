@@ -442,7 +442,7 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_JERK() {
-            return 300;
+            return 500;
         }
 
         @Override
@@ -457,12 +457,12 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public double kP() {
-            return 65.0;
+            return 75.0;
         }
 
         @Override
         public double kI() {
-            return 0.05;
+            return 0.15;
         }
 
         @Override

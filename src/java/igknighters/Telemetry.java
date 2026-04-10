@@ -41,7 +41,7 @@ public class Telemetry {
         try {
             aprilTagLayout = new AprilTagLayout();
         } catch (IOException e) {
-            System.out.println("Could not load AprilTag layout");
+            //     System.out.println("Could not load AprilTag layout");
             e.printStackTrace();
         }
         SignalLogger.start();
