@@ -1,4 +1,4 @@
-package vroom.Obstacles.Fields;
+package vroom.Fields;
 
 import java.util.ArrayList;
 import vroom.Field;
@@ -10,7 +10,7 @@ import vroom.Obstacles.Obstacle;
 import vroom.Obstacles.StuddedRectangle;
 import vroom.Obstacles.WallObstacle;
 
-public class REBUILT implements Field {
+public class REBUILTBUMP implements Field {
     public ArrayList<obstacle> obstacles = new ArrayList<>();
 
     public ArrayList<Obstacle> obstacleObjects = new ArrayList<>();
@@ -24,7 +24,7 @@ public class REBUILT implements Field {
                 new obstacle(0, 16.540988, .3, 16.540988, 0.0, false, obstacleType.WALL)); // top
         obstacles.add(new obstacle(0.0, 0.0, .3, 0.0, 8.069326, false, obstacleType.WALL)); // left
 
-        // bump
+        // HUB
         obstacles.add(
                 new obstacle(
                         4.625594,
@@ -33,7 +33,7 @@ public class REBUILT implements Field {
                         0.6477,
                         2.5411,
                         false,
-                        obstacleType.FUNNEL)); // bump blue
+                        obstacleType.CIRCLE)); // bump blue
         obstacles.add(
                 new obstacle(
                         11.915394,
@@ -42,25 +42,23 @@ public class REBUILT implements Field {
                         0.6477,
                         2.4511,
                         false,
-                        obstacleType.FUNNEL)); // bump red
+                        obstacleType.CIRCLE)); // bump red
 
-        // corridor
-        obstacles.add(new obstacle(11.915394, 6.45 + 2, 1.0, 2.0, 1.0, true, obstacleType.CORIDOR));
+        // TRENCHES
+        obstacles.add(new obstacle(11.915394, 6.45 + 2, 1.0, 2.0, 1.0, true, obstacleType.CIRCLE));
 
         // red top
 
         obstacles.add(
-                new obstacle(11.915394, 1.46 - 2.0, 1.0, 2.0, 1.0, true, obstacleType.CORIDOR));
+                new obstacle(11.915394, 1.46 - 2.0, 1.0, 2.0, 1.0, true, obstacleType.CIRCLE));
 
         // red bottom
 
-        obstacles.add(
-                new obstacle(4.625594, 6.45 + 2.0, 1.0, 2.0, 1.0, true, obstacleType.CORIDOR));
+        obstacles.add(new obstacle(4.625594, 6.45 + 2.0, 1.0, 2.0, 1.0, true, obstacleType.CIRCLE));
 
         // blue top
 
-        obstacles.add(
-                new obstacle(4.625594, 1.46 - 2.0, 1.0, 2.0, 1.0, true, obstacleType.CORIDOR));
+        obstacles.add(new obstacle(4.625594, 1.46 - 2.0, 1.0, 2.0, 1.0, true, obstacleType.CIRCLE));
         // blue bottom
 
         // CLIMB BELOW
@@ -69,7 +67,7 @@ public class REBUILT implements Field {
         obstacles.add(new obstacle(16.540988, 4.323588, 1.0, 2.5, 0, false, obstacleType.CIRCLE));
     }
 
-    public REBUILT() {
+    public REBUILTBUMP() {
         setUpObstacles();
         initializeObstacleObjects();
     }

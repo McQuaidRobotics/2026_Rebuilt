@@ -17,7 +17,7 @@ import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import java.util.ArrayList;
 import java.util.Set;
-import vroom.Obstacles.Fields.REBUILTBUMP;
+import vroom.Fields.REBUILTBUMP;
 
 public class LiveFollower {
     private static SwerveRequest.FieldCentric m_driveRequest =

@@ -16,7 +16,7 @@ public class PathPlanner {
     private final double obstacleInfluenceRange = 1.5; // distance where obstacles start pushing
     static PIDController xController = new PIDController(0.1, 0, 0);
     static PIDController yController = new PIDController(0.1, 0, 0);
-    static PIDController thetaController = new PIDController(0.1, 0, 0);
+    static PIDController thetaController = new PIDController(1.0, 0, 0);
 
     public PathPlanner(Field field, double maxVelocity) {
         this.field = field;
@@ -80,7 +80,7 @@ public class PathPlanner {
                     cursor.getTranslation()
                             .plus(new Translation2d(lookaheadDistance, force.getAngle()));
 
-            cursor = new Pose2d(nextStep, force.getAngle());
+            cursor = new Pose2d(nextStep, target.getRotation());
             pathList.add(cursor);
             if (pathList.size() % 2 == 0 || pathList.size() == maxSteps || pathList.size() == 1) {
                 posesToDisplay.add(cursor);

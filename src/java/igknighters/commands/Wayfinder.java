@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.subsystems.swerve.Swerve;
 import java.util.Set;
-import vroom.Obstacles.Fields.REBUILTBUMP;
+import vroom.Fields.REBUILTBUMP;
 import vroom.PathFollower;
 import vroom.PathPlanner;
 
