@@ -45,11 +45,13 @@ public class CORIDOR implements Obstacle {
             if (isHorizontal) {
                 // Delete vertical forces
                 double sign = Math.signum(targetPos.getX() - robotPos.getX());
-                return new Translation2d(sign * strength, -currentForceY);
+                return new Translation2d(-currentForceX + sign * strength, -currentForceY);
             } else {
                 // Delete horizontal forces and push robot down
                 double sign = Math.signum(targetPos.getY() - robotPos.getY());
-                return new Translation2d(-currentForceX, sign * strength);
+                return new Translation2d(
+                        -currentForceX,
+                        -currentForceY + sign * strength); // over ride the force to ensure a push
             }
         }
         return new Translation2d();

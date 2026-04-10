@@ -1,18 +1,14 @@
 package vroom;
 
 import java.util.ArrayList;
-import vroom.Obstacles.BUMPOBSTACLE;
-import vroom.Obstacles.CORIDOR;
-import vroom.Obstacles.CircleObstacle;
-import vroom.Obstacles.Obstacle;
-import vroom.Obstacles.StuddedRectangle;
-import vroom.Obstacles.WallObstacle;
+import vroom.Obstacles.*;
 
 public class Field {
     public enum obstacleType {
         CIRCLE,
         RECTANGLE,
-        STUDDEDRECT,
+        STUDDED_RECTANGLE,
+        FUNNEL,
         RECTANGLENOTADJACENT,
         CORIDOR,
         WALL;
@@ -61,7 +57,7 @@ public class Field {
                         0.6477,
                         2.5411,
                         false,
-                        obstacleType.STUDDEDRECT)); // bump blue
+                        obstacleType.FUNNEL)); // bump blue
         obstacles.add(
                 new obstacle(
                         11.915394,
@@ -70,7 +66,7 @@ public class Field {
                         0.6477,
                         2.4511,
                         false,
-                        obstacleType.RECTANGLENOTADJACENT)); // bump red
+                        obstacleType.FUNNEL)); // bump red
 
         // corridor
         obstacles.add(new obstacle(11.915394, 6.45 + 2, 1.0, 2.0, 1.0, true, obstacleType.CORIDOR));
@@ -85,8 +81,16 @@ public class Field {
         obstacles.add(
                 new obstacle(4.625594, 6.45 + 2.0, 1.0, 2.0, 1.0, true, obstacleType.CORIDOR));
 
+        // blue top
+
         obstacles.add(
                 new obstacle(4.625594, 1.46 - 2.0, 1.0, 2.0, 1.0, true, obstacleType.CORIDOR));
+        // blue bottom
+
+        // CLIMB BELOW
+
+        obstacles.add(new obstacle(0.0, 4.323588, 2.0, 2.5, 0, false, obstacleType.CIRCLE));
+        obstacles.add(new obstacle(16.540988, 4.323588, 2.0, 2.5, 0, false, obstacleType.CIRCLE));
     }
 
     public Field() {
@@ -122,7 +126,18 @@ public class Field {
                             new BUMPOBSTACLE(
                                     obs.x(), obs.y(), obs.width(), obs.height(), obs.strength()));
                     break;
-                case STUDDEDRECT:
+                case FUNNEL:
+                    obstacleObjects.add(
+                            new FunnelObstacle(
+                                    obs.x(),
+                                    obs.y(),
+                                    obs.width(),
+                                    obs.height(),
+                                    2.0,
+                                    obs.strength(),
+                                    1.5));
+                    break;
+                case STUDDED_RECTANGLE:
                     obstacleObjects.add(
                             new StuddedRectangle(
                                     obs.x(),

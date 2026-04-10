@@ -12,16 +12,14 @@ import vroom.PathPlanner;
 public class Wayfinder {
     static PathPlanner pathPlanner = new PathPlanner(new Field(), 4);
     static PathFollower pathFollower = new PathFollower(1.0, 0, 0);
-    static Pose2d[] path;
 
     public static Command driveToTarget(Swerve swerve, Pose2d target) {
 
-        path = pathPlanner.generatePath(swerve.getState().Pose, target);
         return Commands.defer(
                 () -> {
                     return pathFollower.createFollowPathCommand(
                             swerve,
-                            pathPlanner.generatePath(swerve.getState().Pose, target),
+                            pathPlanner.generateTimestampedPath(swerve.getState().Pose, target),
                             pathPlanner);
                 },
                 Set.of(swerve));

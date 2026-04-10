@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
@@ -32,6 +31,8 @@ public class PathPlanner {
         double currentTime = 0;
         double maxVel = 3.0; // Meters per second
 
+        ArrayList<Pose2d> displayPose = new ArrayList<>();
+
         path.add(new PathPoint(cursor, 0, maxVel));
 
         int maxSteps = 500;
@@ -49,9 +50,15 @@ public class PathPlanner {
             double stepTime = 0.1 / maxVel;
             currentTime += stepTime;
 
+            if (path.size() % 10 == 0 || path.size() == maxSteps || path.size() == 1) {
+                displayPose.add(cursor);
+            }
+
             cursor = new Pose2d(nextStep, moveDir);
             path.add(new PathPoint(cursor, currentTime, maxVel));
         }
+
+        Logger.recordOutput("PATH_DISPLAY", displayPose.toArray(new Pose2d[0]));
         return path.toArray(new PathPoint[0]);
     }
 
@@ -75,7 +82,7 @@ public class PathPlanner {
 
             cursor = new Pose2d(nextStep, force.getAngle());
             pathList.add(cursor);
-            if (pathList.size() % 10 == 0 || pathList.size() == maxSteps || pathList.size() == 1) {
+            if (pathList.size() % 2 == 0 || pathList.size() == maxSteps || pathList.size() == 1) {
                 posesToDisplay.add(cursor);
             }
         }
@@ -149,23 +156,29 @@ public class PathPlanner {
     }
 
     public ChassisSpeeds calculateSpeeds(Pose2d currentPose, PathPoint[] path, double time) {
-    // Get where we should be 0.1s in the future (Lookahead)
-    Pose2d setpoint = getInterpolatedPose(path, time + 0.1);
+        // Get where we should be 0.1s in the future (Lookahead)
+        Pose2d setpoint = getInterpolatedPose(path, time + 0.1);
 
-    // PID helps fix errors
-    double xFeedback = xController.calculate(currentPose.getX(), setpoint.getX());
-    double yFeedback = yController.calculate(currentPose.getY(), setpoint.getY());
+        // PID helps fix errors
+        double xFeedback = xController.calculate(currentPose.getX(), setpoint.getX());
+        double yFeedback = yController.calculate(currentPose.getY(), setpoint.getY());
 
-    // Feedforward: "The path is moving this fast, so start with this speed"
-    // (Velocity from our PathPoint)
-    double velocity = 3.0; 
-    Rotation2d direction = setpoint.getTranslation().minus(currentPose.getTranslation()).getAngle();
-    
-    double xFF = direction.getCos() * velocity;
-    double yFF = direction.getSin() * velocity;
+        // Feedforward: "The path is moving this fast, so start with this speed"
+        // (Velocity from our PathPoint)
+        double velocity = 3.0;
+        Rotation2d direction =
+                setpoint.getTranslation().minus(currentPose.getTranslation()).getAngle();
 
-    return new ChassisSpeeds(xFF + xFeedback, yFF + yFeedback, thetaController.calculate(currentPose.getRotation().getRadians(), setpoint.getRotation().getRadians()));
-}
+        double xFF = direction.getCos() * velocity;
+        double yFF = direction.getSin() * velocity;
+
+        return new ChassisSpeeds(
+                xFF + xFeedback,
+                yFF + yFeedback,
+                thetaController.calculate(
+                        currentPose.getRotation().getRadians(),
+                        setpoint.getRotation().getRadians()));
+    }
 
     public Pose2d getLookaheadPose(Pose2d currentPose, Pose2d[] path, double lookaheadDist) {
         if (path.length == 0) return currentPose;
