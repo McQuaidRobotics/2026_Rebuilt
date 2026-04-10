@@ -11,7 +11,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import igknighters.Robot;
 import igknighters.subsystems.swerve.Swerve;
-import igknighters.util.LerpTable.LerpTableEntry;
 import igknighters.util.Merging.PoseMerger;
 import igknighters.util.Merging.SpeedsMerger;
 import java.util.Arrays;
@@ -27,6 +26,7 @@ import java.util.Optional;
  */
 public class RobotPosePredictor {
     Swerve swerve;
+
     // input is rotational speed
 
     /**
