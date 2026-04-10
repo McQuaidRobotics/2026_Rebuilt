@@ -22,7 +22,10 @@ public class StuddedRectangle implements Obstacle {
 
     @Override
     public Translation2d calculateForce(
-            Translation2d robotPos, Translation2d targetPos, double robotRadius) {
+            Translation2d robotPos,
+            Translation2d targetPos,
+            double robotRadius,
+            Translation2d forceSoFar) {
         double minX = x - halfWidth;
         double maxX = x + halfWidth;
         double minY = y - halfHeight;

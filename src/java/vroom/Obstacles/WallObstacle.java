@@ -15,7 +15,10 @@ public class WallObstacle implements Obstacle {
 
     @Override
     public Translation2d calculateForce(
-            Translation2d robotPos, Translation2d targetPos, double robotRadius) {
+            Translation2d robotPos,
+            Translation2d targetPos,
+            double robotRadius,
+            Translation2d forceSoFar) {
         Translation2d totalRepulsive = new Translation2d();
         boolean isHorizontal = height == 0;
         double dx = 0, dy = 0, distance = Double.MAX_VALUE;

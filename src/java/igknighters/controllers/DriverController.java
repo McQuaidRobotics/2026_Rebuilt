@@ -16,6 +16,7 @@ import igknighters.commands.Wayfinder;
 import igknighters.constants.DrivingSharedState;
 import igknighters.subsystems.Subsystems;
 import java.util.function.DoubleSupplier;
+import vroom.LiveFollower;
 
 public class DriverController {
 
@@ -113,6 +114,7 @@ public class DriverController {
 
         if (debugType == DebugType.SWERVE) {
             this.A.whileTrue(Wayfinder.driveToTarget(swerve, new Pose2d(0, 0, new Rotation2d(0))));
+            this.B.whileTrue(LiveFollower.driveLive(swerve, new Pose2d(8, 5, new Rotation2d(0))));
         } else if (debugType == DebugType.SHOOTER) {
             this.A.whileTrue(ShooterCommands.targetState(shooter, 5000, 90, 25));
             this.B.whileTrue(ShooterCommands.targetState(shooter, 5000, 180, 30));

@@ -14,7 +14,10 @@ public class CircleObstacle implements Obstacle {
 
     @Override
     public Translation2d calculateForce(
-            Translation2d robotPos, Translation2d targetPos, double robotRadius) {
+            Translation2d robotPos,
+            Translation2d targetPos,
+            double robotRadius,
+            Translation2d forceSoFar) {
         Translation2d totalRepulsive = new Translation2d();
 
         // --- CIRCLE: x,y is center, width is radius ---

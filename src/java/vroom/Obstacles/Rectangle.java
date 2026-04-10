@@ -15,7 +15,10 @@ public class Rectangle implements Obstacle {
 
     @Override
     public Translation2d calculateForce(
-            Translation2d robotPos, Translation2d targetPos, double robotRadius) {
+            Translation2d robotPos,
+            Translation2d targetPos,
+            double robotRadius,
+            Translation2d forceSoFar) {
         Translation2d totalRepulsive = new Translation2d();
 
         double minX = x - width;

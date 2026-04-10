@@ -1,8 +1,13 @@
 package vroom;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+
 import java.util.ArrayList;
+import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 public class PathPlanner {
@@ -10,10 +15,44 @@ public class PathPlanner {
     private final double maxVelocity; // meters per second
     private final double lookaheadDistance = 0.1; // step size in meters
     private final double obstacleInfluenceRange = 1.5; // distance where obstacles start pushing
+    static PIDController xController = new PIDController(0.1, 0, 0);
+    static PIDController yController = new PIDController(0.1, 0, 0);
+    static PIDController thetaController = new PIDController(0.1, 0, 0);
 
     public PathPlanner(Field field, double maxVelocity) {
         this.field = field;
         this.maxVelocity = maxVelocity;
+    }
+
+    public record PathPoint(Pose2d pose, double timeSeconds, double velocity) {}
+
+    public PathPoint[] generateTimestampedPath(Pose2d start, Pose2d target) {
+        List<PathPoint> path = new ArrayList<>();
+        Pose2d cursor = start;
+        double currentTime = 0;
+        double maxVel = 3.0; // Meters per second
+
+        path.add(new PathPoint(cursor, 0, maxVel));
+
+        int maxSteps = 500;
+        while (cursor.getTranslation().getDistance(target.getTranslation()) > 0.1
+                && path.size() < maxSteps) {
+            Translation2d force =
+                    calculateTotalForce(cursor.getTranslation(), target.getTranslation());
+            Rotation2d moveDir = force.getAngle();
+
+            // 0.1m step
+            Translation2d nextStep = cursor.getTranslation().plus(new Translation2d(0.1, moveDir));
+
+            // --- TIMING LOGIC ---
+            // Time = Distance / Velocity
+            double stepTime = 0.1 / maxVel;
+            currentTime += stepTime;
+
+            cursor = new Pose2d(nextStep, moveDir);
+            path.add(new PathPoint(cursor, currentTime, maxVel));
+        }
+        return path.toArray(new PathPoint[0]);
     }
 
     public Pose2d[] generatePath(Pose2d current, Pose2d target) {
@@ -65,31 +104,68 @@ public class PathPlanner {
         Translation2d totalRepulsive = new Translation2d();
         double robotRadius = 0.5;
 
+        ArrayList<vroom.Obstacles.Obstacle> corridors = new ArrayList<>();
+
         for (vroom.Obstacles.Obstacle obs : field.getObstacles()) {
-            totalRepulsive = totalRepulsive.plus(obs.calculateForce(current, target, robotRadius));
+            if (obs instanceof vroom.Obstacles.CORIDOR) {
+                corridors.add(obs);
+                continue;
+            }
+            totalRepulsive =
+                    totalRepulsive.plus(
+                            obs.calculateForce(current, target, robotRadius, totalRepulsive));
         }
-        return finalAttractive.plus(totalRepulsive);
+        Translation2d totalForce = finalAttractive.plus(totalRepulsive);
+        for (vroom.Obstacles.Obstacle obs : corridors) {
+            totalForce =
+                    totalForce.plus(obs.calculateForce(current, target, robotRadius, totalForce));
+        }
+        return totalForce;
     }
 
-    /**
-     * Estimates the required pose at a specific time.
-     *
-     * @param path The generated path.
-     * @param seconds Seconds since start of path.
-     * @param lookaheadTime The time to look ahead when estimating the pose.
-     */
-    public Pose2d getPoseAtTime(Pose2d[] path, double seconds, double lookaheadTime) {
-        if (path.length == 0) return new Pose2d();
+    public Pose2d getInterpolatedPose(PathPoint[] path, double time) {
+        if (time <= 0) return path[0].pose();
+        if (time >= path[path.length - 1].timeSeconds()) return path[path.length - 1].pose();
 
-        double distanceToTravel = (seconds + lookaheadTime) * maxVelocity;
-        int index = (int) Math.round(distanceToTravel / lookaheadDistance);
+        // 1. Find the two points we are between
+        for (int i = 0; i < path.length - 1; i++) {
+            if (time < path[i + 1].timeSeconds()) {
+                PathPoint start = path[i];
+                PathPoint end = path[i + 1];
 
-        if (index >= path.length) return path[path.length - 1];
+                // 2. Calculate % of completion between these two points
+                double t = (time - start.timeSeconds()) / (end.timeSeconds() - start.timeSeconds());
 
-        Logger.recordOutput("PATH_INDEX", index);
-        Logger.recordOutput("POSITION LOOKED UP", path[Math.max(0, index)]);
-        return path[Math.max(0, index)];
+                // 3. Interpolate Translation and Rotation
+                Translation2d lerpTrans =
+                        start.pose().getTranslation().interpolate(end.pose().getTranslation(), t);
+                Rotation2d lerpRot =
+                        start.pose().getRotation().interpolate(end.pose().getRotation(), t);
+
+                return new Pose2d(lerpTrans, lerpRot);
+            }
+        }
+        return path[path.length - 1].pose();
     }
+
+    public ChassisSpeeds calculateSpeeds(Pose2d currentPose, PathPoint[] path, double time) {
+    // Get where we should be 0.1s in the future (Lookahead)
+    Pose2d setpoint = getInterpolatedPose(path, time + 0.1);
+
+    // PID helps fix errors
+    double xFeedback = xController.calculate(currentPose.getX(), setpoint.getX());
+    double yFeedback = yController.calculate(currentPose.getY(), setpoint.getY());
+
+    // Feedforward: "The path is moving this fast, so start with this speed"
+    // (Velocity from our PathPoint)
+    double velocity = 3.0; 
+    Rotation2d direction = setpoint.getTranslation().minus(currentPose.getTranslation()).getAngle();
+    
+    double xFF = direction.getCos() * velocity;
+    double yFF = direction.getSin() * velocity;
+
+    return new ChassisSpeeds(xFF + xFeedback, yFF + yFeedback, thetaController.calculate(currentPose.getRotation().getRadians(), setpoint.getRotation().getRadians()));
+}
 
     public Pose2d getLookaheadPose(Pose2d currentPose, Pose2d[] path, double lookaheadDist) {
         if (path.length == 0) return currentPose;

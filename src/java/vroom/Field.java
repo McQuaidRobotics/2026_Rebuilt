@@ -1,6 +1,8 @@
 package vroom;
 
 import java.util.ArrayList;
+import vroom.Obstacles.BUMPOBSTACLE;
+import vroom.Obstacles.CORIDOR;
 import vroom.Obstacles.CircleObstacle;
 import vroom.Obstacles.Obstacle;
 import vroom.Obstacles.StuddedRectangle;
@@ -11,6 +13,8 @@ public class Field {
         CIRCLE,
         RECTANGLE,
         STUDDEDRECT,
+        RECTANGLENOTADJACENT,
+        CORIDOR,
         WALL;
     }
 
@@ -27,7 +31,13 @@ public class Field {
      *     detection).
      */
     public record obstacle(
-            double x, double y, double strength, double width, double height, obstacleType type) {}
+            double x,
+            double y,
+            double strength,
+            double width,
+            double height,
+            boolean horizontal,
+            obstacleType type) {}
 
     public ArrayList<obstacle> obstacles = new ArrayList<>();
 
@@ -35,10 +45,12 @@ public class Field {
 
     public void setUpObstacles() {
         // walls
-        obstacles.add(new obstacle(0, 0, .3, 16.540988, 0.0, obstacleType.WALL)); // bottom
-        obstacles.add(new obstacle(16.540988, 0, .3, 0.0, 8.069326, obstacleType.WALL)); // right
-        obstacles.add(new obstacle(0, 16.540988, .3, 16.540988, 0.0, obstacleType.WALL)); // top
-        obstacles.add(new obstacle(0.0, 0.0, .3, 0.0, 8.069326, obstacleType.WALL)); // left
+        obstacles.add(new obstacle(0, 0, .3, 16.540988, 0.0, false, obstacleType.WALL)); // bottom
+        obstacles.add(
+                new obstacle(16.540988, 0, .3, 0.0, 8.069326, false, obstacleType.WALL)); // right
+        obstacles.add(
+                new obstacle(0, 16.540988, .3, 16.540988, 0.0, false, obstacleType.WALL)); // top
+        obstacles.add(new obstacle(0.0, 0.0, .3, 0.0, 8.069326, false, obstacleType.WALL)); // left
 
         // bump
         obstacles.add(
@@ -48,6 +60,7 @@ public class Field {
                         1.0,
                         0.6477,
                         2.5411,
+                        false,
                         obstacleType.STUDDEDRECT)); // bump blue
         obstacles.add(
                 new obstacle(
@@ -56,7 +69,24 @@ public class Field {
                         1.0,
                         0.6477,
                         2.4511,
-                        obstacleType.STUDDEDRECT)); // bump red
+                        false,
+                        obstacleType.RECTANGLENOTADJACENT)); // bump red
+
+        // corridor
+        obstacles.add(new obstacle(11.915394, 6.45 + 2, 1.0, 2.0, 1.0, true, obstacleType.CORIDOR));
+
+        // red top
+
+        obstacles.add(
+                new obstacle(11.915394, 1.46 - 2.0, 1.0, 2.0, 1.0, true, obstacleType.CORIDOR));
+
+        // red bottom
+
+        obstacles.add(
+                new obstacle(4.625594, 6.45 + 2.0, 1.0, 2.0, 1.0, true, obstacleType.CORIDOR));
+
+        obstacles.add(
+                new obstacle(4.625594, 1.46 - 2.0, 1.0, 2.0, 1.0, true, obstacleType.CORIDOR));
     }
 
     public Field() {
@@ -74,6 +104,22 @@ public class Field {
                 case RECTANGLE:
                     obstacleObjects.add(
                             new vroom.Obstacles.Rectangle(
+                                    obs.x(), obs.y(), obs.width(), obs.height(), obs.strength()));
+                    break;
+
+                case CORIDOR:
+                    obstacleObjects.add(
+                            new CORIDOR(
+                                    obs.x(),
+                                    obs.y(),
+                                    obs.width(),
+                                    obs.height(),
+                                    obs.strength(),
+                                    obs.horizontal()));
+                    break;
+                case RECTANGLENOTADJACENT:
+                    obstacleObjects.add(
+                            new BUMPOBSTACLE(
                                     obs.x(), obs.y(), obs.width(), obs.height(), obs.strength()));
                     break;
                 case STUDDEDRECT:

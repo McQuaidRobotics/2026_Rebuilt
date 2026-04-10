@@ -12,5 +12,8 @@ public interface Obstacle {
      * @return Translation2d representing the force vector.
      */
     Translation2d calculateForce(
-            Translation2d robotPos, Translation2d targetPos, double robotRadius);
+            Translation2d robotPos,
+            Translation2d targetPos,
+            double robotRadius,
+            Translation2d forceSoFar);
 }
