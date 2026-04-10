@@ -89,8 +89,8 @@ public class Field {
 
         // CLIMB BELOW
 
-        obstacles.add(new obstacle(0.0, 4.323588, 2.0, 2.5, 0, false, obstacleType.CIRCLE));
-        obstacles.add(new obstacle(16.540988, 4.323588, 2.0, 2.5, 0, false, obstacleType.CIRCLE));
+        obstacles.add(new obstacle(0.0, 4.323588, 1.0, 2.5, 0, false, obstacleType.CIRCLE));
+        obstacles.add(new obstacle(16.540988, 4.323588, 1.0, 2.5, 0, false, obstacleType.CIRCLE));
     }
 
     public Field() {
