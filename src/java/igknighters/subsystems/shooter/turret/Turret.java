@@ -1,14 +1,16 @@
 package igknighters.subsystems.shooter.turret;
 
 import edu.wpi.first.units.measure.Angle;
-import igknighters.constants.SubsystemConstants.kShooter.kTurret;
+import igknighters.Robot;
+import igknighters.util.log.Log;
 
 public abstract class Turret {
     public double wrapAngleDegrees(double angleDegrees) {
+        Log.log("ROBOT/Subsystems/Shooter/Turret/pre wrapped angle", angleDegrees);
         double angle = angleDegrees;
-        if (angle > kTurret.MAX_ANGLE_DEGREES) {
+        if (angle > Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES()) {
             angle -= 360.0;
-        } else if (angle < kTurret.MIN_ANGLE_DEGREES) {
+        } else if (angle < Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES()) {
             angle += 360.0;
         }
         return angle;

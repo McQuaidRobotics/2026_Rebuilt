@@ -412,7 +412,7 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public double CANCODER_OFFSET_ROTATIONS() {
-            return -0.747314453125;
+            return -0.250732421875;
         }
 
         @Override
@@ -432,17 +432,17 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_SPEED_RPM() {
-            return 600.0;
+            return 200.0;
         }
 
         @Override
         public double MAX_ACCELERATION_RPM() {
-            return 800.0;
+            return 300.0;
         }
 
         @Override
         public double MAX_JERK() {
-            return 300;
+            return 100;
         }
 
         @Override

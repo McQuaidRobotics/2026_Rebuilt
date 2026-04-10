@@ -205,8 +205,8 @@ public class Telemetry {
             }
             unseenTagsPub.set(unseenTagsArray);
         } else {
-            System.out.println("APRIL TAG LAYOUT NOT FOUND");
-            System.out.println("APRIL TAGS NEED TO BE LOADED TO SHOW THE SEEN TAGS");
+            //     System.out.println("APRIL TAG LAYOUT NOT FOUND");
+            //     System.out.println("APRIL TAGS NEED TO BE LOADED TO SHOW THE SEEN TAGS");
         }
 
         /* Telemeterize the module states to a Mechanism2d */

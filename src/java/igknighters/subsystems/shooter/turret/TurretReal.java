@@ -69,7 +69,7 @@ public class TurretReal extends Turret {
 
         cfg.MagnetSensor.MagnetOffset =
                 Robot.consts.shooter().kTurret().CANCODER_OFFSET_ROTATIONS();
-        cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.75;
+        cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.25;
         cfg.MagnetSensor.SensorDirection =
                 SensorDirectionValue.CounterClockwise_Positive; // used to be c p
 
@@ -113,7 +113,7 @@ public class TurretReal extends Turret {
                     "Turret angle out of bounds: "
                             + wrappedAngleDegrees
                             + " degrees. Commanded: "
-                            + angleDegrees,
+                            + angleDegrees.in(Degrees),
                     false);
             return;
         }
@@ -130,7 +130,7 @@ public class TurretReal extends Turret {
     public void periodic() {
 
         if (!Robot.consts.shooter().kTurret().disableTurretLogs()) {
-            //     Log.logMotor("Subsystems/Shooter/Turret/Motor", motor);
+            Log.logMotor("Subsystems/Shooter/Turret/Motor", motor);
             Log.log("ROBOT/Subsystems/Shooter/Turret/Target Degrees", super.targetDegrees);
         }
 
