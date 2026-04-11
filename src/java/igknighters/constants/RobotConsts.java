@@ -336,6 +336,8 @@ public abstract class RobotConsts {
     public interface kRollersConsts {
         int LEADER_MOTOR_ID();
 
+        double DRIVE_RATIO();
+
         int FOLLOWER_MOTOR_ID();
 
         double WHEEL_RADIUS_METERS();

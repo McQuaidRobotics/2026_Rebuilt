@@ -180,6 +180,11 @@ public class GeminiRobotConsts extends RobotConsts {
         }
 
         @Override
+        public double DRIVE_RATIO() {
+            return 1.0;
+        }
+
+        @Override
         public int FOLLOWER_MOTOR_ID() {
             return 28;
         }

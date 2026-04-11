@@ -184,6 +184,11 @@ public class SecondBotRobotConsts extends RobotConsts {
         }
 
         @Override
+        public double DRIVE_RATIO() {
+            return 1.0;
+        }
+
+        @Override
         public double WHEEL_RADIUS_METERS() {
             return 0.0508;
         }
