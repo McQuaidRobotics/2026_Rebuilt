@@ -1,8 +1,8 @@
 package igknighters.subsystems.LimeLightVision.Cameras;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import igknighters.subsystems.LimeLightVision.Helpers.PoseAverager;
 import igknighters.subsystems.LimeLightVision.Helpers.VisionSimulator;
+import igknighters.util.Merging.PoseAverager;
 import java.util.ArrayList;
 import java.util.List;
 

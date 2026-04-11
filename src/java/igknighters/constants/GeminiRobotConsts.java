@@ -401,6 +401,11 @@ public class GeminiRobotConsts extends RobotConsts {
         }
 
         @Override
+        public double TURRET_ROBOT_DISTANCE_FROM_CENTERS() {
+            return 7.0710678118655;
+        }
+
+        @Override
         public int CANCODER_ID() {
             return 25;
         }

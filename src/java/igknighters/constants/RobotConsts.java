@@ -76,6 +76,8 @@ public abstract class RobotConsts {
     public interface kTurretConsts {
         int MOTOR_ID();
 
+        double TURRET_ROBOT_DISTANCE_FROM_CENTERS();
+
         int CANCODER_ID();
 
         double CANCODER_OFFSET_ROTATIONS();

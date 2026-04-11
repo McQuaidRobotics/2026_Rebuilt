@@ -400,6 +400,14 @@ public class AutoRoutines extends AutoCommands {
         AutoTrajectory intakeTrajectory = routine.trajectory("RIGHT_SINGLE_SWIPE_1.traj");
         AutoTrajectory scoringTrajectory = routine.trajectory("RIGHT_SINGLE_SWIPE_2.traj");
 
+        intakeTrajectory
+                .active()
+                .onTrue(
+                        Commands.runOnce(
+                                () -> {
+                                    subsystems.swerve.setActiveTrajectory(intakeTrajectory);
+                                }));
+
         routine.active()
                 .onTrue(
                         Commands.sequence(
@@ -409,7 +417,20 @@ public class AutoRoutines extends AutoCommands {
                                         IntakeCommands.holdAtIntake(subsystems.intake),
                                         intakeTrajectory.cmd())));
 
-        intakeTrajectory.done().onTrue(scoringTrajectory.cmd());
+        intakeTrajectory
+                .done()
+                .onTrue(
+                        Commands.sequence(
+                                Commands.runOnce(
+                                        () -> {
+                                            subsystems.swerve.clearActiveTrajectory();
+                                        }),
+                                Commands.runOnce(
+                                        () -> {
+                                            subsystems.swerve.setActiveTrajectory(
+                                                    scoringTrajectory);
+                                        }),
+                                scoringTrajectory.cmd()));
 
         scoringTrajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
 
