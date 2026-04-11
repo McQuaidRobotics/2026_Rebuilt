@@ -185,7 +185,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double DRIVE_RATIO() {
-            return 1.0;
+            return -1.0;
         }
 
         @Override

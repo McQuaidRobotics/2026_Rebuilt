@@ -2,13 +2,10 @@ package igknighters.subsystems.intake.rollers;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.Robot;
 import igknighters.util.log.Log;
@@ -69,7 +66,7 @@ public class RollersReal extends Rollers {
         config.CurrentLimits.StatorCurrentLimit = 35.0;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         config.Feedback.SensorToMechanismRatio = Robot.consts.intake().kRollers().GEAR_RATIO();
 
@@ -84,7 +81,10 @@ public class RollersReal extends Rollers {
     @Override
     public void goToSpeed(AngularVelocity speed) {
         topMotor.setControl(velocityContorl.withVelocity(speed.in(RotationsPerSecond)));
-        bottomMotor.setControl(velocityContorl.withVelocity(speed.in(RotationsPerSecond) * Robot.consts.intake().kRollers().DRIVE_RATIO()));
+        bottomMotor.setControl(
+                velocityContorl.withVelocity(
+                        speed.in(RotationsPerSecond)
+                                * Robot.consts.intake().kRollers().DRIVE_RATIO()));
     }
 
     @Override
@@ -98,7 +98,9 @@ public class RollersReal extends Rollers {
 
         if (!Robot.consts.intake().kRollers().disableRollersLogs()) {
             Log.log("ROBOT/Subsystems/Intake/Rollers/SpeedRPSTOP", getSpeed());
-            Log.log("ROBOT/Subsystems/Intake/Rollers/SpeedRPSBOTTOM", bottomMotor.getVelocity().refresh().getValueAsDouble());
+            Log.log(
+                    "ROBOT/Subsystems/Intake/Rollers/SpeedRPSBOTTOM",
+                    bottomMotor.getVelocity().refresh().getValueAsDouble());
         }
     }
 }

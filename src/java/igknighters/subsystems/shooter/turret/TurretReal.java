@@ -94,8 +94,6 @@ public class TurretReal extends Turret {
         motor.setPosition(angle.in(Rotations));
     }
 
-
-
     @Override
     public void goToAngleDegrees(Angle angleDegrees) {
         super.targetDegrees = angleDegrees.in(Degrees);
