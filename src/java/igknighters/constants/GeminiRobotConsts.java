@@ -208,7 +208,7 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public double DRIVE_RATIO() {
-            return 1.0;
+            return -1.0;
         }
 
         @Override
@@ -439,7 +439,7 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public InvertedValue MOTOR_INVERTED() {
-            return InvertedValue.Clockwise_Positive;
+            return InvertedValue.CounterClockwise_Positive;
         }
 
         @Override
@@ -474,17 +474,17 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_SPEED_RPM() {
-            return 300.0;
+            return 200.0;
         }
 
         @Override
         public double MAX_ACCELERATION_RPM() {
-            return 600.0;
+            return 500.0;
         }
 
         @Override
         public double MAX_JERK() {
-            return 500;
+            return 300;
         }
 
         @Override

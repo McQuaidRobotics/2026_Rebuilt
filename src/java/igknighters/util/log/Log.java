@@ -34,7 +34,7 @@ public class Log {
                 path + "/Velocity RPM", motor.getVelocity().getValueAsDouble() * Conv.RPS_TO_RPM);
         Logger.recordOutput(
                 path + "/Position DEG",
-                motor.getPosition().getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES);
+                motor.getPosition().refresh().getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES);
     }
 
     public static void logMotorMinimal(String path, TalonFX motor) {

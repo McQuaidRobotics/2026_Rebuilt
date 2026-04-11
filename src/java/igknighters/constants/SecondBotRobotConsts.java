@@ -331,12 +331,12 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiFlywheelsConsts implements kFlywheelsConsts {
         @Override
         public int LEADER_MOTOR_ID() {
-            return 23;
+            return 15;
         }
 
         @Override
         public int FOLLOWER_MOTOR_ID() {
-            return 22;
+            return 8;
         }
 
         @Override
@@ -453,7 +453,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double CANCODER_OFFSET_ROTATIONS() {
-            return -0.747314453125;
+            return 0.1884765625;
         }
 
         @Override
@@ -535,7 +535,7 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiHoodConsts implements kHoodConsts {
         @Override
         public int MOTOR_ID() {
-            return 26;
+            return 32;
         }
 
         @Override

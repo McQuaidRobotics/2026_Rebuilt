@@ -16,7 +16,7 @@ public class SwerveConsts {
     };
 
     private String DEMO_BOT_SERIAL_NUMBER = "TBD";
-    private String GEMINKNIGHT_SERIAL_NUMBER = "03260AF0";
+    private String GEMINKNIGHT_SERIAL_NUMBER = "032B4B20";
     private String SECOND_BOT_SERIAL_NUMBER = "03260ABB";
 
     public Robots getRobot() {
