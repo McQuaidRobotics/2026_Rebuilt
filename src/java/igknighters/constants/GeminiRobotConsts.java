@@ -75,6 +75,31 @@ public class GeminiRobotConsts extends RobotConsts {
         }
 
         @Override
+        public double STOWED_ANGLE_DEGREES() {
+            return 16.0;
+        }
+
+        @Override
+        public double PARTIAL_STOW() {
+            return 66.0;
+        }
+
+        @Override
+        public double JORK_ANGLE() {
+            return 40.0;
+        }
+
+        @Override
+        public InvertedValue INVERTED() {
+            return InvertedValue.Clockwise_Positive;
+        }
+
+        @Override
+        public SensorDirectionValue SENSOR_DIRECTION() {
+            return SensorDirectionValue.Clockwise_Positive;
+        }
+
+        @Override
         public int CANCODER_ID() {
             return 21;
         }

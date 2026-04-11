@@ -15,18 +15,23 @@ public enum IntakeState implements StructSerializable {
             () -> RPM.of(Robot.consts.intake().kRollers().MAX_SPEED_RPM()),
             () -> Degrees.of(5)),
     slightJork(
-            () -> Degrees.of(40),
+            () -> Degrees.of(Robot.consts.intake().kPivot().JORK_ANGLE()),
             () -> RPM.of(Robot.consts.intake().kRollers().MAX_SPEED_RPM()),
             () -> Degrees.of(5)),
 
     largeJork(
-            () -> Degrees.of(35),
+            () -> Degrees.of(Robot.consts.intake().kPivot().JORK_ANGLE()),
             () -> RPM.of(Robot.consts.intake().kRollers().MAX_SPEED_RPM()),
             () -> Degrees.of(5)),
 
-    partialStow(() -> Degrees.of(25), () -> RPM.of(100), () -> Degrees.of(5)),
-    PREP_TO_STOW(() -> Degrees.of(27), () -> RPM.of(500), () -> Degrees.of(10)),
-    Stowed(() -> Degrees.of(15), () -> RPM.of(100), () -> Degrees.of(5));
+    partialStow(
+            () -> Degrees.of(Robot.consts.intake().kPivot().PARTIAL_STOW()),
+            () -> RPM.of(100),
+            () -> Degrees.of(5)),
+    Stowed(
+            () -> Degrees.of(Robot.consts.intake().kPivot().STOWED_ANGLE_DEGREES()),
+            () -> RPM.of(100),
+            () -> Degrees.of(5));
 
     private final Supplier<Angle> pivotDegrees;
     private final Supplier<AngularVelocity> rollerSpeedRPM;

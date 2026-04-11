@@ -11,11 +11,13 @@ public class SwerveConsts {
     public enum Robots {
         DEMO_BOT,
         GEMINKNIGHT,
+        SECOND_BOT,
         UNKNOWN
     };
 
     private String DEMO_BOT_SERIAL_NUMBER = "TBD";
     private String GEMINKNIGHT_SERIAL_NUMBER = "03260AF0";
+    private String SECOND_BOT_SERIAL_NUMBER = "03260ABB";
 
     public Robots getRobot() {
         robotSerialNumber = RobotController.getSerialNumber();
@@ -32,6 +34,11 @@ public class SwerveConsts {
                 Log.log("ROBOT/ROBOT_INFO/ROBOT TYPE", "GEMINKNIGHT");
             }
             return Robots.GEMINKNIGHT;
+        } else if (robotSerialNumber.equals(SECOND_BOT_SERIAL_NUMBER)) {
+            if (!Robot.consts.disableAllLogs()) {
+                Log.log("ROBOT/ROBOT_INFO/ROBOT TYPE", "SECOND_BOT");
+            }
+            return Robots.SECOND_BOT;
         } else {
             if (!Robot.consts.disableAllLogs()) {
                 Log.log(
@@ -54,6 +61,11 @@ public class SwerveConsts {
                 Log.log("ROBOT/ROBOT_INFO/SWERVE CONSTS", "Using GeminiConsts");
             }
             return new GeminiConsts();
+        } else if (robot.equals(Robots.SECOND_BOT)) {
+            if (!Robot.consts.disableAllLogs()) {
+                Log.log("ROBOT/ROBOT_INFO/SWERVE CONSTS", "Using SecondBotConsts");
+            }
+            return new DarkKnightConsts();
         } else {
             if (!Robot.consts.disableAllLogs()) {
                 Log.log("ROBOT/ROBOT_INFO/SWERVE CONSTS", "Using DemoBotConsts (default)");

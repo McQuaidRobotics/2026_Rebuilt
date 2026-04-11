@@ -158,16 +158,28 @@ public class Swerve extends SubsystemBase {
     }
 
     public double getXAcceleration() {
-        return drivetrain.getPigeon2().getAccelerationX().getValueAsDouble();
+        if (!isSwerveDisabled) {
+            return drivetrain.getPigeon2().getAccelerationX().getValueAsDouble();
+        } else {
+            return 0.0;
+        }
     }
 
     public double getYAcceleration() {
-        return drivetrain.getPigeon2().getAccelerationY().getValueAsDouble();
+        if (!isSwerveDisabled) {
+            return drivetrain.getPigeon2().getAccelerationY().getValueAsDouble();
+        } else {
+            return 0.0;
+        }
     }
 
     public double getRotationalVelocity() {
-        return drivetrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble()
-                * Conv.DEGREES_TO_RADIANS;
+        if (!isSwerveDisabled) {
+            return drivetrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble()
+                    * Conv.DEGREES_TO_RADIANS;
+        } else {
+            return 0.0;
+        }
     }
 
     private AutoTrajectory activeTrajectory = null;

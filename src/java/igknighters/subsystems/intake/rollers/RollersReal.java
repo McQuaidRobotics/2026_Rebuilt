@@ -45,7 +45,7 @@ public class RollersReal extends Rollers {
         config.CurrentLimits.StatorCurrentLimit = 35.0;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         config.Feedback.SensorToMechanismRatio = Robot.consts.intake().kRollers().GEAR_RATIO();
 

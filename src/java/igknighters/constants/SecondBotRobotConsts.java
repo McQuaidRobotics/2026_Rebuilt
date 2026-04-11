@@ -74,6 +74,31 @@ public class SecondBotRobotConsts extends RobotConsts {
         }
 
         @Override
+        public double PARTIAL_STOW() {
+            return 35;
+        }
+
+        @Override
+        public double STOWED_ANGLE_DEGREES() {
+            return 16;
+        }
+
+        @Override
+        public double JORK_ANGLE() {
+            return 50.537109;
+        }
+
+        @Override
+        public InvertedValue INVERTED() {
+            return InvertedValue.CounterClockwise_Positive;
+        }
+
+        @Override
+        public SensorDirectionValue SENSOR_DIRECTION() {
+            return SensorDirectionValue.CounterClockwise_Positive;
+        }
+
+        @Override
         public int CANCODER_ID() {
             return 60;
         }
@@ -85,7 +110,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_ANGLE_DEGREES() {
-            return 66.0;
+            return 121.992188;
         }
 
         @Override
@@ -105,7 +130,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double ENCODER_OFFSET() {
-            return 0.31982421875;
+            return 0.21337890625;
         }
 
         @Override
@@ -115,17 +140,17 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public int STATOR_CURRENT_LIMIT() {
-            return 20;
+            return 15;
         }
 
         @Override
         public int SUPPLY_CURRENT_LIMIT() {
-            return 20;
+            return 5;
         }
 
         @Override
         public int SUPPLY_UPPER_LIMIT() {
-            return 25;
+            return 15;
         }
 
         @Override
@@ -187,7 +212,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double DRIVE_RATIO() {
-            return - 1.0;
+            return 1.0;
         }
 
         @Override
@@ -207,17 +232,17 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_SPEED_RPM() {
-            return 5000.0;
+            return 4500.0;
         }
 
         @Override
         public double MAX_ACCELERATION_RPM() {
-            return 1500.0;
+            return 3000.0;
         }
 
         @Override
         public double MOTION_MAGIC_JERK() {
-            return 500.0;
+            return 2000.0;
         }
 
         @Override
