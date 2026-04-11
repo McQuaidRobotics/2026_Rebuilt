@@ -94,15 +94,7 @@ public class TurretReal extends Turret {
         motor.setPosition(angle.in(Rotations));
     }
 
-    public boolean isLegalPosition(double angleDegrees) {
-        return angleDegrees >= Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES()
-                && angleDegrees <= Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES();
-    }
 
-    public boolean isLegalPositionWrapped(double angleDegrees) {
-        double wrappedAngleDegrees = wrapAngleDegrees(angleDegrees);
-        return isLegalPosition(wrappedAngleDegrees);
-    }
 
     @Override
     public void goToAngleDegrees(Angle angleDegrees) {

@@ -18,11 +18,18 @@ public class TurretSim extends Turret {
         super.degrees = wrappedAngleDegrees;
     }
 
+    public boolean isLegalPositionWrapped(double angleDegrees) {
+        double wrappedAngleDegrees = wrapAngleDegrees(angleDegrees);
+        return super.isLegalPosition(wrappedAngleDegrees);
+    }
+
     @Override
     public void goToAngleDegrees(Angle angle) {
+        if (isLegalPositionWrapped(angle.in(Degrees))) {
         double wrappedAngleDegrees = wrapAngleDegrees(angle.in(Degrees));
         super.degrees = wrappedAngleDegrees;
         super.targetDegrees = wrappedAngleDegrees;
+        }
     }
 
     @Override
