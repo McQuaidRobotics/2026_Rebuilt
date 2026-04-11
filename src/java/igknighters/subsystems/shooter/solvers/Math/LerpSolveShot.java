@@ -93,7 +93,7 @@ public class LerpSolveShot {
                         new LerpTableEntry(5.5, 1.15),
                         new LerpTableEntry(6, 1)
                     });
-                    
+
     public static ShooterState solve(
             Pose3d goalPose, double currentRPM, double latencyCompensation) {
 
