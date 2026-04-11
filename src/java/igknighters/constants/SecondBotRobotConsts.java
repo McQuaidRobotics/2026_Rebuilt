@@ -433,12 +433,12 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public SensorDirectionValue CANCODER_DIRECTION() {
-            return SensorDirectionValue.CounterClockwise_Positive;
+            return SensorDirectionValue.Clockwise_Positive;
         }
 
         @Override
         public InvertedValue MOTOR_INVERTED() {
-            return InvertedValue.Clockwise_Positive;
+            return InvertedValue.CounterClockwise_Positive;
         }
 
         @Override
@@ -453,7 +453,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double CANCODER_OFFSET_ROTATIONS() {
-            return 0.1884765625;
+            return -0.07861328125;
         }
 
         @Override
@@ -463,37 +463,37 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_ANGLE_DEGREES() {
-            return 90;
+            return 106.962891;
         }
 
         @Override
         public double MIN_ANGLE_DEGREES() {
-            return -270.0;
+            return -253.037109;
         }
 
         @Override
         public double MAX_SPEED_RPM() {
-            return 600.0;
+            return 200;
         }
 
         @Override
         public double MAX_ACCELERATION_RPM() {
-            return 800.0;
+            return 400;
         }
 
         @Override
         public double MAX_JERK() {
-            return 300;
+            return 200;
         }
 
         @Override
         public int STATOR_CURRENT_LIMIT() {
-            return 40;
+            return 30;
         }
 
         @Override
         public int SUPPLY_CURRENT_LIMIT() {
-            return 30;
+            return 40;
         }
 
         @Override
