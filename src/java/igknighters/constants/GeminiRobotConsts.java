@@ -1,6 +1,8 @@
 package igknighters.constants;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 public class GeminiRobotConsts extends RobotConsts {
 
@@ -403,6 +405,16 @@ public class GeminiRobotConsts extends RobotConsts {
         @Override
         public int MOTOR_ID() {
             return 24;
+        }
+
+        @Override
+        public SensorDirectionValue CANCODER_DIRECTION() {
+            return SensorDirectionValue.CounterClockwise_Positive;
+        }
+
+        @Override
+        public InvertedValue MOTOR_INVERTED() {
+            return InvertedValue.Clockwise_Positive;
         }
 
         @Override

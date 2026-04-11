@@ -64,7 +64,7 @@ public class TurretReal extends Turret {
         return cfg;
     }
 
-    private final CANcoderConfiguration wristCaNcoderConfiguration() {
+    private final CANcoderConfiguration turretCancoderConfig() {
         var cfg = new CANcoderConfiguration();
 
         cfg.MagnetSensor.MagnetOffset =
@@ -85,7 +85,7 @@ public class TurretReal extends Turret {
                 new TalonFX(
                         Robot.consts.shooter().kTurret().MOTOR_ID(),
                         Robot.consts.shooter().kCANBUS());
-        turretCaNcoder.getConfigurator().apply(wristCaNcoderConfiguration());
+        turretCaNcoder.getConfigurator().apply(turretCancoderConfig());
         motor.getConfigurator().apply(turretConfiguration());
     }
 

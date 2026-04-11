@@ -18,8 +18,8 @@ public class Indexer extends SubsystemBase {
 
     public Indexer() {
         if (Robot.isReal()) {
-            spindexer = new SpindexerReal();
-            exitRollers = new ExitRollersReal();
+            spindexer = new SpindexerDisabled();
+            exitRollers = new ExitRollersDisabled();
 
         } else {
             spindexer = new SpindexerSim();

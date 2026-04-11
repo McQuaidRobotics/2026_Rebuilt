@@ -1,6 +1,8 @@
 package igknighters.constants;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 public class SecondBotRobotConsts extends RobotConsts {
 
@@ -185,7 +187,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double DRIVE_RATIO() {
-            return -1.0;
+            return - 1.0;
         }
 
         @Override
@@ -402,6 +404,16 @@ public class SecondBotRobotConsts extends RobotConsts {
         @Override
         public int MOTOR_ID() {
             return 56;
+        }
+
+        @Override
+        public SensorDirectionValue CANCODER_DIRECTION() {
+            return SensorDirectionValue.CounterClockwise_Positive;
+        }
+
+        @Override
+        public InvertedValue MOTOR_INVERTED() {
+            return InvertedValue.Clockwise_Positive;
         }
 
         @Override
