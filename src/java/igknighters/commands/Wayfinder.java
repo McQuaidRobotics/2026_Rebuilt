@@ -5,12 +5,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.subsystems.swerve.Swerve;
 import java.util.Set;
-import vroom.Fields.REBUILTBUMP;
+import vroom.Fields.REBUILT;
 import vroom.PathFollower;
 import vroom.PathPlanner;
 
 public class Wayfinder {
-    static PathPlanner pathPlanner = new PathPlanner(new REBUILTBUMP(), 4);
+    static PathPlanner pathPlanner = new PathPlanner(new REBUILT(), 4);
     static PathFollower pathFollower = new PathFollower(1.0, 0, 0);
 
     public static Command driveToTarget(Swerve swerve, Pose2d target) {

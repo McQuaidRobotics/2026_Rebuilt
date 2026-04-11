@@ -17,7 +17,7 @@ import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import java.util.ArrayList;
 import java.util.Set;
-import vroom.Fields.REBUILTBUMP;
+import vroom.Fields.REBUILT;
 
 public class LiveFollower {
     private static SwerveRequest.FieldCentric m_driveRequest =
@@ -29,7 +29,7 @@ public class LiveFollower {
                     .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
 
     private static PIDController thetaController = new PIDController(1.0, 0, 0);
-    private static Field field = new REBUILTBUMP();
+    private static Field field = new REBUILT();
 
     private static Translation2d calculateTotalForce(Translation2d current, Translation2d target) {
         Translation2d attractive = target.minus(current);
