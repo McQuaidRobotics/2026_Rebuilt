@@ -393,6 +393,7 @@ public class Robot extends LoggedRobot {
         DrivingSharedState.getInstance().setKP(targetingP.value());
         DrivingSharedState.getInstance().setKI(targetingI.value());
         DrivingSharedState.getInstance().setKD(targetingD.value());
+        subsystems.vision.disableCameras();
 
         bindDriverController();
     }
@@ -401,10 +402,14 @@ public class Robot extends LoggedRobot {
     public void disabledPeriodic() {}
 
     @Override
-    public void disabledExit() {}
+    public void disabledExit() {
+        subsystems.vision.enableCameras(4);
+    }
 
     @Override
     public void autonomousInit() {
+
+        subsystems.vision.enableCameras(4);
         Command autoCommand = autoChooser.selectedCommand();
         if (fuelSim != null) {
             fuelSim.start();
@@ -433,6 +438,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopInit() {
+        subsystems.vision.enableCameras(4);
         subsystems.swerve.clearActiveTrajectory();
         if (fuelSim != null) {
             fuelSim.start();

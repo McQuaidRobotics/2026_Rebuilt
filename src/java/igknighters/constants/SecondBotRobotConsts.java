@@ -3,6 +3,8 @@ package igknighters.constants;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 public class SecondBotRobotConsts extends RobotConsts {
 
@@ -70,32 +72,7 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiPivotConsts implements kPivotConsts {
         @Override
         public int MOTOR_ID() {
-            return 61;
-        }
-
-        @Override
-        public double PARTIAL_STOW() {
-            return 35;
-        }
-
-        @Override
-        public double STOWED_ANGLE_DEGREES() {
-            return 16;
-        }
-
-        @Override
-        public double JORK_ANGLE() {
-            return 90.0;
-        }
-
-        @Override
-        public InvertedValue INVERTED() {
-            return InvertedValue.CounterClockwise_Positive;
-        }
-
-        @Override
-        public SensorDirectionValue SENSOR_DIRECTION() {
-            return SensorDirectionValue.CounterClockwise_Positive;
+            return 18;
         }
 
         @Override
@@ -453,7 +430,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double CANCODER_OFFSET_ROTATIONS() {
-            return -0.0771484375;
+            return -0.747314453125;
         }
 
         @Override
@@ -463,12 +440,12 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_ANGLE_DEGREES() {
-            return 152.138672;
+            return 270.0;
         }
 
         @Override
         public double MIN_ANGLE_DEGREES() {
-            return -360 + 152.138672;
+            return -90.0;
         }
 
         @Override

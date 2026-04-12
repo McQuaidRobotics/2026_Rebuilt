@@ -7,6 +7,7 @@ public abstract class Turret {
     public double wrapAngleDegrees(double angleDegrees) {
         double angle = angleDegrees;
         if (angle > Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES()) {
+        if (angle > Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES()) {
             angle -= 360.0;
         } else if (angle < Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES()) {
             angle += 360.0;
