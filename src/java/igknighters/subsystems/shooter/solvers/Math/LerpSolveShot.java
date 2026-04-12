@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import igknighters.FieldVisualizer;
 import igknighters.Robot;
 import igknighters.constants.ShootInformation;
+import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.util.*;
@@ -21,36 +22,36 @@ import igknighters.util.log.Log;
 public class LerpSolveShot {
     // minimal change in RPM most of the change will come from the hood
 
-    // RADIAL_TOWARDS RADIAL_AWAY TANGENTIAL all the inputs are in hypotenuse of (VX, VY) of robot
+    // RADIAL_TOWARDS RADIAL_AWAY TANGENTIAL all the inputs are in hyoptenuse of (VX, VY) of robot
 
     static LerpTable RADIAL_TOWARDS =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, 0.6),
-                        new LerpTableEntry(2.0, 0.7),
-                        new LerpTableEntry(3.0, 0.8),
-                        new LerpTableEntry(4.5, 0.9),
-                        new LerpTableEntry(5.0, 1.0)
+                        new LerpTableEntry(1.0, .6),
+                        new LerpTableEntry(2.0, .7),
+                        new LerpTableEntry(3, .8),
+                        new LerpTableEntry(4.5, .9),
+                        new LerpTableEntry(5, 1.0)
                     });
 
     static LerpTable TANGENTIAL =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, 0.7),
-                        new LerpTableEntry(2.0, 0.8),
-                        new LerpTableEntry(3.0, 0.9),
+                        new LerpTableEntry(1.0, .7),
+                        new LerpTableEntry(2.0, .8),
+                        new LerpTableEntry(3, .9),
                         new LerpTableEntry(4.5, 1.0),
-                        new LerpTableEntry(5.0, 1.1)
+                        new LerpTableEntry(5, 1.1)
                     });
 
     static LerpTable RADIAL_AWAY =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, 0.6),
-                        new LerpTableEntry(2.0, 0.7),
-                        new LerpTableEntry(3.0, 0.8),
-                        new LerpTableEntry(4.5, 0.9),
-                        new LerpTableEntry(5.0, 1.0)
+                        new LerpTableEntry(1.0, .6),
+                        new LerpTableEntry(2.0, .7),
+                        new LerpTableEntry(3, .8),
+                        new LerpTableEntry(4.5, .9),
+                        new LerpTableEntry(5, 1.0)
                     });
 
     static LerpTable HOOD_LERP =
@@ -62,7 +63,7 @@ public class LerpSolveShot {
                         new LerpTableEntry(4.5, 33.0),
                         new LerpTableEntry(5.5, 35.0),
                         new LerpTableEntry(6.0, 38.0),
-                        new LerpTableEntry(10.0, 45.0)
+                        new LerpTableEntry(10.0, 45)
                     });
 
     static LerpTable RPM_LERP =
@@ -79,19 +80,19 @@ public class LerpSolveShot {
                         new LerpTableEntry(6.0, 3800),
                         new LerpTableEntry(8.0, 4000),
                         new LerpTableEntry(10.0, 4200),
-                        new LerpTableEntry(20.0, 5500)
+                        new LerpTableEntry(20, 5500)
                     });
 
     static LerpTable TIME_OF_FLIGHT_LERP =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, 1.1),
+                        new LerpTableEntry(1, 1.1),
                         new LerpTableEntry(2.5, 1.1),
                         new LerpTableEntry(3.5, 1.1),
-                        new LerpTableEntry(4.0, 1.1),
+                        new LerpTableEntry(4, 1.1),
                         new LerpTableEntry(4.5, 1.1),
                         new LerpTableEntry(5.5, 1.15),
-                        new LerpTableEntry(6.0, 1.0)
+                        new LerpTableEntry(6, 1)
                     });
 
     public static ShooterState solve(
@@ -102,7 +103,7 @@ public class LerpSolveShot {
         ChassisSpeeds robotSpeeds = Robot.pose_pred.getDynamicPredictedSpeeds();
         Translation2d rawRobotVelocity =
                 new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
-        double kConversion = Robot.consts.shooter().kFlywheels().RPM_TO_METERS_PER_SECOND_FACTOR();
+        double kConversion = SubsystemConstants.kShooter.kFlywheels.RPM_TO_METERS_PER_SECOND_FACTOR;
 
         Translation2d vectorToGoal =
                 goalPose.getTranslation()
@@ -200,7 +201,7 @@ public class LerpSolveShot {
 
         return new ShooterState(
                 RPM.of(requiredTableRpm),
-                Radians.of(-robotRelativeTurretAngle.getRadians()),
+                Radians.of(robotRelativeTurretAngle.getRadians()),
                 Degrees.of(finalHoodAngle));
     }
 }
