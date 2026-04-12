@@ -303,6 +303,11 @@ public class SecondBotRobotConsts extends RobotConsts {
         }
 
         @Override
+        public double RPM_TO_METERS_PER_SECOND_FACTOR() {
+            return (2 * Math.PI) * 0.0508 / 60.0;
+        }
+
+        @Override
         public int FOLLOWER_MOTOR_ID() {
             return 22;
         }

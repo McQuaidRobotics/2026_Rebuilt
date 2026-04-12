@@ -12,7 +12,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import igknighters.FieldVisualizer;
 import igknighters.Robot;
 import igknighters.constants.ShootInformation;
-import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.util.*;
@@ -103,7 +102,7 @@ public class LerpSolveShot {
         ChassisSpeeds robotSpeeds = Robot.pose_pred.getDynamicPredictedSpeeds();
         Translation2d rawRobotVelocity =
                 new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
-        double kConversion = SubsystemConstants.kShooter.kFlywheels.RPM_TO_METERS_PER_SECOND_FACTOR;
+        double kConversion = Robot.consts.shooter().kFlywheels().RPM_TO_METERS_PER_SECOND_FACTOR();
 
         Translation2d vectorToGoal =
                 goalPose.getTranslation()

@@ -69,7 +69,7 @@ public abstract class RobotConsts {
         boolean disableFlywheelsLogs();
 
         default double RPM_TO_METERS_PER_SECOND_FACTOR() {
-            return (2.0 * Math.PI * WHEEL_RADIUS_METERS()) / 60.0;
+            return (2.0 * Math.PI * 0.0508) / 60.0;
         }
     }
 
