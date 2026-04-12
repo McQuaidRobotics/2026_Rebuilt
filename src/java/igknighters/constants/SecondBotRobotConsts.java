@@ -85,7 +85,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double JORK_ANGLE() {
-            return 50.537109;
+            return 90.0;
         }
 
         @Override
@@ -217,7 +217,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double WHEEL_RADIUS_METERS() {
-            return 0.0508; // Colson wheel radius (3" diameter -> 1.5" = 0.0381 m)
+            return 0.0508;
         }
 
         @Override
@@ -453,7 +453,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double CANCODER_OFFSET_ROTATIONS() {
-            return -0.07861328125;
+            return -0.0771484375;
         }
 
         @Override
@@ -463,12 +463,12 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_ANGLE_DEGREES() {
-            return 106.962891;
+            return 152.138672;
         }
 
         @Override
         public double MIN_ANGLE_DEGREES() {
-            return -253.037109;
+            return -360 + 152.138672;
         }
 
         @Override

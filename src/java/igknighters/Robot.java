@@ -298,7 +298,7 @@ public class Robot extends LoggedRobot {
         double dy = 0.0; // Y offset from turret center to hood
         double dz = 0.12; // z offset from turret pivot to hood pivot
 
-        Pose3d turretPose = getTurretPose(subsystems.shooter.getTurretAngleDegrees());
+        Pose3d turretPose = getTurretPose(-subsystems.shooter.getTurretAngleDegrees());
 
         Pose3d hoodPosition =
                 turretPose.transformBy(
