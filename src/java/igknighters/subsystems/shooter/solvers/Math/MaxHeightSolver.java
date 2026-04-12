@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import igknighters.constants.SubsystemConstants;
+import igknighters.Robot;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.subsystems.shooter.solvers.*;
 import java.util.function.Supplier;
@@ -77,9 +78,9 @@ public class MaxHeightSolver extends Solver {
                     (v_total
                                     / (2
                                             * Math.PI
-                                            * SubsystemConstants.kShooter
-                                                    .kFlywheels
-                                                    .WHEEL_RADIUS_METERS))
+                                            * Robot.consts.shooter()
+                                                    .kFlywheels()
+                                                    .WHEEL_RADIUS_METERS()))
                             * 60
                             * 2.0;
 

@@ -18,7 +18,6 @@ import igknighters.FieldVisualizer;
 import igknighters.Robot;
 import igknighters.constants.ShootInformation;
 import igknighters.constants.SubsystemConstants;
-import igknighters.constants.SubsystemConstants.kShooter.kFlywheels;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.util.LerpTable;
 import igknighters.util.LerpTable.LerpTableEntry;
@@ -283,7 +282,11 @@ public class AimSolver {
 
                 // Single-sided flywheel: Wheel surface speed = 2x Ball speed
                 double RPM =
-                        (v_total / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS))
+                        (v_total
+                                        / (2 * Math.PI
+                                                * Robot.consts.shooter()
+                                                        .kFlywheels()
+                                                        .WHEEL_RADIUS_METERS()))
                                 * 60
                                 * EfficiencyConst;
 
@@ -424,7 +427,11 @@ public class AimSolver {
 
                 // Single-sided flywheel: Wheel surface speed = 2x Ball speed
                 double RPM =
-                        (v_total / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS))
+                        (v_total
+                                        / (2 * Math.PI
+                                                * Robot.consts.shooter()
+                                                        .kFlywheels()
+                                                        .WHEEL_RADIUS_METERS()))
                                 * 60
                                 * EfficiencyConst;
 
@@ -585,7 +592,11 @@ public class AimSolver {
             if (foundValidShot) {
                 // Convert exit velocity to RPM (Using your 2.1 slip/recovery constant)
                 shooterRPM =
-                        (bestV_shooter / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS))
+                        (bestV_shooter
+                                        / (2 * Math.PI
+                                                * Robot.consts.shooter()
+                                                        .kFlywheels()
+                                                        .WHEEL_RADIUS_METERS()))
                                 * 60
                                 * EfficiencyConst;
 
@@ -725,7 +736,11 @@ public class AimSolver {
             if (foundValidShot) {
                 // Convert exit velocity to RPM (Using your 2.1 slip/recovery constant)
                 shooterRPM =
-                        (bestV_shooter / (2 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS))
+                        (bestV_shooter
+                                        / (2 * Math.PI
+                                                * Robot.consts.shooter()
+                                                        .kFlywheels()
+                                                        .WHEEL_RADIUS_METERS()))
                                 * 60
                                 * EfficiencyConst;
 
