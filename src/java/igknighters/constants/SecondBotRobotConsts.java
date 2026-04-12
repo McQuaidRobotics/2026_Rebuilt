@@ -404,10 +404,9 @@ public class SecondBotRobotConsts extends RobotConsts {
             return 25;
         }
 
-        
         @Override
         public double TURRET_ROBOT_DISTANCE_FROM_CENTERS() {
-             return 7.0710678118655;
+            return 7.0710678118655;
         }
 
         @Override
