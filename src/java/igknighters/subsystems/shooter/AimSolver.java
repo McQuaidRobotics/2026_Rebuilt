@@ -39,13 +39,13 @@ public class AimSolver {
         static LerpTable hubRPMTable =
                 new LerpTable(
                         new LerpTableEntry[] {
-                                                        // scaled for Colson wheel radius (multiply by 4/3)
-                                                        new LerpTableEntry(1.0, 3733.0),
-                                                        new LerpTableEntry(3.0, 4000.0),
-                                                        new LerpTableEntry(5.0, 5333.0),
-                                                        new LerpTableEntry(10.0, 6000.0),
-                                                        new LerpTableEntry(15.0, 7333.0),
-                                                        new LerpTableEntry(20.0, 8000.0),
+                            // scaled for Colson wheel radius (multiply by 4/3)
+                            new LerpTableEntry(1.0, 3733.0),
+                            new LerpTableEntry(3.0, 4000.0),
+                            new LerpTableEntry(5.0, 5333.0),
+                            new LerpTableEntry(10.0, 6000.0),
+                            new LerpTableEntry(15.0, 7333.0),
+                            new LerpTableEntry(20.0, 8000.0),
                         });
         // distance to hood angle mapping
         static LerpTable hubHoodTable =
@@ -68,13 +68,13 @@ public class AimSolver {
         static LerpTable passRPMTable =
                 new LerpTable(
                         new LerpTableEntry[] {
-                                                        // scaled for Colson wheel radius (multiply by 4/3)
-                                                        new LerpTableEntry(1.0, 3733.0),
-                                                        new LerpTableEntry(3.0, 4000.0),
-                                                        new LerpTableEntry(5.0, 5333.0),
-                                                        new LerpTableEntry(10.0, 6000.0),
-                                                        new LerpTableEntry(15.0, 7333.0),
-                                                        new LerpTableEntry(20.0, 8000.0),
+                            // scaled for Colson wheel radius (multiply by 4/3)
+                            new LerpTableEntry(1.0, 3733.0),
+                            new LerpTableEntry(3.0, 4000.0),
+                            new LerpTableEntry(5.0, 5333.0),
+                            new LerpTableEntry(10.0, 6000.0),
+                            new LerpTableEntry(15.0, 7333.0),
+                            new LerpTableEntry(20.0, 8000.0),
                         });
         // distance to hood angle mapping
         static LerpTable passHoodTable =

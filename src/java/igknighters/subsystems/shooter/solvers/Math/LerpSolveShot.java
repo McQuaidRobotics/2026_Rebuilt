@@ -68,20 +68,20 @@ public class LerpSolveShot {
     static LerpTable RPM_LERP =
             new LerpTable(
                     new LerpTableEntry[] {
-                                                // scaled for Colson wheels (prev radius 0.0508 -> new 0.0381)
-                                                // scaling factor = 0.0508 / 0.0381 = 4/3
-                                                new LerpTableEntry(1.5, 3333),
-                                                new LerpTableEntry(2.0, 3667),
-                                                new LerpTableEntry(2.5, 3733),
-                                                new LerpTableEntry(3.5, 4133),
-                                                new LerpTableEntry(4.0, 4267),
-                                                new LerpTableEntry(4.5, 4400),
-                                                new LerpTableEntry(5.0, 4907),
-                                                new LerpTableEntry(5.5, 4960),
-                                                new LerpTableEntry(6.0, 5067),
-                                                new LerpTableEntry(8.0, 5333),
-                                                new LerpTableEntry(10.0, 5600),
-                                                new LerpTableEntry(20, 7333)
+                        // scaled for Colson wheels (prev radius 0.0508 -> new 0.0381)
+                        // scaling factor = 0.0508 / 0.0381 = 4/3
+                        new LerpTableEntry(1.5, 3333),
+                        new LerpTableEntry(2.0, 3667),
+                        new LerpTableEntry(2.5, 3733),
+                        new LerpTableEntry(3.5, 4133),
+                        new LerpTableEntry(4.0, 4267),
+                        new LerpTableEntry(4.5, 4400),
+                        new LerpTableEntry(5.0, 4907),
+                        new LerpTableEntry(5.5, 4960),
+                        new LerpTableEntry(6.0, 5067),
+                        new LerpTableEntry(8.0, 5333),
+                        new LerpTableEntry(10.0, 5600),
+                        new LerpTableEntry(20, 7333)
                     });
 
     static LerpTable TIME_OF_FLIGHT_LERP =

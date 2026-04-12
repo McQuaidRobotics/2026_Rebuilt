@@ -492,9 +492,9 @@ public class Robot extends LoggedRobot {
                 // Launch parameters
                 // Velocity is approx (RPM * radius / 2) because only one side is driven (per
                 // AimSolver)
-        double flywheelRadius = Robot.consts.shooter().kFlywheels().WHEEL_RADIUS_METERS();
-        double launchVelocity =
-            (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.1;
+                double flywheelRadius = Robot.consts.shooter().kFlywheels().WHEEL_RADIUS_METERS();
+                double launchVelocity =
+                        (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.1;
 
                 fuelSim.launchFuel(
                         MetersPerSecond.of(launchVelocity),
