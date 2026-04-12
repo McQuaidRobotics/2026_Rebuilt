@@ -260,6 +260,41 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine OP_RIGHT() {
+        AutoRoutine routine = autoFactory.newRoutine("OP RIGHT");
+
+        AutoTrajectory firstLoop = routine.trajectory("OP_RIGHT_1.traj");
+        AutoTrajectory transitionToSecondLoop = routine.trajectory("OP_RIGHT_2.traj");
+        AutoTrajectory secondLoop = routine.trajectory("OP_RIGHT_3.traj");
+
+        routine.active().onTrue(Commands.sequence(firstLoop.resetOdometry(), firstLoop.spawnCmd()));
+
+        firstLoop.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
+        firstLoop
+                .atTime("PROTECT")
+                .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
+
+        firstLoop
+                .done()
+                .onTrue(
+                        Commands.parallel(
+                                HigherOrderCommands.shootTillEmpty(subsystems, 4.0),
+                                transitionToSecondLoop.cmd()));
+
+        transitionToSecondLoop.done().onTrue(secondLoop.cmd());
+
+        secondLoop.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
+        secondLoop
+                .atTime("Protect_intake")
+                .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
+
+        secondLoop.done().onTrue(HigherOrderCommands.shootTillEmpty(subsystems, 10));
+
+        return routine;
+    }
+
     public AutoRoutine BUMP_PASS_TO_SELF_LEFT() {
         AutoRoutine routine = autoFactory.newRoutine("Bump Pass to Self Left");
 

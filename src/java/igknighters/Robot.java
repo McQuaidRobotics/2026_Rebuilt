@@ -22,8 +22,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.Shooter.ShooterCommands;
-import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.SubsystemTriggers;
+import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
@@ -162,6 +162,7 @@ public class Robot extends LoggedRobot {
                 "Pass to Self Right with Depot and Human Player",
                 routines::PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER);
         autoChooser.addRoutine("Aggresive Center Auto Left", routines::meanRoutine);
+        autoChooser.addRoutine("OP RIGHT", routines::OP_RIGHT);
 
         testChooser.addRoutine("Test Auto", routines::TEST);
 
