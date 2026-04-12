@@ -209,7 +209,8 @@ public class SubsystemConstants {
             public static final double SUPPLY_CURRENT_LIMIT = 30;
             public static boolean disableFlywheelsLogs = false;
 
-        // RPM_TO_METERS_PER_SECOND_FACTOR removed; use Robot.consts.shooter().kFlywheels().RPM_TO_METERS_PER_SECOND_FACTOR()
+            // RPM_TO_METERS_PER_SECOND_FACTOR removed; use
+            // Robot.consts.shooter().kFlywheels().RPM_TO_METERS_PER_SECOND_FACTOR()
 
             static {
                 if (disableAllLogs) {

@@ -12,7 +12,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import igknighters.FieldVisualizer;
 import igknighters.Robot;
 import igknighters.constants.ShootInformation;
-import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.util.*;
