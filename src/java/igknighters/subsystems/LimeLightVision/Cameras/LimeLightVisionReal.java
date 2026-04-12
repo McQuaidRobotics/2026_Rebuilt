@@ -47,7 +47,7 @@ public class LimeLightVisionReal extends LimeLights {
             // 1 = make internal match gyro
             for (String cameraName : cameraNames) {
                 LimelightHelpers.SetThrottle(cameraName, 0);
-                LimelightHelpers.SetIMUMode(cameraName, 4); // use both robot + internal
+                LimelightHelpers.SetIMUMode(cameraName, 0); // use both robot + internal
                 // Feed gyro to Limelight (for MT2)
                 LimelightHelpers.SetRobotOrientation(
                         cameraName, yaw, yawRate, pitch, pitchRate, roll, rollRate);

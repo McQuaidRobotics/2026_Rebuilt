@@ -30,7 +30,7 @@ public enum IntakeState implements StructSerializable {
             () -> Degrees.of(5)),
     Stowed(
             () -> Degrees.of(Robot.consts.intake().kPivot().STOWED_ANGLE_DEGREES()),
-            () -> RPM.of(100),
+            () -> RPM.of(-300),
             () -> Degrees.of(5));
 
     private final Supplier<Angle> pivotDegrees;
