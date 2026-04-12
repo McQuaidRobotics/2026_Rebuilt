@@ -48,7 +48,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void goTo(IntakeState state) {
-        
+
         goalPivotAngleDegrees = state.getPivotAngle().in(Degrees);
         goalRollerSpeed = state.getRollerSpeed().in(RPM);
 
