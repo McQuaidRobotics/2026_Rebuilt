@@ -45,11 +45,10 @@ public class LerpSolveShot {
     static LerpTable RADIAL_AWAY =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.0, .6),
-                        new LerpTableEntry(2.0, .7),
-                        new LerpTableEntry(3, .8),
-                        new LerpTableEntry(4.5, .9),
-                        new LerpTableEntry(5, 1.0)
+                         new LerpTableEntry(2.0, .8),
+                        new LerpTableEntry(3, .9),
+                        new LerpTableEntry(4.5, 1.0),
+                        new LerpTableEntry(5, 1.1)
                     });
 
     static LerpTable HOOD_LERP =
