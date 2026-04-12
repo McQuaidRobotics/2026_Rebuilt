@@ -106,20 +106,15 @@ public class AimingCommands {
 
         ShootInformation info = ShootInformation.getInstance();
         info.setBeingControlled(true);
-        Pose2d shooterPoseWithOffset = getTurretPose();
         ShootingData shootingData = info.getData();
 
         shooter.currentShotType = getShotType();
 
-        Pose3d shooterPose3d =
-                new Pose3d(
-                        shooterPoseWithOffset.getX(),
-                        shooterPoseWithOffset.getY(),
-                        Robot.consts.shooter().kFlywheels().ShooterHeightMeters(),
-                        new Rotation3d(0.0, 0.0, shooterPoseWithOffset.getRotation().getRadians()));
-
         ShooterState targetingData =
-                LerpSolveShot.solve(shootingData.TARGET_POSE, 0.1, 0.0);
+                LerpSolveShot.solve(
+                        shootingData.TARGET_POSE,
+                        shooter.getCurrentState().flywheelSpeed.in(RPM),
+                        0.02);
 
         if (targetingData.flywheelSpeed.in(RPM) != 0) {
             // possible shot so follow its instructions
@@ -134,18 +129,6 @@ public class AimingCommands {
     }
 
     public static double maxHeightMeters = 4.8;
-
-    public static Command shootWithProtectionAndAgregiousMaxHeight(Shooter shooter) {
-        BooleanSupplier underTrenchCheck = isUnderTrench();
-        return shooter.run(
-                () -> {
-                    if (underTrenchCheck.getAsBoolean()) {
-                        idleOnce(shooter);
-                    } else {
-                        shootOnce(shooter);
-                    }
-                });
-    }
 
     public static Command shootWithProtection(Shooter shooter) {
         BooleanSupplier underTrenchCheck = isUnderTrench();
@@ -164,9 +147,7 @@ public class AimingCommands {
             Shooter shooter,
             Pose3d targetPose,
             Supplier<Pose2d> robotPose,
-            Supplier<ChassisSpeeds> robotVeloSupplier,
-            double maxHeightMeters,
-            double minHeightMeters) {
+            Supplier<ChassisSpeeds> robotVeloSupplier) {
         return shooter.run(
                 () -> {
                     Pose2d robotPose2d = robotPose.get();
