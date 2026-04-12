@@ -119,7 +119,7 @@ public class AimingCommands {
                         new Rotation3d(0.0, 0.0, shooterPoseWithOffset.getRotation().getRadians()));
 
         ShooterState targetingData =
-                LerpSolveShot.solve(shooterPose3d, shootingData.TARGET_POSE, 0.1, 0.0);
+                LerpSolveShot.solve(shootingData.TARGET_POSE, 0.1, 0.0);
 
         if (targetingData.flywheelSpeed.in(RPM) != 0) {
             // possible shot so follow its instructions
@@ -180,7 +180,6 @@ public class AimingCommands {
                                             0.0, 0.0, robotPose2d.getRotation().getRadians()));
                     ShooterState targetingData =
                             LerpSolveShot.solve(
-                                    shooterPose,
                                     targetPose,
                                     shooter.getCurrentState().flywheelSpeed.in(RPM),
                                     0.02);

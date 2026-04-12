@@ -226,16 +226,6 @@ public class ShooterCommands {
 
                             ShooterState targetingData =
                                     LerpSolveShot.solve(
-                                            new Pose3d(robotPose2d)
-                                                    .plus(
-                                                            new Transform3d(
-                                                                    0,
-                                                                    0,
-                                                                    Robot.consts
-                                                                            .shooter()
-                                                                            .kFlywheels()
-                                                                            .ShooterHeightMeters(),
-                                                                    new Rotation3d())),
                                             targetPose3d,
                                             shooter.getCurrentState().flywheelSpeed.in(RPM),
                                             0.02);
