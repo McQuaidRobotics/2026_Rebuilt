@@ -73,7 +73,7 @@ public class AimingCommands {
             boolean under1 = dx1 <= .5;
             boolean under2 = dx2 <= .5;
 
-            boolean isUnder = under1 || under2;//ahhh
+            boolean isUnder = under1 || under2;
             if (!Robot.consts.disableAllLogs()) {
                 Log.log("ROBOT/Commands/Shooter/Trench Protection/DX_BLUE", dx1);
 
