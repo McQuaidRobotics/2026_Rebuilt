@@ -103,7 +103,7 @@ public class LerpSolveShot {
         ChassisSpeeds robotSpeeds = Robot.pose_pred.getDynamicPredictedSpeeds();
         Translation2d rawRobotVelocity =
                 new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
-        double kConversion = SubsystemConstants.kShooter.kFlywheels.RPM_TO_METERS_PER_SECOND_FACTOR;
+        double kConversion = Robot.consts.shooter().kFlywheels().RPM_TO_METERS_PER_SECOND_FACTOR();
 
         // --- NEW: Radial and Tangential Separation ---
         Translation2d vectorToGoal =
