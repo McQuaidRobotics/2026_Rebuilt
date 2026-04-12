@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import igknighters.Robot;
 import igknighters.commands.Repulsor.obstacle;
 import igknighters.commands.Repulsor.obstacleType;
@@ -222,7 +221,9 @@ public class FieldConstants {
 
     public static class BUMP {
 
-        public static final double HALF_Y_FIELD_METERS = (23.5 + (16*Math.sqrt(2))) * Conv.INCHES_TO_METERS;//adding the distance from center to corner
+        public static final double HALF_Y_FIELD_METERS =
+                (23.5 + (16 * Math.sqrt(2)))
+                        * Conv.INCHES_TO_METERS; // adding the distance from center to corner
         public static final double HALF_HEIGHT_METERS = 109 * Conv.INCHES_TO_METERS;
 
         public static final double BUMP_1_X_METERS = 182.11 * Conv.INCHES_TO_METERS;
@@ -252,7 +253,7 @@ public class FieldConstants {
                 }
             }
 
-        // Bump 2
+            // Bump 2
             if (x >= BUMP_2_X_METERS - HALF_Y_FIELD_METERS
                     && x <= BUMP_2_X_METERS + HALF_Y_FIELD_METERS) {
                 if (y >= BUMP_2_Y_METERS - HALF_HEIGHT_METERS
