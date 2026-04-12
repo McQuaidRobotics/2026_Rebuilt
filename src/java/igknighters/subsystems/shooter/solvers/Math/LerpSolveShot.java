@@ -95,7 +95,7 @@ public class LerpSolveShot {
                     });
 
     public static ShooterState solve(
-            Pose3d goalPose, Pose3d targetPose3d, double currentRPM, double latencyCompensation) {
+            Pose3d targetPose3d, double currentRPM, double latencyCompensation) {
 
         Pose3d shooterPose = Robot.turret_pred.getPredictedPose().get();
 
@@ -105,7 +105,7 @@ public class LerpSolveShot {
         double kConversion = SubsystemConstants.kShooter.kFlywheels.RPM_TO_METERS_PER_SECOND_FACTOR;
 
         Translation2d vectorToGoal =
-                goalPose.getTranslation()
+                targetPose3d.getTranslation()
                         .toTranslation2d()
                         .minus(shooterPose.getTranslation().toTranslation2d());
 
@@ -156,23 +156,21 @@ public class LerpSolveShot {
         for (int i = 0; i < 2; i++) {
             // Find where the goal "will be" relative to the ball
             Translation2d movingCompensation = tunedRobotVelocity.times(tof + latencyCompensation);
-            Translation2d relativeGoal2d = vectorToGoal;
-
-            Translation2d compensatedVector = relativeGoal2d.minus(movingCompensation);
+            Translation2d relativeGoal2d = vectorToGoal.minus(movingCompensation);
 
             FieldVisualizer.getInstance()
                     .updateShootingTarget(
                             new Pose2d(
-                                    goalPose.getTranslation()
+                                    targetPose3d.getTranslation()
                                             .toTranslation2d()
                                             .minus(movingCompensation),
                                     new Rotation2d()));
-            double virtualDistance = compensatedVector.getNorm();
+            double virtualDistance = relativeGoal2d.getNorm();
 
             double baselineRpm = RPM_LERP.lerp(virtualDistance);
             double baselineExitVelocity = baselineRpm * kConversion;
 
-            Translation2d targetDirection = compensatedVector.div(virtualDistance);
+            Translation2d targetDirection = relativeGoal2d.div(virtualDistance);
             Translation2d fieldRelativeVelocityVector = targetDirection.times(baselineExitVelocity);
 
             // Vector Subtraction: V_shot = V_target - V_robot

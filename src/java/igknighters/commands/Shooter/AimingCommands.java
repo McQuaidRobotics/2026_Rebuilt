@@ -92,7 +92,6 @@ public class AimingCommands {
                         new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
         ShooterState targetingData =
                 LerpSolveShot.solve(
-                        shooterPose,
                         shootingData.TARGET_POSE,
                         shooter.getCurrentState().flywheelSpeed.in(RPM),
                         0.02);
