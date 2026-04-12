@@ -94,7 +94,7 @@ public class LerpSolveShot {
                     });
 
     public static ShooterState solve(
-            Pose3d targetPose3d, double currentRPM, double latencyCompensation) {
+            Pose3d goalPose, double currentRPM, double latencyCompensation) {
 
         Pose3d shooterPose = Robot.turret_pred.getPredictedPose().get();
 
@@ -169,7 +169,7 @@ public class LerpSolveShot {
             double baselineRpm = RPM_LERP.lerp(virtualDistance);
             double baselineExitVelocity = baselineRpm * kConversion;
 
-            Translation2d targetDirection = relativeGoal2d.div(virtualDistance);
+            Translation2d targetDirection = compensatedVector.div(virtualDistance);
             Translation2d fieldRelativeVelocityVector = targetDirection.times(baselineExitVelocity);
 
             // Vector Subtraction: V_shot = V_target - V_robot
@@ -197,7 +197,7 @@ public class LerpSolveShot {
 
         return new ShooterState(
                 RPM.of(requiredTableRpm),
-                Radians.of(-robotRelativeTurretAngle.getRadians()),
+                Radians.of(robotRelativeTurretAngle.getRadians()),
                 Degrees.of(finalHoodAngle));
     }
 }

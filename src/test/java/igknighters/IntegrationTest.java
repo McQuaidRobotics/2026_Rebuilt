@@ -97,7 +97,7 @@ public class IntegrationTest {
                         + ", RPM: "
                         + currentRPM);
 
-        assertTrue(Math.abs(-currentTurret - targetTurretAngle) < 2.0, "Turret should move");
+        assertTrue(Math.abs(currentTurret - targetTurretAngle) < 2.0, "Turret should move");
         assertTrue(Math.abs(currentHood - targetHoodAngle) < 10.0, "Hood should move");
         assertTrue(currentRPM > 1000, "Flywheel should spin");
 

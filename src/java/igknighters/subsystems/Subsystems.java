@@ -3,7 +3,7 @@ package igknighters.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.IntakeCommands;
-import igknighters.commands.Shooter.ShooterCommands;
+import igknighters.commands.Shooter.AimingCommands;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.indexer.Indexer;
@@ -42,8 +42,6 @@ public class Subsystems {
 
         this.indexer.setDefaultCommand(IndexerCommands.jorkIt(indexer).repeatedly());
         this.intake.setDefaultCommand(IntakeCommands.holdAtStow(intake));
-        this.shooter.setDefaultCommand(
-                ShooterCommands.idleCommand(
-                        shooter, () -> swerve.getState().Pose, swerve::getFieldRelativeSpeeds));
+        this.shooter.setDefaultCommand(AimingCommands.idleCommand(shooter));
     }
 }

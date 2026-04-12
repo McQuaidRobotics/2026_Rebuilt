@@ -162,6 +162,7 @@ public class Robot extends LoggedRobot {
                 "Pass to Self Right with Depot and Human Player",
                 routines::PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER);
         autoChooser.addRoutine("Aggresive Center Auto Left", routines::meanRoutine);
+        autoChooser.addRoutine("OP RIGHT", routines::OP_RIGHT);
 
         testChooser.addRoutine("Test Auto", routines::TEST);
 
@@ -326,12 +327,12 @@ public class Robot extends LoggedRobot {
         if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()
                     .updateTurret(
-                            -subsystems.shooter.getTurretAngleDegrees(),
+                            subsystems.shooter.getTurretAngleDegrees(),
                             subsystems.swerve.getState().Pose);
             Logger.recordOutput(
                     "componentPoses",
                     new Pose3d[] {
-                        getTurretPose(-subsystems.shooter.getTurretAngleDegrees()),
+                        getTurretPose(subsystems.shooter.getTurretAngleDegrees()),
                         getHoodPose(subsystems.shooter.getHoodAngleDegrees())
                     });
         } else {

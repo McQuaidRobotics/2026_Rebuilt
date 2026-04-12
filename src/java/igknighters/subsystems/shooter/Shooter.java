@@ -103,7 +103,7 @@ public class Shooter extends SubsystemBase {
             double toleranceRPM, double toleranceDegrees, double toleranceHoodDegrees) {
         boolean atSpeed = Math.abs(rollers.getSpeed().in(RPM) - goalRPM) < toleranceRPM;
         boolean atTurretAngle =
-                Math.abs(-getTurretAngleDegrees() - goalTurretAngleDegrees) < toleranceDegrees;
+                Math.abs(getTurretAngleDegrees() - goalTurretAngleDegrees) < toleranceDegrees;
         boolean atHoodAngle =
                 Math.abs(hood.getAngleDegrees() - goalHoodAngleDegrees) < toleranceHoodDegrees;
         Log.log("ROBOT/Subsystems/Shooter/AT TARGET/AT SPEED", atSpeed);
