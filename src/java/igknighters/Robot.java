@@ -22,8 +22,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.Shooter.ShooterCommands;
-import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.SubsystemTriggers;
+import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
@@ -326,12 +326,12 @@ public class Robot extends LoggedRobot {
         if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()
                     .updateTurret(
-                            -subsystems.shooter.getTurretAngleDegrees(),
+                            subsystems.shooter.getTurretAngleDegrees(),
                             subsystems.swerve.getState().Pose);
             Logger.recordOutput(
                     "componentPoses",
                     new Pose3d[] {
-                        getTurretPose(-subsystems.shooter.getTurretAngleDegrees()),
+                        getTurretPose(subsystems.shooter.getTurretAngleDegrees()),
                         getHoodPose(subsystems.shooter.getHoodAngleDegrees())
                     });
         } else {

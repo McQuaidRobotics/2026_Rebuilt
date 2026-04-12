@@ -14,13 +14,13 @@ public class TurretSim extends Turret {
 
     @Override
     public void setAngle(Angle angle) {
-        double wrappedAngleDegrees = -wrapAngleDegrees(angle.in(Degrees));
+        double wrappedAngleDegrees = wrapAngleDegrees(angle.in(Degrees));
         super.degrees = wrappedAngleDegrees;
     }
 
     @Override
     public void goToAngleDegrees(Angle angle) {
-        double wrappedAngleDegrees = -wrapAngleDegrees(angle.in(Degrees));
+        double wrappedAngleDegrees = wrapAngleDegrees(angle.in(Degrees));
         super.degrees = wrappedAngleDegrees;
         super.targetDegrees = wrappedAngleDegrees;
     }
