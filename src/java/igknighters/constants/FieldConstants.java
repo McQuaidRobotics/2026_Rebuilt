@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import igknighters.Robot;
 import igknighters.commands.Repulsor.obstacle;
 import igknighters.commands.Repulsor.obstacleType;
@@ -231,34 +232,57 @@ public class FieldConstants {
         public static final double BUMP_2_Y_METERS = 158.32 * Conv.INCHES_TO_METERS;
 
         public static boolean isInside(Pose2d pose) {
-            double x = pose.getX();
-            double y = pose.getY();
-            if (!Robot.consts.disableAllLogs()) {
-                Log.log("ROBOT/Commands/BumpProtection: x;", x);
-                Log.log("ROBOT/Commands/BumpProtection: y;", y);
-            }
+            Pose2d[] cornerPose2ds = new Pose2d[4];
 
-            // Bump 1
-            if (x >= BUMP_1_X_METERS - HALF_Y_FIELD_METERS
-                    && x <= BUMP_1_X_METERS + HALF_Y_FIELD_METERS) {
-                if (y >= BUMP_1_Y_METERS - HALF_HEIGHT_METERS
-                        && y <= BUMP_1_Y_METERS + HALF_HEIGHT_METERS) {
-                    if (!Robot.consts.disableAllLogs()) {
-                        Log.log("ROBOT/Commands/BumpProtection: inside bump 1", true);
-                    }
-                    return true;
+            final double ROBOT_WIDTH = 32 * Conv.INCHES_TO_METERS;
+            Rotation2d angle = pose.getRotation();
+
+            //if someone can show me how to do this in a cleaner looking manner, that would be nice
+            cornerPose2ds[0] = pose.plus(new Transform2d((ROBOT_WIDTH/2)*angle.getCos()-(ROBOT_WIDTH/2)*angle.getSin(),
+                                                        (ROBOT_WIDTH/2)*angle.getSin()+(ROBOT_WIDTH/2)*angle.getCos(),
+                                                        new Rotation2d()));
+            cornerPose2ds[1] = pose.plus(new Transform2d(-(ROBOT_WIDTH/2)*angle.getCos()-(ROBOT_WIDTH/2)*angle.getSin(),
+                                                        -(ROBOT_WIDTH/2)*angle.getSin()+(ROBOT_WIDTH/2)*angle.getCos(),
+                                                        new Rotation2d()));
+            cornerPose2ds[2] = pose.plus(new Transform2d((ROBOT_WIDTH/2)*angle.getCos()+(ROBOT_WIDTH/2)*angle.getSin(),
+                                                        (ROBOT_WIDTH/2)*angle.getSin()-(ROBOT_WIDTH/2)*angle.getCos(),
+                                                        new Rotation2d()));
+            cornerPose2ds[3] = pose.plus(new Transform2d(-(ROBOT_WIDTH/2)*angle.getCos()+(ROBOT_WIDTH/2)*angle.getSin(),
+                                                        -(ROBOT_WIDTH/2)*angle.getSin()-(ROBOT_WIDTH/2)*angle.getCos(),
+                                                        new Rotation2d()));
+
+                
+            for (Pose2d pose2d : cornerPose2ds) {
+                //get the x and y of each corner, then check if it is in the bumps
+                double x = pose2d.getX();
+                double y = pose2d.getY();
+                if (!Robot.consts.disableAllLogs()) {
+                    Log.log("ROBOT/Commands/BumpProtection: x;", x);
+                    Log.log("ROBOT/Commands/BumpProtection: y;", y);
                 }
-            }
 
-            // Bump 2
-            if (x >= BUMP_2_X_METERS - HALF_Y_FIELD_METERS
-                    && x <= BUMP_2_X_METERS + HALF_Y_FIELD_METERS) {
-                if (y >= BUMP_2_Y_METERS - HALF_HEIGHT_METERS
-                        && y <= BUMP_2_Y_METERS + HALF_HEIGHT_METERS) {
-                    if (!Robot.consts.disableAllLogs()) {
-                        Log.log("ROBOT/Commands/BumpProtection: inside bump 2", true);
+                // Bump 1
+                if (x >= BUMP_1_X_METERS - HALF_Y_FIELD_METERS
+                        && x <= BUMP_1_X_METERS + HALF_Y_FIELD_METERS) {
+                    if (y >= BUMP_1_Y_METERS - HALF_HEIGHT_METERS
+                            && y <= BUMP_1_Y_METERS + HALF_HEIGHT_METERS) {
+                        if (!Robot.consts.disableAllLogs()) {
+                            Log.log("ROBOT/Commands/BumpProtection: inside bump 1", true);
+                        }
+                        return true;
                     }
-                    return true;
+                }
+
+                // Bump 2
+                if (x >= BUMP_2_X_METERS - HALF_Y_FIELD_METERS
+                        && x <= BUMP_2_X_METERS + HALF_Y_FIELD_METERS) {
+                    if (y >= BUMP_2_Y_METERS - HALF_HEIGHT_METERS
+                            && y <= BUMP_2_Y_METERS + HALF_HEIGHT_METERS) {
+                        if (!Robot.consts.disableAllLogs()) {
+                            Log.log("ROBOT/Commands/BumpProtection: inside bump 2", true);
+                        }
+                        return true;
+                    }
                 }
             }
 
