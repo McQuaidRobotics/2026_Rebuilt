@@ -85,7 +85,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double JORK_ANGLE() {
-            return 50.537109;
+            return 90.0;
         }
 
         @Override

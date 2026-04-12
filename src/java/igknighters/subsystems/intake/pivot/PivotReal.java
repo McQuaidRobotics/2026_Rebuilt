@@ -78,7 +78,7 @@ public class PivotReal extends Pivot {
         config.MotionMagic.MotionMagicJerk = Robot.consts.intake().kPivot().MAX_JERK();
         config.Feedback.RotorToSensorRatio = 1.0;
         config.Feedback.SensorToMechanismRatio = 1.0;
-        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
