@@ -217,7 +217,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double WHEEL_RADIUS_METERS() {
-            return 0.0508;
+            return 0.0508; // Colson wheel radius (3" diameter -> 1.5" = 0.0381 m)
         }
 
         @Override

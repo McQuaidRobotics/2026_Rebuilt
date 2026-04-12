@@ -130,7 +130,11 @@ public class AimingCommands {
 
         shooter.currentShotType = getShotType();
 
-        ShooterState targetingData = LerpSolveShot.solve(shootingData.TARGET_POSE, 0.1, 0.0);
+        ShooterState targetingData =
+                LerpSolveShot.solve(
+                        shootingData.TARGET_POSE,
+                        shooter.getCurrentState().flywheelSpeed.in(RPM),
+                        0.02);
 
         if (targetingData.flywheelSpeed.in(RPM) != 0) {
             // possible shot so follow its instructions
@@ -147,15 +151,8 @@ public class AimingCommands {
     public static double maxHeightMeters = 4.8;
 
     public static Command shootWithProtectionAndAgregiousMaxHeight(Shooter shooter) {
-        BooleanSupplier underTrenchCheck = isUnderTrench();
-        return shooter.run(
-                () -> {
-                    if (underTrenchCheck.getAsBoolean()) {
-                        idleOnce(shooter);
-                    } else {
-                        shootOnce(shooter);
-                    }
-                });
+        // Restored to fix "cannot find symbol" error in HigherOrderCommands.java
+        return shootWithProtection(shooter);
     }
 
     public static Command shootWithProtection(Shooter shooter) {
