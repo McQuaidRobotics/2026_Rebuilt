@@ -61,7 +61,15 @@ public class LimeLightVisionSim extends LimeLights {
         }
         return PoseAverager.averagePose2ds(estimatedPoses);
     }
+    @Override
+    public void enableCameras(int imu_mode) {
+        
+    }
 
+    @Override
+    public void saveCameras() {
+        
+    }
     @Override
     public double getLastTimeStamp() {
         // In simulation, we can get the timestamp from the latest results
