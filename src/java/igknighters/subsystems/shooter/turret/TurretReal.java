@@ -58,19 +58,19 @@ public class TurretReal extends Turret {
                 Robot.consts.shooter().kTurret().SUPPLY_CURRENT_LIMIT();
 
         cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        cfg.MotorOutput.Inverted = Robot.consts.shooter().kTurret().MOTOR_INVERTED();
 
         return cfg;
     }
 
-    private final CANcoderConfiguration wristCaNcoderConfiguration() {
+    private final CANcoderConfiguration turretCancoderConfig() {
         var cfg = new CANcoderConfiguration();
 
         cfg.MagnetSensor.MagnetOffset =
                 Robot.consts.shooter().kTurret().CANCODER_OFFSET_ROTATIONS();
         cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.25;
         cfg.MagnetSensor.SensorDirection =
-                SensorDirectionValue.CounterClockwise_Positive; // Adjust as needed
+                Robot.consts.shooter().kTurret().CANCODER_DIRECTION(); // Adjust as needed
 
         return cfg;
     }
@@ -84,7 +84,7 @@ public class TurretReal extends Turret {
                 new TalonFX(
                         Robot.consts.shooter().kTurret().MOTOR_ID(),
                         Robot.consts.shooter().kCANBUS());
-        turretCaNcoder.getConfigurator().apply(wristCaNcoderConfiguration());
+        turretCaNcoder.getConfigurator().apply(turretCancoderConfig());
         motor.getConfigurator().apply(turretConfiguration());
     }
 
