@@ -12,6 +12,7 @@ import igknighters.constants.FieldConstants;
 import igknighters.subsystems.intake.AbstractIntake;
 import igknighters.subsystems.intake.IntakeState;
 import igknighters.util.log.Log;
+import java.util.function.Supplier;
 
 public class IntakeCommands {
     public static boolean toggledState = true;
@@ -109,6 +110,27 @@ public class IntakeCommands {
                         Log.log("ROBOT/Commands/Protected Intake", "Outside BUMP, holding intake");
                         holdAtIntake(intake);
                     }
+                });
+    }
+
+    public static Supplier<Double> getTimeDown() {
+        if (Robot.pose_pred == null) {
+            return () -> 0.5;
+        }
+        double vx = Robot.pose_pred.getPredictedVelos().vxMetersPerSecond;
+        double vy = Robot.pose_pred.getPredictedVelos().vyMetersPerSecond;
+        double v = Math.hypot(vx, vy);
+        // increase time as v increases
+        return () -> Math.max(.5, v); // Replace with actual time calculation
+    }
+
+    public static Command dynamicIntake(AbstractIntake intake) {
+        return intake.defer(
+                () -> {
+                    return Commands.sequence(
+                                    holdAtIntake(intake).withTimeout(getTimeDown().get()),
+                                    holdAtState(intake, IntakeState.slightJork).withTimeout(.1))
+                            .repeatedly();
                 });
     }
 
