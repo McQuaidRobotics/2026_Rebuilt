@@ -327,12 +327,12 @@ public class Robot extends LoggedRobot {
         if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()
                     .updateTurret(
-                            -subsystems.shooter.getTurretAngleDegrees(),
+                            subsystems.shooter.getTurretAngleDegrees(),
                             subsystems.swerve.getState().Pose);
             Logger.recordOutput(
                     "componentPoses",
                     new Pose3d[] {
-                        getTurretPose(-subsystems.shooter.getTurretAngleDegrees()),
+                        getTurretPose(subsystems.shooter.getTurretAngleDegrees()),
                         getHoodPose(subsystems.shooter.getHoodAngleDegrees())
                     });
         } else {
