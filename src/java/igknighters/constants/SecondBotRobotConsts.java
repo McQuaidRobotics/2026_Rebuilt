@@ -1,6 +1,8 @@
 package igknighters.constants;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 public class SecondBotRobotConsts extends RobotConsts {
 
@@ -68,12 +70,37 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiPivotConsts implements kPivotConsts {
         @Override
         public int MOTOR_ID() {
-            return 18;
+            return 61;
+        }
+
+        @Override
+        public double PARTIAL_STOW() {
+            return 35;
+        }
+
+        @Override
+        public double STOWED_ANGLE_DEGREES() {
+            return 16;
+        }
+
+        @Override
+        public double JORK_ANGLE() {
+            return 90.0;
+        }
+
+        @Override
+        public InvertedValue INVERTED() {
+            return InvertedValue.CounterClockwise_Positive;
+        }
+
+        @Override
+        public SensorDirectionValue SENSOR_DIRECTION() {
+            return SensorDirectionValue.CounterClockwise_Positive;
         }
 
         @Override
         public int CANCODER_ID() {
-            return 21;
+            return 60;
         }
 
         @Override
@@ -83,7 +110,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_ANGLE_DEGREES() {
-            return 66.0;
+            return 121.992188;
         }
 
         @Override
@@ -103,7 +130,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double ENCODER_OFFSET() {
-            return 0.31982421875;
+            return 0.21337890625;
         }
 
         @Override
@@ -113,17 +140,17 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public int STATOR_CURRENT_LIMIT() {
-            return 20;
+            return 15;
         }
 
         @Override
         public int SUPPLY_CURRENT_LIMIT() {
-            return 20;
+            return 5;
         }
 
         @Override
         public int SUPPLY_UPPER_LIMIT() {
-            return 25;
+            return 15;
         }
 
         @Override
@@ -175,17 +202,22 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiRollersConsts implements kRollersConsts {
         @Override
         public int LEADER_MOTOR_ID() {
-            return 20;
+            return 59;
         }
 
         @Override
         public int FOLLOWER_MOTOR_ID() {
-            return 28;
+            return 62;
+        }
+
+        @Override
+        public double DRIVE_RATIO() {
+            return 1.0;
         }
 
         @Override
         public double WHEEL_RADIUS_METERS() {
-            return 0.0508; // Colson wheel radius (3" diameter -> 1.5" = 0.0381 m)
+            return 0.0508;
         }
 
         @Override
@@ -200,17 +232,17 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_SPEED_RPM() {
-            return 5000.0;
+            return 4500.0;
         }
 
         @Override
         public double MAX_ACCELERATION_RPM() {
-            return 1500.0;
+            return 3000.0;
         }
 
         @Override
         public double MOTION_MAGIC_JERK() {
-            return 500.0;
+            return 2000.0;
         }
 
         @Override
@@ -299,17 +331,12 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiFlywheelsConsts implements kFlywheelsConsts {
         @Override
         public int LEADER_MOTOR_ID() {
-            return 23;
-        }
-
-        @Override
-        public double RPM_TO_METERS_PER_SECOND_FACTOR() {
-            return (2 * Math.PI) * 0.0508 / 60.0;
+            return 15;
         }
 
         @Override
         public int FOLLOWER_MOTOR_ID() {
-            return 22;
+            return 8;
         }
 
         @Override
@@ -401,12 +428,22 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiTurretConsts implements kTurretConsts {
         @Override
         public int MOTOR_ID() {
-            return 24;
+            return 56;
+        }
+
+        @Override
+        public SensorDirectionValue CANCODER_DIRECTION() {
+            return SensorDirectionValue.Clockwise_Positive;
+        }
+
+        @Override
+        public InvertedValue MOTOR_INVERTED() {
+            return InvertedValue.CounterClockwise_Positive;
         }
 
         @Override
         public int CANCODER_ID() {
-            return 25;
+            return 56;
         }
 
         @Override
@@ -416,7 +453,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double CANCODER_OFFSET_ROTATIONS() {
-            return -0.747314453125;
+            return -0.0771484375;
         }
 
         @Override
@@ -426,37 +463,37 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_ANGLE_DEGREES() {
-            return 270.0;
+            return 152.138672;
         }
 
         @Override
         public double MIN_ANGLE_DEGREES() {
-            return -90.0;
+            return -360 + 152.138672;
         }
 
         @Override
         public double MAX_SPEED_RPM() {
-            return 600.0;
+            return 200;
         }
 
         @Override
         public double MAX_ACCELERATION_RPM() {
-            return 800.0;
+            return 400;
         }
 
         @Override
         public double MAX_JERK() {
-            return 300;
+            return 200;
         }
 
         @Override
         public int STATOR_CURRENT_LIMIT() {
-            return 40;
+            return 30;
         }
 
         @Override
         public int SUPPLY_CURRENT_LIMIT() {
-            return 30;
+            return 40;
         }
 
         @Override
@@ -498,7 +535,7 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiHoodConsts implements kHoodConsts {
         @Override
         public int MOTOR_ID() {
-            return 26;
+            return 32;
         }
 
         @Override
@@ -798,7 +835,7 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiSpindexerConsts implements kSpindexerConsts {
         @Override
         public int LEADER_MOTOR_ID() {
-            return 16;
+            return 57;
         }
 
         @Override
@@ -900,7 +937,7 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiExitRollersConsts implements kExitRollersConsts {
         @Override
         public int LEADER_MOTOR_ID() {
-            return 17;
+            return 58;
         }
 
         @Override
@@ -920,7 +957,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_ACCELERATION_RPM() {
-            return 1500.0;
+            return 5000.0;
         }
 
         @Override
