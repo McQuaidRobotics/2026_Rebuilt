@@ -226,7 +226,7 @@ public class SubsystemTriggers {
                         .and(falseOnce())
                         .whileTrue(
                                 Commands.startEnd(
-                                                () -> driverController.rumble(0.03),
+                                                () -> driverController.rumble(1),
                                                 () -> driverController.rumble(0.0))
                                         .ignoringDisable(true)
                                         .withName("RumbleForTag"));
