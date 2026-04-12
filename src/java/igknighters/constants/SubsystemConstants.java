@@ -207,6 +207,7 @@ public class SubsystemConstants {
                     .5; // 40 cm this is made up it will be off ground though
             public static final double PEAK_CURRENT_LIMIT = 40;
             public static final double SUPPLY_CURRENT_LIMIT = 30;
+            public static final double RPM_TO_METERS_PER_SECOND_FACTOR = 0;
             public static boolean disableFlywheelsLogs = false;
 
             // RPM_TO_METERS_PER_SECOND_FACTOR removed; use
