@@ -382,7 +382,7 @@ public class Robot extends LoggedRobot {
     }
 
     public void bindDriverController() {
-        driverController.bind(subsystems, DebugType.SWERVE);
+        driverController.bind(subsystems);
     }
 
     @Override
