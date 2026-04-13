@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -19,7 +20,7 @@ public class AprilTagLayout {
     public AprilTagLayout() throws IOException {
         File file =
                 new File(
-                        System.getProperty("user.dir"),
+                        Filesystem.getDeployDirectory(),
                         "assets/2026_Rebuilt_April_Tags_AndyMark.json");
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(
