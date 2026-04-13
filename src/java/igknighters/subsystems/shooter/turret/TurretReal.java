@@ -84,7 +84,6 @@ public class TurretReal extends Turret {
                         Robot.consts.shooter().kTurret().MOTOR_ID(),
                         Robot.consts.shooter().kCANBUS());
         turretCaNcoder.getConfigurator().apply(turretCancoderConfig());
-        turretCaNcoder.getConfigurator().apply(turretCancoderConfig());
         motor.getConfigurator().apply(turretConfiguration());
     }
 
