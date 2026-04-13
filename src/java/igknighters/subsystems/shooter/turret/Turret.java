@@ -19,7 +19,6 @@ public abstract class Turret {
     public boolean isLegalPositionWrapped(double angleDegrees) {
         double wrappedAngleDegrees = wrapAngleDegrees(angleDegrees);
         return isLegalPosition(wrappedAngleDegrees);
-    }
 
     public boolean isLegalPosition(double angleDegrees) {
         return angleDegrees >= Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES()
