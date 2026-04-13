@@ -33,6 +33,7 @@ import igknighters.constants.RobotConsts;
 import igknighters.constants.RobotIdentity;
 import igknighters.constants.SecondBotRobotConsts;
 import igknighters.controllers.DriverController;
+import igknighters.controllers.DriverController.DebugType;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
@@ -506,7 +507,7 @@ public class Robot extends LoggedRobot {
                 // AimSolver)
                 double flywheelRadius = Robot.consts.shooter().kFlywheels().WHEEL_RADIUS_METERS();
                 double launchVelocity =
-                        (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.1;
+                        (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.0;
 
                 fuelSim.launchFuel(
                         MetersPerSecond.of(launchVelocity),
