@@ -30,6 +30,14 @@ public class LimeLightVision extends SubsystemBase {
         return vision.getVisibleTagIds();
     }
 
+    public void enableCameras(int IMU_MODE) {
+        vision.enableCameras(IMU_MODE);
+    }
+
+    public void disableCameras() {
+        vision.saveCameras();
+    }
+
     public double getLastTimeStamp() {
         return vision.getLastTimeStamp();
     }

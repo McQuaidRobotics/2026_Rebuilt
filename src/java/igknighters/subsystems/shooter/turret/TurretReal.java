@@ -9,9 +9,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import igknighters.Robot;
@@ -58,20 +56,19 @@ public class TurretReal extends Turret {
                 Robot.consts.shooter().kTurret().SUPPLY_CURRENT_LIMIT();
 
         cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        cfg.MotorOutput.Inverted =
-                InvertedValue.CounterClockwise_Positive; // inverted used to be c p
+        cfg.MotorOutput.Inverted = Robot.consts.shooter().kTurret().MOTOR_INVERTED();
 
         return cfg;
     }
 
-    private final CANcoderConfiguration wristCaNcoderConfiguration() {
+    private final CANcoderConfiguration turretCancoderConfig() {
         var cfg = new CANcoderConfiguration();
 
         cfg.MagnetSensor.MagnetOffset =
                 Robot.consts.shooter().kTurret().CANCODER_OFFSET_ROTATIONS();
-        cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.75;
+        cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.25;
         cfg.MagnetSensor.SensorDirection =
-                SensorDirectionValue.CounterClockwise_Positive; // used to be c p
+                Robot.consts.shooter().kTurret().CANCODER_DIRECTION(); // Adjust as needed
 
         return cfg;
     }
@@ -85,7 +82,7 @@ public class TurretReal extends Turret {
                 new TalonFX(
                         Robot.consts.shooter().kTurret().MOTOR_ID(),
                         Robot.consts.shooter().kCANBUS());
-        turretCaNcoder.getConfigurator().apply(wristCaNcoderConfiguration());
+        turretCaNcoder.getConfigurator().apply(turretCancoderConfig());
         motor.getConfigurator().apply(turretConfiguration());
     }
 

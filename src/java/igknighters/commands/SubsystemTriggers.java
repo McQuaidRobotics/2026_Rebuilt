@@ -13,12 +13,16 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.LEDCommands.LEDSection;
 import igknighters.commands.Shooter.AimingCommands;
 import igknighters.commands.Shooter.ShooterCommands;
+import igknighters.commands.teleop.AutoRotateOnBump;
 import igknighters.commands.teleop.SlowedDownDrivingWhileShooting;
 import igknighters.constants.Conv;
+import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.intake.Intake;
+import igknighters.subsystems.intake.IntakeState;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
 import igknighters.subsystems.swerve.Swerve;
@@ -182,6 +186,7 @@ public class SubsystemTriggers {
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
         Led led = subsystems.led;
         Swerve swerve = subsystems.swerve;
+        Intake intake = subsystems.intake;
         Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
 
         Trigger trenchProtection = new Trigger(AimingCommands.isUnderTrench());
@@ -189,11 +194,22 @@ public class SubsystemTriggers {
         SetupOperatorController(subsystems);
 
         // onBump.and(teleop)
-        //         .whileTrue(
-        //                 Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true))
-        //                         .andThen(new AutoRotateOnBump(swerve, driverController)));
+        //        .whileTrue(
+        //                Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true))
+        //                        .andThen(new AutoRotateOnBump(swerve, driverController)));
         // onBump.onFalse(Commands.runOnce(() ->
         // DrivingSharedState.getInstance().setOnBump(false)));
+
+        onBump.and(teleop)
+                .whileTrue(
+                        Commands.sequence(
+                                Commands.runOnce(
+                                        () -> DrivingSharedState.getInstance().setOnBump(true)),
+                                Commands.parallel(
+                                        new AutoRotateOnBump(swerve, driverController),
+                                        IntakeCommands.holdAtState(
+                                                intake, IntakeState.slightJork))));
+        onBump.onFalse(Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(false)));
 
         falseOnce().and(disabled).whileTrue(disabledLED(led));
 
@@ -225,7 +241,7 @@ public class SubsystemTriggers {
                         .and(falseOnce())
                         .whileTrue(
                                 Commands.startEnd(
-                                                () -> driverController.rumble(0.03),
+                                                () -> driverController.rumble(1),
                                                 () -> driverController.rumble(0.0))
                                         .ignoringDisable(true)
                                         .withName("RumbleForTag"));

@@ -1,6 +1,8 @@
 package igknighters.constants;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 public class GeminiRobotConsts extends RobotConsts {
 
@@ -70,6 +72,31 @@ public class GeminiRobotConsts extends RobotConsts {
         @Override
         public int MOTOR_ID() {
             return 18;
+        }
+
+        @Override
+        public double STOWED_ANGLE_DEGREES() {
+            return 16.0;
+        }
+
+        @Override
+        public double PARTIAL_STOW() {
+            return 66.0;
+        }
+
+        @Override
+        public double JORK_ANGLE() {
+            return 40.0;
+        }
+
+        @Override
+        public InvertedValue INVERTED() {
+            return InvertedValue.Clockwise_Positive;
+        }
+
+        @Override
+        public SensorDirectionValue SENSOR_DIRECTION() {
+            return SensorDirectionValue.Clockwise_Positive;
         }
 
         @Override
@@ -177,6 +204,16 @@ public class GeminiRobotConsts extends RobotConsts {
         @Override
         public int LEADER_MOTOR_ID() {
             return 20;
+        }
+
+        @Override
+        public InvertedValue INVERTED() {
+            return InvertedValue.Clockwise_Positive;
+        }
+
+        @Override
+        public double DRIVE_RATIO() {
+            return 1.0;
         }
 
         @Override
@@ -401,6 +438,16 @@ public class GeminiRobotConsts extends RobotConsts {
         }
 
         @Override
+        public SensorDirectionValue CANCODER_DIRECTION() {
+            return SensorDirectionValue.CounterClockwise_Positive;
+        }
+
+        @Override
+        public InvertedValue MOTOR_INVERTED() {
+            return InvertedValue.CounterClockwise_Positive;
+        }
+
+        @Override
         public double TURRET_ROBOT_DISTANCE_FROM_CENTERS() {
             return 7.0710678118655;
         }
@@ -412,7 +459,7 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public double CANCODER_OFFSET_ROTATIONS() {
-            return -0.747314453125;
+            return -0.250732421875;
         }
 
         @Override
@@ -432,12 +479,12 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_SPEED_RPM() {
-            return 600.0;
+            return 200.0;
         }
 
         @Override
         public double MAX_ACCELERATION_RPM() {
-            return 800.0;
+            return 500.0;
         }
 
         @Override
@@ -457,12 +504,12 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public double kP() {
-            return 65.0;
+            return 75.0;
         }
 
         @Override
         public double kI() {
-            return 0.05;
+            return 0.15;
         }
 
         @Override

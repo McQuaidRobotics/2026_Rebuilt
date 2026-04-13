@@ -221,7 +221,9 @@ public class FieldConstants {
 
     public static class BUMP {
 
-        public static final double HALF_Y_FIELD_METERS = 23.5 * Conv.INCHES_TO_METERS;
+        public static final double HALF_Y_FIELD_METERS =
+                (23.5 + (16 * Math.sqrt(2)))
+                        * Conv.INCHES_TO_METERS; // adding the distance from center to corner
         public static final double HALF_HEIGHT_METERS = 109 * Conv.INCHES_TO_METERS;
 
         public static final double BUMP_1_X_METERS = 182.11 * Conv.INCHES_TO_METERS;
@@ -233,6 +235,7 @@ public class FieldConstants {
         public static boolean isInside(Pose2d pose) {
             double x = pose.getX();
             double y = pose.getY();
+
             if (!Robot.consts.disableAllLogs()) {
                 Log.log("ROBOT/Commands/BumpProtection: x;", x);
                 Log.log("ROBOT/Commands/BumpProtection: y;", y);

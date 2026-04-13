@@ -14,6 +14,10 @@ public abstract class LimeLights {
 
     public abstract double getLastTimeStamp();
 
+    public abstract void saveCameras();
+
+    public abstract void enableCameras(int imu_mode);
+
     public abstract double timeSinceLastSample();
 
     public abstract List<Integer> getVisibleTagIds();

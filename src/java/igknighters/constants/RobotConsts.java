@@ -1,6 +1,8 @@
 package igknighters.constants;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 public abstract class RobotConsts {
     public abstract CANBus getSuperStructureBus();
@@ -75,6 +77,10 @@ public abstract class RobotConsts {
 
     public interface kTurretConsts {
         int MOTOR_ID();
+
+        SensorDirectionValue CANCODER_DIRECTION();
+
+        InvertedValue MOTOR_INVERTED();
 
         double TURRET_ROBOT_DISTANCE_FROM_CENTERS();
 
@@ -292,13 +298,23 @@ public abstract class RobotConsts {
     public interface kPivotConsts {
         int MOTOR_ID();
 
+        InvertedValue INVERTED();
+
+        SensorDirectionValue SENSOR_DIRECTION();
+
         int CANCODER_ID();
 
         double GEAR_RATIO();
 
+        double PARTIAL_STOW();
+
+        double JORK_ANGLE();
+
         double MAX_ANGLE_DEGREES();
 
         double MIN_ANGLE_DEGREES();
+
+        double STOWED_ANGLE_DEGREES();
 
         double MAX_SPEED_METERS_PER_SECOND();
 
@@ -335,6 +351,10 @@ public abstract class RobotConsts {
 
     public interface kRollersConsts {
         int LEADER_MOTOR_ID();
+
+        double DRIVE_RATIO();
+
+        InvertedValue INVERTED();
 
         int FOLLOWER_MOTOR_ID();
 
