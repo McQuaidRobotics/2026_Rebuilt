@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.RPM;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.subsystems.intake.pivot.Pivot;
 import igknighters.subsystems.intake.pivot.PivotReal;
@@ -16,7 +15,7 @@ import igknighters.subsystems.intake.rollers.RollersSim;
 import igknighters.util.log.Log;
 import org.littletonrobotics.junction.Logger;
 
-public class Intake extends SubsystemBase {
+public class Intake extends AbstractIntake {
     private final Pivot pivot;
     private final Rollers rollers;
     private final IntakeVisualizer visualizer;
@@ -67,7 +66,7 @@ public class Intake extends SubsystemBase {
         return pivot.getAngle();
     }
 
-    public AngularVelocity getRollerSpeedRPM() {
+    public AngularVelocity getRollerSpeed() {
         return rollers.getSpeed();
     }
 

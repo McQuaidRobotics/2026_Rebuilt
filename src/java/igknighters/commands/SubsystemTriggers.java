@@ -21,7 +21,7 @@ import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.intake.Intake;
+import igknighters.subsystems.intake.AbstractIntake;
 import igknighters.subsystems.intake.IntakeState;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
@@ -186,7 +186,7 @@ public class SubsystemTriggers {
     public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
         Led led = subsystems.led;
         Swerve swerve = subsystems.swerve;
-        Intake intake = subsystems.intake;
+        AbstractIntake intake = subsystems.intake;
         Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
 
         Trigger trenchProtection = new Trigger(AimingCommands.isUnderTrench());
@@ -241,7 +241,7 @@ public class SubsystemTriggers {
                         .and(falseOnce())
                         .whileTrue(
                                 Commands.startEnd(
-                                                () -> driverController.rumble(1),
+                                                () -> driverController.rumble(1.0),
                                                 () -> driverController.rumble(0.0))
                                         .ignoringDisable(true)
                                         .withName("RumbleForTag"));

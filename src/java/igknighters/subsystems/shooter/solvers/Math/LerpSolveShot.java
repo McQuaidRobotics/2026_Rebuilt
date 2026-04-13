@@ -61,7 +61,6 @@ public class LerpSolveShot {
                         new LerpTableEntry(3.5, 30.0),
                         new LerpTableEntry(4.5, 33.0),
                         new LerpTableEntry(5.5, 35.0),
-                        new LerpTableEntry(5.5, 35.0),
                         new LerpTableEntry(6.0, 38.0),
                         new LerpTableEntry(10.0, 45)
                     });
@@ -69,14 +68,6 @@ public class LerpSolveShot {
     static LerpTable RPM_LERP =
             new LerpTable(
                     new LerpTableEntry[] {
-                        new LerpTableEntry(1.5, 2700),
-                        new LerpTableEntry(2.0, 2800),
-                        new LerpTableEntry(2.5, 2900),
-                        new LerpTableEntry(3.5, 3200),
-                        new LerpTableEntry(4.0, 3300),
-                        new LerpTableEntry(4.5, 3400),
-                        new LerpTableEntry(5.2, 3680),
-                        new LerpTableEntry(5.5, 3780),
                         new LerpTableEntry(1.5, 2700),
                         new LerpTableEntry(2.0, 2800),
                         new LerpTableEntry(2.5, 2900),
@@ -120,6 +111,7 @@ public class LerpSolveShot {
 
         double actualDistance = vectorToGoal.getNorm();
         Log.log("ROBOT/COMMANDS/LERPSOLVE/TURRETDISTANCE", actualDistance);
+        Log.log("ROBOT/COMMANDS/LERPSOLVE/TURRETDISTANCE", actualDistance);
 
         // 1. Find the unit vector pointing straight at the goal
         Translation2d unitVectorToGoal =
@@ -145,6 +137,9 @@ public class LerpSolveShot {
 
         // Input is the magnitude of the tangential component
         double tangentialMultiplier = TANGENTIAL.lerp(tangentialVelocity.getNorm());
+        // --- UPDATED: Radial and Tangential Speed Inputs ---
+        Log.log("ROBOT/COMMANDS/LERPSOLVE/RADIAL VELO", radialVelocity.getNorm());
+        Log.log("ROBOT/COMMANDS/LERPSOLVE/TANGENTIAL VELO", tangentialVelocity.getNorm());
 
         double radialMultiplierToUse =
                 (radialVelocityMag >= 0) ? radialTowardsMultiplier : radialAwayMultiplier;
@@ -154,6 +149,7 @@ public class LerpSolveShot {
         Translation2d tunedTangentialVelocity = tangentialVelocity.times(tangentialMultiplier);
 
         Translation2d tunedRobotVelocity = tunedRadialVelocity.plus(tunedTangentialVelocity);
+        // --------------------------------------------------
         // --------------------------------------------------
 
         // --- STEP 1: Initial Estimate ---
@@ -185,6 +181,7 @@ public class LerpSolveShot {
             Translation2d fieldRelativeVelocityVector = targetDirection.times(baselineExitVelocity);
 
             // Vector Subtraction: V_shot = V_target - V_robot
+            // Vector Subtraction: V_shot = V_target - V_robot
             Translation2d requiredShooterVector =
                     fieldRelativeVelocityVector.minus(tunedRobotVelocity);
 
@@ -193,6 +190,7 @@ public class LerpSolveShot {
             fieldRelativeTurretAngle = requiredShooterVector.getAngle();
 
             // RE-CALCULATE TOF based on the RPM we are actually shooting at
+            // RE-CALCULATE TOF based on the RPM we are actually shooting at
             double effectiveDistance = RPM_LERP.inverseLerp(requiredTableRpm);
             tof = TIME_OF_FLIGHT_LERP.lerp(effectiveDistance);
         }
@@ -200,6 +198,8 @@ public class LerpSolveShot {
         // --- STEP 3: Final Outputs ---
         double finalEffectiveDistance = RPM_LERP.inverseLerp(requiredTableRpm);
         double finalHoodAngle = HOOD_LERP.lerp(finalEffectiveDistance);
+
+        // Assuming turret zero is field-relative or robot-relative based on your pose provider
 
         // Assuming turret zero is field-relative or robot-relative based on your pose provider
         Rotation2d robotRelativeTurretAngle =

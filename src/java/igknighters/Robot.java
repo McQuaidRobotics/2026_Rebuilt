@@ -33,7 +33,6 @@ import igknighters.constants.RobotConsts;
 import igknighters.constants.RobotIdentity;
 import igknighters.constants.SecondBotRobotConsts;
 import igknighters.controllers.DriverController;
-import igknighters.controllers.DriverController.DebugType;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
@@ -240,7 +239,7 @@ public class Robot extends LoggedRobot {
                 new Subsystems(
                         new Swerve(false),
                         new LimeLightVision(),
-                        new Led(80, 2),
+                        new Led(90, 2),
                         new Shooter(),
                         new Indexer(),
                         new Intake(),
@@ -268,7 +267,7 @@ public class Robot extends LoggedRobot {
                 new Subsystems(
                         new Swerve(isSwerveDisabled),
                         new LimeLightVision(),
-                        new Led(80, 2),
+                        new Led(90, 2),
                         new Shooter(),
                         new Indexer(),
                         new Intake(),
@@ -405,13 +404,13 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledExit() {
-        subsystems.vision.enableCameras(4);
+        subsystems.vision.enableCameras(0);
     }
 
     @Override
     public void autonomousInit() {
 
-        subsystems.vision.enableCameras(4);
+        subsystems.vision.enableCameras(0);
         Command autoCommand = autoChooser.selectedCommand();
         if (fuelSim != null) {
             fuelSim.start();
@@ -440,7 +439,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopInit() {
-        subsystems.vision.enableCameras(4);
+        subsystems.vision.enableCameras(0);
         subsystems.swerve.clearActiveTrajectory();
         if (fuelSim != null) {
             fuelSim.start();

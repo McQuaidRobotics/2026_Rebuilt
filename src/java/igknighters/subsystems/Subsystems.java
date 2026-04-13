@@ -7,6 +7,7 @@ import igknighters.commands.Shooter.AimingCommands;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.indexer.Indexer;
+import igknighters.subsystems.intake.AbstractIntake;
 import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
@@ -18,7 +19,7 @@ public class Subsystems {
     public final Led led;
     public final Shooter shooter;
     public final Indexer indexer;
-    public final Intake intake;
+    public final AbstractIntake intake;
     public final Luma luma;
     public final SubsystemBase[] lockedResources;
 

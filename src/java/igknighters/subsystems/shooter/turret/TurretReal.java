@@ -67,8 +67,9 @@ public class TurretReal extends Turret {
         cfg.MagnetSensor.MagnetOffset =
                 Robot.consts.shooter().kTurret().CANCODER_OFFSET_ROTATIONS();
         cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.25;
+        cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.25;
         cfg.MagnetSensor.SensorDirection =
-                Robot.consts.shooter().kTurret().CANCODER_DIRECTION(); // Adjust as needed
+                Robot.consts.shooter().kTurret().CANCODER_DIRECTION(); // used to be c p
 
         return cfg;
     }
@@ -91,26 +92,16 @@ public class TurretReal extends Turret {
         motor.setPosition(angle.in(Rotations));
     }
 
-    public boolean isLegalPosition(double angleDegrees) {
-        return angleDegrees >= Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES()
-                && angleDegrees <= Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES();
-    }
-
-    public boolean isLegalPositionWrapped(double angleDegrees) {
-        double wrappedAngleDegrees = wrapAngleDegrees(angleDegrees);
-        return isLegalPosition(wrappedAngleDegrees);
-    }
-
     @Override
     public void goToAngleDegrees(Angle angleDegrees) {
         super.targetDegrees = angleDegrees.in(Degrees);
-        double wrappedAngleDegrees = wrapAngleDegrees(angleDegrees.in(Degrees));
-        if (!isLegalPositionWrapped(angleDegrees.in(Degrees))) {
+        double wrappedAngleDegrees = super.wrapAngleDegrees(angleDegrees.in(Degrees));
+        if (!super.isLegalPositionWrapped(angleDegrees.in(Degrees))) {
             DriverStation.reportError(
                     "Turret angle out of bounds: "
                             + wrappedAngleDegrees
                             + " degrees. Commanded: "
-                            + angleDegrees,
+                            + angleDegrees.in(Degrees),
                     false);
             return;
         }
@@ -127,7 +118,7 @@ public class TurretReal extends Turret {
     public void periodic() {
 
         if (!Robot.consts.shooter().kTurret().disableTurretLogs()) {
-            //     Log.logMotor("Subsystems/Shooter/Turret/Motor", motor);
+            Log.logMotor("ROBOT/Subsystems/Shooter/Turret/Motor", motor);
             Log.log("ROBOT/Subsystems/Shooter/Turret/Target Degrees", super.targetDegrees);
         }
 

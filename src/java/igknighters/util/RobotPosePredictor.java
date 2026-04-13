@@ -27,6 +27,8 @@ import java.util.Optional;
 public class RobotPosePredictor {
     Swerve swerve;
 
+    // input is rotational speed
+
     /**
      * Returns the best possible pose prediction based on current state. Automatically switches to
      * Auto prediction if a trajectory is active.

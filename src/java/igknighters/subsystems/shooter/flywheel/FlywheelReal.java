@@ -101,7 +101,8 @@ public class FlywheelReal extends Flywheel {
             Log.log(
                     "ROBOT/Subsystems/Shooter/Flywheels/being controlled",
                     isBeingControlledActivly);
-            Log.logMotor("ROBOT/Subsystems/Shooter/Flywheels/Motor", mainShooter);
+            Log.logMotor("ROBOT/Subsystems/Shooter/Flywheels/MainMotor", mainShooter);
+            Log.logMotor("ROBOT/Subsystems/Shooter/Flywheels/FollowerMotor", followerShooter);
         }
 
         isBeingControlledActivly = false;
