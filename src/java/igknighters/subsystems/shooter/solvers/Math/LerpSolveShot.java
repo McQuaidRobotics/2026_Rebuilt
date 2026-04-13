@@ -42,10 +42,6 @@ public class LerpSolveShot {
                         new LerpTableEntry(3, .9),
                         new LerpTableEntry(4.5, 1.0),
                         new LerpTableEntry(5, 1.1)
-                        new LerpTableEntry(2.0, .8),
-                        new LerpTableEntry(3, .9),
-                        new LerpTableEntry(4.5, 1.0),
-                        new LerpTableEntry(5, 1.1)
                     });
 
     static LerpTable RADIAL_AWAY =
@@ -104,7 +100,6 @@ public class LerpSolveShot {
 
     public static ShooterState solve(
             Pose3d goalPose, double currentRPM, double latencyCompensation) {
-            Pose3d goalPose, double currentRPM, double latencyCompensation) {
 
         Pose3d shooterPose = Robot.turret_pred.getPredictedPose().get();
 
@@ -149,13 +144,6 @@ public class LerpSolveShot {
         // --- UPDATED: Radial and Tangential Speed Inputs ---
         Log.log("ROBOT/COMMANDS/LERPSOLVE/RADIAL VELO", radialVelocity.getNorm());
         Log.log("ROBOT/COMMANDS/LERPSOLVE/TANGENTIAL VELO", tangentialVelocity.getNorm());
-
-        // Input is the absolute radial speed
-        double radialTowardsMultiplier = RADIAL_TOWARDS.lerp(Math.abs(radialVelocityMag));
-        double radialAwayMultiplier = RADIAL_AWAY.lerp(Math.abs(radialVelocityMag));
-
-        // Input is the magnitude of the tangential component
-        double tangentialMultiplier = TANGENTIAL.lerp(tangentialVelocity.getNorm());
 
         double radialMultiplierToUse =
                 (radialVelocityMag >= 0) ? radialTowardsMultiplier : radialAwayMultiplier;
@@ -225,7 +213,6 @@ public class LerpSolveShot {
 
         return new ShooterState(
                 RPM.of(requiredTableRpm),
-                Radians.of(robotRelativeTurretAngle.getRadians()),
                 Radians.of(robotRelativeTurretAngle.getRadians()),
                 Degrees.of(finalHoodAngle));
     }

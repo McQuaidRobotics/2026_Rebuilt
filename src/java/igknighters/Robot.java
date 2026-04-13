@@ -404,13 +404,13 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledExit() {
-        subsystems.vision.enableCameras(4);
+        subsystems.vision.enableCameras(0);
     }
 
     @Override
     public void autonomousInit() {
 
-        subsystems.vision.enableCameras(4);
+        subsystems.vision.enableCameras(0);
         Command autoCommand = autoChooser.selectedCommand();
         if (fuelSim != null) {
             fuelSim.start();
@@ -439,7 +439,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopInit() {
-        subsystems.vision.enableCameras(4);
+        subsystems.vision.enableCameras(0);
         subsystems.swerve.clearActiveTrajectory();
         if (fuelSim != null) {
             fuelSim.start();

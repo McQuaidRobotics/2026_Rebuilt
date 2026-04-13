@@ -264,8 +264,8 @@ public class AutoRoutines extends AutoCommands {
         AutoRoutine routine = autoFactory.newRoutine("OP RIGHT");
 
         AutoTrajectory firstLoop = routine.trajectory("OP_RIGHT_1.traj");
-        AutoTrajectory transitionToSecondLoop = routine.trajectory("OP_RIGHT_2");
-        AutoTrajectory secondLoop = routine.trajectory("OP_RIGHT_3");
+        AutoTrajectory transitionToSecondLoop = routine.trajectory("OP_RIGHT_2.traj");
+        AutoTrajectory secondLoop = routine.trajectory("OP_RIGHT_3.traj");
 
         routine.active().onTrue(Commands.sequence(firstLoop.resetOdometry(), firstLoop.spawnCmd()));
 

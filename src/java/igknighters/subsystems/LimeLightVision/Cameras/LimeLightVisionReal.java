@@ -26,6 +26,8 @@ public class LimeLightVisionReal extends LimeLights {
         }
     }
 
+
+
     /**
      * Returns a vision-based pose where translation comes from MT2 (reliable) and rotation comes
      * from MT1 (vision), ignoring MT1 translation entirely.
@@ -38,16 +40,12 @@ public class LimeLightVisionReal extends LimeLights {
             double roll,
             double rollRate) {
 
-        if (!RobotModeTriggers.disabled().getAsBoolean()) {
-
             List<Pose2d> poses = new ArrayList<>();
             double timestampSum = 0.0;
             visibleTagIds.clear();
             // mode breakdown
             // 1 = make internal match gyro
             for (String cameraName : cameraNames) {
-                LimelightHelpers.SetThrottle(cameraName, 0);
-                LimelightHelpers.SetIMUMode(cameraName, 0); // use both robot + internal
                 // Feed gyro to Limelight (for MT2)
                 LimelightHelpers.SetRobotOrientation(
                         cameraName, yaw, yawRate, pitch, pitchRate, roll, rollRate);
@@ -122,14 +120,6 @@ public class LimeLightVisionReal extends LimeLights {
             }
 
             return PoseAverager.averagePose2ds(poses);
-        } else {
-            // disabled
-            for (String cameraName : cameraNames) {
-                LimelightHelpers.SetThrottle(cameraName, 300);
-                LimelightHelpers.SetIMUMode(cameraName, 1);
-            }
-            return null;
-        }
     }
 
     @Override
