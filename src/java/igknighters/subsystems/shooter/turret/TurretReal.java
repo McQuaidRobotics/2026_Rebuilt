@@ -61,7 +61,7 @@ public class TurretReal extends Turret {
 
         return cfg;
     }
-    
+
     private final CANcoderConfiguration turretCancoderConfig() {
         var cfg = new CANcoderConfiguration();
 

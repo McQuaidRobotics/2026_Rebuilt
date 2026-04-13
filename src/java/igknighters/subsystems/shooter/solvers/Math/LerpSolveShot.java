@@ -17,7 +17,6 @@ import igknighters.subsystems.shooter.ShooterState;
 import igknighters.util.*;
 import igknighters.util.LerpTable.LerpTableEntry;
 import igknighters.util.log.Log;
-import igknighters.util.log.Log;
 
 public class LerpSolveShot {
     // minimal change in RPM most of the change will come from the hood
