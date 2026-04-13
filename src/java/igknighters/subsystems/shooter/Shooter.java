@@ -46,7 +46,7 @@ public class Shooter extends SubsystemBase {
         if (Robot.isReal()) {
             rollers = new FlywheelDisabled();
             turret = new TurretDisabled();
-            hood = new HoodReal();
+            hood = new HoodDisabled();
         } else {
             rollers = new FlywheelSimulator();
             turret = new TurretSim();
