@@ -20,6 +20,7 @@ public class LimeLightVisionReal extends LimeLights {
     public LimeLightVisionReal(String... cameraNames) {
         this.cameraNames = new ArrayList<>();
         for (String cameraName : cameraNames) {
+            LimelightHelpers.SetIMUAssistAlpha(cameraName, 0.1);
             this.cameraNames.add(cameraName);
         }
     }
@@ -39,9 +40,11 @@ public class LimeLightVisionReal extends LimeLights {
         List<Pose2d> poses = new ArrayList<>();
         double timestampSum = 0.0;
         visibleTagIds.clear();
-
+        // mode breakdown
+        // 1 = make internal match gyro
         for (String cameraName : cameraNames) {
-
+            LimelightHelpers.SetThrottle(cameraName, 0);
+            LimelightHelpers.SetIMUMode(cameraName, 4); // use both robot + internal
             // Feed gyro to Limelight (for MT2)
             LimelightHelpers.SetRobotOrientation(
                     cameraName, yaw, yawRate, pitch, pitchRate, roll, rollRate);
@@ -56,7 +59,8 @@ public class LimeLightVisionReal extends LimeLights {
                 Rotation2d rotationToUse;
                 if (mt1Estimate.tagCount >= 2) {
                     if (RobotController.getFPGATime() - previousSampleTime > 0.0) {
-                        // only accept the newer ones. This makes it so that if the last camera is
+                        // only accept the newer ones. This makes it so that if the last camera
+                        // is
                         // behind the others it will still work
                         previousSampleTime = RobotController.getFPGATime();
                     }
@@ -113,6 +117,15 @@ public class LimeLightVisionReal extends LimeLights {
         return PoseAverager.averagePose2ds(poses);
     }
 
+    @Override
+    public void saveCameras() {
+        // disabled
+        for (String cameraName : cameraNames) {
+            LimelightHelpers.SetThrottle(cameraName, 300);
+            LimelightHelpers.SetIMUMode(cameraName, 1);
+        }
+    }
+
     /** Returns a list of visible tag IDs in the current frame. */
     public List<Integer> getVisibleTagIds() {
         return visibleTagIds;
@@ -121,6 +134,14 @@ public class LimeLightVisionReal extends LimeLights {
     public double timeSinceLastSample() {
         return (RobotController.getFPGATime() - previousSampleTime)
                 * (1 / 1000000.0); // microseconds to seconds
+    }
+
+    @Override
+    public void enableCameras(int imu_mode) {
+        for (String name : cameraNames) {
+            LimelightHelpers.SetThrottle(name, 0);
+            LimelightHelpers.SetIMUMode(name, imu_mode);
+        }
     }
 
     /** Returns the last timestamp from vision measurements. */

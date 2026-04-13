@@ -9,9 +9,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
 import igknighters.Robot;
 import igknighters.constants.Conv;
@@ -43,7 +41,7 @@ public class PivotReal extends Pivot {
         CANcoderConfiguration config = new CANcoderConfiguration();
         config.MagnetSensor.MagnetOffset = Robot.consts.intake().kPivot().ENCODER_OFFSET();
         config.MagnetSensor.AbsoluteSensorDiscontinuityPoint = .5;
-        config.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+        config.MagnetSensor.SensorDirection = Robot.consts.intake().kPivot().SENSOR_DIRECTION();
 
         return config;
     }
@@ -60,7 +58,7 @@ public class PivotReal extends Pivot {
 
         config.Feedback.FeedbackRemoteSensorID = Robot.consts.intake().kPivot().CANCODER_ID();
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        config.MotorOutput.Inverted = Robot.consts.intake().kPivot().INVERTED();
         // config.CurrentLimits.StatorCurrentLimit =
         //        Robot.consts.intake().kPivot().STATOR_CURRENT_LIMIT;
         config.CurrentLimits.SupplyCurrentLowerLimit =
