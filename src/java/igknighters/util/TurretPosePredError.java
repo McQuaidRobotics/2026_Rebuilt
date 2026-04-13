@@ -31,6 +31,9 @@ public class TurretPosePredError {
     }
 
     public double[] findError(Pose3d actualPose) {
+        if (actualPose == null) {
+            return new double[] {0, 0, 0};
+        }
         double prevTimestamp = Collections.min(Arrays.stream(timestampHistory).boxed().toList());
         int latestIdx = Arrays.stream(timestampHistory).boxed().toList().indexOf(prevTimestamp);
         double actualOmega = actualPose.getZ();
