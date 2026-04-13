@@ -207,8 +207,13 @@ public class GeminiRobotConsts extends RobotConsts {
         }
 
         @Override
+        public InvertedValue INVERTED() {
+            return InvertedValue.Clockwise_Positive;
+        }
+
+        @Override
         public double DRIVE_RATIO() {
-            return -1.0;
+            return 1.0;
         }
 
         @Override

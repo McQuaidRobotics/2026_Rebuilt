@@ -206,6 +206,11 @@ public class SecondBotRobotConsts extends RobotConsts {
         }
 
         @Override
+        public InvertedValue INVERTED() {
+            return InvertedValue.CounterClockwise_Positive;
+        }
+
+        @Override
         public int FOLLOWER_MOTOR_ID() {
             return 62;
         }

@@ -354,6 +354,8 @@ public abstract class RobotConsts {
 
         double DRIVE_RATIO();
 
+        InvertedValue INVERTED();
+
         int FOLLOWER_MOTOR_ID();
 
         double WHEEL_RADIUS_METERS();
