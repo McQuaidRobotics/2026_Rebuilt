@@ -12,11 +12,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import igknighters.FieldVisualizer;
 import igknighters.Robot;
 import igknighters.constants.ShootInformation;
-import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.util.*;
 import igknighters.util.LerpTable.LerpTableEntry;
+import igknighters.util.log.Log;
 import igknighters.util.log.Log;
 
 public class LerpSolveShot {
@@ -38,6 +38,10 @@ public class LerpSolveShot {
             new LerpTable(
                     new LerpTableEntry[] {
                         new LerpTableEntry(1.0, .7),
+                        new LerpTableEntry(2.0, .8),
+                        new LerpTableEntry(3, .9),
+                        new LerpTableEntry(4.5, 1.0),
+                        new LerpTableEntry(5, 1.1)
                         new LerpTableEntry(2.0, .8),
                         new LerpTableEntry(3, .9),
                         new LerpTableEntry(4.5, 1.0),
@@ -87,9 +91,12 @@ public class LerpSolveShot {
             new LerpTable(
                     new LerpTableEntry[] {
                         new LerpTableEntry(1, 1.1),
+                        new LerpTableEntry(1, 1.1),
                         new LerpTableEntry(2.5, 1.1),
                         new LerpTableEntry(3.5, 1.1),
+                        new LerpTableEntry(3.5, 1.1),
                         new LerpTableEntry(4, 1.1),
+                        new LerpTableEntry(4.5, 1.1),
                         new LerpTableEntry(4.5, 1.1),
                         new LerpTableEntry(5.5, 1.15),
                         new LerpTableEntry(6, 1)
@@ -97,13 +104,14 @@ public class LerpSolveShot {
 
     public static ShooterState solve(
             Pose3d goalPose, double currentRPM, double latencyCompensation) {
+            Pose3d goalPose, double currentRPM, double latencyCompensation) {
 
         Pose3d shooterPose = Robot.turret_pred.getPredictedPose().get();
 
         ChassisSpeeds robotSpeeds = Robot.pose_pred.getDynamicPredictedSpeeds();
         Translation2d rawRobotVelocity =
                 new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
-        double kConversion = SubsystemConstants.kShooter.kFlywheels.RPM_TO_METERS_PER_SECOND_FACTOR;
+        double kConversion = Robot.consts.shooter().kFlywheels().RPM_TO_METERS_PER_SECOND_FACTOR();
 
         Translation2d vectorToGoal =
                 goalPose.getTranslation()
@@ -111,6 +119,7 @@ public class LerpSolveShot {
                         .minus(shooterPose.getTranslation().toTranslation2d());
 
         double actualDistance = vectorToGoal.getNorm();
+        Log.log("ROBOT/COMMANDS/LERPSOLVE/TURRETDISTANCE", actualDistance);
         Log.log("ROBOT/COMMANDS/LERPSOLVE/TURRETDISTANCE", actualDistance);
 
         // 1. Find the unit vector pointing straight at the goal
@@ -137,6 +146,16 @@ public class LerpSolveShot {
 
         // Input is the magnitude of the tangential component
         double tangentialMultiplier = TANGENTIAL.lerp(tangentialVelocity.getNorm());
+        // --- UPDATED: Radial and Tangential Speed Inputs ---
+        Log.log("ROBOT/COMMANDS/LERPSOLVE/RADIAL VELO", radialVelocity.getNorm());
+        Log.log("ROBOT/COMMANDS/LERPSOLVE/TANGENTIAL VELO", tangentialVelocity.getNorm());
+
+        // Input is the absolute radial speed
+        double radialTowardsMultiplier = RADIAL_TOWARDS.lerp(Math.abs(radialVelocityMag));
+        double radialAwayMultiplier = RADIAL_AWAY.lerp(Math.abs(radialVelocityMag));
+
+        // Input is the magnitude of the tangential component
+        double tangentialMultiplier = TANGENTIAL.lerp(tangentialVelocity.getNorm());
 
         double radialMultiplierToUse =
                 (radialVelocityMag >= 0) ? radialTowardsMultiplier : radialAwayMultiplier;
@@ -146,6 +165,7 @@ public class LerpSolveShot {
         Translation2d tunedTangentialVelocity = tangentialVelocity.times(tangentialMultiplier);
 
         Translation2d tunedRobotVelocity = tunedRadialVelocity.plus(tunedTangentialVelocity);
+        // --------------------------------------------------
         // --------------------------------------------------
 
         // --- STEP 1: Initial Estimate ---
@@ -177,6 +197,7 @@ public class LerpSolveShot {
             Translation2d fieldRelativeVelocityVector = targetDirection.times(baselineExitVelocity);
 
             // Vector Subtraction: V_shot = V_target - V_robot
+            // Vector Subtraction: V_shot = V_target - V_robot
             Translation2d requiredShooterVector =
                     fieldRelativeVelocityVector.minus(tunedRobotVelocity);
 
@@ -184,6 +205,7 @@ public class LerpSolveShot {
             requiredTableRpm = requiredExitVelocity / kConversion;
             fieldRelativeTurretAngle = requiredShooterVector.getAngle();
 
+            // RE-CALCULATE TOF based on the RPM we are actually shooting at
             // RE-CALCULATE TOF based on the RPM we are actually shooting at
             double effectiveDistance = RPM_LERP.inverseLerp(requiredTableRpm);
             tof = TIME_OF_FLIGHT_LERP.lerp(effectiveDistance);
@@ -194,6 +216,8 @@ public class LerpSolveShot {
         double finalHoodAngle = HOOD_LERP.lerp(finalEffectiveDistance);
 
         // Assuming turret zero is field-relative or robot-relative based on your pose provider
+
+        // Assuming turret zero is field-relative or robot-relative based on your pose provider
         Rotation2d robotRelativeTurretAngle =
                 fieldRelativeTurretAngle.minus(shooterPose.getRotation().toRotation2d());
 
@@ -201,6 +225,7 @@ public class LerpSolveShot {
 
         return new ShooterState(
                 RPM.of(requiredTableRpm),
+                Radians.of(robotRelativeTurretAngle.getRadians()),
                 Radians.of(robotRelativeTurretAngle.getRadians()),
                 Degrees.of(finalHoodAngle));
     }

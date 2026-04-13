@@ -299,7 +299,7 @@ public class Robot extends LoggedRobot {
         double dy = 0.0; // Y offset from turret center to hood
         double dz = 0.12; // z offset from turret pivot to hood pivot
 
-        Pose3d turretPose = getTurretPose(subsystems.shooter.getTurretAngleDegrees());
+        Pose3d turretPose = getTurretPose(-subsystems.shooter.getTurretAngleDegrees());
 
         Pose3d hoodPosition =
                 turretPose.transformBy(
@@ -333,7 +333,7 @@ public class Robot extends LoggedRobot {
             Logger.recordOutput(
                     "componentPoses",
                     new Pose3d[] {
-                        getTurretPose(-subsystems.shooter.getTurretAngleDegrees()),
+                        getTurretPose(subsystems.shooter.getTurretAngleDegrees()),
                         getHoodPose(subsystems.shooter.getHoodAngleDegrees())
                     });
         } else {
@@ -394,6 +394,7 @@ public class Robot extends LoggedRobot {
         DrivingSharedState.getInstance().setKP(targetingP.value());
         DrivingSharedState.getInstance().setKI(targetingI.value());
         DrivingSharedState.getInstance().setKD(targetingD.value());
+        subsystems.vision.disableCameras();
 
         bindDriverController();
     }
@@ -402,10 +403,14 @@ public class Robot extends LoggedRobot {
     public void disabledPeriodic() {}
 
     @Override
-    public void disabledExit() {}
+    public void disabledExit() {
+        subsystems.vision.enableCameras(4);
+    }
 
     @Override
     public void autonomousInit() {
+
+        subsystems.vision.enableCameras(4);
         Command autoCommand = autoChooser.selectedCommand();
         if (fuelSim != null) {
             fuelSim.start();
@@ -434,6 +439,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopInit() {
+        subsystems.vision.enableCameras(4);
         subsystems.swerve.clearActiveTrajectory();
         if (fuelSim != null) {
             fuelSim.start();
@@ -498,7 +504,7 @@ public class Robot extends LoggedRobot {
                 // Launch parameters
                 // Velocity is approx (RPM * radius / 2) because only one side is driven (per
                 // AimSolver)
-                double flywheelRadius = 0.0508; // 2 inches
+                double flywheelRadius = Robot.consts.shooter().kFlywheels().WHEEL_RADIUS_METERS();
                 double launchVelocity =
                         (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.0;
 

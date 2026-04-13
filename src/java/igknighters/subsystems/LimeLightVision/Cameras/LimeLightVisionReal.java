@@ -132,6 +132,15 @@ public class LimeLightVisionReal extends LimeLights {
         }
     }
 
+    @Override
+    public void saveCameras() {
+        // disabled
+        for (String cameraName : cameraNames) {
+            LimelightHelpers.SetThrottle(cameraName, 300);
+            LimelightHelpers.SetIMUMode(cameraName, 1);
+        }
+    }
+
     /** Returns a list of visible tag IDs in the current frame. */
     public List<Integer> getVisibleTagIds() {
         return visibleTagIds;
@@ -140,6 +149,14 @@ public class LimeLightVisionReal extends LimeLights {
     public double timeSinceLastSample() {
         return (RobotController.getFPGATime() - previousSampleTime)
                 * (1 / 1000000.0); // microseconds to seconds
+    }
+
+    @Override
+    public void enableCameras(int imu_mode) {
+        for (String name : cameraNames) {
+            LimelightHelpers.SetThrottle(name, 0);
+            LimelightHelpers.SetIMUMode(name, imu_mode);
+        }
     }
 
     /** Returns the last timestamp from vision measurements. */

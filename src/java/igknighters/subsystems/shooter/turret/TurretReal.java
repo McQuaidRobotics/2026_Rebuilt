@@ -63,10 +63,12 @@ public class TurretReal extends Turret {
     }
 
     private final CANcoderConfiguration turretCancoderConfig() {
+    private final CANcoderConfiguration turretCancoderConfig() {
         var cfg = new CANcoderConfiguration();
 
         cfg.MagnetSensor.MagnetOffset =
                 Robot.consts.shooter().kTurret().CANCODER_OFFSET_ROTATIONS();
+        cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.25;
         cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.25;
         cfg.MagnetSensor.SensorDirection =
                 Robot.consts.shooter().kTurret().CANCODER_DIRECTION(); // used to be c p
@@ -83,6 +85,7 @@ public class TurretReal extends Turret {
                 new TalonFX(
                         Robot.consts.shooter().kTurret().MOTOR_ID(),
                         Robot.consts.shooter().kCANBUS());
+        turretCaNcoder.getConfigurator().apply(turretCancoderConfig());
         turretCaNcoder.getConfigurator().apply(turretCancoderConfig());
         motor.getConfigurator().apply(turretConfiguration());
     }

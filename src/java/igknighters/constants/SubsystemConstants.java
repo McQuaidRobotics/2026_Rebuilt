@@ -189,7 +189,8 @@ public class SubsystemConstants {
         public static class kFlywheels {
             public static final int LEADER_MOTOR_ID = 23;
             public static final int FOLLOWER_MOTOR_ID = 22;
-            public static final double WHEEL_RADIUS_METERS = 0.0508; // 2 inch radius
+            // WHEEL_RADIUS_METERS removed to avoid duplication with Robot.consts
+            // Use Robot.consts.shooter().kFlywheels().WHEEL_RADIUS_METERS() instead.
             public static final double GEAR_RATIO = 1.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
             public static final double MAX_SPEED_RPM = 5000.0;
@@ -206,10 +207,11 @@ public class SubsystemConstants {
                     .5; // 40 cm this is made up it will be off ground though
             public static final double PEAK_CURRENT_LIMIT = 40;
             public static final double SUPPLY_CURRENT_LIMIT = 30;
+            public static final double RPM_TO_METERS_PER_SECOND_FACTOR = 0;
             public static boolean disableFlywheelsLogs = false;
 
-            public static double RPM_TO_METERS_PER_SECOND_FACTOR =
-                    (2.0 * Math.PI * kFlywheels.WHEEL_RADIUS_METERS) / 60.0;
+            // RPM_TO_METERS_PER_SECOND_FACTOR removed; use
+            // Robot.consts.shooter().kFlywheels().RPM_TO_METERS_PER_SECOND_FACTOR()
 
             static {
                 if (disableAllLogs) {
