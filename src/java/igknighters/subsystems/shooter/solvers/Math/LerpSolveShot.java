@@ -87,12 +87,9 @@ public class LerpSolveShot {
             new LerpTable(
                     new LerpTableEntry[] {
                         new LerpTableEntry(1, 1.1),
-                        new LerpTableEntry(1, 1.1),
                         new LerpTableEntry(2.5, 1.1),
                         new LerpTableEntry(3.5, 1.1),
-                        new LerpTableEntry(3.5, 1.1),
                         new LerpTableEntry(4, 1.1),
-                        new LerpTableEntry(4.5, 1.1),
                         new LerpTableEntry(4.5, 1.1),
                         new LerpTableEntry(5.5, 1.15),
                         new LerpTableEntry(6, 1)
