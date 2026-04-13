@@ -56,8 +56,7 @@ public class TurretReal extends Turret {
                 Robot.consts.shooter().kTurret().SUPPLY_CURRENT_LIMIT();
 
         cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        cfg.MotorOutput.Inverted =
-                Robot.consts.shooter().kTurret().MOTOR_INVERTED(); // inverted used to be c p
+        cfg.MotorOutput.Inverted = Robot.consts.shooter().kTurret().MOTOR_INVERTED();
 
         return cfg;
     }
