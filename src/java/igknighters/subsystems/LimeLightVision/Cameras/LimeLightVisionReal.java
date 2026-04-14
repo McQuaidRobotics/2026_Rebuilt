@@ -51,7 +51,7 @@ public class LimeLightVisionReal extends LimeLights {
             var mt2Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
             var mt1Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
 
-            if (mt2Estimate != null && mt1Estimate != null && mt1Estimate.tagCount > 0) {
+            if (mt2Estimate != null && mt1Estimate != null && mt1Estimate.tagCount >= 2) {
 
                 // --- ROTATION SELECTION LOGIC ---
                 Rotation2d rotationToUse;
@@ -77,8 +77,10 @@ public class LimeLightVisionReal extends LimeLights {
                 timestampSum += mt2Estimate.timestampSeconds;
 
                 // collect visible tags
-                for (var fiducial : mt2Estimate.rawFiducials) {
-                    visibleTagIds.add(fiducial.id);
+                if (mt2Estimate.rawFiducials != null) {
+                    for (var fiducial : mt2Estimate.rawFiducials) {
+                        visibleTagIds.add(fiducial.id);
+                    }
                 }
 
                 // Optional: log rotation source
