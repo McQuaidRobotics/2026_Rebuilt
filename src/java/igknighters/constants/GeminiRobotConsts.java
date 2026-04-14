@@ -509,6 +509,11 @@ public class GeminiRobotConsts extends RobotConsts {
         }
 
         @Override
+        public InvertedValue INVERTED() {
+            return InvertedValue.Clockwise_Positive;
+        }
+
+        @Override
         public double WHEEL_RADIUS_METERS() {
             return 0.0508;
         }

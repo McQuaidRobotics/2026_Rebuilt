@@ -94,7 +94,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double STOWED_ANGLE_DEGREES() {
-            return 16;
+            return 90;
         }
 
         @Override
@@ -501,6 +501,11 @@ public class SecondBotRobotConsts extends RobotConsts {
         }
 
         @Override
+        public InvertedValue INVERTED() {
+            return InvertedValue.Clockwise_Positive;
+        }
+
+        @Override
         public int FOLLOWER_MOTOR_ID() {
             return 4;
         }
@@ -619,7 +624,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double CANCODER_OFFSET_ROTATIONS() {
-            return -0.0771484375;
+            return -0.081298828125;
         }
 
         @Override
