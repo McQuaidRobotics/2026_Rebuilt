@@ -25,6 +25,87 @@ public class LimeLightVisionReal extends LimeLights {
         }
     }
 
+    // public Pose2d getRobotPoseFromVision(
+    //         double yaw,
+    //         double yawRate,
+    //         double pitch,
+    //         double pitchRate,
+    //         double roll,
+    //         double rollRate) {
+
+    //     List<Pose2d> poses = new ArrayList<>();
+    //     double timestampSum = 0.0;
+    //     visibleTagIds.clear();
+
+    //     System.out.println("--- Vision Update Start ---");
+    //     System.out.println("Camera Names List Size: " + cameraNames.size());
+
+    //     for (String cameraName : cameraNames) {
+    //         System.out.println("Processing Camera: " + cameraName);
+
+    //         // Feed gyro to Limelight (for MT2)
+    //         LimelightHelpers.SetRobotOrientation(
+    //                 cameraName, yaw, yawRate, pitch, pitchRate, roll, rollRate);
+
+    //         // Get both MT2 and MT1 estimates
+    //         var mt2Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
+    //         var mt1Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
+
+    //         // DEBUG BLOCK: Check exactly what is null
+    //         if (mt1Estimate == null) {
+    //             System.out.println("  [!] mt1Estimate is NULL for " + cameraName);
+    //         } else {
+    //             System.out.println("  [OK] mt1Estimate tagCount: " + mt1Estimate.tagCount);
+    //         }
+
+    //         if (mt2Estimate == null) {
+    //             System.out.println(
+    //                     "  [!] mt2Estimate is NULL for "
+    //                             + cameraName
+    //                             + " (Check gyro/orientation or array length)");
+    //         } else {
+    //             System.out.println("  [OK] mt2Estimate found. Pose: " + mt2Estimate.pose);
+    //         }
+
+    //         // Logic Check
+    //         if (mt2Estimate != null && mt1Estimate != null && mt1Estimate.tagCount >= 2) {
+    //             System.out.println("  >>> SUCCESS: Entering Pose Calculation");
+
+    //             Rotation2d rotationToUse;
+    //             if (mt1Estimate.tagCount >= 2) {
+    //                 System.out.println("  Using MT1 Vision Rotation");
+    //                 rotationToUse = mt1Estimate.pose.getRotation();
+    //             } else {
+    //                 System.out.println("  Using MT2 Gyro Rotation");
+    //                 rotationToUse = mt2Estimate.pose.getRotation();
+    //             }
+
+    //             Pose2d rotationOnlyPose =
+    //                     new Pose2d(mt2Estimate.pose.getTranslation(), rotationToUse);
+    //             poses.add(rotationOnlyPose);
+    //             timestampSum += mt2Estimate.timestampSeconds;
+
+    //             if (mt2Estimate.rawFiducials != null) {
+    //                 for (var fiducial : mt2Estimate.rawFiducials) {
+    //                     visibleTagIds.add(fiducial.id);
+    //                 }
+    //             }
+    //         } else {
+    //             System.out.println(
+    //                     "  [X] Skipped: Conditions not met (MT2 null, MT1 null, or Tags < 2)");
+    //         }
+    //     }
+
+    //     System.out.println("Total Poses Collected: " + poses.size());
+    //     System.out.println("WE MADE IT TO BOTTOM");
+
+    //     if (poses.isEmpty()) {
+    //         return null; // This avoids crashing PoseAverager
+    //     }
+
+    //     return PoseAverager.averagePose2ds(poses);
+    // }
+
     /**
      * Returns a vision-based pose where translation comes from MT2 (reliable) and rotation comes
      * from MT1 (vision), ignoring MT1 translation entirely.
@@ -77,8 +158,10 @@ public class LimeLightVisionReal extends LimeLights {
                 timestampSum += mt2Estimate.timestampSeconds;
 
                 // collect visible tags
-                for (var fiducial : mt2Estimate.rawFiducials) {
-                    visibleTagIds.add(fiducial.id);
+                if (mt2Estimate.rawFiducials != null) {
+                    for (var fiducial : mt2Estimate.rawFiducials) {
+                        visibleTagIds.add(fiducial.id);
+                    }
                 }
 
                 // Optional: log rotation source

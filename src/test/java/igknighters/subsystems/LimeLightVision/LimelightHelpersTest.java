@@ -21,66 +21,61 @@ public class LimelightHelpersTest {
     public void parsesBotposeRotation() throws InterruptedException {
         String cam1 = "limelight-cam1";
         String cam2 = "limelight-cam2";
-        double rot1 = 1;
-        double rot2 = 359;
+        double rot1 = 1.5;
+        double rot2 = 358.5;
         LimeLightVisionReal vision = new LimeLightVisionReal(cam1, cam2);
 
-        // Fake botpose array: [x, y, z, roll, pitch, yaw, latency, tagCount, ...]
-        double[] fakeBotpose1 = new double[18];
-        fakeBotpose1[0] = 2.0; // x
-        fakeBotpose1[1] = 3.0; // y
-        fakeBotpose1[2] = 0.0; // z
+        // Array Size: 11 (Header/Summary) + 7 (Tag 1) + 7 (Tag 2) = 25 total elements
+        double[] fakeBotpose1 = new double[25];
+
+        // --- Header & Summary ---
+        fakeBotpose1[0] = 2.0; // x (meters)
+        fakeBotpose1[1] = 3.0; // y (meters)
+        fakeBotpose1[2] = 0.5; // z (height off ground)
         fakeBotpose1[3] = 0.0; // roll
         fakeBotpose1[4] = 0.0; // pitch
-        fakeBotpose1[5] = rot1; // yaw in degrees
-        fakeBotpose1[6] = 20.0; // latency
-        fakeBotpose1[7] = 1; // tagCount
-        fakeBotpose1[8] = 0.5; // tagSpan
-        fakeBotpose1[9] = 1.0; // avgTagDist
-        fakeBotpose1[10] = 0.1; // avgTagArea
-        fakeBotpose1[11] = 1; // id
-        fakeBotpose1[12] = 0; // txnc
-        fakeBotpose1[13] = 0; // tync
-        fakeBotpose1[14] = 0; // ta
-        fakeBotpose1[15] = 0; // distToCamera
-        fakeBotpose1[16] = 0; // distToRobot
-        fakeBotpose1[17] = 0; // ambiguity
+        fakeBotpose1[5] = rot1; // yaw
+        fakeBotpose1[6] = 15.5; // latency (ms)
+        fakeBotpose1[7] = 2; // TAG COUNT (Crucial for your logic)
+        fakeBotpose1[8] = 1.2; // tagSpan (meters between tags)
+        fakeBotpose1[9] = 2.1; // avgTagDist (meters)
+        fakeBotpose1[10] = 0.8; // avgTagArea (%)
 
-        // [x, y, z, roll, pitch, yaw, latency, tagCount, ...]
-        double[] fakeBotpose2 = new double[18];
-        fakeBotpose2[0] = 2.0; // x
-        fakeBotpose2[1] = 3.0; // y
-        fakeBotpose2[2] = 0.0; // z
-        fakeBotpose2[3] = 0.0; // roll
-        fakeBotpose2[4] = 0.0; // pitch
-        fakeBotpose2[5] = rot2; // yaw in degrees
-        fakeBotpose2[6] = 20.0; // latency
-        fakeBotpose2[7] = 1; // tagCount
-        fakeBotpose2[8] = 0.5; // tagSpan
-        fakeBotpose2[9] = 1.0; // avgTagDist
-        fakeBotpose2[10] = 0.1; // avgTag
-        fakeBotpose2[11] = 2; // id
-        fakeBotpose2[12] = 0; // txnc
-        fakeBotpose2[13] = 0; // tync
-        fakeBotpose2[14] = 0; // ta
-        fakeBotpose2[15] = 0; // distToCamera
-        fakeBotpose2[16] = 0; // distToRobot
-        fakeBotpose2[17] = 0; // ambiguity
+        // --- Tag ID 1 Data ---
+        fakeBotpose1[11] = 1; // ID
+        fakeBotpose1[12] = -5.2; // txnc (degrees left of center)
+        fakeBotpose1[13] = 1.1; // tync (degrees above center)
+        fakeBotpose1[14] = 0.9; // ta (area %)
+        fakeBotpose1[15] = 2.05; // distToCamera (meters)
+        fakeBotpose1[16] = 2.2; // distToRobot (meters)
+        fakeBotpose1[17] = 0.02; // ambiguity (0.0 is perfect, 1.0 is bad)
+
+        // --- Tag ID 7 Data ---
+        fakeBotpose1[18] = 7; // ID (The second ID you needed)
+        fakeBotpose1[19] = 6.4; // txnc (degrees right of center)
+        fakeBotpose1[20] = 0.8; // tync
+        fakeBotpose1[21] = 0.7; // ta
+        fakeBotpose1[22] = 2.15; // distToCamera
+        fakeBotpose1[23] = 2.3; // distToRobot
+        fakeBotpose1[24] = 0.04; // ambiguity
+
         // Inject into NetworkTables
         NetworkTableInstance.getDefault()
                 .getTable(cam1)
                 .getEntry("botpose_orb_wpiblue")
                 .setDoubleArray(fakeBotpose1);
-
         NetworkTableInstance.getDefault()
                 .getTable(cam1)
                 .getEntry("botpose_wpiblue")
                 .setDoubleArray(fakeBotpose1);
+
+        // Repeat for Cam 2 (You can reuse the array or slightly tweak it)
+        double[] fakeBotpose2 = fakeBotpose1.clone();
+        fakeBotpose2[5] = rot2; // Give cam2 a different yaw
         NetworkTableInstance.getDefault()
                 .getTable(cam2)
                 .getEntry("botpose_orb_wpiblue")
                 .setDoubleArray(fakeBotpose2);
-
         NetworkTableInstance.getDefault()
                 .getTable(cam2)
                 .getEntry("botpose_wpiblue")
@@ -115,16 +110,19 @@ public class LimelightHelpersTest {
             robotVisionPose = vision.getRobotPoseFromVision(40.0, 0, 0, 0, 0, 0);
             Thread.sleep(100);
         }
+        // Line 106-111 area in your test
         double[] cam1Orientation =
                 NetworkTableInstance.getDefault()
                         .getTable(cam1)
                         .getEntry("robot_orientation_set")
-                        .getDoubleArray(new double[0]);
+                        .getDoubleArray(
+                                new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}); // Provide a default!
+
         double[] cam2Orientation =
                 NetworkTableInstance.getDefault()
                         .getTable(cam2)
                         .getEntry("robot_orientation_set")
-                        .getDoubleArray(new double[0]);
+                        .getDoubleArray(new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0});
 
         assertNotNull(cam1Orientation, "Cam1 orientation should not be null");
         assertNotNull(cam2Orientation, "Cam2 orientation should not be null");

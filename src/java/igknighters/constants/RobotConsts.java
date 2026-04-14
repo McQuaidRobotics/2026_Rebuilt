@@ -36,6 +36,8 @@ public abstract class RobotConsts {
 
         int FOLLOWER_MOTOR_ID();
 
+        InvertedValue INVERTED();
+
         double WHEEL_RADIUS_METERS();
 
         double GEAR_RATIO();
