@@ -458,7 +458,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double CANCODER_OFFSET_ROTATIONS() {
-            return -0.0771484375;
+            return -0.081298828125;
         }
 
         @Override

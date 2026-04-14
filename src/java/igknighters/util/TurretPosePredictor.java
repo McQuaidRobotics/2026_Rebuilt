@@ -41,6 +41,8 @@ public class TurretPosePredictor {
                 Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
         Pose3d predTurretPose = getTurretPoseFieldRelativeOffset(predRobotPose);
         Robot.turret_pred_error.findError(currentPose[latestIdx]);
+        Log.log("ROBOT/TURRET_POSE_X", predTurretPose.getX());
+        Log.log("ROBOT/TURRET_POSE_Y", predTurretPose.getY());
         return () -> predTurretPose;
     }
 
