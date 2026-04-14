@@ -3,6 +3,9 @@ package igknighters.constants;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import igknighters.constants.SubsystemConstants.kShooter.kHood;
+import igknighters.util.LerpTable;
+import igknighters.util.LerpTable.LerpTableEntry;
 
 public class SecondBotRobotConsts extends RobotConsts {
 
@@ -308,6 +311,144 @@ public class SecondBotRobotConsts extends RobotConsts {
         @Override
         public boolean disableRollersLogs() {
             return true || disableAllLogs;
+        }
+    }
+
+    @Override
+    public kLerpConsts lerp() {
+        return new GeminiLerpConsts();
+    }
+    public static class GeminiLerpConsts implements kLerpConsts {
+        @Override
+        public kRPMConsts kRPM() {
+            return new GeminiRPMConsts();
+        }
+
+        @Override
+        public kHoodAngleConsts kHoodAngle() {
+            return new GeminiHoodLerpAngleConsts();
+        }
+
+        @Override
+        public kRadialSOTMConsts kRadialSOTM() {
+            return new GeminiRadialSOTMConsts();
+        }
+
+        @Override
+        public kTangentialSOTMConsts kTangentialSOTM() {
+            return new GeminiTangentialSOTMConsts();
+        }
+
+        @Override
+        public kTOFConsts kTimeOfFlight() {
+            return new GeminiTimeOfFlightConsts();
+        }
+    }
+
+    public static class GeminiTangentialSOTMConsts implements kTangentialSOTMConsts {
+        static LerpTable TANGENTIAL =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(1.0, .7),
+                        new LerpTableEntry(2.0, .8),
+                        new LerpTableEntry(3, .9),
+                        new LerpTableEntry(4.5, 1.0),
+                        new LerpTableEntry(5, 1.1)
+                    });
+        @Override
+        public LerpTable table() {
+            return TANGENTIAL;
+        }
+    }
+
+    public static class GeminiRadialSOTMConsts implements kRadialSOTMConsts {
+        static LerpTable RADIAL_TOWARDS =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(1.0, .6),
+                        new LerpTableEntry(2.0, .7),
+                        new LerpTableEntry(3, .8),
+                        new LerpTableEntry(4.5, .9),
+                        new LerpTableEntry(5, 1.0)
+                    });
+
+        static LerpTable RADIAL_AWAY =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(1.0, .6),
+                        new LerpTableEntry(2.0, .7),
+                        new LerpTableEntry(3, .8),
+                        new LerpTableEntry(4.5, .9),
+                        new LerpTableEntry(5, 1.0)
+                    });
+        
+        @Override
+        public LerpTable away() {
+            return RADIAL_AWAY;
+        }
+
+        @Override
+        public LerpTable towards() {
+            return RADIAL_TOWARDS;
+        }
+    }
+
+    public static class GeminiHoodLerpAngleConsts implements kHoodAngleConsts {
+        static LerpTable HOOD_LERP =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(1.5, kHood.MIN_ANGLE_DEGREES), // this is a shortfall but i dont know how to acces other consts within this file
+                        new LerpTableEntry(2.5, 25.0),
+                        new LerpTableEntry(3.5, 30.0),
+                        new LerpTableEntry(4.5, 33.0),
+                        new LerpTableEntry(5.5, 35.0),
+                        new LerpTableEntry(6.0, 38.0),
+                        new LerpTableEntry(10.0, 45)
+                    });
+        @Override
+        public LerpTable table() {
+            return HOOD_LERP;
+        }
+    }
+
+    public static class GeminiRPMConsts implements kRPMConsts {
+        static LerpTable RPM_LERP =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(1.5, 2700),
+                        new LerpTableEntry(2.0, 2800),
+                        new LerpTableEntry(2.5, 2900),
+                        new LerpTableEntry(3.5, 3200),
+                        new LerpTableEntry(4.0, 3300),
+                        new LerpTableEntry(4.5, 3400),
+                        new LerpTableEntry(5.2, 3680),
+                        new LerpTableEntry(5.5, 3780),
+                        new LerpTableEntry(6.0, 3800),
+                        new LerpTableEntry(8.0, 4000),
+                        new LerpTableEntry(10.0, 4200),
+                        new LerpTableEntry(20, 5500)
+                    });
+        @Override
+        public LerpTable table() {
+            return RPM_LERP;
+        }
+    }
+
+    public static class GeminiTimeOfFlightConsts implements kTOFConsts {
+        static LerpTable TIME_OF_FLIGHT_LERP =
+            new LerpTable(
+                    new LerpTableEntry[] {
+                        new LerpTableEntry(1, 1.1),
+                        new LerpTableEntry(2.5, 1.1),
+                        new LerpTableEntry(3.5, 1.1),
+                        new LerpTableEntry(4, 1.1),
+                        new LerpTableEntry(4.5, 1.1),
+                        new LerpTableEntry(5.5, 1.15),
+                        new LerpTableEntry(6, 1)
+                    });
+        @Override
+        public LerpTable table() {
+            return TIME_OF_FLIGHT_LERP;
         }
     }
 
