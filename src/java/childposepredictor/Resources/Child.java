@@ -1,6 +1,4 @@
-package childposepredictor;
-
-import edu.wpi.first.math.geometry.Translation2d;
+package childposepredictor.Resources;
 import edu.wpi.first.math.geometry.Translation3d;
 
 public class Child {
