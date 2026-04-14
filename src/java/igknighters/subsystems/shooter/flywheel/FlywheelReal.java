@@ -4,11 +4,9 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.Robot;
@@ -17,7 +15,7 @@ import igknighters.util.log.Log;
 public class FlywheelReal extends Flywheel {
 
     private final TalonFX mainShooter;
-    private final TalonFX followerShooter;
+    // private final TalonFX followerShooter;
 
     // private final MotionMagicVelocityVoltage velocityControl = new
 
@@ -63,14 +61,14 @@ public class FlywheelReal extends Flywheel {
                 new TalonFX(
                         Robot.consts.shooter().kFlywheels().LEADER_MOTOR_ID(),
                         Robot.consts.shooter().kCANBUS());
-        followerShooter =
-                new TalonFX(
-                        Robot.consts.shooter().kFlywheels().FOLLOWER_MOTOR_ID(),
-                        Robot.consts.shooter().kCANBUS());
+        // followerShooter =
+        //         new TalonFX(
+        //                 Robot.consts.shooter().kFlywheels().FOLLOWER_MOTOR_ID(),
+        //                 Robot.consts.shooter().kCANBUS());
 
         mainShooter.getConfigurator().apply(getLeaderConfig());
-        followerShooter.setControl(
-                new Follower(mainShooter.getDeviceID(), MotorAlignmentValue.Opposed));
+        // followerShooter.setControl(
+        //         new Follower(mainShooter.getDeviceID(), MotorAlignmentValue.Opposed));
 
         velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(0);
     }
@@ -102,7 +100,7 @@ public class FlywheelReal extends Flywheel {
                     "ROBOT/Subsystems/Shooter/Flywheels/being controlled",
                     isBeingControlledActivly);
             Log.logMotor("ROBOT/Subsystems/Shooter/Flywheels/MainMotor", mainShooter);
-            Log.logMotor("ROBOT/Subsystems/Shooter/Flywheels/FollowerMotor", followerShooter);
+            // Log.logMotor("ROBOT/Subsystems/Shooter/Flywheels/FollowerMotor", followerShooter);
         }
 
         isBeingControlledActivly = false;
