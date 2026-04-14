@@ -11,8 +11,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import igknighters.Robot;
 import igknighters.subsystems.swerve.Swerve;
-import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import vroom.PathPlanner.PathPoint;
 
 public class PathFollower {
@@ -21,7 +21,12 @@ public class PathFollower {
     private final PIDController thetaController;
     final SwerveRequest.FieldCentric m_driveRequest =
             new SwerveRequest.FieldCentric()
-                    .withDeadband(knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.1)
+                    .withDeadband(
+                            Robot.consts
+                                            .swerve()
+                                            .getCommonSwerveConsts()
+                                            .getMaxSpeedMetersPerSecond()
+                                    * 0.1)
                     .withRotationalDeadband(RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .1)
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo)

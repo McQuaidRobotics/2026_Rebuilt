@@ -4,6 +4,8 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
+import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
+import igknighters.subsystems.swerve.swerveconstants.SwerveConsts;
 import igknighters.util.LerpTable;
 import igknighters.util.LerpTable.LerpTableEntry;
 
@@ -15,13 +17,24 @@ public class GeminiRobotConsts extends RobotConsts {
     public static final CANBus drive = new CANBus("DriveBus");
 
     @Override
-    public CANBus getSuperStructureBus() {
-        return superStructure;
+    public SWERVE_CONSTS swerve() {
+        return new GeminiSwerveConsts();
+    }
+
+    public static class GeminiSwerveConsts implements SWERVE_CONSTS {
+        static SwerveConsts swerveConsts = new SwerveConsts();
+
+        static CommonSwerveConsts commonSwerveConsts = swerveConsts.getSwerveConsts();
+
+        @Override
+        public CommonSwerveConsts getCommonSwerveConsts() {
+            return commonSwerveConsts;
+        }
     }
 
     @Override
-    public CANBus getDriveBus() {
-        return drive;
+    public CANBus getSuperStructureBus() {
+        return superStructure;
     }
 
     @Override

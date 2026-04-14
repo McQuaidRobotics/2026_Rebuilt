@@ -1,6 +1,5 @@
 package igknighters.commands.teleop;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -11,14 +10,18 @@ import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.Robot;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
-import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import igknighters.util.log.Log;
 
 public class TeleopSwerveHeadingCmd extends TeleopSwerveBaseCmd {
     private final double heading;
     private final SwerveRequest.FieldCentric m_driveRequest =
             new SwerveRequest.FieldCentric()
-                    .withDeadband(knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.1)
+                    .withDeadband(
+                            Robot.consts
+                                            .swerve()
+                                            .getCommonSwerveConsts()
+                                            .getMaxSpeedMetersPerSecond()
+                                    * 0.1)
                     .withRotationalDeadband(RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .1)
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
@@ -65,11 +68,17 @@ public class TeleopSwerveHeadingCmd extends TeleopSwerveBaseCmd {
                 m_driveRequest
                         .withVelocityX(
                                 vt.getX()
-                                        * knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond)
+                                        * Robot.consts
+                                                .swerve()
+                                                .getCommonSwerveConsts()
+                                                .getMaxSpeedMetersPerSecond()
                                         * allianceFlipper)
                         .withVelocityY(
                                 vt.getY()
-                                        * knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond)
+                                        * Robot.consts
+                                                .swerve()
+                                                .getCommonSwerveConsts()
+                                                .getMaxSpeedMetersPerSecond()
                                         * allianceFlipper)
                         .withRotationalRate(omega));
     }

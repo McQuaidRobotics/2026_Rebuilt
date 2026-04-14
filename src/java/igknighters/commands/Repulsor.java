@@ -1,6 +1,5 @@
 package igknighters.commands;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -15,7 +14,6 @@ import igknighters.Robot;
 import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.swerve.Swerve;
-import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import igknighters.util.log.Log;
 import java.util.ArrayList;
 
@@ -259,7 +257,12 @@ public class Repulsor {
         // FieldVisualizer.getInstance().updateDrivingTarget(targetPose);
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
-                        .withDeadband(knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.05)
+                        .withDeadband(
+                                Robot.consts
+                                                .swerve()
+                                                .getCommonSwerveConsts()
+                                                .getMaxSpeedMetersPerSecond()
+                                        * 0.05)
                         .withRotationalDeadband(
                                 RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.05)
                         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
