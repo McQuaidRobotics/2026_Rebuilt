@@ -80,7 +80,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double STOWED_ANGLE_DEGREES() {
-            return 90;
+            return 16;
         }
 
         @Override
