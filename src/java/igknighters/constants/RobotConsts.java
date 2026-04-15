@@ -3,6 +3,7 @@ package igknighters.constants;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import igknighters.util.LerpTable;
 
 public abstract class RobotConsts {
     public abstract CANBus getSuperStructureBus();
@@ -19,6 +20,8 @@ public abstract class RobotConsts {
 
     public abstract kIntakeConsts intake();
 
+    public abstract kLerpConsts lerp();
+
     public abstract kLimelightVisionConsts limelightVision();
 
     public interface kShooterConsts {
@@ -29,6 +32,40 @@ public abstract class RobotConsts {
         kTurretConsts kTurret();
 
         kHoodConsts kHood();
+    }
+
+    public interface kLerpConsts {
+        kRPMConsts kRPM();
+
+        kHoodAngleConsts kHoodAngle();
+
+        kRadialSOTMConsts kRadialSOTM();
+
+        kTOFConsts kTimeOfFlight();
+
+        kTangentialSOTMConsts kTangentialSOTM();
+    }
+
+    public interface kTOFConsts {
+        LerpTable table();
+    }
+
+    public interface kRPMConsts {
+        LerpTable table();
+    }
+
+    public interface kHoodAngleConsts {
+        LerpTable table();
+    }
+
+    public interface kRadialSOTMConsts {
+        LerpTable away();
+
+        LerpTable towards();
+    }
+
+    public interface kTangentialSOTMConsts {
+        LerpTable table();
     }
 
     public interface kFlywheelsConsts {
