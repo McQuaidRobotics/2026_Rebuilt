@@ -1,6 +1,5 @@
 package igknighters.commands.teleop;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -12,7 +11,6 @@ import igknighters.Robot;
 import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
-import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import igknighters.util.log.Log;
 
 public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
@@ -20,7 +18,12 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
     private final PIDController thetaController = new PIDController(4.0, 0, 0);
     private final SwerveRequest.FieldCentric m_driveRequest =
             new SwerveRequest.FieldCentric()
-                    .withDeadband(knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.1)
+                    .withDeadband(
+                            Robot.consts
+                                            .swerve()
+                                            .getCommonSwerveConsts()
+                                            .getMaxSpeedMetersPerSecond()
+                                    * 0.1)
                     .withRotationalDeadband(RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .1)
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
@@ -64,7 +67,7 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
         // Force a smaller speed on the bump as requested
         double bumpSpeedMultiplier = 0.5;
         double maxSpeed =
-                knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond)
+                Robot.consts.swerve().getCommonSwerveConsts().getMaxSpeedMetersPerSecond()
                         * detune
                         * bumpSpeedMultiplier;
 

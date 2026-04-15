@@ -3,11 +3,12 @@ package igknighters.constants;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
 
 public abstract class RobotConsts {
     public abstract CANBus getSuperStructureBus();
 
-    public abstract CANBus getDriveBus();
+    public abstract SWERVE_CONSTS swerve();
 
     public abstract boolean disableAllLogs();
 
@@ -20,6 +21,10 @@ public abstract class RobotConsts {
     public abstract kIntakeConsts intake();
 
     public abstract kLimelightVisionConsts limelightVision();
+
+    public interface SWERVE_CONSTS {
+        CommonSwerveConsts getCommonSwerveConsts();
+    }
 
     public interface kShooterConsts {
         CANBus kCANBUS();

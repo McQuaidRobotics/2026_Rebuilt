@@ -3,21 +3,33 @@ package igknighters.constants;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import igknighters.constants.SubsystemConstants.kShooter.kHood;
+import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
+import igknighters.subsystems.swerve.swerveconstants.SwerveConsts;
 
 public class SecondBotRobotConsts extends RobotConsts {
 
     public static final boolean disableAllLogs = false;
     public static final CANBus superStructure = new CANBus("SuperStructureBus");
-    public static final CANBus drive = new CANBus("DriveBus");
+
+    @Override
+    public SWERVE_CONSTS swerve() {
+        return new SecondBotSwerveConsts();
+    }
+
+    public static class SecondBotSwerveConsts implements SWERVE_CONSTS {
+        static SwerveConsts swerveConsts = new SwerveConsts();
+        static CommonSwerveConsts commonSwerveConsts = swerveConsts.getSwerveConsts();
+
+        @Override
+        public CommonSwerveConsts getCommonSwerveConsts() {
+            return commonSwerveConsts;
+        }
+    }
 
     @Override
     public CANBus getSuperStructureBus() {
         return superStructure;
-    }
-
-    @Override
-    public CANBus getDriveBus() {
-        return drive;
     }
 
     @Override
@@ -458,7 +470,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double CANCODER_OFFSET_ROTATIONS() {
-            return -0.0771484375;
+            return -0.081298828125;
         }
 
         @Override

@@ -1,6 +1,5 @@
 package igknighters.commands;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -16,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.FieldVisualizer;
 import igknighters.Robot;
 import igknighters.subsystems.swerve.Swerve;
-import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import igknighters.util.log.Log;
 import java.util.function.BooleanSupplier;
 
@@ -212,7 +210,12 @@ public class SwerveCommands {
         thetaController.setTolerance(0.0);
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
-                        .withDeadband(knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond) * .01)
+                        .withDeadband(
+                                Robot.consts
+                                                .swerve()
+                                                .getCommonSwerveConsts()
+                                                .getMaxSpeedMetersPerSecond()
+                                        * .01)
                         .withRotationalDeadband(
                                 RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .01)
                         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)

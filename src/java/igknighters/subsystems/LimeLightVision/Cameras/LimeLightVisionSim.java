@@ -32,7 +32,7 @@ public class LimeLightVisionSim extends LimeLights {
                             cameraRotations.get(i)[0],
                             cameraRotations.get(i)[1],
                             5,
-                            0.01,
+                            0.0001,
                             0.0,
                             0.1));
         }
