@@ -10,6 +10,7 @@ import igknighters.Robot;
 import java.util.function.Supplier;
 
 public enum IntakeState implements StructSerializable {
+    FULL_STOW(() -> Degrees.of(0.0), () -> RPM.of(0.0), () -> Degrees.of(5.0)),
     Intake(
             () -> Degrees.of(Robot.consts.intake().kPivot().MAX_ANGLE_DEGREES()),
             () -> RPM.of(Robot.consts.intake().kRollers().MAX_SPEED_RPM()),
