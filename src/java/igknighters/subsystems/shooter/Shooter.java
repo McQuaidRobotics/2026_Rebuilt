@@ -26,6 +26,7 @@ public class Shooter extends SubsystemBase {
     public shotType currentShotType = shotType.SHOT;
     private Boolean beingControlled = false;
     private final ShooterVisualizer visualizer;
+
     private ShootInformation ableToShootState = ShootInformation.getInstance();
     private double goalRPM = 100.0;
     private double goalTurretAngleDegrees = 10.0;

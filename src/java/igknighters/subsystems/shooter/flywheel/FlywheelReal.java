@@ -17,7 +17,7 @@ import igknighters.Robot;
 import igknighters.util.log.Log;
 
 public class FlywheelReal extends Flywheel {
-    public boolean useOneMotor = true;
+    public boolean useOneMotor = false;
     private final TalonFX mainShooter;
     private final TalonFX followerShooter;
 

@@ -77,24 +77,24 @@ public class IntakeCommands {
 
     public static Command slightJorkIntake(AbstractIntake intake) {
         return Commands.sequence(
-                        holdAtIntake(intake).withTimeout(.2),
-                        holdAtState(intake, IntakeState.slightJork).withTimeout(.2))
+                        holdAtIntake(intake).withTimeout(.05),
+                        holdAtState(intake, IntakeState.slightJork).withTimeout(.05))
                 .repeatedly()
                 .withName("Slight Jork");
     }
 
     public static Command largeJorkIntake(AbstractIntake intake) {
         return Commands.sequence(
-                        holdAtIntake(intake).withTimeout(.2),
-                        holdAtState(intake, IntakeState.largeJork).withTimeout(.2))
+                        holdAtIntake(intake).withTimeout(.05),
+                        holdAtState(intake, IntakeState.largeJork).withTimeout(.05))
                 .repeatedly()
                 .withName("Large Jork");
     }
 
     public static Command intakeWhileSlightJorking(AbstractIntake intake) {
         return Commands.sequence(
-                        holdAtIntake(intake).withTimeout(.7),
-                        holdAtState(intake, IntakeState.slightJork).withTimeout(.2))
+                        holdAtIntake(intake).withTimeout(.05),
+                        holdAtState(intake, IntakeState.slightJork).withTimeout(.05))
                 .repeatedly()
                 .withName("Slight Jork-y Intake-y");
     }

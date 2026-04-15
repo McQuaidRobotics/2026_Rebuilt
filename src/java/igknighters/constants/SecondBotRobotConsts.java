@@ -89,12 +89,12 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double PARTIAL_STOW() {
-            return 35;
+            return 90;
         }
 
         @Override
         public double STOWED_ANGLE_DEGREES() {
-            return 90;
+            return 80;
         }
 
         @Override
@@ -417,7 +417,7 @@ public class SecondBotRobotConsts extends RobotConsts {
                             // this file
                             new LerpTableEntry(2.5, 25.0),
                             new LerpTableEntry(3.5, 30.0),
-                            new LerpTableEntry(4.5, 33.0),
+                            new LerpTableEntry(4.5, 34.0),
                             new LerpTableEntry(5.5, 35.0),
                             new LerpTableEntry(6.0, 38.0),
                             new LerpTableEntry(10.0, 45)
@@ -436,12 +436,12 @@ public class SecondBotRobotConsts extends RobotConsts {
                             new LerpTableEntry(1.5, 2700),
                             new LerpTableEntry(2.0, 2800),
                             new LerpTableEntry(2.5, 2900),
-                            new LerpTableEntry(3.5, 3200),
+                            new LerpTableEntry(3.5, 3300),
                             new LerpTableEntry(4.0, 3300),
-                            new LerpTableEntry(4.5, 3400),
-                            new LerpTableEntry(5.2, 3680),
-                            new LerpTableEntry(5.5, 3780),
-                            new LerpTableEntry(6.0, 3800),
+                            new LerpTableEntry(4.5, 3600),
+                            new LerpTableEntry(5.2, 3740),
+                            new LerpTableEntry(5.5, 3800),
+                            new LerpTableEntry(6.0, 3900),
                             new LerpTableEntry(8.0, 4000),
                             new LerpTableEntry(10.0, 4200),
                             new LerpTableEntry(20, 5500)
@@ -502,7 +502,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public InvertedValue INVERTED() {
-            return InvertedValue.Clockwise_Positive;
+            return InvertedValue.CounterClockwise_Positive;
         }
 
         @Override
