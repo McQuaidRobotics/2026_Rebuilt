@@ -1,7 +1,6 @@
 package igknighters.commands.autos;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -27,7 +26,6 @@ import igknighters.constants.RobotConsts;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.intake.IntakeState;
 import igknighters.subsystems.shooter.ShooterState;
-import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import java.util.function.Supplier;
 
 public class AutoRoutines extends AutoCommands {
@@ -182,7 +180,12 @@ public class AutoRoutines extends AutoCommands {
 
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
-                        .withDeadband(knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.1)
+                        .withDeadband(
+                                Robot.consts
+                                                .swerve()
+                                                .getCommonSwerveConsts()
+                                                .getMaxSpeedMetersPerSecond()
+                                        * 0.1)
                         .withRotationalDeadband(
                                 RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .1)
                         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)

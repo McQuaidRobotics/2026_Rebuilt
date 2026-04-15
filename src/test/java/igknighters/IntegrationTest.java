@@ -1,7 +1,6 @@
 package igknighters;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +13,6 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.intake.IntakeState;
-import igknighters.subsystems.swerve.swerveconstants.knightshadeConsts;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -138,7 +136,8 @@ public class IntegrationTest {
         // --- 3. Test Manual Drive movement ---
         System.out.println("Starting Swerve Manual Test...");
         subsystems.swerve.resetPose(new Pose2d());
-        double maxSpeed = knightshadeConsts.kSpeedAt12Volts.in(MetersPerSecond);
+        double maxSpeed =
+                Robot.consts.swerve().getCommonSwerveConsts().getMaxSpeedMetersPerSecond();
         SwerveRequest.RobotCentric driveRequest =
                 new SwerveRequest.RobotCentric()
                         .withDeadband(0)
