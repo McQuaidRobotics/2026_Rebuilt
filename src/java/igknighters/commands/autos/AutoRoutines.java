@@ -263,6 +263,28 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine SINGLE_DUMP_LEFT() {
+        AutoRoutine routine = autoFactory.newRoutine("SINGLE_DUMP_LEFT");
+
+        AutoTrajectory firstLoop = routine.trajectory("SINGLE_DUMP.traj");
+
+        routine.active().onTrue(Commands.sequence(firstLoop.resetOdometry(), firstLoop.spawnCmd()));
+
+        firstLoop.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
+        firstLoop
+                .atTime("PROTECT")
+                .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
+
+        firstLoop
+                .done()
+                .onTrue(
+                        Commands.parallel(
+                                HigherOrderCommands.shootTillEmpty(subsystems, 25.0)));
+
+        return routine;
+    }
+
     public AutoRoutine OP_LEFT() {
         AutoRoutine routine = autoFactory.newRoutine("OP LEFT");
 
