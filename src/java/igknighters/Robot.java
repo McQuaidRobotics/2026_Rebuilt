@@ -164,6 +164,7 @@ public class Robot extends LoggedRobot {
                 routines::PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER);
         autoChooser.addRoutine("Aggresive Center Auto Left", routines::meanRoutine);
         autoChooser.addRoutine("OP RIGHT", routines::OP_RIGHT);
+        autoChooser.addRoutine("OP_LEFT", routines::OP_LEFT);
 
         testChooser.addRoutine("Test Auto", routines::TEST);
 
