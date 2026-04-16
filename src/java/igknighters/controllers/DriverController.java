@@ -148,9 +148,7 @@ public class DriverController {
         var swerve = subsystems.swerve;
         var intake = subsystems.intake;
 
-        this.LT
-                .whileTrue(IntakeCommands.holdAtIntake(subsystems.intake))
-                .onFalse(IntakeCommands.holdAtStow(subsystems.intake));
+        this.LT.whileTrue(IntakeCommands.holdAtIntake(subsystems.intake));
         this.RT
                 .whileTrue(HigherOrderCommands.rapidFireStream(subsystems))
                 .onFalse(HigherOrderCommands.IdleShooter(subsystems));
@@ -159,7 +157,7 @@ public class DriverController {
         this.LB.whileTrue(IntakeCommands.intakeWhileSlightJorking(intake));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
         this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
-        this.Y.whileTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.FULL_STOW));
+        this.Y.onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.FULL_STOW));
         this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
         this.A.and(this.B).whileTrue(Wayfinder.driveToSafeSpot(swerve));
     }

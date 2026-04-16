@@ -19,4 +19,6 @@ public abstract class AbstractIntake extends SubsystemBase {
     public abstract void goTo(IntakeState state);
 
     public abstract void setRollerSpeed(AngularVelocity speed);
+
+    public abstract boolean isStowed();
 }
