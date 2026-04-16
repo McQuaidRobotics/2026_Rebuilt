@@ -19,9 +19,14 @@ public class DrivingSharedState {
     public double kI = 0.00;
     public double kD = 0.00;
     public boolean onBump = false;
+    public boolean underTrench = false;
 
     public void setOnBump(boolean onBump) {
         this.onBump = onBump;
+    }
+
+    public void setUnderTrench(boolean underTrench) {
+        this.underTrench = underTrench;
     }
 
     public void setKP(double p) {

@@ -28,6 +28,7 @@ import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
+import igknighters.constants.FieldConstants;
 import igknighters.constants.GeminiRobotConsts;
 import igknighters.constants.RobotConsts;
 import igknighters.constants.RobotIdentity;
@@ -52,6 +53,7 @@ import igknighters.util.log.Log;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Optional;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -252,7 +254,7 @@ public class Robot extends LoggedRobot {
 
         pose_pred = new RobotPosePredictor(subsystems.swerve);
 
-        subsystemTriggers.SetupTriggers(subsystems, driverController);
+        subsystemTriggers.SetupTriggers(subsystems, driverController, poseSupplier());
 
         if (isSimulation()) {
             configureFuelSim();
@@ -279,7 +281,7 @@ public class Robot extends LoggedRobot {
         setUpTest(subsystems);
         bindDriverController();
 
-        subsystemTriggers.SetupTriggers(subsystems, driverController);
+        subsystemTriggers.SetupTriggers(subsystems, driverController, poseSupplier());
     }
 
     public Pose3d getTurretPose(double turretAngleDegrees) {
@@ -292,6 +294,10 @@ public class Robot extends LoggedRobot {
                 yMeterOffset,
                 zMeterOffset,
                 new Rotation3d(0, 0, turretAngleDegrees * Math.PI / 180));
+    }
+
+    public Supplier<Pose2d> poseSupplier() {
+        return () -> subsystems.swerve.getState().Pose;
     }
 
     public Pose3d getHoodPose(double hoodAngleDegrees) {
@@ -312,6 +318,26 @@ public class Robot extends LoggedRobot {
         return hoodPosition;
     }
 
+    boolean underTrench() {
+        Pose2d turretPredPose = turret_pred.getPredictedPose().get().toPose2d();
+        Pose2d turretAccPose = subsystems.swerve.getState().Pose;
+
+        double dx1Pred = Math.abs(turretPredPose.getX() - FieldConstants.BUMP.BUMP_1_X_METERS);
+        double dx2Pred = Math.abs(turretPredPose.getX() - FieldConstants.BUMP.BUMP_2_X_METERS);
+
+        double dx1Acc = Math.abs(turretAccPose.getX() - FieldConstants.BUMP.BUMP_1_X_METERS);
+        double dx2Acc = Math.abs(turretAccPose.getX() - FieldConstants.BUMP.BUMP_2_X_METERS);
+
+        boolean under1Pred = dx1Pred <= .5;
+        boolean under2Pred = dx2Pred <= .5;
+
+        boolean under1Acc = dx1Acc <= .5;
+        boolean under2Acc = dx2Acc <= .5;
+
+        boolean isUnder = under1Pred || under2Pred || under1Acc || under2Acc;
+        return isUnder;
+    }
+
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
@@ -320,6 +346,12 @@ public class Robot extends LoggedRobot {
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
         pose_pred.setVelocitiesAndPose();
+
+        if (underTrench()) {
+            DrivingSharedState.getInstance().setUnderTrench(true);
+        } else {
+            DrivingSharedState.getInstance().setUnderTrench(false);
+        }
         turret_pred.logTurretPose(
                 turret_pred.getTurretPoseFieldRelativeOffset(subsystems.swerve.getState().Pose));
         pose_pred_error.logPose(subsystems.swerve.getState().Pose);

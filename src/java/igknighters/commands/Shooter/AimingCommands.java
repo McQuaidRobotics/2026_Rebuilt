@@ -8,14 +8,12 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
 import igknighters.commands.Shooter.ShooterCommands.shotType;
-import igknighters.constants.FieldConstants;
+import igknighters.constants.DrivingSharedState;
 import igknighters.constants.ShootInformation;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.subsystems.shooter.ShootingData;
 import igknighters.subsystems.shooter.solvers.Math.LerpSolveShot;
-import igknighters.util.log.Log;
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 public class AimingCommands {
@@ -60,33 +58,6 @@ public class AimingCommands {
                             targetingData.turretAngle,
                             Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
                 });
-    }
-
-    public static BooleanSupplier isUnderTrench() {
-
-        return () -> {
-            Pose2d turretPose = getTurretPose();
-
-            double dx1 = Math.abs(turretPose.getX() - FieldConstants.BUMP.BUMP_1_X_METERS);
-            double dx2 = Math.abs(turretPose.getX() - FieldConstants.BUMP.BUMP_2_X_METERS);
-
-            boolean under1 = dx1 <= .5;
-            boolean under2 = dx2 <= .5;
-
-            boolean isUnder = under1 || under2;
-            if (!Robot.consts.disableAllLogs()) {
-                Log.log("ROBOT/Commands/Shooter/Trench Protection/DX_BLUE", dx1);
-
-                Log.log("ROBOT/Commands/Shooter/Trench Protection/DX_RED", dx2);
-
-                Log.log("ROBOT/Commands/Shooter/Trench Protection/isUnderTrench", isUnder);
-                Log.log("ROBOT/Commands/Shooter/Trench Protection/Under 1", under1);
-                Log.log("ROBOT/Commands/Shooter/Trench Protection/Under 2", under2);
-                Log.log("ROBOT/Commands/Shooter/Trench Protection/RobotX", turretPose.getX());
-            }
-
-            return isUnder;
-        };
     }
 
     public static shotType getShotType() {
@@ -147,10 +118,10 @@ public class AimingCommands {
     public static double maxHeightMeters = 4.8;
 
     public static Command shootWithProtectionAndAgregiousMaxHeight(Shooter shooter) {
-        BooleanSupplier underTrenchCheck = isUnderTrench();
         return shooter.run(
                 () -> {
-                    if (underTrenchCheck.getAsBoolean()) {
+                    Boolean underTrenchCheck = DrivingSharedState.getInstance().underTrench;
+                    if (underTrenchCheck) {
                         idleOnce(shooter);
                     } else {
                         shootOnce(shooter);
@@ -159,11 +130,11 @@ public class AimingCommands {
     }
 
     public static Command shootWithProtection(Shooter shooter) {
-        BooleanSupplier underTrenchCheck = isUnderTrench();
 
         return shooter.run(
                 () -> {
-                    if (underTrenchCheck.getAsBoolean()) {
+                    Boolean underTrenchCheck = DrivingSharedState.getInstance().underTrench;
+                    if (underTrenchCheck) {
                         idleOnce(shooter);
                     } else {
                         shootOnce(shooter);
