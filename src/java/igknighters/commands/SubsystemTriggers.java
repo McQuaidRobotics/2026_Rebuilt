@@ -239,9 +239,10 @@ public class SubsystemTriggers {
         shouldRumble =
                 new Trigger(() -> subsystems.vision.timeSinceLastSample() < 0.1)
                         .and(falseOnce())
+                        .and(teleop)
                         .whileTrue(
                                 Commands.startEnd(
-                                                () -> driverController.rumble(1.0),
+                                                () -> driverController.rumble(.30),
                                                 () -> driverController.rumble(0.0))
                                         .ignoringDisable(true)
                                         .withName("RumbleForTag"));
