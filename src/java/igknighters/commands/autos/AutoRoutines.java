@@ -278,10 +278,20 @@ public class AutoRoutines extends AutoCommands {
 
         firstLoop
                 .done()
-                .onTrue(
-                        Commands.parallel(
-                                HigherOrderCommands.shootTillEmpty(subsystems, 25.0)));
+                .onTrue(Commands.parallel(HigherOrderCommands.shootTillEmpty(subsystems, 25.0)));
 
+        return routine;
+    }
+
+    public AutoRoutine SQUOVAL() {
+        AutoRoutine routine = autoFactory.newRoutine("SQUOVAL");
+        AutoTrajectory trajectory = routine.trajectory("SINGLE_DUMP_PASS_1.traj");
+        AutoTrajectory pass = routine.trajectory("SINGLE_DUMP_PASS_2.traj");
+
+        routine.active()
+                .onTrue(Commands.sequence(trajectory.resetOdometry(), trajectory.spawnCmd()));
+
+        trajectory.atTime("SHOOT").onTrue(HigherOrderCommands.shootTillEmpty(subsystems, 7));
         return routine;
     }
 
