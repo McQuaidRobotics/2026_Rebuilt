@@ -1,5 +1,6 @@
 package igknighters.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.NetworkTable;
@@ -27,6 +28,7 @@ import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
 import igknighters.subsystems.swerve.Swerve;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public class SubsystemTriggers {
     private final Trigger disabled = RobotModeTriggers.disabled();
@@ -183,13 +185,16 @@ public class SubsystemTriggers {
                 .withName("DisabledRed");
     }
 
-    public void SetupTriggers(Subsystems subsystems, DriverController driverController) {
+    public void SetupTriggers(
+            Subsystems subsystems,
+            DriverController driverController,
+            Supplier<Pose2d> poseSupplier) {
         Led led = subsystems.led;
         Swerve swerve = subsystems.swerve;
         AbstractIntake intake = subsystems.intake;
         Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
 
-        Trigger trenchProtection = new Trigger(AimingCommands.isUnderTrench());
+        Trigger trenchProtection = new Trigger(() -> DrivingSharedState.getInstance().underTrench);
 
         SetupOperatorController(subsystems);
 

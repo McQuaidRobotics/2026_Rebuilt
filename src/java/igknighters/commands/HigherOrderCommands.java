@@ -9,6 +9,7 @@ import igknighters.commands.Shooter.AimingCommands;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
+import java.util.function.Supplier;
 
 public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
@@ -99,5 +100,9 @@ public class HigherOrderCommands {
         return Commands.parallel(
                 rapidFireStream(subsystems),
                 IntakeCommands.intakeWhileSlightJorking(subsystems.intake));
+    }
+
+    public Supplier<Pose2d> poseSupplier(Subsystems subsystems) {
+        return () -> subsystems.swerve.getState().Pose;
     }
 }
