@@ -15,6 +15,7 @@ import igknighters.commands.SwerveCommands;
 import igknighters.commands.Wayfinder;
 import igknighters.constants.DrivingSharedState;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.intake.IntakeState;
 import java.util.function.DoubleSupplier;
 
 public class DriverController {
@@ -112,10 +113,6 @@ public class DriverController {
         var indexer = subsystems.indexer;
 
         if (debugType == DebugType.SWERVE) {
-            // this.A.whileTrue(Wayfinder.driveToTarget(swerve, new Pose2d(0, 0, new
-            // Rotation2d(0))));
-            // this.B.whileTrue(LiveFollower.driveLive(swerve, new Pose2d(8, 5, new
-            // Rotation2d(0))));
             this.X.whileTrue(Wayfinder.driveToTarget(swerve, new Pose2d(3, 1, new Rotation2d(0))));
         } else if (debugType == DebugType.SHOOTER) {
             this.A.whileTrue(ShooterCommands.targetState(shooter, 5000, 90, 25));
@@ -162,7 +159,9 @@ public class DriverController {
         this.LB.whileTrue(IntakeCommands.intakeWhileSlightJorking(intake));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
         this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
+        this.Y.whileTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.FULL_STOW));
         this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
+        this.A.and(this.B).whileTrue(Wayfinder.driveToSafeSpot(swerve));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {
