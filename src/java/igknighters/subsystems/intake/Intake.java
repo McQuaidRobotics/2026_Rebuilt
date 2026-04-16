@@ -17,6 +17,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Intake extends AbstractIntake {
     private final Pivot pivot;
+    public boolean isStowed = false;
     private final Rollers rollers;
     private final IntakeVisualizer visualizer;
     private double goalPivotAngleDegrees = 0.0;
@@ -38,6 +39,11 @@ public class Intake extends AbstractIntake {
         rollers.goToSpeed(velo);
     }
 
+    @Override
+    public boolean isStowed() {
+        return isStowed;
+    }
+
     public void goTo(Angle angle, AngularVelocity speedRPM) {
         goalPivotAngleDegrees = angle.in(Degrees);
         goalRollerSpeed = speedRPM.in(RPM);
@@ -47,6 +53,8 @@ public class Intake extends AbstractIntake {
     }
 
     public void goTo(IntakeState state) {
+
+        isStowed = state == IntakeState.Stowed;
 
         goalPivotAngleDegrees = state.getPivotAngle().in(Degrees);
         goalRollerSpeed = state.getRollerSpeed().in(RPM);

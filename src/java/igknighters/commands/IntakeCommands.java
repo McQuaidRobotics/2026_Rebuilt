@@ -42,8 +42,7 @@ public class IntakeCommands {
     }
 
     public static Command toggleHoldState(AbstractIntake intake) {
-        return intake.startRun(() -> toggledState = !toggledState, () -> intake.goTo(toggledState))
-                .withName("AbstractIntakeBalls");
+        return Commands.either(holdAtIntake(intake), holdAtStow(intake), () -> intake.isStowed());
     }
 
     public static Command expell(AbstractIntake intake) {
