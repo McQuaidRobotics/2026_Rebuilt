@@ -165,6 +165,7 @@ public class Robot extends LoggedRobot {
         autoChooser.addRoutine("Aggresive Center Auto Left", routines::meanRoutine);
         autoChooser.addRoutine("OP RIGHT", routines::OP_RIGHT);
         autoChooser.addRoutine("OP_LEFT", routines::OP_LEFT);
+        autoChooser.addRoutine("SQUOVAL", routines::SQUOVAL);
 
         testChooser.addRoutine("Test Auto", routines::TEST);
 

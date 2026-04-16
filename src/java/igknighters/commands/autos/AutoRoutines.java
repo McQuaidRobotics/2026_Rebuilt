@@ -291,7 +291,15 @@ public class AutoRoutines extends AutoCommands {
         routine.active()
                 .onTrue(Commands.sequence(trajectory.resetOdometry(), trajectory.spawnCmd()));
 
+        trajectory
+                .atTime("PROTECT")
+                .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
+
         trajectory.atTime("SHOOT").onTrue(HigherOrderCommands.shootTillEmpty(subsystems, 7));
+
+        trajectory.done().onTrue(pass.spawnCmd());
+
+        pass.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
         return routine;
     }
 
