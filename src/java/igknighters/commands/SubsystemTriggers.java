@@ -23,7 +23,6 @@ import igknighters.constants.ShootInformation;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.intake.AbstractIntake;
-import igknighters.subsystems.intake.IntakeState;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
 import igknighters.subsystems.swerve.Swerve;
@@ -210,10 +209,7 @@ public class SubsystemTriggers {
                         Commands.sequence(
                                 Commands.runOnce(
                                         () -> DrivingSharedState.getInstance().setOnBump(true)),
-                                Commands.parallel(
-                                        new AutoRotateOnBump(swerve, driverController),
-                                        IntakeCommands.holdAtState(
-                                                intake, IntakeState.slightJork))));
+                                new AutoRotateOnBump(swerve, driverController)));
         onBump.onFalse(Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(false)));
 
         falseOnce().and(disabled).whileTrue(disabledLED(led));
@@ -231,7 +227,7 @@ public class SubsystemTriggers {
                 .onFalse(getLEDCommandByMode(led));
         ableToShootState
                 .canShoot()
-                .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kYellow)))
+                .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kMagenta)))
                 .onFalse(getLEDCommandByMode(led));
 
         ableToShootState
