@@ -155,7 +155,6 @@ public class Robot extends LoggedRobot {
         final var routines = new AutoRoutines(subsystems, autoFactory, consts);
         autoChooser.addRoutine("Right Orbit", routines::orbitRight);
         autoChooser.addRoutine("Left Orbit", routines::ORBIT_LEFT);
-        autoChooser.addRoutine("Orbit Pass to Self Right", routines::ORBIT_PASS_TO_SELF_RIGHT);
         autoChooser.addRoutine("Center Depot", routines::centerPreload);
         autoChooser.addRoutine("LEFT BUMP PASS TO SELF", routines::BUMP_PASS_TO_SELF_LEFT);
         autoChooser.addRoutine(

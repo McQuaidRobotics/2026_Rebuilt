@@ -291,6 +291,8 @@ public class AutoRoutines extends AutoCommands {
         routine.active()
                 .onTrue(Commands.sequence(trajectory.resetOdometry(), trajectory.spawnCmd()));
 
+        trajectory.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
         trajectory
                 .atTime("PROTECT")
                 .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
@@ -580,9 +582,13 @@ public class AutoRoutines extends AutoCommands {
 
         routine.active().onTrue(Commands.sequence(move_traj.resetOdometry(), move_traj.cmd()));
 
-        move_traj.atTime("SHOOT").onTrue(HigherOrderCommands.hippoShoot(subsystems));
+        move_traj.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
 
-        move_traj.done().onTrue(SwerveCommands.stopDriving(swerve));
+        move_traj
+                .done()
+                .onTrue(
+                        SwerveCommands.stopDriving(swerve)
+                                .andThen(HigherOrderCommands.shootTillEmpty(subsystems, 15)));
         return routine;
     }
 
