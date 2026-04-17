@@ -11,7 +11,7 @@ import igknighters.util.LerpTable.LerpTableEntry;
 
 public class SecondBotRobotConsts extends RobotConsts {
 
-    public static final boolean disableAllLogs = false;
+    public static final boolean disableAllLogs = true;
     public static final CANBus superStructure = new CANBus("SuperStructureBus");
 
     @Override
@@ -593,7 +593,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public boolean disableFlywheelsLogs() {
-            return false;
+            return true;
         }
     }
 
@@ -700,7 +700,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public boolean disableTurretLogs() {
-            return false;
+            return true;
         }
     }
 
