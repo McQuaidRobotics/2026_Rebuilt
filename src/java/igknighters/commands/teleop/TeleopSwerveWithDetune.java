@@ -60,7 +60,7 @@ public class TeleopSwerveWithDetune extends TeleopSwerveBaseCmd {
                                         * detune)
                         .withRotationalRate(
                                 detune
-                                        * RotationsPerSecond.of(0.75).in(RadiansPerSecond)
+                                        * RotationsPerSecond.of(3).in(RadiansPerSecond)
                                         * rotationStick().getX()));
     }
 }
