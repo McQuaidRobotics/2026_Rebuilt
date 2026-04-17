@@ -263,6 +263,81 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
+    public AutoRoutine SINGLE_DUMP_LEFT() {
+        AutoRoutine routine = autoFactory.newRoutine("SINGLE_DUMP_LEFT");
+
+        AutoTrajectory firstLoop = routine.trajectory("SINGLE_DUMP.traj");
+
+        routine.active().onTrue(Commands.sequence(firstLoop.resetOdometry(), firstLoop.spawnCmd()));
+
+        firstLoop.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
+        firstLoop
+                .atTime("PROTECT")
+                .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
+
+        firstLoop
+                .done()
+                .onTrue(Commands.parallel(HigherOrderCommands.shootTillEmpty(subsystems, 25.0)));
+
+        return routine;
+    }
+
+    public AutoRoutine SQUOVAL() {
+        AutoRoutine routine = autoFactory.newRoutine("SQUOVAL");
+        AutoTrajectory trajectory = routine.trajectory("SINGLE_DUMP_PASS_1.traj");
+        AutoTrajectory pass = routine.trajectory("SINGLE_DUMP_PASS_2.traj");
+
+        routine.active()
+                .onTrue(Commands.sequence(trajectory.resetOdometry(), trajectory.spawnCmd()));
+
+        trajectory
+                .atTime("PROTECT")
+                .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
+
+        trajectory.atTime("SHOOT").onTrue(HigherOrderCommands.shootTillEmpty(subsystems, 7));
+
+        trajectory.done().onTrue(pass.spawnCmd());
+
+        pass.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
+        return routine;
+    }
+
+    public AutoRoutine OP_LEFT() {
+        AutoRoutine routine = autoFactory.newRoutine("OP LEFT");
+
+        AutoTrajectory firstLoop = routine.trajectory("OP_LEFT_1.traj");
+        AutoTrajectory transitionToSecondLoop = routine.trajectory("OP_LEFT_2.traj");
+        AutoTrajectory secondLoop = routine.trajectory("OP_LEFT_3.traj");
+
+        routine.active().onTrue(Commands.sequence(firstLoop.resetOdometry(), firstLoop.spawnCmd()));
+
+        firstLoop.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
+        firstLoop
+                .atTime("PROTECT")
+                .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
+
+        firstLoop
+                .done()
+                .onTrue(
+                        Commands.parallel(
+                                HigherOrderCommands.shootTillEmpty(subsystems, 4.0),
+                                transitionToSecondLoop.cmd()));
+
+        transitionToSecondLoop.done().onTrue(secondLoop.spawnCmd());
+
+        secondLoop.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+
+        secondLoop
+                .atTime("PROTECT_INTAKE_2")
+                .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
+        secondLoop.atTime("SHOOT_2").onTrue(HigherOrderCommands.shootTillEmpty(subsystems, 5));
+        secondLoop.done().onTrue(HigherOrderCommands.shootTillEmpty(subsystems, 10));
+
+        return routine;
+    }
+
     public AutoRoutine OP_RIGHT() {
         AutoRoutine routine = autoFactory.newRoutine("OP RIGHT");
 
