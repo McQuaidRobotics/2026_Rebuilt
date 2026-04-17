@@ -17,6 +17,7 @@ import igknighters.constants.DrivingSharedState;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.intake.IntakeState;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 public class DriverController {
 
@@ -142,6 +143,10 @@ public class DriverController {
             System.out.println("UNKNOWN DEBUG TYPE: " + debugType);
             throw new IllegalArgumentException("UNKNOWN DEBUG TYPE: " + debugType);
         }
+    }
+
+    public Supplier<Pose2d> poseSupplier(Subsystems subsystems) {
+        return () -> subsystems.swerve.getState().Pose;
     }
 
     public void bind(final Subsystems subsystems) {
