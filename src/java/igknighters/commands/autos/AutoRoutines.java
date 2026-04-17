@@ -156,15 +156,14 @@ public class AutoRoutines extends AutoCommands {
 
         swipe1Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
 
-        swipe1Out.done().onTrue(swipe1In.cmd());
+        swipe1Out.done().onTrue(swipe1In.spawnCmd());
 
         swipe1In.done()
                 .onTrue(
                         HigherOrderCommands.shootTillEmpty(subsystems, 4)
-                                .andThen(
-                                        Commands.parallel(
-                                                loopDiDoop.cmd(),
-                                                IntakeCommands.holdAtIntake(subsystems.intake))));
+                                .andThen(loopDiDoop.spawnCmd()));
+
+        loopDiDoop.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
 
         loopDiDoop
                 .done()
