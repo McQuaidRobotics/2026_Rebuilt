@@ -210,10 +210,7 @@ public class SubsystemTriggers {
                         Commands.sequence(
                                 Commands.runOnce(
                                         () -> DrivingSharedState.getInstance().setOnBump(true)),
-                                Commands.parallel(
-                                        new AutoRotateOnBump(swerve, driverController),
-                                        IntakeCommands.holdAtState(
-                                                intake, IntakeState.slightJork))));
+                                new AutoRotateOnBump(swerve, driverController)));
         onBump.onFalse(Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(false)));
 
         falseOnce().and(disabled).whileTrue(disabledLED(led));
@@ -231,7 +228,7 @@ public class SubsystemTriggers {
                 .onFalse(getLEDCommandByMode(led));
         ableToShootState
                 .canShoot()
-                .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kYellow)))
+                .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kMagenta)))
                 .onFalse(getLEDCommandByMode(led));
 
         ableToShootState

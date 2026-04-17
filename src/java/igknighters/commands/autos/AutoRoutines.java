@@ -160,7 +160,7 @@ public class AutoRoutines extends AutoCommands {
 
         swipe1In.done()
                 .onTrue(
-                        HigherOrderCommands.shootTillEmpty(subsystems, 3.5)
+                        HigherOrderCommands.shootTillEmpty(subsystems, 4)
                                 .andThen(
                                         Commands.parallel(
                                                 loopDiDoop.cmd(),
