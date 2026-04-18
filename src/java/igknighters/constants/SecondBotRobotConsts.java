@@ -440,12 +440,13 @@ public class SecondBotRobotConsts extends RobotConsts {
                             new LerpTableEntry(3.5, 3200),
                             new LerpTableEntry(4.0, 3350),
                             new LerpTableEntry(4.5, 3600),
-                            new LerpTableEntry(5.2, 3740),
-                            new LerpTableEntry(5.5, 3900),
-                            new LerpTableEntry(6.0, 3900),
-                            new LerpTableEntry(8.0, 4000),
-                            new LerpTableEntry(10.0, 4200),
-                            new LerpTableEntry(20, 5500)
+                            new LerpTableEntry(4.9, 3750),
+                            new LerpTableEntry(5.2, 3900),
+                            new LerpTableEntry(5.5, 4000),
+                            new LerpTableEntry(6.0, 4100),
+                            new LerpTableEntry(8.0, 4600),
+                            new LerpTableEntry(10.0, 5000),
+                            new LerpTableEntry(20, 6000)
                         });
 
         @Override
@@ -528,7 +529,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_SPEED_RPM() {
-            return 5000.0;
+            return 6000.0;
         }
 
         @Override
@@ -583,17 +584,17 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double PEAK_CURRENT_LIMIT() {
-            return 40;
+            return 50;
         }
 
         @Override
         public double SUPPLY_CURRENT_LIMIT() {
-            return 30;
+            return 35;
         }
 
         @Override
         public boolean disableFlywheelsLogs() {
-            return true;
+            return false;
         }
     }
 

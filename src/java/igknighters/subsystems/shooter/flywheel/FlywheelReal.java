@@ -56,8 +56,10 @@ public class FlywheelReal extends Flywheel {
         config.MotionMagic.MotionMagicCruiseVelocity =
                 Robot.consts.shooter().kFlywheels().MAX_SPEED_RPM();
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
-        config.CurrentLimits.SupplyCurrentLimit =
-                Robot.consts.shooter().kFlywheels().SUPPLY_CURRENT_LIMIT();
+        config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLowerTime = .2;
+        config.CurrentLimits.SupplyCurrentLowerLimit = 35;
+        config.CurrentLimits.SupplyCurrentLimit = 50;
         config.MotorOutput.PeakReverseDutyCycle = 0.0; // do not allow the motor to run in reverse
 
         return config;
