@@ -1,7 +1,7 @@
 package igknighters.util.Vision;
 
-import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.RobotController;
 import igknighters.Robot;
 import igknighters.subsystems.LimeLightVision.Helpers.LimelightHelpers;
 import igknighters.util.log.Log;
@@ -22,17 +21,18 @@ public class TurretedLimelight {
     private final Rotation3d cameraDefaultRotation;
 
     public TurretedLimelight(
-            String cameraName, 
-            Translation3d turretCenterInRobotSpace, 
-            Translation3d cameraRelativeToTurret, 
+            String cameraName,
+            Translation3d turretCenterInRobotSpace,
+            Translation3d cameraRelativeToTurret,
             Rotation3d cameraRotation) {
-        
+
         this.cameraName = cameraName;
         this.turretCenterInRobotSpace = turretCenterInRobotSpace;
         this.cameraDefaultRotation = cameraRotation;
-        
+
         // We split the offset into 2D (for rotation) and Z (static height)
-        this.cameraOffsetFromTurretCenter = new Translation2d(cameraRelativeToTurret.getX(), cameraRelativeToTurret.getY());
+        this.cameraOffsetFromTurretCenter =
+                new Translation2d(cameraRelativeToTurret.getX(), cameraRelativeToTurret.getY());
         this.cameraHeight = turretCenterInRobotSpace.getZ() + cameraRelativeToTurret.getZ();
     }
 
@@ -41,7 +41,7 @@ public class TurretedLimelight {
 
         // 1. Calculate new XY translation by rotating the camera offset by the turret's angle
         Translation2d rotatedOffset = cameraOffsetFromTurretCenter.rotateBy(turretRot);
-        
+
         double finalX = turretCenterInRobotSpace.getX() + rotatedOffset.getX();
         double finalY = turretCenterInRobotSpace.getY() + rotatedOffset.getY();
         double finalZ = cameraHeight;
@@ -53,16 +53,10 @@ public class TurretedLimelight {
 
         // 3. Update Limelight
         LimelightHelpers.setCameraPose_RobotSpace(
-            cameraName, 
-            finalX, 
-            finalY, 
-            finalZ, 
-            finalRoll, 
-            finalPitch, 
-            finalYaw
-        );
+                cameraName, finalX, finalY, finalZ, finalRoll, finalPitch, finalYaw);
     }
-        public Pose2d getRobotPoseFromVision(
+
+    public Pose2d getRobotPoseFromVision(
             double yaw,
             double yawRate,
             double pitch,
@@ -70,41 +64,39 @@ public class TurretedLimelight {
             double roll,
             double rollRate) {
 
-        
-            // Feed gyro to Limelight (for MT2)
-            LimelightHelpers.SetRobotOrientation(
-                    cameraName, yaw, yawRate, pitch, pitchRate, roll, rollRate);
+        // Feed gyro to Limelight (for MT2)
+        LimelightHelpers.SetRobotOrientation(
+                cameraName, yaw, yawRate, pitch, pitchRate, roll, rollRate);
 
-            // Get both MT2 and MT1 estimates
-            var mt2Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
-            var mt1Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
+        // Get both MT2 and MT1 estimates
+        var mt2Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
+        var mt1Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
 
-            Pose2d robotPose2d = null;
+        Pose2d robotPose2d = null;
 
-            if (mt2Estimate != null && mt1Estimate != null && mt1Estimate.tagCount > 0) {
+        if (mt2Estimate != null && mt1Estimate != null && mt1Estimate.tagCount > 0) {
 
-                // --- ROTATION SELECTION LOGIC ---
-                Rotation2d rotationToUse;
-                if (mt1Estimate.tagCount >= 2) {
-                    rotationToUse = mt1Estimate.pose.getRotation(); // vision rotation
-                } else {
-                    rotationToUse = mt2Estimate.pose.getRotation(); // fallback gyro-based
-                }
-
-                // MT2 translation + selected rotation
-                robotPose2d =
-                        new Pose2d(mt2Estimate.pose.getTranslation(), rotationToUse);
-
-                // Optional: log rotation source
-                if (!Robot.consts.limelightVision().disableVisionLogs()) {
-                    Log.log(
-                            "Subsystems/Vision/LimeLightVision/Source_" + cameraName,
-                            (mt1Estimate.tagCount >= 2) ? "VISION_CORRECTION" : "ROBOT_GYRO_ONLY");
-                }
+            // --- ROTATION SELECTION LOGIC ---
+            Rotation2d rotationToUse;
+            if (mt1Estimate.tagCount >= 2) {
+                rotationToUse = mt1Estimate.pose.getRotation(); // vision rotation
             } else {
-                return null;
+                rotationToUse = mt2Estimate.pose.getRotation(); // fallback gyro-based
             }
 
-            return robotPose2d;
+            // MT2 translation + selected rotation
+            robotPose2d = new Pose2d(mt2Estimate.pose.getTranslation(), rotationToUse);
+
+            // Optional: log rotation source
+            if (!Robot.consts.limelightVision().disableVisionLogs()) {
+                Log.log(
+                        "Subsystems/Vision/LimeLightVision/Source_" + cameraName,
+                        (mt1Estimate.tagCount >= 2) ? "VISION_CORRECTION" : "ROBOT_GYRO_ONLY");
+            }
+        } else {
+            return null;
+        }
+
+        return robotPose2d;
     }
 }
