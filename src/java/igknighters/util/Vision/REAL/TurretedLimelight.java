@@ -1,4 +1,4 @@
-package igknighters.util.Vision;
+package igknighters.util.Vision.REAL;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
@@ -11,13 +11,17 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.measure.Angle;
 import igknighters.Robot;
 import igknighters.subsystems.LimeLightVision.Helpers.LimelightHelpers;
+import igknighters.util.Vision.LocalizationCamera;
 import igknighters.util.log.Log;
+import java.util.ArrayList;
 
-public class TurretedLimelight {
+public class TurretedLimelight extends LocalizationCamera {
     private final String cameraName;
     private final Translation3d turretCenterInRobotSpace;
     private final Translation2d cameraOffsetFromTurretCenter;
     private final double cameraHeight;
+    private double lastTimeStamp;
+    private ArrayList<Integer> visibleTagIds;
     private final Rotation3d cameraDefaultRotation;
 
     public TurretedLimelight(
@@ -27,6 +31,7 @@ public class TurretedLimelight {
             Rotation3d cameraRotation) {
 
         this.cameraName = cameraName;
+        this.lastTimeStamp = 0.0;
         this.turretCenterInRobotSpace = turretCenterInRobotSpace;
         this.cameraDefaultRotation = cameraRotation;
 
@@ -56,11 +61,8 @@ public class TurretedLimelight {
                 cameraName, finalX, finalY, finalZ, finalRoll, finalPitch, finalYaw);
     }
 
-    public double getTimeStamp(double latency) {
-        if (LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName) != null) {
-            return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName).timestampSeconds + latency;
-        }
-        return 0.0;
+    public double getLastTimeStamp() {
+        return lastTimeStamp;
     }
 
     public Pose2d getRobotPoseFromVision(
@@ -69,7 +71,12 @@ public class TurretedLimelight {
             double pitch,
             double pitchRate,
             double roll,
-            double rollRate) {
+            double rollRate,
+            Angle turretAngle) {
+
+        update(turretAngle);
+
+        visibleTagIds.clear();
 
         // Feed gyro to Limelight (for MT2)
         LimelightHelpers.SetRobotOrientation(
@@ -86,9 +93,14 @@ public class TurretedLimelight {
             // --- ROTATION SELECTION LOGIC ---
             Rotation2d rotationToUse;
             if (mt1Estimate.tagCount >= 2) {
+                lastTimeStamp = mt1Estimate.timestampSeconds;
                 rotationToUse = mt1Estimate.pose.getRotation(); // vision rotation
             } else {
                 rotationToUse = mt2Estimate.pose.getRotation(); // fallback gyro-based
+            }
+
+            for (var fid : mt2Estimate.rawFiducials) {
+                visibleTagIds.add(fid.id);
             }
 
             // MT2 translation + selected rotation
@@ -105,5 +117,10 @@ public class TurretedLimelight {
         }
 
         return robotPose2d;
+    }
+
+    @Override
+    public ArrayList<Integer> getVisibleTagIds() {
+        return visibleTagIds;
     }
 }
