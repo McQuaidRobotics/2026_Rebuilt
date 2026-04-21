@@ -56,6 +56,13 @@ public class TurretedLimelight {
                 cameraName, finalX, finalY, finalZ, finalRoll, finalPitch, finalYaw);
     }
 
+    public double getTimeStamp(double latency) {
+        if (LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName) != null) {
+            return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName).timestampSeconds + latency;
+        }
+        return 0.0;
+    }
+
     public Pose2d getRobotPoseFromVision(
             double yaw,
             double yawRate,
