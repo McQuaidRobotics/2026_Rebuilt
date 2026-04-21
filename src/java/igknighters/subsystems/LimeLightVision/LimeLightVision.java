@@ -45,7 +45,7 @@ public class LimeLightVision extends SubsystemBase {
     }
 
     public double getLastTimeStamp() {
-        return vision.getTimeSinceLastUpdate();
+        return vision.getTimeStamp();
     }
 
     public double timeSinceLastSample() {

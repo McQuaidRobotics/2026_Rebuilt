@@ -14,6 +14,7 @@ public class SimCamera extends LocalizationCamera {
     private final VisionSimulator simulator;
     private final String name;
     private double lastTimeStamp;
+    private double lastDoubleTagTimeStamp;
     private ArrayList<Integer> visibleTagIds;
 
     /**
@@ -24,6 +25,7 @@ public class SimCamera extends LocalizationCamera {
     public SimCamera(String cameraName, double minAngle, double maxAngle) {
         this.name = cameraName;
         this.visibleTagIds = new ArrayList<>();
+        this.lastDoubleTagTimeStamp = 0.0;
 
         // Initializing the simulator with the provided FOV constraints
         // Values based on your original LimeLightVisionSim defaults
@@ -59,6 +61,9 @@ public class SimCamera extends LocalizationCamera {
             List<Integer> tags = simulator.getVisibleTagIds();
             if (tags != null) {
                 visibleTagIds.addAll(tags);
+                if (tags.size() >= 2) {
+                    lastDoubleTagTimeStamp = lastTimeStamp;
+                }
             }
 
             return estimatedPose;
@@ -70,6 +75,11 @@ public class SimCamera extends LocalizationCamera {
     @Override
     public double getLastTimeStamp() {
         return lastTimeStamp;
+    }
+
+    @Override
+    public double getLastDoubleTagTimeStamp() {
+        return lastDoubleTagTimeStamp;
     }
 
     @Override

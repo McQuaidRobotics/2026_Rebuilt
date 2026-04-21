@@ -12,12 +12,14 @@ import java.util.ArrayList;
 public class StaticCamera extends LocalizationCamera {
     String name;
     double lastTimeStamp;
+    double lastDoubleTagTimeStamp;
 
     ArrayList<Integer> visibleTagIds;
 
     public StaticCamera(String cameraName) {
         this.name = cameraName;
         this.lastTimeStamp = 0.0;
+        this.lastDoubleTagTimeStamp = 0.0;
         this.visibleTagIds = new ArrayList<>();
     }
 
@@ -46,11 +48,12 @@ public class StaticCamera extends LocalizationCamera {
             if (mt1Estimate.tagCount >= 2) {
                 // only update when we have a good vision estimate > 2 tags
                 rotationToUse = mt1Estimate.pose.getRotation(); // vision rotation
-                lastTimeStamp = mt2Estimate.timestampSeconds;
+                lastDoubleTagTimeStamp = mt1Estimate.timestampSeconds;
             } else {
                 rotationToUse = mt2Estimate.pose.getRotation(); // fallback gyro-based
             }
-
+            lastTimeStamp = mt2Estimate.timestampSeconds;
+            
             // MT2 translation + selected rotation
             Pose2d rotationOnlyPose = new Pose2d(mt2Estimate.pose.getTranslation(), rotationToUse);
 
@@ -88,5 +91,10 @@ public class StaticCamera extends LocalizationCamera {
 
     public ArrayList<Integer> getVisibleTagIds() {
         return visibleTagIds;
+    }
+
+    @Override
+    public double getLastDoubleTagTimeStamp() {
+        return lastDoubleTagTimeStamp;
     }
 }

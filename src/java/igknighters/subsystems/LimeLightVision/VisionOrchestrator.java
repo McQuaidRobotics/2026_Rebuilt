@@ -15,9 +15,8 @@ public class VisionOrchestrator {
     double timestampSum = 0.0;
     double usedCameras = 0.0;
     // used for rumble
-    double currentGreatestTimeStamp = 0.0;
-    double lastGreatestTimeStamp = 0.0;
-
+    double currentGreatestDoubleTagTimeStamp = 0.0;
+    double lastGreatestDoubleTagTimeStamp = 0.0;
     public VisionOrchestrator(List<LocalizationCamera> cameras) {
         this.cameras = cameras;
         this.visibleTagIds = new ArrayList<>();
@@ -32,6 +31,12 @@ public class VisionOrchestrator {
             double rollRate,
             Angle turretAngle) {
         ArrayList<Pose2d> poses = new ArrayList<>();
+        visibleTagIds.clear();
+        timestampSum = 0.0;
+        usedCameras = 0.0;
+        lastGreatestDoubleTagTimeStamp = currentGreatestDoubleTagTimeStamp;
+        currentGreatestDoubleTagTimeStamp = 0.0;
+
         for (var camera : cameras) {
             Pose2d pose =
                     camera.getRobotPoseFromVision(
@@ -39,8 +44,8 @@ public class VisionOrchestrator {
             if (pose != null) {
                 poses.add(pose);
                 timestampSum += camera.getLastTimeStamp();
-                currentGreatestTimeStamp =
-                        Math.max(currentGreatestTimeStamp, camera.getLastTimeStamp());
+                currentGreatestDoubleTagTimeStamp =
+                        Math.max(currentGreatestDoubleTagTimeStamp, camera.getLastDoubleTagTimeStamp());
                 usedCameras++;
                 visibleTagIds.addAll(camera.getVisibleTagIds());
             }
@@ -57,7 +62,7 @@ public class VisionOrchestrator {
     }
 
     public double getTimeSinceLastUpdate() {
-        return currentGreatestTimeStamp - lastGreatestTimeStamp;
+        return currentGreatestDoubleTagTimeStamp - lastGreatestDoubleTagTimeStamp;
     }
 
     public ArrayList<Integer> getVisibleTagIds() {

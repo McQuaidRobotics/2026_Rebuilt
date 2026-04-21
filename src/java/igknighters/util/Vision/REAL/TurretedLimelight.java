@@ -21,6 +21,7 @@ public class TurretedLimelight extends LocalizationCamera {
     private final Translation2d cameraOffsetFromTurretCenter;
     private final double cameraHeight;
     private double lastTimeStamp;
+    private double lastDoubleTagTimeStamp;
     private ArrayList<Integer> visibleTagIds;
     private final Rotation3d cameraDefaultRotation;
 
@@ -34,6 +35,7 @@ public class TurretedLimelight extends LocalizationCamera {
         this.lastTimeStamp = 0.0;
         this.turretCenterInRobotSpace = turretCenterInRobotSpace;
         this.cameraDefaultRotation = cameraRotation;
+        this.visibleTagIds = new ArrayList<>();
 
         // We split the offset into 2D (for rotation) and Z (static height)
         this.cameraOffsetFromTurretCenter =
@@ -89,15 +91,17 @@ public class TurretedLimelight extends LocalizationCamera {
         Pose2d robotPose2d = null;
 
         if (mt2Estimate != null && mt1Estimate != null && mt1Estimate.tagCount > 0) {
+            lastTimeStamp = mt2Estimate.timestampSeconds;
 
             // --- ROTATION SELECTION LOGIC ---
             Rotation2d rotationToUse;
             if (mt1Estimate.tagCount >= 2) {
-                lastTimeStamp = mt1Estimate.timestampSeconds;
                 rotationToUse = mt1Estimate.pose.getRotation(); // vision rotation
+                lastDoubleTagTimeStamp = mt1Estimate.timestampSeconds;
             } else {
                 rotationToUse = mt2Estimate.pose.getRotation(); // fallback gyro-based
             }
+
 
             for (var fid : mt2Estimate.rawFiducials) {
                 visibleTagIds.add(fid.id);
@@ -122,5 +126,10 @@ public class TurretedLimelight extends LocalizationCamera {
     @Override
     public ArrayList<Integer> getVisibleTagIds() {
         return visibleTagIds;
+    }
+
+    @Override
+    public double getLastDoubleTagTimeStamp() {
+        return lastDoubleTagTimeStamp;
     }
 }

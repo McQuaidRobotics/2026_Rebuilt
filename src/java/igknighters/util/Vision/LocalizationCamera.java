@@ -16,5 +16,7 @@ public abstract class LocalizationCamera {
 
     public abstract double getLastTimeStamp();
 
+    public abstract double getLastDoubleTagTimeStamp();
+
     public abstract ArrayList<Integer> getVisibleTagIds();
 }
