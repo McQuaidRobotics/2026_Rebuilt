@@ -53,7 +53,7 @@ public class StaticCamera extends LocalizationCamera {
                 rotationToUse = mt2Estimate.pose.getRotation(); // fallback gyro-based
             }
             lastTimeStamp = mt2Estimate.timestampSeconds;
-            
+
             // MT2 translation + selected rotation
             Pose2d rotationOnlyPose = new Pose2d(mt2Estimate.pose.getTranslation(), rotationToUse);
 

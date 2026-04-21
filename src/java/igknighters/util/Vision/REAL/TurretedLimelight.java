@@ -102,7 +102,6 @@ public class TurretedLimelight extends LocalizationCamera {
                 rotationToUse = mt2Estimate.pose.getRotation(); // fallback gyro-based
             }
 
-
             for (var fid : mt2Estimate.rawFiducials) {
                 visibleTagIds.add(fid.id);
             }

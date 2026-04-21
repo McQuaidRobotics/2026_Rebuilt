@@ -17,6 +17,7 @@ public class VisionOrchestrator {
     // used for rumble
     double currentGreatestDoubleTagTimeStamp = 0.0;
     double lastGreatestDoubleTagTimeStamp = 0.0;
+
     public VisionOrchestrator(List<LocalizationCamera> cameras) {
         this.cameras = cameras;
         this.visibleTagIds = new ArrayList<>();
@@ -45,7 +46,9 @@ public class VisionOrchestrator {
                 poses.add(pose);
                 timestampSum += camera.getLastTimeStamp();
                 currentGreatestDoubleTagTimeStamp =
-                        Math.max(currentGreatestDoubleTagTimeStamp, camera.getLastDoubleTagTimeStamp());
+                        Math.max(
+                                currentGreatestDoubleTagTimeStamp,
+                                camera.getLastDoubleTagTimeStamp());
                 usedCameras++;
                 visibleTagIds.addAll(camera.getVisibleTagIds());
             }
