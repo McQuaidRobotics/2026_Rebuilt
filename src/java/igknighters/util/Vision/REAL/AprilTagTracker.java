@@ -2,14 +2,23 @@ package igknighters.util.Vision.REAL;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.units.measure.Angle;
 import igknighters.subsystems.LimeLightVision.Helpers.LimelightHelpers;
+import igknighters.util.Vision.RelativeTracking;
+
 import java.util.Optional;
 
-public class AprilTagTracker {
+public class AprilTagTracker extends RelativeTracking {
     private final String cameraName;
 
     public AprilTagTracker(String cameraName) {
         this.cameraName = cameraName;
+    }
+
+    @Override
+    public Translation3d getTranslation(Angle robotAngle, int targetID) {
+        Optional<Translation3d> translation = getTranslationToTag(targetID);
+        return translation.orElse(new Translation3d(0, 0, 0));
     }
 
     /**
