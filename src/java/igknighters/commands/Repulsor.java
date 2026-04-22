@@ -11,9 +11,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import igknighters.constants.SubsystemConstants;
 import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
+import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.GeminiConsts;
 import igknighters.util.log.Log;
@@ -259,8 +259,7 @@ public class Repulsor {
         // FieldVisualizer.getInstance().updateDrivingTarget(targetPose);
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
-                        .withDeadband(
-                                GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.05)
+                        .withDeadband(GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.05)
                         .withRotationalDeadband(
                                 RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.05)
                         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)

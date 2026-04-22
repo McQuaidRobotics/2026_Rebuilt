@@ -13,16 +13,11 @@ public class Subsystems {
     public final Luma luma;
     public final SubsystemBase[] lockedResources;
 
-    public Subsystems(
-            Swerve swerve,
-            LimeLightVision vision,
-            Led led,
-            Luma luma) {
+    public Subsystems(Swerve swerve, LimeLightVision vision, Led led, Luma luma) {
         this.swerve = swerve;
         this.vision = vision;
         this.led = led;
         this.luma = luma;
-        this.lockedResources =
-                new SubsystemBase[] {swerve, vision, led, luma};
+        this.lockedResources = new SubsystemBase[] {swerve, vision, led, luma};
     }
 }

@@ -8,8 +8,8 @@ import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
-import igknighters.constants.SubsystemConstants;
 import igknighters.constants.DrivingSharedState;
+import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.GeminiConsts;
@@ -20,9 +20,7 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
     private final PIDController thetaController = new PIDController(4.0, 0, 0);
     private final SwerveRequest.FieldCentric m_driveRequest =
             new SwerveRequest.FieldCentric()
-                    .withDeadband(
-                            GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond)
-                                    * 0.1)
+                    .withDeadband(GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.1)
                     .withRotationalDeadband(RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .1)
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
@@ -66,9 +64,7 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
         // Force a smaller speed on the bump as requested
         double bumpSpeedMultiplier = 0.5;
         double maxSpeed =
-                GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond)
-                        * detune
-                        * bumpSpeedMultiplier;
+                GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond) * detune * bumpSpeedMultiplier;
 
         swerve.setControl(
                 m_driveRequest

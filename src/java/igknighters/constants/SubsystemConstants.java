@@ -8,6 +8,7 @@ public class SubsystemConstants {
     public static final boolean disableAllLogs = false;
     public static final CANBus superStructure = new CANBus("SuperStructureBus");
     public static final CANBus drive = new CANBus("DriveBus");
+
     public static class kClimber {
         public static final CANBus CANBUS = SubsystemConstants.superStructure;
 

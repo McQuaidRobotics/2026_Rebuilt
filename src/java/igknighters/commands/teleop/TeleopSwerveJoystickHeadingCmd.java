@@ -19,9 +19,7 @@ public class TeleopSwerveJoystickHeadingCmd extends TeleopSwerveJoystickRepulsor
     private final double heading;
     private final SwerveRequest.FieldCentric m_driveRequest =
             new SwerveRequest.FieldCentric()
-                    .withDeadband(
-                            GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond)
-                                    * 0.1)
+                    .withDeadband(GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.1)
                     .withRotationalDeadband(RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .1)
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);

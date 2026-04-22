@@ -26,7 +26,6 @@ import igknighters.commands.teleop.TeleopSwerveWithDetune;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
-import igknighters.constants.RobotIdentity;
 import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
@@ -139,7 +138,6 @@ public class Robot extends LoggedRobot {
         logger = new Telemetry(subsystems.swerve.getMaxSpeedMetersPerSecond(), subsystems);
         subsystems.swerve.registerTelemetry(logger::telemeterize);
     }
-
 
     public void setUpAdvantageScope() {
 
@@ -392,7 +390,7 @@ public class Robot extends LoggedRobot {
         }
         try {
             // scheduler.schedule(ShooterCommands.homeHood(subsystems.shooter));
-            //home hood here
+            // home hood here
         } catch (Exception e) {
             if (!SubsystemConstants.disableAllLogs) {
                 Log.log("ROBOT/autonomousInit/HomeHoodScheduleFailed", e.toString());
@@ -429,7 +427,7 @@ public class Robot extends LoggedRobot {
         // already triggered because homeHood handles the short-circuit case.
         try {
             // scheduler.schedule(ShooterCommands.homeHood(subsystems.shooter));
-            //home hood here
+            // home hood here
         } catch (Exception e) {
             // Log but don't crash the robot if scheduling fails for any reason.
             if (!SubsystemConstants.disableAllLogs) {
@@ -471,9 +469,10 @@ public class Robot extends LoggedRobot {
 
             // Logic to launch fuel when dispensing and shooter is ready
             double currentTime = RobotController.getFPGATime() / 1.0e6;
-            
+
             // TODO: Implement actual fuel launch logic
-            // THIS SHOULD CHECK SPINDEXER RPM + SHOOTER RPM and if sim + spining then make the false true
+            // THIS SHOULD CHECK SPINDEXER RPM + SHOOTER RPM and if sim + spining then make the
+            // false true
             if (false) { // 0.1s cooldown
 
                 // Launch parameters
@@ -486,9 +485,11 @@ public class Robot extends LoggedRobot {
                 fuelSim.launchFuel(
                         MetersPerSecond.of(launchVelocity),
                         Radians.of(Math.PI / 2),
-                        Degrees.of(0), //replace
+                        Degrees.of(0), // replace
                         Meters.of(
-                                SubsystemConstants.kShooter.kFlywheels.ShooterHeightMeters) // height of shooter exit
+                                SubsystemConstants.kShooter
+                                        .kFlywheels
+                                        .ShooterHeightMeters) // height of shooter exit
                         );
 
                 lastShotTime = currentTime;

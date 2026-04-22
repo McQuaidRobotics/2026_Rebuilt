@@ -213,9 +213,7 @@ public class SwerveCommands {
         thetaController.setTolerance(0.0);
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
-                        .withDeadband(
-                                GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond)
-                                        * .01)
+                        .withDeadband(GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond) * .01)
                         .withRotationalDeadband(
                                 RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .01)
                         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)

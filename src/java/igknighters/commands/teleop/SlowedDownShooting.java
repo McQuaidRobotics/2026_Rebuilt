@@ -7,7 +7,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Translation2d;
-import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.GeminiConsts;
@@ -15,9 +14,7 @@ import igknighters.subsystems.swerve.swerveconstants.GeminiConsts;
 public class SlowedDownShooting extends TeleopSwerveBaseCmd {
     private final SwerveRequest.FieldCentric m_driveRequest =
             new SwerveRequest.FieldCentric()
-                    .withDeadband(
-                            GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond)
-                                    * 0.1)
+                    .withDeadband(GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.1)
                     .withRotationalDeadband(RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .1)
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
@@ -35,13 +32,9 @@ public class SlowedDownShooting extends TeleopSwerveBaseCmd {
         swerve.setControl(
                 m_driveRequest
                         .withVelocityX(
-                                vt.getX()
-                                        * GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond)
-                                        * 0.5)
+                                vt.getX() * GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.5)
                         .withVelocityY(
-                                vt.getY()
-                                        * GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond)
-                                        * 0.5)
+                                vt.getY() * GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.5)
                         .withRotationalRate(
                                 0.5
                                         * RotationsPerSecond.of(0.75).in(RadiansPerSecond)

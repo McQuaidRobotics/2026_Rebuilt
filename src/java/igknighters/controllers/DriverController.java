@@ -107,9 +107,9 @@ public class DriverController {
             this.X.whileTrue(Wayfinder.driveToTarget(swerve, new Pose2d(3, 1, new Rotation2d(0))));
         } else if (debugType == DebugType.SHOOTER) {
         } else if (debugType == DebugType.INDEXER) {
-            
+
         } else if (debugType == DebugType.INTAKE) {
-            
+
         } else {
             System.out.println("UNKNOWN DEBUG TYPE: " + debugType);
             throw new IllegalArgumentException("UNKNOWN DEBUG TYPE: " + debugType);
@@ -123,9 +123,12 @@ public class DriverController {
     public void bind(final Subsystems subsystems) {
         // when you write your commands this will be where you place them
         // this.A.whileTrue(...) -> will run the command inside parenthesis only while held
-        // this.A.onTrue(...) -> will run the command inside parenthesis when pressed and will keep running if its a .run() command
-        // I have absolute faith. You do not need to add any binds to swerve driving will work with no additional code. Zeroing is also
-        // unnecessary if you have vision. However if you want it this.start.onTrue(SwerveCommands.zeroGyro(swerve));
+        // this.A.onTrue(...) -> will run the command inside parenthesis when pressed and will keep
+        // running if its a .run() command
+        // I have absolute faith. You do not need to add any binds to swerve driving will work with
+        // no additional code. Zeroing is also
+        // unnecessary if you have vision. However if you want it
+        // this.start.onTrue(SwerveCommands.zeroGyro(swerve));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

@@ -7,8 +7,8 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Translation2d;
-import igknighters.constants.SubsystemConstants;
 import igknighters.constants.DrivingSharedState;
+import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.GeminiConsts;
@@ -18,9 +18,7 @@ public class TeleopSwerveWithDetune extends TeleopSwerveBaseCmd {
     private double detune;
     private final SwerveRequest.FieldCentric m_driveRequest =
             new SwerveRequest.FieldCentric()
-                    .withDeadband(
-                            GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond)
-                                    * 0.1)
+                    .withDeadband(GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.1)
                     .withRotationalDeadband(RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .1)
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
