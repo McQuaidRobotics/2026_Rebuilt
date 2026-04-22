@@ -25,15 +25,24 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Handles the collection and publishing of robot telemetry data. This class is responsible for
+ * sending robot pose, swerve module states, vision targets, and other diagnostic information to
+ * NetworkTables and logs.
+ *
+ * <p>It facilitates real-time visualization in tools like AdvantageScope and SmartDashboard, and
+ * ensures high-frequency data is captured by SignalLogger.
+ */
 public class Telemetry {
     private final double MaxSpeed;
     private final Subsystems subsystems;
     private AprilTagLayout aprilTagLayout;
 
     /**
-     * Construct a telemetry object, with the specified max speed of the robot
+     * Constructs a Telemetry object with the specified maximum robot speed.
      *
-     * @param maxSpeed Maximum speed in meters per second
+     * @param maxSpeed Maximum theoretical speed in meters per second.
+     * @param subsystems The robot subsystems for context.
      */
     public Telemetry(double maxSpeed, Subsystems subsystems) {
         MaxSpeed = maxSpeed;
@@ -41,16 +50,15 @@ public class Telemetry {
         try {
             aprilTagLayout = new AprilTagLayout();
         } catch (IOException e) {
-            //     System.out.println("Could not load AprilTag layout");
             e.printStackTrace();
         }
         SignalLogger.start();
     }
 
-    /* What to publish over networktables for telemetry */
+    /* NetworkTables instance for publishing data */
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
-    /* Robot swerve drive state */
+    /* Swerve drive state publishers */
     private final NetworkTable driveStateTable = inst.getTable("DriveState");
     private final StructPublisher<Pose2d> drivePose =
             driveStateTable.getStructTopic("Pose", Pose2d.struct).publish();
@@ -71,7 +79,7 @@ public class Telemetry {
     private final DoublePublisher driveOdometryFrequency =
             driveStateTable.getDoubleTopic("OdometryFrequency").publish();
 
-    /* Robot pose for field positioning */
+    /* Field positioning publishers for AdvantageScope visualization */
     private final NetworkTable table = inst.getTable("Pose");
     private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose").publish();
     private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
@@ -89,7 +97,7 @@ public class Telemetry {
     private final DoubleArrayPublisher detectedObjectsPub =
             table.getDoubleArrayTopic("detectedObjects").publish();
 
-    /* Mechanisms to represent the swerve module states */
+    /* Mechanism2d visualizers for swerve modules */
     private final Mechanism2d[] m_moduleMechanisms =
             new Mechanism2d[] {
                 new Mechanism2d(1, 1),
@@ -97,7 +105,7 @@ public class Telemetry {
                 new Mechanism2d(1, 1),
                 new Mechanism2d(1, 1),
             };
-    /* A direction and length changing ligament for speed representation */
+
     private final MechanismLigament2d[] m_moduleSpeeds =
             new MechanismLigament2d[] {
                 m_moduleMechanisms[0]
@@ -113,7 +121,7 @@ public class Telemetry {
                         .getRoot("RootSpeed", 0.5, 0.5)
                         .append(new MechanismLigament2d("Speed", 0.5, 0)),
             };
-    /* A direction changing and length constant ligament for module direction */
+
     private final MechanismLigament2d[] m_moduleDirections =
             new MechanismLigament2d[] {
                 m_moduleMechanisms[0]
@@ -142,9 +150,14 @@ public class Telemetry {
     private final double[] m_moduleStatesArray = new double[8];
     private final double[] m_moduleTargetsArray = new double[8];
 
-    /** Accept the swerve drive state and telemeterize it to SmartDashboard and SignalLogger. */
+    /**
+     * Processes the current swerve drive state and publishes it to all active sinks. This includes
+     * NetworkTables for live visualization and SignalLogger for high-speed data capture.
+     *
+     * @param state The current {@link SwerveDriveState} from the drivetrain.
+     */
     public void telemeterize(SwerveDriveState state) {
-        /* Telemeterize the swerve drive state */
+        /* Publish to NetworkTables */
         drivePose.set(state.Pose);
         driveSpeeds.set(state.Speeds);
         driveModuleStates.set(state.ModuleStates);
@@ -153,7 +166,7 @@ public class Telemetry {
         driveTimestamp.set(state.Timestamp);
         driveOdometryFrequency.set(1.0 / state.OdometryPeriod);
 
-        /* Also write to log file */
+        /* Write to high-speed log file */
         m_poseArray[0] = state.Pose.getX();
         m_poseArray[1] = state.Pose.getY();
         m_poseArray[2] = state.Pose.getRotation().getDegrees();
@@ -169,10 +182,11 @@ public class Telemetry {
         SignalLogger.writeDoubleArray("DriveState/ModuleTargets", m_moduleTargetsArray);
         SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
 
-        /* Telemeterize the pose to a Field2d */
+        /* Update field visualization */
         fieldTypePub.set("Field2d");
         fieldPub.set(m_poseArray);
 
+        // Visualize seen/unseen AprilTags if layout is available.
         if (aprilTagLayout != null) {
             List<Integer> visibleIds = subsystems.vision.getVisibleTagIds();
             Map<Integer, Pose3d> allTagPoses = aprilTagLayout.getTagPoses();
@@ -204,12 +218,9 @@ public class Telemetry {
                 unseenTagsArray[i++] = pose.getRotation().getDegrees();
             }
             unseenTagsPub.set(unseenTagsArray);
-        } else {
-            //     System.out.println("APRIL TAG LAYOUT NOT FOUND");
-            //     System.out.println("APRIL TAGS NEED TO BE LOADED TO SHOW THE SEEN TAGS");
         }
 
-        /* Telemeterize the module states to a Mechanism2d */
+        /* Update swerve module visualizers in SmartDashboard */
         for (int i = 0; i < 4; ++i) {
             m_moduleSpeeds[i].setAngle(state.ModuleStates[i].angle);
             m_moduleDirections[i].setAngle(state.ModuleStates[i].angle);
@@ -220,6 +231,11 @@ public class Telemetry {
         }
     }
 
+    /**
+     * Publishes a target pose for shooting visualization on the field map.
+     *
+     * @param targetPose The destination {@link Pose2d}.
+     */
     public void addShootingTargetPose(Pose2d targetPose) {
         double[] targetPoseArray = new double[3];
         targetPoseArray[0] = targetPose.getX();
@@ -228,6 +244,11 @@ public class Telemetry {
         shootingTargetPosesPub.set(targetPoseArray);
     }
 
+    /**
+     * Publishes a target pose for driving visualization on the field map.
+     *
+     * @param targetPose The destination {@link Pose2d}.
+     */
     public void addDrivingTargetPose(Pose2d targetPose) {
         double[] targetPoseArray = new double[3];
         targetPoseArray[0] = targetPose.getX();
@@ -236,6 +257,11 @@ public class Telemetry {
         drivingTargetPub.set(targetPoseArray);
     }
 
+    /**
+     * Publishes a list of detected objects (e.g., game pieces) for field visualization.
+     *
+     * @param objectPoses List of {@link Pose2d} representing detected objects.
+     */
     public void publishDetectedObjects(List<Pose2d> objectPoses) {
         double[] objectPosesArray = new double[objectPoses.size() * 3];
         int i = 0;

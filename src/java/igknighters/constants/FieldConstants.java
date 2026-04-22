@@ -5,8 +5,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import igknighters.util.log.Log;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 
 public class FieldConstants {
@@ -73,6 +71,7 @@ public class FieldConstants {
                         0.0,
                         new Rotation3d());
     }
+
     public static final double Y_FIELD = 316.64 * Conv.INCHES_TO_METERS; // meters
     public static final double X_FIELD = 651.12 * Conv.INCHES_TO_METERS; // meters
     public static final double ALIANCE_ZONE_BLUE = 181.56 * Conv.INCHES_TO_METERS; // meters

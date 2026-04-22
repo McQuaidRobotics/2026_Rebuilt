@@ -9,67 +9,72 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.Wayfinder;
 import igknighters.subsystems.Subsystems;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
+/**
+ * Wrapper for the driver's Xbox controller, providing a clean interface for button triggers and
+ * stick axes.
+ *
+ * <p>This class abstracts the raw {@link CommandXboxController} and provides named {@link Trigger}
+ * objects for all buttons and D-pad directions. It is also the primary location for binding robot
+ * commands to driver inputs.
+ */
 public class DriverController {
-
-    // Define the bindings for the controller
-
-    // Define the buttons on the controller
 
     private final CommandXboxController controller;
 
-    private boolean intakeActive = false;
-
-    /** Button: 1 */
+    /** Button: A (Green) */
     protected final Trigger A;
 
-    /** Button: 2 */
+    /** Button: B (Red) */
     protected final Trigger B;
 
-    /** Button: 3 */
+    /** Button: X (Blue) */
     protected final Trigger X;
 
-    /** Button: 4 */
+    /** Button: Y (Yellow) */
     protected final Trigger Y;
 
-    /** Left Center; Button: 7 */
+    /** Button: Back (Left Center) */
     protected final Trigger Back;
 
-    /** Right Center; Button: 8 */
+    /** Button: Start (Right Center) */
     protected final Trigger Start;
 
-    /** Left Bumper; Button: 5 */
+    /** Button: Left Bumper */
     protected final Trigger LB;
 
-    /** Right Bumper; Button: 6 */
+    /** Button: Right Bumper */
     protected final Trigger RB;
 
-    /** Left Stick; Button: 9 */
+    /** Button: Left Stick Click */
     protected final Trigger LS;
 
-    /** Right Stick; Button: 10 */
+    /** Button: Right Stick Click */
     protected final Trigger RS;
 
-    /** Left Trigger; Axis: 2 */
+    /** Trigger: Left (Pressure sensitive) */
     protected final Trigger LT;
 
-    /** Right Trigger; Axis: 3 */
+    /** Trigger: Right (Pressure sensitive) */
     protected final Trigger RT;
 
-    /** DPad Up; Degrees: 0 */
+    /** D-Pad: Up */
     protected final Trigger DPU;
 
-    /** DPad Right; Degrees: 90 */
+    /** D-Pad: Right */
     protected final Trigger DPR;
 
-    /** DPad Down; Degrees: 180 */
+    /** D-Pad: Down */
     protected final Trigger DPD;
 
-    /** DPad Left; Degrees: 270 */
+    /** D-Pad: Left */
     protected final Trigger DPL;
 
-    /** for button idx (nice for sim) {@link edu.wpi.first.wpilibj.XboxController.Button} */
+    /**
+     * Constructs a DriverController on the specified HID port.
+     *
+     * @param port The USB port index on the Driver Station.
+     */
     public DriverController(int port) {
         DriverStation.silenceJoystickConnectionWarning(true);
         controller = new CommandXboxController(port);
@@ -91,6 +96,7 @@ public class DriverController {
         DPU = controller.povUp();
     }
 
+    /** Debug modes for isolating subsystem testing during development. */
     public static enum DebugType {
         SHOOTER,
         SWERVE,
@@ -99,47 +105,51 @@ public class DriverController {
         CLIMBER;
     }
 
+    /**
+     * Binds specialized commands for debugging specific subsystems.
+     *
+     * @param subsystems The robot subsystems.
+     * @param debugType The subsystem to debug.
+     */
     public void bind(final Subsystems subsystems, DebugType debugType) {
-        // allows for individual debuging of systems
         var swerve = subsystems.swerve;
 
         if (debugType == DebugType.SWERVE) {
+            // Example: Bind X button to drive to a fixed field coordinate for swerve testing.
             this.X.whileTrue(Wayfinder.driveToTarget(swerve, new Pose2d(3, 1, new Rotation2d(0))));
-        } else if (debugType == DebugType.SHOOTER) {
-        } else if (debugType == DebugType.INDEXER) {
-
-        } else if (debugType == DebugType.INTAKE) {
-
         } else {
-            System.out.println("UNKNOWN DEBUG TYPE: " + debugType);
-            throw new IllegalArgumentException("UNKNOWN DEBUG TYPE: " + debugType);
+            System.out.println("DEBUG MODE: " + debugType + " (No specialized binds)");
         }
     }
 
-    public Supplier<Pose2d> poseSupplier(Subsystems subsystems) {
-        return () -> subsystems.swerve.getState().Pose;
-    }
-
+    /**
+     * The primary location for binding robot commands to driver controller inputs.
+     *
+     * <p>New programmers: Add your button bindings here using the {@code this.BUTTON.whileTrue()}
+     * or {@code this.BUTTON.onTrue()} patterns.
+     *
+     * @param subsystems The robot subsystems available for command targeting.
+     */
     public void bind(final Subsystems subsystems) {
-        // when you write your commands this will be where you place them
-        // this.A.whileTrue(...) -> will run the command inside parenthesis only while held
-        // this.A.onTrue(...) -> will run the command inside parenthesis when pressed and will keep
-        // running if its a .run() command
-        // I have absolute faith. You do not need to add any binds to swerve driving will work with
-        // no additional code. Zeroing is also
-        // unnecessary if you have vision. However if you want it
-        // this.start.onTrue(SwerveCommands.zeroGyro(swerve));
+        // Example: this.A.whileTrue(new MyCommand(subsystems.mySubsystem));
+        // Swerve driving is handled by the default command set in Robot.java,
+        // so no explicit bind is needed here for basic teleop driving.
     }
 
+    /**
+     * Applies a deadband to a raw joystick value.
+     *
+     * @param supplier The raw value supplier.
+     * @param deadband The deadband threshold.
+     * @return A supplier that returns 0.0 if within the deadband, or a scaled value otherwise.
+     */
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {
-
         return () -> {
             double val = supplier.getAsDouble();
             if (Math.abs(val) > deadband) {
                 if (val > 0.0) {
                     val = (val - deadband) / (1.0 - deadband);
                 } else {
-
                     val = (val + deadband) / (1.0 - deadband);
                 }
             } else {
@@ -150,103 +160,103 @@ public class DriverController {
     }
 
     /**
-     * Right on the stick is positive (axis 4)
+     * Returns the horizontal value of the right joystick.
      *
-     * @return A supplier for the value of the right stick x axis
+     * @return A supplier for Right X (-1.0 to 1.0).
      */
     public DoubleSupplier rightStickX() {
         return () -> -controller.getRightX();
     }
 
     /**
-     * Right on the stick is positive (axis 4)
+     * Returns the horizontal value of the right joystick with a deadband applied.
      *
-     * @param deadband the deadband to apply to the stick
-     * @return A supplier for the value of the right stick x axis
+     * @param deadband The deadband threshold.
+     * @return A supplier for Right X.
      */
     public DoubleSupplier rightStickX(double deadband) {
         return deadbandSupplier(rightStickX(), deadband);
     }
 
     /**
-     * Up on the stick is positive (axis 5)
+     * Returns the vertical value of the right joystick.
      *
-     * @return A supplier for the value of the right stick y axis
+     * @return A supplier for Right Y (-1.0 to 1.0).
      */
     public DoubleSupplier rightStickY() {
         return controller::getRightY;
     }
 
     /**
-     * Up on the stick is positive (axis 5)
+     * Returns the vertical value of the right joystick with a deadband applied.
      *
-     * @param deadband the deadband to apply to the stick
-     * @return A supplier for the value of the right stick y axis
+     * @param deadband The deadband threshold.
+     * @return A supplier for Right Y.
      */
     public DoubleSupplier rightStickY(double deadband) {
         return deadbandSupplier(rightStickY(), deadband);
     }
 
     /**
-     * Right on the stick is positive (axis 0)
+     * Returns the horizontal value of the left joystick.
      *
-     * @return A supplier for the value of the left stick x axis
+     * @return A supplier for Left X (-1.0 to 1.0).
      */
     public DoubleSupplier leftStickX() {
         return controller::getLeftX;
     }
 
     /**
-     * Right on the stick is positive (axis 0)
+     * Returns the horizontal value of the left joystick with a deadband applied.
      *
-     * @param deadband the deadband to apply to the stick
-     * @return A supplier for the value of the left stick x axis
+     * @param deadband The deadband threshold.
+     * @return A supplier for Left X.
      */
     public DoubleSupplier leftStickX(double deadband) {
         return deadbandSupplier(leftStickX(), deadband);
     }
 
     /**
-     * Up on the stick is positive (axis 1)
+     * Returns the vertical value of the left joystick.
      *
-     * @return A supplier for the value of the left stick y axis
+     * @return A supplier for Left Y (-1.0 to 1.0).
      */
     public DoubleSupplier leftStickY() {
         return () -> -controller.getLeftY();
     }
 
     /**
-     * Up on the stick is positive (axis 1)
+     * Returns the vertical value of the left joystick with a deadband applied.
      *
-     * @param deadband the deadband to apply to the stick
-     * @return A supplier for the value of the left stick y axis
+     * @param deadband The deadband threshold.
+     * @return A supplier for Left Y.
      */
     public DoubleSupplier leftStickY(double deadband) {
         return deadbandSupplier(leftStickY(), deadband);
     }
 
     /**
-     * will print warning if this trigger is also bound to a command
+     * Returns the pressure value of the right trigger.
      *
-     * @param suppressWarning if true will not print warning even if bound to a command
+     * @return A supplier for the axis value (0.0 to 1.0).
      */
-    public DoubleSupplier rightTrigger(boolean suppressWarning) {
+    public DoubleSupplier rightTrigger() {
         return controller::getRightTriggerAxis;
     }
 
     /**
-     * will print warning if this trigger is also bound to a command
+     * Returns the pressure value of the left trigger.
      *
-     * @param suppressWarning if true will not print warning even if bound to a command
+     * @return A supplier for the axis value (0.0 to 1.0).
      */
-    public DoubleSupplier leftTrigger(boolean suppressWarning) {
+    public DoubleSupplier leftTrigger() {
         return controller::getLeftTriggerAxis;
     }
 
     /**
-     * Will rumble both sides of the controller with a magnitude
+     * Triggers a rumble effect on the controller.
      *
-     * @param magnitude The magnitude to rumble at
+     * @param magnitude The intensity of the rumble (0.0 to 1.0).
      */
     public void rumble(double magnitude) {
         controller.getHID().setRumble(RumbleType.kBothRumble, magnitude);

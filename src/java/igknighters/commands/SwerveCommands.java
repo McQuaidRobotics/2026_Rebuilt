@@ -21,8 +21,20 @@ import igknighters.subsystems.swerve.swerveconstants.GeminiConsts;
 import igknighters.util.log.Log;
 import java.util.function.BooleanSupplier;
 
+/**
+ * Factory class for creating swerve-related commands. This class provides static methods to create
+ * commands for common swerve tasks like zeroing the gyro, stopping the robot, and moving to
+ * specific poses using PID.
+ */
 public class SwerveCommands {
 
+    /**
+     * Creates a command to zero the robot's gyro (heading). Automatically adjusts for the current
+     * alliance color.
+     *
+     * @param swerve The swerve subsystem.
+     * @return A command to zero the gyro.
+     */
     public static Command zeroGyro(Swerve swerve) {
         return Commands.either(
                 Commands.runOnce(
@@ -42,6 +54,12 @@ public class SwerveCommands {
                 () -> Robot.isBlue());
     }
 
+    /**
+     * Returns the current field-relative pose of the robot.
+     *
+     * @param swerve The swerve subsystem.
+     * @return The current {@link Pose2d}.
+     */
     public static Pose2d getPose(Swerve swerve) {
         return swerve.getState().Pose;
     }
@@ -76,6 +94,15 @@ public class SwerveCommands {
         };
     }
 
+    /**
+     * Returns a supplier that checks if the robot's current field-relative velocity is within a
+     * specified tolerance of a target velocity.
+     *
+     * @param swerve The swerve subsystem.
+     * @param targetSpeeds The desired chassis speeds.
+     * @param tolerance The allowed error for each component.
+     * @return A boolean supplier for the check.
+     */
     public static BooleanSupplier isAtVelocity(
             Swerve swerve, ChassisSpeeds targetSpeeds, ChassisSpeeds tolerance) {
         return () -> {
@@ -95,6 +122,12 @@ public class SwerveCommands {
         };
     }
 
+    /**
+     * Creates a command that immediately stops all robot movement by setting velocities to zero.
+     *
+     * @param swerve The swerve subsystem.
+     * @return A command to stop the robot.
+     */
     public static Command stopDriving(Swerve swerve) {
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
@@ -113,6 +146,16 @@ public class SwerveCommands {
                 .withName("Stop Driving");
     }
 
+    /**
+     * Returns a supplier that checks if the robot is currently at a target pose within specified
+     * position and angle tolerances.
+     *
+     * @param swerve The swerve subsystem.
+     * @param targetPose The destination {@link Pose2d}.
+     * @param positionToleranceMeters Allowed distance error in meters.
+     * @param angleToleranceRadians Allowed rotation error in radians.
+     * @return A boolean supplier for the check.
+     */
     public static BooleanSupplier isAt(
             Swerve swerve,
             Pose2d targetPose,
@@ -124,18 +167,14 @@ public class SwerveCommands {
                 FieldVisualizer.getInstance().updateDrivingTarget(targetPose);
             }
 
-            // 1. Calculate linear distance (Hypotenuse)
+            // Calculate linear distance between current and target positions.
             double positionError =
                     currentPose.getTranslation().getDistance(targetPose.getTranslation());
 
-            // 2. Calculate angular difference
+            // Calculate angular difference, ensuring proper wrapping.
             double currentHeading = currentPose.getRotation().getRadians();
             double targetHeading = targetPose.getRotation().getRadians();
-
-            // Calculate raw error (Target - Current is the standard way to calculate error)
             double rawError = targetHeading - currentHeading;
-
-            // Wrap the error to be within -PI to PI
             double angleError = Math.abs(Math.atan2(Math.sin(rawError), Math.cos(rawError)));
 
             boolean isAt =
@@ -151,6 +190,14 @@ public class SwerveCommands {
         };
     }
 
+    /**
+     * Creates a command to move the robot to a target pose using simple PID controllers for X, Y,
+     * and rotation. This is a basic implementation suitable for short, low-precision movements.
+     *
+     * @param swerve The swerve subsystem.
+     * @param targetPose The destination {@link Pose2d}.
+     * @return A command to move the robot.
+     */
     @SuppressWarnings("resource")
     public static Command moveToSimple(Swerve swerve, Pose2d targetPose) {
         final SwerveRequest.FieldCentric m_driveRequest =
@@ -159,8 +206,9 @@ public class SwerveCommands {
                         .withRotationalDeadband(0.0)
                         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                         .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
-        final PIDController xController =
-                new PIDController(1, 0.2, 0.0); // Adjust gains as necessary
+
+        // Basic PID controllers for each axis.
+        final PIDController xController = new PIDController(1, 0.2, 0.0);
         xController.setTolerance(0.0);
         final PIDController yController = new PIDController(2, 0.02, 0.0);
         yController.setTolerance(0.0);
@@ -177,21 +225,13 @@ public class SwerveCommands {
                             thetaController.calculate(
                                     MathUtil.angleModulus(currentPose.getRotation().getRadians()),
                                     MathUtil.angleModulus(targetPose.getRotation().getRadians()));
+
                     if (!SubsystemConstants.disableAllLogs) {
                         Log.log("ROBOT/Commands/Swerve/MoveToSimple/VX", vx);
                         Log.log("ROBOT/Commands/Swerve/MoveToSimple/VY", vy);
                         Log.log("ROBOT/Commands/Swerve/MoveToSimple/Omega", omega);
-                        Log.log(
-                                "Commands/Swerve/MoveToSimple/dx",
-                                targetPose.getX() - currentPose.getX());
-                        Log.log(
-                                "Commands/Swerve/MoveToSimple/dy",
-                                targetPose.getY() - currentPose.getY());
-                        Log.log(
-                                "Commands/Swerve/MoveToSimple/dtheta",
-                                targetPose.getRotation().getRadians()
-                                        - currentPose.getRotation().getRadians());
                     }
+
                     swerve.setControl(
                             m_driveRequest
                                     .withVelocityX(-vx)
@@ -200,17 +240,24 @@ public class SwerveCommands {
                 });
     }
 
+    /**
+     * Creates a command to move the robot to a target pose with velocity limits. Uses PID to
+     * calculate desired velocities and then clamps them to the provided maximums.
+     *
+     * @param swerve The swerve subsystem.
+     * @param targetPose The destination {@link Pose2d}.
+     * @param maxVelocities A {@link Pose2d} where X/Y are max linear speeds and rotation is max
+     *     angular speed.
+     * @return A command to move the robot with velocity control.
+     */
     @SuppressWarnings("resource")
     public static Command moveToSimpleWithVelocityControl(
             Swerve swerve, Pose2d targetPose, Pose2d maxVelocities) {
-        final PIDController xController =
-                new PIDController(.1, 0.0, 0.0); // Adjust gains as necessary
+        final PIDController xController = new PIDController(.1, 0.0, 0.0);
         final PIDController yController = new PIDController(.1, 0.0, 0.0);
         final PIDController thetaController = new PIDController(.1, 0.0, 0.0);
         thetaController.enableContinuousInput(0, 2 * Math.PI);
-        xController.setTolerance(0.0);
-        yController.setTolerance(0.0);
-        thetaController.setTolerance(0.0);
+
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
                         .withDeadband(GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond) * .01)
@@ -229,7 +276,7 @@ public class SwerveCommands {
                                     currentPose.getRotation().getRadians(),
                                     targetPose.getRotation().getRadians());
 
-                    // Clamp speeds to max velocities
+                    // Clamp speeds to max velocities to prevent aggressive movement.
                     double clampedVx =
                             Math.max(Math.min(-vx, maxVelocities.getX()), -maxVelocities.getX());
                     double clampedVy =
@@ -238,33 +285,11 @@ public class SwerveCommands {
                             Math.max(
                                     Math.min(-omega, maxVelocities.getRotation().getRadians()),
                                     -maxVelocities.getRotation().getRadians());
+
                     if (!SubsystemConstants.disableAllLogs) {
-
-                        Log.log(
-                                "Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedVX",
-                                clampedVx);
-                        Log.log(
-                                "Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedVY",
-                                clampedVy);
-                        Log.log(
-                                "Commands/Swerve/MoveToSimpleWithVelocityControl/ClampedOmega",
-                                clampedOmega);
-
-                        Log.log("ROBOT/Commands/Swerve/MoveToSimpleWithVelocityControl/VX", vx);
-                        Log.log("ROBOT/Commands/Swerve/MoveToSimpleWithVelocityControl/VY", vy);
-                        Log.log(
-                                "ROBOT/Commands/Swerve/MoveToSimpleWithVelocityControl/Omega",
-                                omega);
-                        Log.log(
-                                "Commands/Swerve/MoveToSimpleWithVelocityControl/dx",
-                                targetPose.getX() - currentPose.getX());
-                        Log.log(
-                                "Commands/Swerve/MoveToSimpleWithVelocityControl/dy",
-                                targetPose.getY() - currentPose.getY());
-                        Log.log(
-                                "Commands/Swerve/MoveToSimpleWithVelocityControl/dtheta",
-                                targetPose.getRotation().getRadians()
-                                        - currentPose.getRotation().getRadians());
+                        Log.log("ROBOT/Commands/Swerve/MoveToVelCtrl/ClampedVX", clampedVx);
+                        Log.log("ROBOT/Commands/Swerve/MoveToVelCtrl/ClampedVY", clampedVy);
+                        Log.log("ROBOT/Commands/Swerve/MoveToVelCtrl/ClampedOmega", clampedOmega);
                     }
 
                     swerve.setControl(
