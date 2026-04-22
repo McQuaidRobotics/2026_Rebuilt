@@ -70,7 +70,7 @@ public class SubsystemTriggers {
                 new Trigger(() -> dashboardTable.getEntry("robot/passTrigger").getBoolean(false));
 
         moveToTrigger.whileTrue(
-                Repulsor.moveWithRepulsor(
+                Wayfinder.driveToTarget(
                         swerve, getPoseFromString("robot/moveWaypoint").toPose2d()));
     }
 
