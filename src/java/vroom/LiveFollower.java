@@ -1,5 +1,6 @@
 package vroom;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -12,8 +13,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import igknighters.Robot;
 import igknighters.subsystems.swerve.Swerve;
+import igknighters.subsystems.swerve.swerveconstants.GeminiConsts;
+
 import java.util.ArrayList;
 import java.util.Set;
 import vroom.Fields.REBUILT;
@@ -22,10 +24,7 @@ public class LiveFollower {
     private static SwerveRequest.FieldCentric m_driveRequest =
             new SwerveRequest.FieldCentric()
                     .withDeadband(
-                            Robot.consts
-                                            .swerve()
-                                            .getCommonSwerveConsts()
-                                            .getMaxSpeedMetersPerSecond()
+                            GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond)
                                     * 0.1)
                     .withRotationalDeadband(RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .1)
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
@@ -90,15 +89,12 @@ public class LiveFollower {
         // We don't want to exceed robot limits
         Translation2d driveVector = new Translation2d(desiredVx, desiredVy);
         if (driveVector.getNorm()
-                > Robot.consts.swerve().getCommonSwerveConsts().getMaxSpeedMetersPerSecond()) {
+                > GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond)) {
             driveVector =
                     driveVector
                             .div(driveVector.getNorm())
                             .times(
-                                    Robot.consts
-                                            .swerve()
-                                            .getCommonSwerveConsts()
-                                            .getMaxSpeedMetersPerSecond());
+                                    GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond));
         }
 
         return new ChassisSpeeds(driveVector.getX(), driveVector.getY(), rotationOutput);

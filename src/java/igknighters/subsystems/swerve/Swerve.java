@@ -16,16 +16,19 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import igknighters.constants.SubsystemConstants;
 import igknighters.Robot;
 import igknighters.constants.Conv;
-import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
+import igknighters.subsystems.swerve.swerveconstants.GeminiConsts;
+
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Swerve extends SubsystemBase {
     CommandSwerveDrivetrain drivetrain;
-    CommonSwerveConsts commonSwerveConsts;
     boolean isSwerveDisabled = false;
     DummySwerve dummySwerve = new DummySwerve();
 
@@ -36,8 +39,7 @@ public class Swerve extends SubsystemBase {
     public Swerve(boolean isSwerveDisabled) {
         this.isSwerveDisabled = isSwerveDisabled;
         if (!isSwerveDisabled) {
-            drivetrain = Robot.consts.swerve().getCommonSwerveConsts().createDrivetrain(this);
-            commonSwerveConsts = Robot.consts.swerve().getCommonSwerveConsts();
+            drivetrain = GeminiConsts.createDrivetrain(this);
         }
     }
 
@@ -156,8 +158,8 @@ public class Swerve extends SubsystemBase {
 
     public double getMaxSpeedMetersPerSecond() {
         if (!isSwerveDisabled) {
-            return commonSwerveConsts.getMaxSpeedMetersPerSecond();
-        } else {
+                return GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond);
+            } else {
             return 0.0;
         }
     }

@@ -1,5 +1,6 @@
 package igknighters.commands.teleop;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -7,10 +8,11 @@ import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
-import igknighters.Robot;
+import igknighters.constants.SubsystemConstants;
 import igknighters.constants.DrivingSharedState;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
+import igknighters.subsystems.swerve.swerveconstants.GeminiConsts;
 import igknighters.util.log.Log;
 
 public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
@@ -19,10 +21,7 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
     private final SwerveRequest.FieldCentric m_driveRequest =
             new SwerveRequest.FieldCentric()
                     .withDeadband(
-                            Robot.consts
-                                            .swerve()
-                                            .getCommonSwerveConsts()
-                                            .getMaxSpeedMetersPerSecond()
+                            GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond)
                                     * 0.1)
                     .withRotationalDeadband(RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .1)
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
@@ -57,7 +56,7 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
 
         double rotationRate = thetaController.calculate(currentAngle, targetAngle);
 
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("ROBOT/Commands/AutoRotateOnBump/Active", true);
             Log.log("ROBOT/Commands/AutoRotateOnBump/CurrentAngle", currentAngle);
             Log.log("ROBOT/Commands/AutoRotateOnBump/TargetAngle", targetAngle);
@@ -67,7 +66,7 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
         // Force a smaller speed on the bump as requested
         double bumpSpeedMultiplier = 0.5;
         double maxSpeed =
-                Robot.consts.swerve().getCommonSwerveConsts().getMaxSpeedMetersPerSecond()
+                GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond)
                         * detune
                         * bumpSpeedMultiplier;
 
@@ -81,7 +80,7 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
     @Override
     public void end(boolean interrupted) {
         super.end(interrupted);
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("ROBOT/Commands/AutoRotateOnBump/Active", false);
         }
     }

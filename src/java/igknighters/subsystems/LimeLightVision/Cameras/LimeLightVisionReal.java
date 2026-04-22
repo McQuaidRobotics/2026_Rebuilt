@@ -3,7 +3,7 @@ package igknighters.subsystems.LimeLightVision.Cameras;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotController;
-import igknighters.Robot;
+import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.LimeLightVision.Helpers.LimelightHelpers;
 import igknighters.util.Merging.PoseAverager;
 import igknighters.util.log.Log;
@@ -82,7 +82,7 @@ public class LimeLightVisionReal extends LimeLights {
                 }
 
                 // Optional: log rotation source
-                if (!Robot.consts.limelightVision().disableVisionLogs()) {
+                if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
                     Log.log(
                             "Subsystems/Vision/LimeLightVision/Source_" + cameraName,
                             (mt1Estimate.tagCount >= 2) ? "VISION_CORRECTION" : "ROBOT_GYRO_ONLY");
@@ -92,7 +92,7 @@ public class LimeLightVisionReal extends LimeLights {
             double timestamp = !poses.isEmpty() ? timestampSum / poses.size() : 0.0;
             lastTimeStamp = timestamp;
 
-            if (!Robot.consts.limelightVision().disableVisionLogs()) {
+            if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
                 Log.log(
                         "ROBOT/Subsystems/Vision/LimeLightVision/TimeStampOfMeasurements",
                         timestamp);
@@ -105,7 +105,7 @@ public class LimeLightVisionReal extends LimeLights {
         double timestamp = !poses.isEmpty() ? timestampSum / poses.size() : 0.0;
         lastTimeStamp = timestamp;
 
-        if (!Robot.consts.limelightVision().disableVisionLogs()) {
+        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
             Log.log("ROBOT/Subsystems/Vision/LimeLightVision/TimeStampOfMeasurements", timestamp);
             Log.log(
                     "ROBOT/Subsystems/Vision/LimeLightVision/NumberOfTagsSeen",

@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.util.struct.StructSerializable;
 import edu.wpi.first.wpilibj2.command.Command;
+import igknighters.constants.SubsystemConstants;
 import igknighters.Robot;
 import igknighters.commands.Repulsor;
 import igknighters.commands.Repulsor.obstacle;
@@ -80,19 +81,19 @@ public class TeleopSwerveJoystickRepulsor extends Command {
         if (YRepulse != 0) {
             repulseProcessedY += YRepulse;
         }
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("Commands/repulsor/Teleop/TeleopXRepulse", XRepulse);
             Log.log("Commands/repulsor/Teleop/XForce", repulseProcessedX);
             Log.log("Commands/repulsor/Teleop/TeleopYRepulse", YRepulse);
             Log.log("Commands/repulsor/Teleop/YForce", repulseProcessedY);
         }
         if (Robot.isBlue()) {
-            if (!Robot.consts.disableAllLogs()) {
+            if (!SubsystemConstants.disableAllLogs) {
                 Log.log("TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
             }
             return new Translation2d(-repulseProcessedY, repulseProcessedX);
         } else {
-            if (!Robot.consts.disableAllLogs()) {
+            if (!SubsystemConstants.disableAllLogs) {
                 Log.log("TeleopSwerveBaseCmd", "Red Alliance - Inversion");
             }
             return new Translation2d(repulseProcessedY, -repulseProcessedX);
@@ -120,7 +121,7 @@ public class TeleopSwerveJoystickRepulsor extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("Commands/Teleop/teleopCommand", "ENDED");
         }
     }
@@ -155,7 +156,7 @@ public class TeleopSwerveJoystickRepulsor extends Command {
         //         rotation.getX(),
         //         rawRotationYSup.getAsDouble(),
         //         rotation.getY());
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("Commands/teleop/repulsor/rawTranslationX", rawTranslationXSup.getAsDouble());
             Log.log("Commands/teleop/repulsor/translationX", translation.getX());
             Log.log("Commands/teleop/repulsor/rawTranslationY", rawTranslationYSup.getAsDouble());

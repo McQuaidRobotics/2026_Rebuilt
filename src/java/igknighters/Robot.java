@@ -21,26 +21,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import igknighters.commands.IndexerCommands;
-import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.commands.SubsystemTriggers;
-import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
-import igknighters.constants.GeminiRobotConsts;
-import igknighters.constants.RobotConsts;
 import igknighters.constants.RobotIdentity;
-import igknighters.constants.SecondBotRobotConsts;
+import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.indexer.Indexer;
-import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
-import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.FuelSim;
 import igknighters.util.RobotPosePredError;
@@ -62,8 +54,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
 
     private Command m_autonomousCommand;
-
-    public static RobotConsts consts;
     private AutoFactory autoFactory;
     public final AutoChooser autoChooser = new AutoChooser();
     public final AutoChooser testChooser = new AutoChooser();
@@ -91,7 +81,7 @@ public class Robot extends LoggedRobot {
     TunableDouble targetingD = TunableValues.getDouble("Tunables/TargetingD", 0.00);
 
     public void setUpCommandLogging() {
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             scheduler.onCommandInitialize(
                     command ->
                             Log.log(
@@ -135,36 +125,8 @@ public class Robot extends LoggedRobot {
         }
     }
 
-    public void setUpRobotConsts() {
-
-        // THE IDS WILL BE WRONG SINCE SN IS WRONG WILL DEFAULT TO SECOND BOT
-        if (RobotIdentity.isGemini()) {
-            consts = new GeminiRobotConsts();
-        } else if (RobotIdentity.isSecondBot()) {
-            consts = new SecondBotRobotConsts();
-        } else if (Robot.isReal()) {
-            throw new IllegalStateException(
-                    "Unknown robot identity ENSURE SERIAL NUMBERS MATCH"); // only problem irl
-        } else {
-            consts = new GeminiRobotConsts(); // in sim with unknown sn we should pick something
-        }
-    }
-
     public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsystems.swerve.createAutoFactory();
-        final var routines = new AutoRoutines(subsystems, autoFactory, consts);
-        autoChooser.addRoutine("Right Orbit", routines::orbitRight);
-        autoChooser.addRoutine("Left Orbit", routines::ORBIT_LEFT);
-        autoChooser.addRoutine("Center Depot", routines::centerPreload);
-        autoChooser.addRoutine("LEFT BUMP PASS TO SELF", routines::BUMP_PASS_TO_SELF_LEFT);
-        autoChooser.addRoutine(
-                "Pass to Self Right with Depot and Human Player",
-                routines::PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER);
-        autoChooser.addRoutine("OP RIGHT", routines::OP_RIGHT);
-        autoChooser.addRoutine("OP_LEFT", routines::OP_LEFT);
-        autoChooser.addRoutine("SQUOVAL", routines::SQUOVAL);
-
-        testChooser.addRoutine("Test Auto", routines::TEST);
 
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
         SmartDashboard.putData("TEST CHOOSER", testChooser);
@@ -178,14 +140,6 @@ public class Robot extends LoggedRobot {
         subsystems.swerve.registerTelemetry(logger::telemeterize);
     }
 
-    public void setUpTest(Subsystems subsystems) {
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - STOP",
-                IndexerCommands.justStop(subsystems.indexer));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - DISPENSE BALLS",
-                IndexerCommands.dispense(subsystems.indexer));
-    }
 
     public void setUpAdvantageScope() {
 
@@ -231,7 +185,6 @@ public class Robot extends LoggedRobot {
     }
 
     public Robot() {
-        setUpRobotConsts();
         setUpAdvantageScope();
         setUpCommandLogging();
         subsystems =
@@ -239,14 +192,10 @@ public class Robot extends LoggedRobot {
                         new Swerve(false),
                         new LimeLightVision(),
                         new Led(90, 2),
-                        new Shooter(),
-                        new Indexer(),
-                        new Intake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
         publishCommandsAndSubystems(subsystems);
         setUpAutos(subsystems);
-        setUpTest(subsystems);
         bindDriverController();
 
         pose_pred = new RobotPosePredictor(subsystems.swerve);
@@ -259,7 +208,6 @@ public class Robot extends LoggedRobot {
     }
 
     public Robot(boolean isSwerveDisabled) {
-        setUpRobotConsts();
         setUpAdvantageScope();
         setUpCommandLogging();
         subsystems =
@@ -267,15 +215,11 @@ public class Robot extends LoggedRobot {
                         new Swerve(isSwerveDisabled),
                         new LimeLightVision(),
                         new Led(90, 2),
-                        new Shooter(),
-                        new Indexer(),
-                        new Intake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
         pose_pred = new RobotPosePredictor(subsystems.swerve);
         publishCommandsAndSubystems(subsystems);
         setUpAutos(subsystems);
-        setUpTest(subsystems);
         bindDriverController();
 
         subsystemTriggers.SetupTriggers(subsystems, driverController, poseSupplier());
@@ -302,7 +246,9 @@ public class Robot extends LoggedRobot {
         double dy = 0.0; // Y offset from turret center to hood
         double dz = 0.12; // z offset from turret pivot to hood pivot
 
-        Pose3d turretPose = getTurretPose(-subsystems.shooter.getTurretAngleDegrees());
+        // Pose3d turretPose = getTurretPose(-subsystems.shooter.getTurretAngleDegrees());
+
+        Pose3d turretPose = getTurretPose(0.0);
 
         Pose3d hoodPosition =
                 turretPose.transformBy(
@@ -354,28 +300,28 @@ public class Robot extends LoggedRobot {
         pose_pred_error.logPose(subsystems.swerve.getState().Pose);
         turret_pred_error.logPose(
                 turret_pred.getTurretPoseFieldRelativeOffset(subsystems.swerve.getState().Pose));
-        if (Robot.isReal() && !consts.disableAllLogs()) {
-            FieldVisualizer.getInstance()
-                    .updateTurret(
-                            subsystems.shooter.getTurretAngleDegrees(),
-                            subsystems.swerve.getState().Pose);
-            Logger.recordOutput(
-                    "componentPoses",
-                    new Pose3d[] {
-                        getTurretPose(subsystems.shooter.getTurretAngleDegrees()),
-                        getHoodPose(subsystems.shooter.getHoodAngleDegrees())
-                    });
+        if (Robot.isReal() && !SubsystemConstants.disableAllLogs) {
+            // FieldVisualizer.getInstance()
+            //         .updateTurret(
+            //                 subsystems.shooter.getTurretAngleDegrees(),
+            //                 subsystems.swerve.getState().Pose);
+            // Logger.recordOutput(
+            //         "componentPoses",
+            //         new Pose3d[] {
+            //             getTurretPose(subsystems.shooter.getTurretAngleDegrees()),
+            //             getHoodPose(subsystems.shooter.getHoodAngleDegrees())
+            //         });
         } else {
-            FieldVisualizer.getInstance()
-                    .updateTurret(
-                            subsystems.shooter.getTurretAngleDegrees(),
-                            subsystems.swerve.getState().Pose);
-            Logger.recordOutput(
-                    "componentPoses",
-                    new Pose3d[] {
-                        getTurretPose(subsystems.shooter.getTurretAngleDegrees()),
-                        getHoodPose(subsystems.shooter.getHoodAngleDegrees())
-                    });
+            // FieldVisualizer.getInstance()
+            //         .updateTurret(
+            //                 subsystems.shooter.getTurretAngleDegrees(),
+            //                 subsystems.swerve.getState().Pose);
+            // Logger.recordOutput(
+            //         "componentPoses",
+            //         new Pose3d[] {
+            //             getTurretPose(subsystems.shooter.getTurretAngleDegrees()),
+            //             getHoodPose(subsystems.shooter.getHoodAngleDegrees())
+            //         });
         }
 
         Logger.recordOutput(
@@ -398,11 +344,11 @@ public class Robot extends LoggedRobot {
                         subsystems.vision
                                 .getLastTimeStamp()); // trusts vision rotation less. Needs tuning
                 // increase the std devs to trust vision less
-                if (!Robot.consts.limelightVision().disableVisionLogs()) {
+                if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
                     Log.log("ROBOT/Subsystems/Vision/Null Pose", false);
                 }
             } else {
-                if (!Robot.consts.limelightVision().disableVisionLogs()) {
+                if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
                     Log.log("ROBOT/Subsystems/Vision/Null Pose", true);
                 }
             }
@@ -445,9 +391,10 @@ public class Robot extends LoggedRobot {
             fuelSim.start();
         }
         try {
-            scheduler.schedule(ShooterCommands.homeHood(subsystems.shooter));
+            // scheduler.schedule(ShooterCommands.homeHood(subsystems.shooter));
+            //home hood here
         } catch (Exception e) {
-            if (!Robot.consts.disableAllLogs()) {
+            if (!SubsystemConstants.disableAllLogs) {
                 Log.log("ROBOT/autonomousInit/HomeHoodScheduleFailed", e.toString());
             }
         }
@@ -481,10 +428,11 @@ public class Robot extends LoggedRobot {
         // zeroed before driver control. This will be a no-op if the hood sensor is
         // already triggered because homeHood handles the short-circuit case.
         try {
-            scheduler.schedule(ShooterCommands.homeHood(subsystems.shooter));
+            // scheduler.schedule(ShooterCommands.homeHood(subsystems.shooter));
+            //home hood here
         } catch (Exception e) {
             // Log but don't crash the robot if scheduling fails for any reason.
-            if (!Robot.consts.disableAllLogs()) {
+            if (!SubsystemConstants.disableAllLogs) {
                 Log.log("ROBOT/teleopInit/HomeHoodScheduleFailed", e.toString());
             }
         }
@@ -523,33 +471,28 @@ public class Robot extends LoggedRobot {
 
             // Logic to launch fuel when dispensing and shooter is ready
             double currentTime = RobotController.getFPGATime() / 1.0e6;
-            if (subsystems.indexer.getExitRollerRPM() > 50.0
-                    && subsystems.shooter.getCurrentState().flywheelSpeed.in(RPM) > 500.0
-                    && subsystems.indexer.getSpindexerRPM() > 50.0
-                    && (currentTime - lastShotTime) > 0.1) { // 0.1s cooldown
-
-                var shooterState = subsystems.shooter.getCurrentState();
+            
+            // TODO: Implement actual fuel launch logic
+            // THIS SHOULD CHECK SPINDEXER RPM + SHOOTER RPM and if sim + spining then make the false true
+            if (false) { // 0.1s cooldown
 
                 // Launch parameters
                 // Velocity is approx (RPM * radius / 2) because only one side is driven (per
                 // AimSolver)
-                double flywheelRadius = Robot.consts.shooter().kFlywheels().WHEEL_RADIUS_METERS();
+                double flywheelRadius = SubsystemConstants.kShooter.kFlywheels.WHEEL_RADIUS_METERS;
                 double launchVelocity =
-                        (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.0;
+                        (50 * flywheelRadius) / 2.0; // 50 rps * radius with a 50% efficiency
 
                 fuelSim.launchFuel(
                         MetersPerSecond.of(launchVelocity),
-                        Radians.of(Math.PI / 2 - shooterState.hoodAngle.in(Radian)),
-                        shooterState.turretAngle,
+                        Radians.of(Math.PI / 2),
+                        Degrees.of(0), //replace
                         Meters.of(
-                                Robot.consts
-                                        .shooter()
-                                        .kFlywheels()
-                                        .ShooterHeightMeters()) // height of shooter exit
+                                SubsystemConstants.kShooter.kFlywheels.ShooterHeightMeters) // height of shooter exit
                         );
 
                 lastShotTime = currentTime;
-                if (!Robot.consts.shooter().kFlywheels().disableFlywheelsLogs()) {
+                if (SubsystemConstants.disableAllLogs) {
                     Log.log("ROBOT/Simulation/FuelLaunched", true);
                 }
             }
@@ -603,7 +546,7 @@ public class Robot extends LoggedRobot {
         } else {
             // Default to blue if alliance is unknown (e.g., in simulation without alliance set)
             // Log this so we know why things might be going to the blue side.
-            if (!Robot.consts.disableAllLogs()) {
+            if (!SubsystemConstants.disableAllLogs) {
                 Log.log("ROBOT/System/AllianceUnknown", true);
             }
             return true;

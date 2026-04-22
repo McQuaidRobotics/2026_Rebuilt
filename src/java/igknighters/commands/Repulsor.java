@@ -1,5 +1,6 @@
 package igknighters.commands;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -10,10 +11,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import igknighters.Robot;
+import igknighters.constants.SubsystemConstants;
 import igknighters.constants.Conv;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.swerve.Swerve;
+import igknighters.subsystems.swerve.swerveconstants.GeminiConsts;
 import igknighters.util.log.Log;
 import java.util.ArrayList;
 
@@ -49,7 +51,7 @@ public class Repulsor {
     public static double getXRepulse(Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
 
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("ROBOT/Commands/repulsor/Time", currentTime);
         }
         double xRepelForce = 0.0;
@@ -81,13 +83,13 @@ public class Repulsor {
         }
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
 
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("ROBOT/Commands/repulsor/DeltaTime", deltaTime);
         }
         if (deltaTime > maxTime) {
             maxTime = deltaTime;
 
-            if (!Robot.consts.disableAllLogs()) {
+            if (!SubsystemConstants.disableAllLogs) {
                 Log.log("ROBOT/Commands/repulsor/MaxDeltaTime", maxTime);
             }
         }
@@ -96,7 +98,7 @@ public class Repulsor {
 
     public static double getXGoal(Pose2d currentPose, Pose2d target) {
         double xGoalDist = target.getX() - currentPose.getX();
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("ROBOT/Commands/repulsor/xGoalDist", target.getX() - currentPose.getX());
         }
         return xGoalDist;
@@ -107,7 +109,7 @@ public class Repulsor {
             Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles, Pose2d target) {
         double yRepelForce = 0.0;
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("ROBOT/Commands/repulsor/Time", currentTime);
         }
         for (Repulsor.obstacle obs : obstacles) {
@@ -158,12 +160,12 @@ public class Repulsor {
             }
         }
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("ROBOT/Commands/repulsor/DeltaTime", deltaTime);
         }
         if (deltaTime > maxTime) {
             maxTime = deltaTime;
-            if (!Robot.consts.disableAllLogs()) {
+            if (!SubsystemConstants.disableAllLogs) {
                 Log.log("ROBOT/Commands/repulsor/MaxDeltaTime", maxTime);
             }
         }
@@ -183,7 +185,7 @@ public class Repulsor {
     public static double getYRepulse(Pose2d currentPose, ArrayList<Repulsor.obstacle> obstacles) {
         double yRepelForce = 0.0;
         double currentTime = RobotController.getFPGATime() * 1000.0; // microseconds to milliseconds
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("Commands/repulsor/Time", currentTime);
         }
         for (Repulsor.obstacle obs : obstacles) {
@@ -224,12 +226,12 @@ public class Repulsor {
             }
         }
         double deltaTime = Timer.getFPGATimestamp() * 1000 - currentTime;
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("Commands/repulsor/DeltaTime", deltaTime);
         }
         if (deltaTime > maxTime) {
             maxTime = deltaTime;
-            if (!Robot.consts.disableAllLogs()) {
+            if (!SubsystemConstants.disableAllLogs) {
                 Log.log("Commands/repulsor/MaxDeltaTime", maxTime);
             }
         }
@@ -246,7 +248,7 @@ public class Repulsor {
 
     public static double getYGoal(Pose2d currentPose, Pose2d target) {
         double yGoalDist = target.getY() - currentPose.getY();
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("ROBOT/Commands/repulsor/yGoalDist", target.getY() - currentPose.getY());
         }
         return yGoalDist;
@@ -258,11 +260,7 @@ public class Repulsor {
         final SwerveRequest.FieldCentric m_driveRequest =
                 new SwerveRequest.FieldCentric()
                         .withDeadband(
-                                Robot.consts
-                                                .swerve()
-                                                .getCommonSwerveConsts()
-                                                .getMaxSpeedMetersPerSecond()
-                                        * 0.05)
+                                GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.05)
                         .withRotationalDeadband(
                                 RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.05)
                         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
@@ -278,7 +276,7 @@ public class Repulsor {
                             10
                                     * -(getXGoal(currentPose, targetPose)
                                             + getXRepulse(currentPose, obstacles));
-                    if (!Robot.consts.disableAllLogs()) {
+                    if (!SubsystemConstants.disableAllLogs) {
                         Log.log(
                                 "ROBOT/Commands/repulsor/xRepel",
                                 getXRepulse(currentPose, obstacles));
@@ -287,7 +285,7 @@ public class Repulsor {
                             10
                                     * -(getYGoal(currentPose, targetPose)
                                             + getYRepulse(currentPose, obstacles, targetPose));
-                    if (!Robot.consts.disableAllLogs()) {
+                    if (!SubsystemConstants.disableAllLogs) {
                         Log.log(
                                 "Commands/repulsor/yRepel",
                                 getYRepulse(currentPose, obstacles, targetPose));
@@ -311,7 +309,7 @@ public class Repulsor {
                                     getXRepulse(currentPose, obstacles)));
 
                     omega *= 20.0;
-                    if (!Robot.consts.disableAllLogs()) {
+                    if (!SubsystemConstants.disableAllLogs) {
                         Log.log("ROBOT/Commands/repulsor/Omega", omega);
                     }
                     swerve.setControl(

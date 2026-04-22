@@ -12,17 +12,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.LEDCommands.LEDSection;
-import igknighters.commands.Shooter.AimingCommands;
-import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.commands.teleop.AutoRotateOnBump;
-import igknighters.commands.teleop.SlowedDownDrivingWhileShooting;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
-import igknighters.constants.ShootInformation;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.intake.AbstractIntake;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
 import igknighters.subsystems.swerve.Swerve;
@@ -60,81 +55,6 @@ public class SubsystemTriggers {
                 });
     }
 
-    public static Command runLEDBASEDONSTATE(Led led, boolean isDisabled, boolean isAutonomous) {
-        // should be Magenta, Cyan, Yellow if all three are lit then it should shoot
-
-        if (isDisabled) {
-            return LEDCommands.run(led, LEDPattern.solid(Color.kRed));
-        } else if (isAutonomous) {
-            LEDSection possibleShot;
-            LEDSection atTarget;
-            LEDSection beingControlled;
-            LEDSection autonomous =
-                    new LEDSection(1, 0, LedUtil.makeRainbow(255, 128), 20, "AUTONOMOUS RAINBOW");
-
-            if (ShootInformation.getInstance().shotPosible().getAsBoolean()) {
-                possibleShot =
-                        new LEDSection(
-                                0, 0, LEDPattern.solid(Color.kMagenta), 20, "IS POSSIBLE SHOT");
-            } else {
-                possibleShot =
-                        new LEDSection(
-                                0, 0, LEDPattern.solid(Color.kBlack), 20, "IS NOT POSSIBLE SHOT");
-            }
-
-            if (ShootInformation.getInstance().getAtTarget()) {
-                atTarget = new LEDSection(0, 20, LEDPattern.solid(Color.kCyan), 20, "AT TARGET");
-            } else {
-                atTarget =
-                        new LEDSection(0, 20, LEDPattern.solid(Color.kBlack), 20, "NOT AT TARGET");
-            }
-
-            if (ShootInformation.getInstance().beingControlledTrigger().getAsBoolean()) {
-                beingControlled =
-                        new LEDSection(
-                                0, 40, LEDPattern.solid(Color.kYellow), 20, "BEING CONTROLLED");
-            } else {
-                beingControlled =
-                        new LEDSection(
-                                0, 40, LEDPattern.solid(Color.kBlack), 20, "NOT BEING CONTROLLED");
-            }
-
-            return LEDCommands.run(led, autonomous, possibleShot, atTarget, beingControlled);
-        } else {
-            LEDSection possibleShot;
-            LEDSection atTarget;
-            LEDSection beingControlled;
-            LEDSection enabled =
-                    new LEDSection(1, 0, LEDPattern.solid(Color.kGreen), 40, "ENABLED");
-            if (ShootInformation.getInstance().getAtTarget()) {
-                atTarget = new LEDSection(0, 20, LEDPattern.solid(Color.kCyan), 20, "AT TARGET");
-            } else {
-                atTarget =
-                        new LEDSection(0, 20, LEDPattern.solid(Color.kBlack), 20, "NOT AT TARGET");
-            }
-            if (ShootInformation.getInstance().beingControlledTrigger().getAsBoolean()) {
-                beingControlled =
-                        new LEDSection(
-                                0, 40, LEDPattern.solid(Color.kYellow), 20, "BEING CONTROLLED");
-            } else {
-                beingControlled =
-                        new LEDSection(
-                                0, 40, LEDPattern.solid(Color.kBlack), 20, "NOT BEING CONTROLLED");
-            }
-            if (ShootInformation.getInstance().shotPosible().getAsBoolean()) {
-                possibleShot =
-                        new LEDSection(
-                                0, 0, LEDPattern.solid(Color.kMagenta), 20, "IS POSSIBLE SHOT");
-            } else {
-                possibleShot =
-                        new LEDSection(
-                                0, 0, LEDPattern.solid(Color.kBlack), 20, "IS NOT POSSIBLE SHOT");
-            }
-
-            return LEDCommands.run(led, enabled, possibleShot, atTarget, beingControlled);
-        }
-    }
-
     public Pose3d getPoseFromString(String path) {
         double x = dashboardTable.getEntry(path + "X").getDouble(0.0) * Conv.FEET_TO_METERS;
         double y = dashboardTable.getEntry(path + "Y").getDouble(0.0) * Conv.FEET_TO_METERS;
@@ -150,12 +70,6 @@ public class SubsystemTriggers {
         Trigger passTrigger =
                 new Trigger(() -> dashboardTable.getEntry("robot/passTrigger").getBoolean(false));
 
-        passTrigger.onTrue(
-                Commands.runOnce(
-                        () -> ShootInformation.getInstance().useOperatorControlLocation(true)));
-        passTrigger.onFalse(
-                Commands.runOnce(
-                        () -> ShootInformation.getInstance().useOperatorControlLocation(false)));
         moveToTrigger.whileTrue(
                 Repulsor.moveWithRepulsor(
                         swerve, getPoseFromString("robot/moveWaypoint").toPose2d()));
@@ -190,7 +104,6 @@ public class SubsystemTriggers {
             Supplier<Pose2d> poseSupplier) {
         Led led = subsystems.led;
         Swerve swerve = subsystems.swerve;
-        AbstractIntake intake = subsystems.intake;
         Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
 
         Trigger trenchProtection = new Trigger(() -> DrivingSharedState.getInstance().underTrench);
@@ -217,24 +130,6 @@ public class SubsystemTriggers {
         autonomous.onTrue(autoLED(led));
 
         teleop.whileTrue(teleopLED(led));
-
-        // Get the AbleToShootSharedState singleton
-        ShootInformation ableToShootState = ShootInformation.getInstance();
-
-        // Bind LED commands to the canShootTrigger
-        trenchProtection
-                .onTrue(LEDCommands.run(led, LEDPattern.solid(Color.kBlue)))
-                .onFalse(getLEDCommandByMode(led));
-        ableToShootState
-                .canShoot()
-                .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kMagenta)))
-                .onFalse(getLEDCommandByMode(led));
-
-        ableToShootState
-                .beingControlledTrigger()
-                .and(teleop)
-                .and(() -> AimingCommands.getShotType() == ShooterCommands.shotType.SHOT)
-                .whileTrue(new SlowedDownDrivingWhileShooting(swerve, driverController));
 
         // rumble
         shouldRumble =
