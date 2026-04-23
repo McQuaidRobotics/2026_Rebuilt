@@ -14,7 +14,7 @@ import java.util.List;
  * FieldVisualizer provides methods to update specific objects on the field (Field2d) independently
  * of the main telemetry loop. This allows for updating vision targets, detected objects, and other
  * field elements only when necessary.
- * 
+ *
  * <p>It uses a singleton pattern to ensure a single entry point for field visualization updates
  * across different commands and subsystems.
  */
@@ -30,7 +30,7 @@ public class FieldVisualizer {
 
     /**
      * Returns the singleton instance of the FieldVisualizer.
-     * 
+     *
      * @return The FieldVisualizer instance.
      */
     public static FieldVisualizer getInstance() {
@@ -79,7 +79,7 @@ public class FieldVisualizer {
 
     /**
      * Updates the predicted future pose of the robot on the field.
-     * 
+     *
      * @param pred_pose The predicted {@link Pose2d}.
      */
     public void updatePredictedPose(Pose2d pred_pose) {
@@ -109,7 +109,7 @@ public class FieldVisualizer {
 
     /**
      * Updates the turret orientation visualization relative to the robot's pose.
-     * 
+     *
      * @param turretAngleDegrees The current rotation of the turret.
      * @param robotPose The robot's current {@link Pose2d}.
      */

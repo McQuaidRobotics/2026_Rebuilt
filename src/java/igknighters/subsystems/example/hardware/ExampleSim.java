@@ -1,8 +1,6 @@
 package igknighters.subsystems.example.hardware;
 
-/**
- * Simulation implementation for the Example subsystem.
- */
+/** Simulation implementation for the Example subsystem. */
 public class ExampleSim extends Example {
     private double currentPosition = 0.0;
     private double currentSpeed = 0.0;

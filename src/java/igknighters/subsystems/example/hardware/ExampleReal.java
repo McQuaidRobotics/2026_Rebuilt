@@ -1,8 +1,6 @@
 package igknighters.subsystems.example.hardware;
 
-/**
- * Real hardware implementation for the Example subsystem.
- */
+/** Real hardware implementation for the Example subsystem. */
 public class ExampleReal extends Example {
 
     public ExampleReal(int motorId) {

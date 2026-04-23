@@ -1,8 +1,8 @@
 package igknighters.subsystems.example.hardware;
 
 /**
- * Disabled implementation for the Example subsystem.
- * Useful for debugging logic when the hardware isn't needed.
+ * Disabled implementation for the Example subsystem. Useful for debugging logic when the hardware
+ * isn't needed.
  */
 public class ExampleDisabled extends Example {
 
