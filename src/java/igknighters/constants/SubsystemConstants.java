@@ -223,6 +223,9 @@ public class SubsystemConstants {
             public static final int MOTOR_ID = 24;
             public static final int CANCODER_ID = 25;
             public static final double CANCODER_OFFSET_ROTATIONS = -0.747314453125;
+
+            public static final double xMeterOffset = 7 * Conv.INCHES_TO_METERS;
+            public static final double yMeterOffset = 7 * Conv.INCHES_TO_METERS;
             public static final double GEAR_RATIO = 16.2;
             public static final double MAX_ANGLE_DEGREES = 270.0;
             public static final double MIN_ANGLE_DEGREES = -90.0;

@@ -9,7 +9,7 @@ This is the Java codebase for the FRC 2026 robot, developed by the **IgKnighters
 *   **Framework:** WPILib 2026 (Beta), Command-Based
 *   **Build System:** Gradle
 *   **Path Planning:** ChoreoLib
-*   **Logging:** DogLog, Monologue
+*   **Logging:** Advantage Kit
 *   **Simulation:** Standard WPILib Simulation
 
 ## Reference Implementation
@@ -25,13 +25,12 @@ The **2025_Reefscape** project (located at `../2025_Reefscape`) serves as the pr
 The codebase follows a command-based architecture with some custom extensions for resource management and simulation.
 
 ### Entry Point
-*   `src/java/igknighters/Main.java`: Standard entry point.
+*   `src/java/igknighters`: Standard entry point.
 *   `src/java/igknighters/Robot.java`: The main robot class (TimedRobot), responsible for initializing subsystems, handling modes (Teleop, Auto, Test), and the main control loop.
 
 ### Subsystems (`src/java/igknighters/subsystems`)
 Subsystems are centralized in `Subsystems.java`. The project distinguishes between:
 *   **ExclusiveSubsystem:** Standard WPILib subsystems (require command requirements, e.g., Swerve Drive, LED).
-*   **SharedSubsystem:** "Lockless" resources that can be accessed by multiple commands/loops simultaneously (e.g., Vision, Luma).
 
 ### Simulation
 The project uses standard WPILib simulation support (e.g., `PhysicsSim`, `DCMotorSim`, `RoboRioSim`) instead of custom hardware abstraction layers. Simulation logic should be embedded within subsystems or handled via parallel simulation classes that mirror the hardware implementation using WPILib's `RobotBase.isSimulation()` check.
@@ -66,9 +65,8 @@ The project uses the Gradle wrapper (`gradlew`).
 
 *   `src/java/igknighters/`: Main source code.
     *   `commands/`: WPILib Commands (actions).
-    *   `subsystems/`: Hardware interface classes.
-    *   `monologue/`: Logging framework integration.
-    *   `wayfinder/`: Path following and trajectory logic.
+    *   `subsystems/`: Hardware interface classes. As well as the math needed to controll them
+    *   `vroom/`: Path following and trajectory logic.
     *   `controllers/`: Driver input handling (gamepads).
 *   `src/main/deploy/`: Files deployed to the robot (e.g., Choreo `.traj` paths).
 *   `vendordeps/`: JSON files for 3rd party libraries (CTRE, Rev, etc.).
