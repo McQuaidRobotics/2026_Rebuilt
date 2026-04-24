@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
-import igknighters.commands.IntakeCommands;
 import igknighters.commands.Shooter.AimingCommands;
 import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.commands.SwerveCommands;

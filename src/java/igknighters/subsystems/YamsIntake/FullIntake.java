@@ -18,6 +18,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -124,6 +125,18 @@ public class FullIntake extends SubsystemBase {
             targetState(YamIntakeState.DEPLOYED).withTimeout(1),
             targetState(YamIntakeState.STOWED).withTimeout(1)
         ).repeatedly();
+    }
+
+    public AngularVelocity getRollerVelocity() { 
+        return shooter.getSpeed();
+    }
+    public Angle getPivotAngle() { 
+        return arm.getAngle();
+    }
+
+    public boolean isAt(YamIntakeState state, AngularVelocity velocityTolerance, Angle angleTolerance) {
+        return Math.abs(this.getRollerVelocity().in(RPM) - state.rollerVelocity.in(RPM)) < velocityTolerance.in(RPM) &&
+               Math.abs(this.getPivotAngle().in(Degrees) - state.pivotAngle.in(Degrees)) < angleTolerance.in(Degrees);
     }
 
 }

@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.Robot;
 import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
-import igknighters.commands.IntakeCommands;
 import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.commands.SwerveCommands;
 import igknighters.constants.RobotConsts;

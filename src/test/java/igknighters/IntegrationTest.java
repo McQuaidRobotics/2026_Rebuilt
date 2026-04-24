@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.YamsIntake.YamIntakeState;
 import igknighters.subsystems.intake.IntakeState;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -102,7 +103,7 @@ public class IntegrationTest {
         // --- 2. Test Intake movement ---
 
         // put intake in stowed position first
-        subsystems.intake.goTo(IntakeState.Stowed);
+        subsystems.intake.targetState(YamIntakeState.STOWED);
 
         System.out.println("Starting Intake Test...");
 
@@ -110,10 +111,10 @@ public class IntegrationTest {
                 "Intake Initial -> Pivot: "
                         + subsystems.intake.getPivotAngle().in(Degrees)
                         + ", Roller RPM: "
-                        + subsystems.intake.getRollerSpeed().in(RPM));
+                        + subsystems.intake.getRollerVelocity().in(RPM));
 
         for (int i = 0; i < 200; i++) {
-            subsystems.intake.goTo(IntakeState.Intake);
+            subsystems.intake.targetState(YamIntakeState.DEPLOYED);
             DriverStationSim.notifyNewData();
             robot.robotPeriodic();
             robot.autonomousPeriodic();
@@ -122,14 +123,13 @@ public class IntegrationTest {
                 "Intake Final -> Pivot: "
                         + subsystems.intake.getPivotAngle().in(Degrees)
                         + ", Roller RPM: "
-                        + subsystems.intake.getRollerSpeed());
+                        + subsystems.intake.getRollerVelocity().in(RPM));
 
         boolean intakeMoved =
                 !subsystems.intake.isAt(
-                        IntakeState.Stowed.getPivotAngle(),
-                        IntakeState.Stowed.getRollerSpeed(),
-                        Degrees.of(10.0),
-                        RPM.of(100.0));
+                        YamIntakeState.DEPLOYED,
+                        RPM.of(100.0),
+                        Degrees.of(10.0));
         System.out.println("Intake Moved from Stowed: " + intakeMoved);
         assertTrue(intakeMoved, "Intake should have moved away from stowed position");
 
