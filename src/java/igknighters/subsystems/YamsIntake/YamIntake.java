@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 public class YamIntake {
-    public final Pivot pivot;
+    public final IntakePivot pivot;
     public final Rollers rollers;
 
     public YamIntake() {
-        this.pivot = new Pivot();
+        this.pivot = new IntakePivot();
         this.rollers = new Rollers();
     }
 

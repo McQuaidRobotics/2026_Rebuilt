@@ -82,7 +82,7 @@ public class Rollers extends SubsystemBase {
     private SmartMotorController talonSmartMotorController =
             new TalonFXWrapper(roller, DCMotor.getKrakenX60(1), smcConfig);
 
-    private final FlyWheelConfig shooterConfig =
+    private final FlyWheelConfig rollerConfig =
             new FlyWheelConfig(talonSmartMotorController)
                     // Diameter of the flywheel.
                     .withDiameter(
@@ -96,7 +96,7 @@ public class Rollers extends SubsystemBase {
                     .withTelemetry("IntakeRollers", TelemetryVerbosity.HIGH);
 
     // Shooter Mechanism
-    private FlyWheel shooter = new FlyWheel(shooterConfig);
+    private FlyWheel shooter = new FlyWheel(rollerConfig);
 
     /**
      * Gets the current velocity of the shooter.

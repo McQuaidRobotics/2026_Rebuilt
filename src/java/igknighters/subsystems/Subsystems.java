@@ -5,7 +5,7 @@ import igknighters.commands.IndexerCommands;
 import igknighters.commands.Shooter.AimingCommands;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
-import igknighters.subsystems.YamsIntake.Pivot;
+import igknighters.subsystems.YamsIntake.IntakePivot;
 import igknighters.subsystems.YamsIntake.Rollers;
 import igknighters.subsystems.YamsIntake.YamIntake;
 import igknighters.subsystems.YamsIntake.YamIntakeState;
@@ -20,7 +20,7 @@ public class Subsystems {
     public final Led led;
     public final Shooter shooter;
     public final Indexer indexer;
-    public final Pivot pivot;
+    public final IntakePivot pivot;
     public final Rollers rollers;
     public final YamIntake intake;
     public final Luma luma;

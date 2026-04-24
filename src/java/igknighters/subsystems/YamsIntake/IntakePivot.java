@@ -24,8 +24,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
-import yams.mechanisms.config.ArmConfig;
+import yams.mechanisms.config.PivotConfig;
 import yams.mechanisms.positional.Arm;
+import yams.mechanisms.positional.Pivot;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
@@ -33,13 +34,11 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class Pivot extends SubsystemBase {
+public class IntakePivot extends SubsystemBase {
 
     private SmartMotorControllerConfig smcConfig =
             new SmartMotorControllerConfig(this)
-                    
-                .with
-                .withControlMode(ControlMode.CLOSED_LOOP)
+                    .withControlMode(ControlMode.CLOSED_LOOP)
 
                     // Feedback Constants (PID Constants)
                     .withClosedLoopController(
@@ -54,16 +53,11 @@ public class Pivot extends SubsystemBase {
                                             .kPivot()
                                             .MAX_ACCELERATION_METERS_PER_SECOND_SQUARED()))
                     .withSimClosedLoopController(
-                            Robot.consts.intake().kPivot().kP(),
+                            10,
                             Robot.consts.intake().kPivot().kI(),
                             Robot.consts.intake().kPivot().kD(),
-                            DegreesPerSecond.of(
-                                    Robot.consts.intake().kPivot().MAX_SPEED_METERS_PER_SECOND()),
-                            DegreesPerSecondPerSecond.of(
-                                    Robot.consts
-                                            .intake()
-                                            .kPivot()
-                                            .MAX_ACCELERATION_METERS_PER_SECOND_SQUARED()))
+                            DegreesPerSecond.of(360),
+                            DegreesPerSecondPerSecond.of(480))
                     // Feedforward Constants
                     .withFeedforward(
                             new ArmFeedforward(
@@ -83,10 +77,7 @@ public class Pivot extends SubsystemBase {
                     // In this example GearBox.fromReductionStages(3,4) is the same as
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
                     // your motor.
-                    .withGearing(
-                            new MechanismGearing(
-                                    GearBox.fromReductionStages(
-                                            Robot.consts.intake().kPivot().GEAR_RATIO())))
+                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(15)))
                     .withMotorInverted(
                             Robot.consts
                                     .intake()
@@ -102,13 +93,14 @@ public class Pivot extends SubsystemBase {
     // Vendor motor controller object
     private TalonFX pivotMotor = new TalonFX(Robot.consts.intake().kPivot().MOTOR_ID());
 
-    // Create our SmartMotorController from our Spark and config with the NEO.
-    private SmartMotorController sparkSmartMotorController =
+    // Create our SmartMotorController from our Spark and config with the Kraken.
+    private SmartMotorController talonSmartMotorController =
             new TalonFXWrapper(pivotMotor, DCMotor.getKrakenX60(1), smcConfig);
 
-    private ArmConfig armCfg =
-            new ArmConfig(sparkSmartMotorController)
+    private PivotConfig pivotConfig =
+            new PivotConfig(talonSmartMotorController)
                     // Soft limit is applied to the SmartMotorControllers PID
+                    .withMOI(Meters.of(0.25), Pounds.of(1))
                     .withSoftLimits(
                             Degrees.of(Robot.consts.intake().kPivot().MIN_ANGLE_DEGREES()),
                             Degrees.of(Robot.consts.intake().kPivot().MAX_ANGLE_DEGREES()))
@@ -119,14 +111,11 @@ public class Pivot extends SubsystemBase {
                     // Starting position is where your arm starts
                     .withStartingPosition(
                             Degrees.of(Robot.consts.intake().kPivot().STOWED_ANGLE_DEGREES()))
-                    // Length and mass of your arm for sim.
-                    .withLength(Meters.of(Robot.consts.intake().kPivot().LENGTH_METERS()))
-                    .withMass(Pounds.of(1))
                     // Telemetry name and verbosity for the arm.
                     .withTelemetry("PivotArm", TelemetryVerbosity.HIGH);
 
     // Arm Mechanism
-    private Arm arm = new Arm(armCfg);
+    private Pivot pivot = new Pivot(pivotConfig);
 
     /**
      * Set the angle of the arm, does not stop when the arm reaches the setpoint.
@@ -135,7 +124,7 @@ public class Pivot extends SubsystemBase {
      * @return A command.
      */
     public Command targetAngle(Angle angle) {
-        return arm.run(angle);
+        return pivot.run(angle);
     }
 
     /**
@@ -147,7 +136,7 @@ public class Pivot extends SubsystemBase {
      * @return A Command
      */
     public Command setAngleAndStop(Angle angle, Angle tolerance) {
-        return arm.runTo(angle, tolerance);
+        return pivot.runTo(angle, tolerance);
     }
 
     /**
@@ -156,7 +145,7 @@ public class Pivot extends SubsystemBase {
      * @param angle Angle to go to.
      */
     public void setAngleSetpoint(Angle angle) {
-        arm.setMechanismPositionSetpoint(angle);
+        pivot.setMechanismPositionSetpoint(angle);
     }
 
     /**
@@ -165,24 +154,24 @@ public class Pivot extends SubsystemBase {
      * @param dutycycle [-1, 1] speed to set the arm too.
      */
     public Command set(double dutycycle) {
-        return arm.set(dutycycle);
+        return pivot.set(dutycycle);
     }
 
     /** Run sysId on the {@link Arm} */
     public Command sysId() {
-        return arm.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
+        return pivot.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
     }
 
     public Angle getAngle() {
-        return arm.getAngle();
+        return pivot.getAngle();
     }
 
     public boolean isAt(Angle angle, Angle tolerance) {
-        return arm.isNear(angle, tolerance).getAsBoolean();
+        return pivot.isNear(angle, tolerance).getAsBoolean();
     }
 
     /** Creates a new ExampleSubsystem. */
-    public Pivot() {}
+    public IntakePivot() {}
 
     /**
      * Example command factory method.
@@ -211,12 +200,12 @@ public class Pivot extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        arm.updateTelemetry();
+        pivot.updateTelemetry();
     }
 
     @Override
     public void simulationPeriodic() {
         // This method will be called once per scheduler run during simulation
-        arm.simIterate();
+        pivot.simIterate();
     }
 }
