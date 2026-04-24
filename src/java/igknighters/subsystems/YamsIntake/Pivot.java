@@ -17,9 +17,20 @@ import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
+import yams.mechanisms.config.ArmConfig;
+import yams.mechanisms.positional.Arm;
+import yams.motorcontrollers.SmartMotorController;
+import yams.motorcontrollers.SmartMotorControllerConfig;
+import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
+import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
+import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class Pivot extends SubsystemBase {
@@ -76,10 +87,10 @@ public class Pivot extends SubsystemBase {
                     // Starting position is where your arm starts
                     .withStartingPosition(Degrees.of(0))
                     // Length and mass of your arm for sim.
-                    .withLength(Feet.of(2))
+                    .withLength(Feet.of(1))
                     .withMass(Pounds.of(1))
                     // Telemetry name and verbosity for the arm.
-                    .withTelemetry("Arm", TelemetryVerbosity.HIGH);
+                    .withTelemetry("Visualizers/Arm", TelemetryVerbosity.HIGH);
 
     // Arm Mechanism
     private Arm arm = new Arm(armCfg);
@@ -127,6 +138,14 @@ public class Pivot extends SubsystemBase {
     /** Run sysId on the {@link Arm} */
     public Command sysId() {
         return arm.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
+    }
+
+    public Angle getAngle() {
+        return arm.getAngle();
+    }
+
+    public boolean isAt(Angle angle, Angle tolerance) {
+        return arm.isNear(angle, tolerance).getAsBoolean();
     }
 
     /** Creates a new ExampleSubsystem. */

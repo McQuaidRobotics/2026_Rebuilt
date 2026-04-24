@@ -11,8 +11,8 @@ public enum YamIntakeState {
     PARTIAL_STOW(Degrees.of(22.5), RPM.of(500.0)),
     DEPLOYED(Degrees.of(45.0), RPM.of(1000.0));
 
-    Angle pivotAngle;
-    AngularVelocity rollerVelocity;
+    public final Angle pivotAngle;
+    public final AngularVelocity rollerVelocity;
 
     YamIntakeState(Angle pivotAngle, AngularVelocity rollerVelocity) {
         this.pivotAngle = pivotAngle;

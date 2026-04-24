@@ -125,7 +125,7 @@ public class IntegrationTest {
                         + subsystems.intake.getRollerVelocity().in(RPM));
 
         boolean intakeMoved =
-                !subsystems.intake.isAt(YamIntakeState.DEPLOYED, RPM.of(100.0), Degrees.of(10.0));
+                !subsystems.intake.isAt(YamIntakeState.DEPLOYED, Degrees.of(10.0), RPM.of(100.0));
         System.out.println("Intake Moved from Stowed: " + intakeMoved);
         assertTrue(intakeMoved, "Intake should have moved away from stowed position");
 

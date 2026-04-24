@@ -5,7 +5,9 @@ import igknighters.commands.IndexerCommands;
 import igknighters.commands.Shooter.AimingCommands;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
-import igknighters.subsystems.YamsIntake.FullIntake;
+import igknighters.subsystems.YamsIntake.Pivot;
+import igknighters.subsystems.YamsIntake.Rollers;
+import igknighters.subsystems.YamsIntake.YamIntake;
 import igknighters.subsystems.YamsIntake.YamIntakeState;
 import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.led.Led;
@@ -18,7 +20,9 @@ public class Subsystems {
     public final Led led;
     public final Shooter shooter;
     public final Indexer indexer;
-    public final FullIntake intake;
+    public final Pivot pivot;
+    public final Rollers rollers;
+    public final YamIntake intake;
     public final Luma luma;
     public final SubsystemBase[] lockedResources;
 
@@ -28,7 +32,7 @@ public class Subsystems {
             Led led,
             Shooter shooter,
             Indexer indexer,
-            FullIntake intake,
+            YamIntake intake,
             Luma luma) {
         this.swerve = swerve;
         this.vision = vision;
@@ -37,12 +41,16 @@ public class Subsystems {
         this.luma = luma;
         this.intake = intake;
         this.indexer = indexer;
+        this.pivot = intake.pivot;
+        this.rollers = intake.rollers;
         this.lockedResources =
-                new SubsystemBase[] {swerve, shooter, indexer, intake, luma, vision, led};
+                new SubsystemBase[] {swerve, shooter, indexer, rollers, pivot, luma, vision, led};
 
         this.indexer.setDefaultCommand(IndexerCommands.jorkIt(indexer).repeatedly());
 
-        this.intake.setDefaultCommand(intake.targetState(YamIntakeState.STOWED));
+        this.pivot.setDefaultCommand(pivot.targetAngle(YamIntakeState.STOWED.pivotAngle));
+        this.rollers.setDefaultCommand(
+                rollers.targetVelocity(YamIntakeState.STOWED.rollerVelocity));
 
         this.shooter.setDefaultCommand(AimingCommands.idleCommand(shooter));
     }

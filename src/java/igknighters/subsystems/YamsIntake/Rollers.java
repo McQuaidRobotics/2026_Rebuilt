@@ -13,9 +13,19 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
+import yams.mechanisms.config.FlyWheelConfig;
+import yams.mechanisms.velocity.FlyWheel;
+import yams.motorcontrollers.SmartMotorController;
+import yams.motorcontrollers.SmartMotorControllerConfig;
+import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
+import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
+import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class Rollers extends SubsystemBase {
@@ -83,6 +93,10 @@ public class Rollers extends SubsystemBase {
      */
     public Command targetVelocity(AngularVelocity speed) {
         return shooter.run(speed);
+    }
+
+    public boolean isAt(AngularVelocity speed, AngularVelocity tolerance) {
+        return shooter.isNear(speed, tolerance).getAsBoolean();
     }
 
     /**
