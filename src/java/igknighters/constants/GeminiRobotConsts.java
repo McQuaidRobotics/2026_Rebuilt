@@ -136,12 +136,12 @@ public class GeminiRobotConsts extends RobotConsts {
         }
 
         @Override
-        public double MAX_SPEED_METERS_PER_SECOND() {
+        public double MAX_SPEED_ROTATIONS_PER_SECOND() {
             return 1.0;
         }
 
         @Override
-        public double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED() {
+        public double MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED() {
             return 0.5;
         }
 

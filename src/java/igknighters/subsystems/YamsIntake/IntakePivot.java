@@ -10,6 +10,8 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -45,13 +47,13 @@ public class IntakePivot extends SubsystemBase {
                             Robot.consts.intake().kPivot().kP(),
                             Robot.consts.intake().kPivot().kI(),
                             Robot.consts.intake().kPivot().kD(),
-                            DegreesPerSecond.of(
-                                    Robot.consts.intake().kPivot().MAX_SPEED_METERS_PER_SECOND()),
-                            DegreesPerSecondPerSecond.of(
+                            RotationsPerSecond.of(
+                                    Robot.consts.intake().kPivot().MAX_SPEED_ROTATIONS_PER_SECOND()),
+                            RotationsPerSecondPerSecond.of(
                                     Robot.consts
                                             .intake()
                                             .kPivot()
-                                            .MAX_ACCELERATION_METERS_PER_SECOND_SQUARED()))
+                                            .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED()))
                     .withSimClosedLoopController(
                             10,
                             Robot.consts.intake().kPivot().kI(),

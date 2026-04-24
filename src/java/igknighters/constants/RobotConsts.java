@@ -360,9 +360,9 @@ public abstract class RobotConsts {
 
         double STOWED_ANGLE_DEGREES();
 
-        double MAX_SPEED_METERS_PER_SECOND();
+        double MAX_SPEED_ROTATIONS_PER_SECOND();
 
-        double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED();
+        double MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED();
 
         double ENCODER_OFFSET();
 
