@@ -1,5 +1,7 @@
 package igknighters.subsystems.YamsIntake;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,15 +18,17 @@ public class YamIntake {
 
     public Command targetState(YamIntakeState state) {
         return Commands.parallel(
-                this.pivot.targetAngle(state.pivotAngle),
-                this.rollers.targetVelocity(state.rollerVelocity));
+                        this.pivot.targetAngle(state.pivotAngle),
+                        this.rollers.targetVelocity(state.rollerVelocity))
+                .withName("TARGET STATE: PIVOT ANGLE: " + state.pivotAngle.in(Degrees));
     }
 
     public Command jorkIntake() {
         return Commands.sequence(
                         targetState(YamIntakeState.DEPLOYED).withTimeout(1),
                         targetState(YamIntakeState.STOWED).withTimeout(1))
-                .repeatedly();
+                .repeatedly()
+                .withName("JORK INTAKE");
     }
 
     public Angle getPivotAngle() {

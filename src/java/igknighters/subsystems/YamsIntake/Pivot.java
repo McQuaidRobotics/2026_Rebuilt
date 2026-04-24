@@ -8,7 +8,7 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -37,15 +37,46 @@ public class Pivot extends SubsystemBase {
 
     private SmartMotorControllerConfig smcConfig =
             new SmartMotorControllerConfig(this)
-                    .withControlMode(ControlMode.CLOSED_LOOP)
+                    
+                .with
+                .withControlMode(ControlMode.CLOSED_LOOP)
+
                     // Feedback Constants (PID Constants)
                     .withClosedLoopController(
-                            50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+                            Robot.consts.intake().kPivot().kP(),
+                            Robot.consts.intake().kPivot().kI(),
+                            Robot.consts.intake().kPivot().kD(),
+                            DegreesPerSecond.of(
+                                    Robot.consts.intake().kPivot().MAX_SPEED_METERS_PER_SECOND()),
+                            DegreesPerSecondPerSecond.of(
+                                    Robot.consts
+                                            .intake()
+                                            .kPivot()
+                                            .MAX_ACCELERATION_METERS_PER_SECOND_SQUARED()))
                     .withSimClosedLoopController(
-                            50, 0, 0, DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+                            Robot.consts.intake().kPivot().kP(),
+                            Robot.consts.intake().kPivot().kI(),
+                            Robot.consts.intake().kPivot().kD(),
+                            DegreesPerSecond.of(
+                                    Robot.consts.intake().kPivot().MAX_SPEED_METERS_PER_SECOND()),
+                            DegreesPerSecondPerSecond.of(
+                                    Robot.consts
+                                            .intake()
+                                            .kPivot()
+                                            .MAX_ACCELERATION_METERS_PER_SECOND_SQUARED()))
                     // Feedforward Constants
-                    .withFeedforward(new ArmFeedforward(0, 0, 0))
-                    .withSimFeedforward(new ArmFeedforward(0, 0, 0))
+                    .withFeedforward(
+                            new ArmFeedforward(
+                                    Robot.consts.intake().kPivot().kS(),
+                                    0,
+                                    Robot.consts.intake().kPivot().kV(),
+                                    Robot.consts.intake().kPivot().kA()))
+                    .withSimFeedforward(
+                            new ArmFeedforward(
+                                    Robot.consts.intake().kPivot().kS(),
+                                    0,
+                                    Robot.consts.intake().kPivot().kV(),
+                                    Robot.consts.intake().kPivot().kA()))
                     // Telemetry name and verbosity level
                     .withTelemetry("Intake Pivot Motor", TelemetryVerbosity.HIGH)
                     // Gearing from the motor rotor to final shaft.
@@ -63,12 +94,13 @@ public class Pivot extends SubsystemBase {
                                     .INVERTED()
                                     .equals(InvertedValue.Clockwise_Positive))
                     .withIdleMode(MotorMode.BRAKE)
-                    .withStatorCurrentLimit(Amps.of(40))
+                    .withStatorCurrentLimit(
+                            Amps.of(Robot.consts.intake().kPivot().STATOR_CURRENT_LIMIT()))
                     .withClosedLoopRampRate(Seconds.of(0.25))
                     .withOpenLoopRampRate(Seconds.of(0.25));
 
     // Vendor motor controller object
-    private TalonFX pivotMotor = new TalonFX(4);
+    private TalonFX pivotMotor = new TalonFX(Robot.consts.intake().kPivot().MOTOR_ID());
 
     // Create our SmartMotorController from our Spark and config with the NEO.
     private SmartMotorController sparkSmartMotorController =
@@ -85,12 +117,13 @@ public class Pivot extends SubsystemBase {
                             Degrees.of(Robot.consts.intake().kPivot().MIN_ANGLE_DEGREES()),
                             Degrees.of(Robot.consts.intake().kPivot().MAX_ANGLE_DEGREES()))
                     // Starting position is where your arm starts
-                    .withStartingPosition(Degrees.of(0))
+                    .withStartingPosition(
+                            Degrees.of(Robot.consts.intake().kPivot().STOWED_ANGLE_DEGREES()))
                     // Length and mass of your arm for sim.
-                    .withLength(Feet.of(1))
+                    .withLength(Meters.of(Robot.consts.intake().kPivot().LENGTH_METERS()))
                     .withMass(Pounds.of(1))
                     // Telemetry name and verbosity for the arm.
-                    .withTelemetry("Visualizers/Arm", TelemetryVerbosity.HIGH);
+                    .withTelemetry("PivotArm", TelemetryVerbosity.HIGH);
 
     // Arm Mechanism
     private Arm arm = new Arm(armCfg);
