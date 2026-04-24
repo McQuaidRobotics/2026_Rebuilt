@@ -15,6 +15,7 @@ import igknighters.commands.SwerveCommands;
 import igknighters.commands.Wayfinder;
 import igknighters.constants.DrivingSharedState;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.YamsIntake.YamIntakeState;
 import igknighters.subsystems.intake.IntakeState;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -135,10 +136,8 @@ public class DriverController {
             this.A.onTrue(IndexerCommands.dispense(indexer));
             this.B.onTrue(IndexerCommands.justStop(indexer));
         } else if (debugType == DebugType.INTAKE) {
-            this.A.whileTrue(IntakeCommands.holdAtIntake(subsystems.intake));
-            this.B.whileTrue(IntakeCommands.jorkIt(subsystems.intake));
-            this.X.whileTrue(IntakeCommands.slightJorkIntake(subsystems.intake));
-            this.Y.onTrue(IntakeCommands.toggleHoldState(subsystems.intake));
+            this.A.whileTrue(subsystems.intake.targetState(YamIntakeState.DEPLOYED));
+            this.B.whileTrue(subsystems.intake.targetState(YamIntakeState.STOWED));
         } else {
             System.out.println("UNKNOWN DEBUG TYPE: " + debugType);
             throw new IllegalArgumentException("UNKNOWN DEBUG TYPE: " + debugType);
@@ -151,18 +150,15 @@ public class DriverController {
 
     public void bind(final Subsystems subsystems) {
         var swerve = subsystems.swerve;
-        var intake = subsystems.intake;
 
-        this.LT.whileTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+        this.LT.whileTrue(subsystems.intake.targetState(YamIntakeState.DEPLOYED));
         this.RT
                 .whileTrue(HigherOrderCommands.rapidFireStream(subsystems))
                 .onFalse(HigherOrderCommands.IdleShooter(subsystems));
         this.DPR.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
         this.RB.whileTrue(HigherOrderCommands.forceDispense(subsystems));
-        this.LB.whileTrue(IntakeCommands.intakeWhileSlightJorking(intake));
+        this.LB.whileTrue(subsystems.intake.jorkIntake());
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
-        this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
-        this.Y.onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.FULL_STOW));
         this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
         this.A.and(this.B).whileTrue(Wayfinder.driveToSafeSpot(swerve));
     }

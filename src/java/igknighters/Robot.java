@@ -36,6 +36,8 @@ import igknighters.constants.SecondBotRobotConsts;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
+import igknighters.subsystems.YamsIntake.FullIntake;
+import igknighters.subsystems.YamsIntake.YamIntake;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.Intake;
@@ -162,7 +164,6 @@ public class Robot extends LoggedRobot {
                 routines::PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER);
         autoChooser.addRoutine("OP RIGHT", routines::OP_RIGHT);
         autoChooser.addRoutine("OP_LEFT", routines::OP_LEFT);
-        autoChooser.addRoutine("SQUOVAL", routines::SQUOVAL);
 
         testChooser.addRoutine("Test Auto", routines::TEST);
 
@@ -241,7 +242,7 @@ public class Robot extends LoggedRobot {
                         new Led(90, 2),
                         new Shooter(),
                         new Indexer(),
-                        new Intake(),
+                        new FullIntake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
         publishCommandsAndSubystems(subsystems);
@@ -269,7 +270,7 @@ public class Robot extends LoggedRobot {
                         new Led(90, 2),
                         new Shooter(),
                         new Indexer(),
-                        new Intake(),
+                        new FullIntake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
         pose_pred = new RobotPosePredictor(subsystems.swerve);

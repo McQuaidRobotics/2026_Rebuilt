@@ -1,0 +1,21 @@
+package igknighters.subsystems.YamsIntake;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+
+public class YamIntake {
+    public final Pivot pivot;
+    public final Rollers rollers;
+
+    public YamIntake() {
+        this.pivot = new Pivot();
+        this.rollers = new Rollers();
+    }
+
+    public Command goToState(YamIntakeState state) {
+        return Commands.parallel(
+            this.pivot.targetAngle(state.pivotAngle),
+            this.rollers.targetVelocity(state.rollerVelocity)
+        );
+    }
+}

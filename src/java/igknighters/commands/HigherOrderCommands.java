@@ -15,7 +15,7 @@ public class HigherOrderCommands {
     public static Command shootTillEmpty(Subsystems subsystems, double timeout) {
         return Commands.parallel(
                         rapidFireStream(subsystems),
-                        IntakeCommands.largeJorkIntake(subsystems.intake))
+                        subsystems.intake.jorkIntake())
                 .withTimeout(timeout)
                 .andThen(Commands.print("ALL BALLS SHOT CONTINUING")); // this is a placeholder for
         // IndexerCommands.isBallPresent()
@@ -99,7 +99,7 @@ public class HigherOrderCommands {
     public static Command hippoShoot(Subsystems subsystems) {
         return Commands.parallel(
                 rapidFireStream(subsystems),
-                IntakeCommands.intakeWhileSlightJorking(subsystems.intake));
+                subsystems.intake.jorkIntake());
     }
 
     public Supplier<Pose2d> poseSupplier(Subsystems subsystems) {

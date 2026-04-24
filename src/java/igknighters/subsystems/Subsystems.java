@@ -2,13 +2,12 @@ package igknighters.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.commands.IndexerCommands;
-import igknighters.commands.IntakeCommands;
 import igknighters.commands.Shooter.AimingCommands;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
+import igknighters.subsystems.YamsIntake.FullIntake;
+import igknighters.subsystems.YamsIntake.YamIntakeState;
 import igknighters.subsystems.indexer.Indexer;
-import igknighters.subsystems.intake.AbstractIntake;
-import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
@@ -19,7 +18,7 @@ public class Subsystems {
     public final Led led;
     public final Shooter shooter;
     public final Indexer indexer;
-    public final AbstractIntake intake;
+    public final FullIntake intake;
     public final Luma luma;
     public final SubsystemBase[] lockedResources;
 
@@ -29,7 +28,7 @@ public class Subsystems {
             Led led,
             Shooter shooter,
             Indexer indexer,
-            Intake intake,
+            FullIntake intake,
             Luma luma) {
         this.swerve = swerve;
         this.vision = vision;
@@ -42,7 +41,9 @@ public class Subsystems {
                 new SubsystemBase[] {swerve, shooter, indexer, intake, luma, vision, led};
 
         this.indexer.setDefaultCommand(IndexerCommands.jorkIt(indexer).repeatedly());
-        this.intake.setDefaultCommand(IntakeCommands.holdAtStow(intake));
+
+        this.intake.setDefaultCommand(intake.targetState(YamIntakeState.STOWED));
+
         this.shooter.setDefaultCommand(AimingCommands.idleCommand(shooter));
     }
 }

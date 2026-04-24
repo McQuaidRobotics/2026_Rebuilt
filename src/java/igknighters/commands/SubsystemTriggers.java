@@ -190,7 +190,6 @@ public class SubsystemTriggers {
             Supplier<Pose2d> poseSupplier) {
         Led led = subsystems.led;
         Swerve swerve = subsystems.swerve;
-        AbstractIntake intake = subsystems.intake;
         Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
 
         Trigger trenchProtection = new Trigger(() -> DrivingSharedState.getInstance().underTrench);
