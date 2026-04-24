@@ -24,7 +24,6 @@ import igknighters.commands.SwerveCommands;
 import igknighters.constants.RobotConsts;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.YamsIntake.YamIntakeState;
-import igknighters.subsystems.intake.IntakeState;
 import igknighters.subsystems.shooter.ShooterState;
 import java.util.function.Supplier;
 
@@ -90,6 +89,7 @@ public class AutoRoutines extends AutoCommands {
 
         return routine;
     }
+
     public AutoRoutine PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER() {
         AutoRoutine routine =
                 autoFactory.newRoutine("Pass to Self Right with Depot and Human Player");
@@ -179,7 +179,10 @@ public class AutoRoutines extends AutoCommands {
                                                                         .MIN_ANGLE_DEGREES())))
                                         .withTimeout(2),
                                 // shooter tested
-                                subsystems.intake.targetState(YamIntakeState.DEPLOYED).withTimeout(4.0),
+                                subsystems
+                                        .intake
+                                        .targetState(YamIntakeState.DEPLOYED)
+                                        .withTimeout(4.0),
                                 // feed ball here
                                 Commands.parallel(
                                                 ShooterCommands.targetState(
@@ -307,7 +310,9 @@ public class AutoRoutines extends AutoCommands {
 
         trajectory.atTime("HIPPO").onTrue(HigherOrderCommands.hippoShoot(subsystems));
 
-        trajectory.atTime("JUST INTAKE").onTrue(subsystems.intake.targetState(YamIntakeState.DEPLOYED));
+        trajectory
+                .atTime("JUST INTAKE")
+                .onTrue(subsystems.intake.targetState(YamIntakeState.DEPLOYED));
 
         trajectory
                 .atTime("PROTECT INTAKE")
@@ -357,7 +362,9 @@ public class AutoRoutines extends AutoCommands {
         // better then none
         meanTrajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
         // start preserving balls for shots instead of just stealing to our side
-        meanTrajectory.atTime("INTAKE").onTrue(subsystems.intake.targetState(YamIntakeState.DEPLOYED));
+        meanTrajectory
+                .atTime("INTAKE")
+                .onTrue(subsystems.intake.targetState(YamIntakeState.DEPLOYED));
         // back on our side so shoot gathered balls + human player station
         meanTrajectory.atTime("SCORE").onTrue(HigherOrderCommands.hippoShoot(subsystems));
         return routine;
@@ -572,7 +579,8 @@ public class AutoRoutines extends AutoCommands {
                                         HigherOrderCommands.shootTillEmpty(subsystems, 5),
                                         Commands.print("FINISHED EMPTYING HOPPER"),
                                         Commands.parallel(
-                                                subsystems.intake.targetState(YamIntakeState.DEPLOYED),
+                                                subsystems.intake.targetState(
+                                                        YamIntakeState.DEPLOYED),
                                                 Commands.sequence(
                                                         subsystems.shooter.runOnce(
                                                                 () ->

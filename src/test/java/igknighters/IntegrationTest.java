@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.YamsIntake.YamIntakeState;
-import igknighters.subsystems.intake.IntakeState;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -126,10 +125,7 @@ public class IntegrationTest {
                         + subsystems.intake.getRollerVelocity().in(RPM));
 
         boolean intakeMoved =
-                !subsystems.intake.isAt(
-                        YamIntakeState.DEPLOYED,
-                        RPM.of(100.0),
-                        Degrees.of(10.0));
+                !subsystems.intake.isAt(YamIntakeState.DEPLOYED, RPM.of(100.0), Degrees.of(10.0));
         System.out.println("Intake Moved from Stowed: " + intakeMoved);
         assertTrue(intakeMoved, "Intake should have moved away from stowed position");
 

@@ -15,7 +15,6 @@ import igknighters.commands.Wayfinder;
 import igknighters.constants.DrivingSharedState;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.YamsIntake.YamIntakeState;
-import igknighters.subsystems.intake.IntakeState;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 

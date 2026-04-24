@@ -22,7 +22,6 @@ import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.intake.AbstractIntake;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
 import igknighters.subsystems.swerve.Swerve;

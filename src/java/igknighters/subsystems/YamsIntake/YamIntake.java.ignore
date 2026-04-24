@@ -14,8 +14,7 @@ public class YamIntake {
 
     public Command goToState(YamIntakeState state) {
         return Commands.parallel(
-            this.pivot.targetAngle(state.pivotAngle),
-            this.rollers.targetVelocity(state.rollerVelocity)
-        );
+                this.pivot.targetAngle(state.pivotAngle),
+                this.rollers.targetVelocity(state.rollerVelocity));
     }
 }
