@@ -189,8 +189,7 @@ public class SubsystemConstants {
         public static class kFlywheels {
             public static final int LEADER_MOTOR_ID = 23;
             public static final int FOLLOWER_MOTOR_ID = 22;
-            // WHEEL_RADIUS_METERS removed to avoid duplication with Robot.consts
-            // Use Robot.consts.shooter().kFlywheels().WHEEL_RADIUS_METERS() instead.
+            public static final double WHEEL_RADIUS_METERS = 0.05; // 5 cm
             public static final double GEAR_RATIO = 1.0;
             public static final double MOMENT_OF_INERTIA_KG_M2 = 0.02;
             public static final double MAX_SPEED_RPM = 5000.0;
@@ -224,6 +223,9 @@ public class SubsystemConstants {
             public static final int MOTOR_ID = 24;
             public static final int CANCODER_ID = 25;
             public static final double CANCODER_OFFSET_ROTATIONS = -0.747314453125;
+
+            public static final double xMeterOffset = 7 * Conv.INCHES_TO_METERS;
+            public static final double yMeterOffset = 7 * Conv.INCHES_TO_METERS;
             public static final double GEAR_RATIO = 16.2;
             public static final double MAX_ANGLE_DEGREES = 270.0;
             public static final double MIN_ANGLE_DEGREES = -90.0;

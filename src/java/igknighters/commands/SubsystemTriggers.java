@@ -11,25 +11,28 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import igknighters.commands.LEDCommands.LEDSection;
-import igknighters.commands.Shooter.AimingCommands;
-import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.commands.teleop.AutoRotateOnBump;
-import igknighters.commands.teleop.SlowedDownDrivingWhileShooting;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
-import igknighters.constants.ShootInformation;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.intake.AbstractIntake;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
 import igknighters.subsystems.swerve.Swerve;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+/**
+ * Manages high-level robot triggers and mode-based command bindings. This class is responsible for
+ * wiring up sensor-based triggers (like bumper collisions), mode changes (Teleop, Auto, Disabled),
+ * and visual feedback via LEDs.
+ *
+ * <p>It provides a centralized place to define how the robot should react to different states and
+ * inputs throughout its lifecycle.
+ */
 public class SubsystemTriggers {
+    // Standard WPILib mode triggers
     private final Trigger disabled = RobotModeTriggers.disabled();
     private final Trigger autonomous = RobotModeTriggers.autonomous();
     private final Trigger teleop = RobotModeTriggers.teleop();
@@ -38,12 +41,12 @@ public class SubsystemTriggers {
     private final NetworkTable dashboardTable =
             NetworkTableInstance.getDefault().getTable("dashboard");
 
-    Command disabledLED;
-
-    Command autoLED;
-
-    Command teleopLED;
-
+    /**
+     * Creates a trigger that returns true only once after it is checked. Useful for one-shot
+     * actions that should only happen the first time a condition is met.
+     *
+     * @return A one-shot {@link Trigger}.
+     */
     public static Trigger falseOnce() {
         return new Trigger(
                 new BooleanSupplier() {
@@ -56,85 +59,15 @@ public class SubsystemTriggers {
                             ret = true;
                         }
                     }
-                    ;
                 });
     }
 
-    public static Command runLEDBASEDONSTATE(Led led, boolean isDisabled, boolean isAutonomous) {
-        // should be Magenta, Cyan, Yellow if all three are lit then it should shoot
-
-        if (isDisabled) {
-            return LEDCommands.run(led, LEDPattern.solid(Color.kRed));
-        } else if (isAutonomous) {
-            LEDSection possibleShot;
-            LEDSection atTarget;
-            LEDSection beingControlled;
-            LEDSection autonomous =
-                    new LEDSection(1, 0, LedUtil.makeRainbow(255, 128), 20, "AUTONOMOUS RAINBOW");
-
-            if (ShootInformation.getInstance().shotPosible().getAsBoolean()) {
-                possibleShot =
-                        new LEDSection(
-                                0, 0, LEDPattern.solid(Color.kMagenta), 20, "IS POSSIBLE SHOT");
-            } else {
-                possibleShot =
-                        new LEDSection(
-                                0, 0, LEDPattern.solid(Color.kBlack), 20, "IS NOT POSSIBLE SHOT");
-            }
-
-            if (ShootInformation.getInstance().getAtTarget()) {
-                atTarget = new LEDSection(0, 20, LEDPattern.solid(Color.kCyan), 20, "AT TARGET");
-            } else {
-                atTarget =
-                        new LEDSection(0, 20, LEDPattern.solid(Color.kBlack), 20, "NOT AT TARGET");
-            }
-
-            if (ShootInformation.getInstance().beingControlledTrigger().getAsBoolean()) {
-                beingControlled =
-                        new LEDSection(
-                                0, 40, LEDPattern.solid(Color.kYellow), 20, "BEING CONTROLLED");
-            } else {
-                beingControlled =
-                        new LEDSection(
-                                0, 40, LEDPattern.solid(Color.kBlack), 20, "NOT BEING CONTROLLED");
-            }
-
-            return LEDCommands.run(led, autonomous, possibleShot, atTarget, beingControlled);
-        } else {
-            LEDSection possibleShot;
-            LEDSection atTarget;
-            LEDSection beingControlled;
-            LEDSection enabled =
-                    new LEDSection(1, 0, LEDPattern.solid(Color.kGreen), 40, "ENABLED");
-            if (ShootInformation.getInstance().getAtTarget()) {
-                atTarget = new LEDSection(0, 20, LEDPattern.solid(Color.kCyan), 20, "AT TARGET");
-            } else {
-                atTarget =
-                        new LEDSection(0, 20, LEDPattern.solid(Color.kBlack), 20, "NOT AT TARGET");
-            }
-            if (ShootInformation.getInstance().beingControlledTrigger().getAsBoolean()) {
-                beingControlled =
-                        new LEDSection(
-                                0, 40, LEDPattern.solid(Color.kYellow), 20, "BEING CONTROLLED");
-            } else {
-                beingControlled =
-                        new LEDSection(
-                                0, 40, LEDPattern.solid(Color.kBlack), 20, "NOT BEING CONTROLLED");
-            }
-            if (ShootInformation.getInstance().shotPosible().getAsBoolean()) {
-                possibleShot =
-                        new LEDSection(
-                                0, 0, LEDPattern.solid(Color.kMagenta), 20, "IS POSSIBLE SHOT");
-            } else {
-                possibleShot =
-                        new LEDSection(
-                                0, 0, LEDPattern.solid(Color.kBlack), 20, "IS NOT POSSIBLE SHOT");
-            }
-
-            return LEDCommands.run(led, enabled, possibleShot, atTarget, beingControlled);
-        }
-    }
-
+    /**
+     * Parses a 3D pose from NetworkTables for use in dashboard-driven commands.
+     *
+     * @param path The base path in the dashboard table.
+     * @return The parsed {@link Pose3d}.
+     */
     public Pose3d getPoseFromString(String path) {
         double x = dashboardTable.getEntry(path + "X").getDouble(0.0) * Conv.FEET_TO_METERS;
         double y = dashboardTable.getEntry(path + "Y").getDouble(0.0) * Conv.FEET_TO_METERS;
@@ -142,25 +75,29 @@ public class SubsystemTriggers {
         return new Pose3d(x, y, 0, new Rotation3d(0, 0, theta));
     }
 
+    /**
+     * Sets up triggers for operator-specific dashboard controls.
+     *
+     * @param subsystems The robot subsystems.
+     */
     public void SetupOperatorController(Subsystems subsystems) {
         Swerve swerve = subsystems.swerve;
 
         Trigger moveToTrigger =
                 new Trigger(() -> dashboardTable.getEntry("robot/moveTrigger").getBoolean(false));
-        Trigger passTrigger =
-                new Trigger(() -> dashboardTable.getEntry("robot/passTrigger").getBoolean(false));
 
-        passTrigger.onTrue(
-                Commands.runOnce(
-                        () -> ShootInformation.getInstance().useOperatorControlLocation(true)));
-        passTrigger.onFalse(
-                Commands.runOnce(
-                        () -> ShootInformation.getInstance().useOperatorControlLocation(false)));
+        // When the move trigger is pressed on the dashboard, drive to the specified waypoint.
         moveToTrigger.whileTrue(
-                Repulsor.moveWithRepulsor(
+                Wayfinder.driveToTarget(
                         swerve, getPoseFromString("robot/moveWaypoint").toPose2d()));
     }
 
+    /**
+     * Returns the appropriate LED command based on the current robot mode.
+     *
+     * @param led The LED subsystem.
+     * @return A command for the current mode's LED pattern.
+     */
     public Command getLEDCommandByMode(Led led) {
         return Commands.either(
                 teleopLED(led), Commands.either(disabledLED(led), autoLED(led), disabled), teleop);
@@ -184,59 +121,42 @@ public class SubsystemTriggers {
                 .withName("DisabledRed");
     }
 
+    /**
+     * Initializes all robot triggers, combining subsystem states, mode changes, and driver inputs.
+     *
+     * @param subsystems The robot subsystems.
+     * @param driverController The driver's controller.
+     * @param poseSupplier A supplier for the robot's current pose.
+     */
     public void SetupTriggers(
             Subsystems subsystems,
             DriverController driverController,
             Supplier<Pose2d> poseSupplier) {
         Led led = subsystems.led;
         Swerve swerve = subsystems.swerve;
-        AbstractIntake intake = subsystems.intake;
-        Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
 
-        Trigger trenchProtection = new Trigger(() -> DrivingSharedState.getInstance().underTrench);
+        // Triggered when the robot is inside a "bump" zone on the field.
+        Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
 
         SetupOperatorController(subsystems);
 
-        // onBump.and(teleop)
-        //        .whileTrue(
-        //                Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true))
-        //                        .andThen(new AutoRotateOnBump(swerve, driverController)));
-        // onBump.onFalse(Commands.runOnce(() ->
-        // DrivingSharedState.getInstance().setOnBump(false)));
-
+        // When on a bump during teleop, automatically adjust the robot's rotation.
         onBump.and(teleop)
                 .whileTrue(
                         Commands.sequence(
                                 Commands.runOnce(
                                         () -> DrivingSharedState.getInstance().setOnBump(true)),
                                 new AutoRotateOnBump(swerve, driverController)));
+
+        // Clear the bump state when leaving the zone.
         onBump.onFalse(Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(false)));
 
+        // Mode-based LED patterns
         falseOnce().and(disabled).whileTrue(disabledLED(led));
-
         autonomous.onTrue(autoLED(led));
-
         teleop.whileTrue(teleopLED(led));
 
-        // Get the AbleToShootSharedState singleton
-        ShootInformation ableToShootState = ShootInformation.getInstance();
-
-        // Bind LED commands to the canShootTrigger
-        trenchProtection
-                .onTrue(LEDCommands.run(led, LEDPattern.solid(Color.kBlue)))
-                .onFalse(getLEDCommandByMode(led));
-        ableToShootState
-                .canShoot()
-                .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kMagenta)))
-                .onFalse(getLEDCommandByMode(led));
-
-        ableToShootState
-                .beingControlledTrigger()
-                .and(teleop)
-                .and(() -> AimingCommands.getShotType() == ShooterCommands.shotType.SHOT)
-                .whileTrue(new SlowedDownDrivingWhileShooting(swerve, driverController));
-
-        // rumble
+        // Provide haptic feedback (rumble) when a vision target is successfully tracked.
         shouldRumble =
                 new Trigger(() -> subsystems.vision.timeSinceLastSample() < 0.1)
                         .and(falseOnce())

@@ -21,26 +21,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import igknighters.commands.IndexerCommands;
-import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.commands.SubsystemTriggers;
-import igknighters.commands.autos.AutoRoutines;
 import igknighters.commands.teleop.TeleopSwerveWithDetune;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
-import igknighters.constants.GeminiRobotConsts;
-import igknighters.constants.RobotConsts;
-import igknighters.constants.RobotIdentity;
-import igknighters.constants.SecondBotRobotConsts;
+import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.indexer.Indexer;
-import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
-import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.FuelSim;
 import igknighters.util.RobotPosePredError;
@@ -59,39 +50,66 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+/**
+ * The main robot class that extends LoggedRobot for AdvantageKit integration. This class handles
+ * the robot's lifecycle, subsystem initialization, command binding, and periodic updates.
+ *
+ * <p>It serves as the central hub for all robot functionality and coordination between subsystems
+ * and commands.
+ */
 public class Robot extends LoggedRobot {
 
+    // --- Commands & Scheduling ---
     private Command m_autonomousCommand;
-
-    public static RobotConsts consts;
     private AutoFactory autoFactory;
+
+    /** Chooser for autonomous routines. */
     public final AutoChooser autoChooser = new AutoChooser();
+
+    /** Chooser for test routines. */
     public final AutoChooser testChooser = new AutoChooser();
-    double i = 0;
+
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
+
+    // --- State Predictors & Logging ---
+    /** Global robot pose predictor. */
     public static RobotPosePredictor pose_pred;
+
+    /** Predictor for turret pose relative to the field. */
     public static TurretPosePredictor turret_pred = new TurretPosePredictor();
+
+    /** Error tracking for pose prediction. */
     public static RobotPosePredError pose_pred_error = new RobotPosePredError();
+
+    /** Error tracking for turret pose prediction. */
     public static TurretPosePredError turret_pred_error = new TurretPosePredError();
 
+    private Telemetry logger;
+
+    // --- Controllers & Subsystems ---
     private final DriverController driverController = new DriverController(0);
 
+    /** Central container for all robot subsystems. */
     public final Subsystems subsystems;
 
+    // --- Simulation ---
     private FuelSim fuelSim;
     private double lastShotTime = 0.0;
 
+    // --- Configuration & Tunables ---
     private final boolean kUseLimelight = true;
-
-    private Telemetry logger;
     TunableDouble detune = TunableValues.getDouble("Tunables/Detune", 1.0);
     TunableDouble targetingP = TunableValues.getDouble("Tunables/TargetingP", 0.07);
     TunableDouble targetingI = TunableValues.getDouble("Tunables/TargetingI", 0.00);
     TunableDouble targetingD = TunableValues.getDouble("Tunables/TargetingD", 0.00);
 
+    /**
+     * Configures logging for command lifecycle events (Initialize, Interrupt, Finish). This helps
+     * in debugging command behavior through logs.
+     */
     public void setUpCommandLogging() {
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             scheduler.onCommandInitialize(
                     command ->
                             Log.log(
@@ -128,6 +146,11 @@ public class Robot extends LoggedRobot {
         }
     }
 
+    /**
+     * Publishes command and subsystem data to SmartDashboard for visibility.
+     *
+     * @param subsystems The robot subsystems to publish.
+     */
     public void publishCommandsAndSubystems(Subsystems subsystems) {
         SmartDashboard.putData(CommandScheduler.getInstance());
         for (var subsystem : subsystems.lockedResources) {
@@ -135,41 +158,23 @@ public class Robot extends LoggedRobot {
         }
     }
 
-    public void setUpRobotConsts() {
-
-        // THE IDS WILL BE WRONG SINCE SN IS WRONG WILL DEFAULT TO SECOND BOT
-        if (RobotIdentity.isGemini()) {
-            consts = new GeminiRobotConsts();
-        } else if (RobotIdentity.isSecondBot()) {
-            consts = new SecondBotRobotConsts();
-        } else if (Robot.isReal()) {
-            throw new IllegalStateException(
-                    "Unknown robot identity ENSURE SERIAL NUMBERS MATCH"); // only problem irl
-        } else {
-            consts = new GeminiRobotConsts(); // in sim with unknown sn we should pick something
-        }
-    }
-
+    /**
+     * Initializes the autonomous routine factories and choosers.
+     *
+     * @param subsystems The robot subsystems needed for auto factory creation.
+     */
     public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsystems.swerve.createAutoFactory();
-        final var routines = new AutoRoutines(subsystems, autoFactory, consts);
-        autoChooser.addRoutine("Right Orbit", routines::orbitRight);
-        autoChooser.addRoutine("Left Orbit", routines::ORBIT_LEFT);
-        autoChooser.addRoutine("Center Depot", routines::centerPreload);
-        autoChooser.addRoutine("LEFT BUMP PASS TO SELF", routines::BUMP_PASS_TO_SELF_LEFT);
-        autoChooser.addRoutine(
-                "Pass to Self Right with Depot and Human Player",
-                routines::PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER);
-        autoChooser.addRoutine("OP RIGHT", routines::OP_RIGHT);
-        autoChooser.addRoutine("OP_LEFT", routines::OP_LEFT);
-        autoChooser.addRoutine("SQUOVAL", routines::SQUOVAL);
-
-        testChooser.addRoutine("Test Auto", routines::TEST);
 
         SmartDashboard.putData("AUTO CHOOSER", autoChooser);
         SmartDashboard.putData("TEST CHOOSER", testChooser);
     }
 
+    /**
+     * Configures the swerve drive subsystem, including default commands and telemetry.
+     *
+     * @param subsystems The robot subsystems container.
+     */
     public void setUpSwerve(Subsystems subsystems) {
         subsystems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsystems.swerve, driverController, 1.0));
@@ -178,17 +183,10 @@ public class Robot extends LoggedRobot {
         subsystems.swerve.registerTelemetry(logger::telemeterize);
     }
 
-    public void setUpTest(Subsystems subsystems) {
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - STOP",
-                IndexerCommands.justStop(subsystems.indexer));
-        SmartDashboard.putData(
-                "Commands/Spindexer/Spindexer - DISPENSE BALLS",
-                IndexerCommands.dispense(subsystems.indexer));
-    }
-
+    /**
+     * Initializes AdvantageKit logging and metadata. Configures data receivers for WPILOG and NT4.
+     */
     public void setUpAdvantageScope() {
-
         // Record metadata
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
         Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
@@ -230,8 +228,8 @@ public class Robot extends LoggedRobot {
         Logger.start();
     }
 
+    /** Default constructor for the Robot class. Initializes all systems and subsystems. */
     public Robot() {
-        setUpRobotConsts();
         setUpAdvantageScope();
         setUpCommandLogging();
         subsystems =
@@ -239,14 +237,10 @@ public class Robot extends LoggedRobot {
                         new Swerve(false),
                         new LimeLightVision(),
                         new Led(90, 2),
-                        new Shooter(),
-                        new Indexer(),
-                        new Intake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
         publishCommandsAndSubystems(subsystems);
         setUpAutos(subsystems);
-        setUpTest(subsystems);
         bindDriverController();
 
         pose_pred = new RobotPosePredictor(subsystems.swerve);
@@ -258,8 +252,13 @@ public class Robot extends LoggedRobot {
         }
     }
 
+    /**
+     * Constructor for the Robot class with an option to disable swerve. Useful for testing specific
+     * subsystems in isolation.
+     *
+     * @param isSwerveDisabled True if the swerve drive should be disabled.
+     */
     public Robot(boolean isSwerveDisabled) {
-        setUpRobotConsts();
         setUpAdvantageScope();
         setUpCommandLogging();
         subsystems =
@@ -267,20 +266,22 @@ public class Robot extends LoggedRobot {
                         new Swerve(isSwerveDisabled),
                         new LimeLightVision(),
                         new Led(90, 2),
-                        new Shooter(),
-                        new Indexer(),
-                        new Intake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
         pose_pred = new RobotPosePredictor(subsystems.swerve);
         publishCommandsAndSubystems(subsystems);
         setUpAutos(subsystems);
-        setUpTest(subsystems);
         bindDriverController();
 
         subsystemTriggers.SetupTriggers(subsystems, driverController, poseSupplier());
     }
 
+    /**
+     * Calculates the 3D pose of the turret relative to the robot's center.
+     *
+     * @param turretAngleDegrees The current rotation of the turret in degrees.
+     * @return The Pose3d representing the turret's position and orientation.
+     */
     public Pose3d getTurretPose(double turretAngleDegrees) {
         // Assuming the turret is mounted at the center of the robot and has a fixed height
         double xMeterOffset = -0.1; // X offset from robot center to turret
@@ -293,16 +294,27 @@ public class Robot extends LoggedRobot {
                 new Rotation3d(0, 0, turretAngleDegrees * Math.PI / 180));
     }
 
+    /**
+     * Provides a supplier for the robot's current 2D pose from the swerve drive.
+     *
+     * @return A supplier that returns the current Pose2d.
+     */
     public Supplier<Pose2d> poseSupplier() {
         return () -> subsystems.swerve.getState().Pose;
     }
 
+    /**
+     * Calculates the 3D pose of the shooter hood relative to the robot's center.
+     *
+     * @param hoodAngleDegrees The current angle of the shooter hood.
+     * @return The Pose3d of the hood.
+     */
     public Pose3d getHoodPose(double hoodAngleDegrees) {
         double dx = 0.09; // X offset from turret center to hood
         double dy = 0.0; // Y offset from turret center to hood
         double dz = 0.12; // z offset from turret pivot to hood pivot
 
-        Pose3d turretPose = getTurretPose(-subsystems.shooter.getTurretAngleDegrees());
+        Pose3d turretPose = getTurretPose(0.0);
 
         Pose3d hoodPosition =
                 turretPose.transformBy(
@@ -315,6 +327,12 @@ public class Robot extends LoggedRobot {
         return hoodPosition;
     }
 
+    /**
+     * Checks if the robot is currently positioned under a trench or bump on the field. Used for
+     * driving logic and possibly avoiding collisions or adjusting vision.
+     *
+     * @return True if the robot is under a trench or bump.
+     */
     boolean underTrench() {
         Pose2d turretPredPose = turret_pred.getPredictedPose().get().toPose2d();
         Pose2d turretAccPose = subsystems.swerve.getState().Pose;
@@ -331,53 +349,27 @@ public class Robot extends LoggedRobot {
         boolean under1Acc = dx1Acc <= .5;
         boolean under2Acc = dx2Acc <= .5;
 
-        boolean isUnder = under1Pred || under2Pred || under1Acc || under2Acc;
-        return isUnder;
+        return under1Pred || under2Pred || under1Acc || under2Acc;
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-        // // THE COORDINATES LOOK WEIRD WHEN THERE ARE MULTIPLE FUEL, needs tuning
-        // Log.log(
-        //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
-        //         subsystems.luma.getClosestGamePiece());
+
+        // Update pose prediction
         pose_pred.setVelocitiesAndPose();
 
-        if (underTrench()) {
-            DrivingSharedState.getInstance().setUnderTrench(true);
-        } else {
-            DrivingSharedState.getInstance().setUnderTrench(false);
-        }
+        // Update trench state
+        DrivingSharedState.getInstance().setUnderTrench(underTrench());
+
+        // Log predictor states
         turret_pred.logTurretPose(
                 turret_pred.getTurretPoseFieldRelativeOffset(subsystems.swerve.getState().Pose));
         pose_pred_error.logPose(subsystems.swerve.getState().Pose);
         turret_pred_error.logPose(
                 turret_pred.getTurretPoseFieldRelativeOffset(subsystems.swerve.getState().Pose));
-        if (Robot.isReal() && !consts.disableAllLogs()) {
-            FieldVisualizer.getInstance()
-                    .updateTurret(
-                            subsystems.shooter.getTurretAngleDegrees(),
-                            subsystems.swerve.getState().Pose);
-            Logger.recordOutput(
-                    "componentPoses",
-                    new Pose3d[] {
-                        getTurretPose(subsystems.shooter.getTurretAngleDegrees()),
-                        getHoodPose(subsystems.shooter.getHoodAngleDegrees())
-                    });
-        } else {
-            FieldVisualizer.getInstance()
-                    .updateTurret(
-                            subsystems.shooter.getTurretAngleDegrees(),
-                            subsystems.swerve.getState().Pose);
-            Logger.recordOutput(
-                    "componentPoses",
-                    new Pose3d[] {
-                        getTurretPose(subsystems.shooter.getTurretAngleDegrees()),
-                        getHoodPose(subsystems.shooter.getHoodAngleDegrees())
-                    });
-        }
 
+        // Visualize poses in AdvantageScope
         Logger.recordOutput(
                 "zeroedPoses",
                 new Pose3d[] {
@@ -385,6 +377,7 @@ public class Robot extends LoggedRobot {
                     new Pose3d(0, 0, 0, new Rotation3d(0, 0.0, 0))
                 });
 
+        // Integrate vision measurements
         if (kUseLimelight) {
             var driveState = subsystems.swerve.getState();
             double headingDeg = driveState.Pose.getRotation().getDegrees();
@@ -393,22 +386,22 @@ public class Robot extends LoggedRobot {
                     subsystems.vision.getRobotPoseFromVision(headingDeg, omegaRps, 0, 0, 0, 0);
 
             if (currentPose != null) {
+                // Trusts vision rotation less than position. Needs tuning.
                 subsystems.swerve.addVisionMeasurement(
-                        currentPose,
-                        subsystems.vision
-                                .getLastTimeStamp()); // trusts vision rotation less. Needs tuning
-                // increase the std devs to trust vision less
-                if (!Robot.consts.limelightVision().disableVisionLogs()) {
+                        currentPose, subsystems.vision.getLastTimeStamp());
+
+                if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
                     Log.log("ROBOT/Subsystems/Vision/Null Pose", false);
                 }
             } else {
-                if (!Robot.consts.limelightVision().disableVisionLogs()) {
+                if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
                     Log.log("ROBOT/Subsystems/Vision/Null Pose", true);
                 }
             }
         }
     }
 
+    /** Binds commands to the driver controller. */
     public void bindDriverController() {
         driverController.bind(subsystems);
     }
@@ -419,12 +412,14 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().clearComposedCommands();
         subsystems.swerve.setDefaultCommand(
                 new TeleopSwerveWithDetune(subsystems.swerve, driverController, detune.value()));
+
+        // Sync shared state with tunables
         DrivingSharedState.getInstance().setDetune(detune.value());
         DrivingSharedState.getInstance().setKP(targetingP.value());
         DrivingSharedState.getInstance().setKI(targetingI.value());
         DrivingSharedState.getInstance().setKD(targetingD.value());
-        subsystems.vision.disableCameras();
 
+        subsystems.vision.disableCameras();
         bindDriverController();
     }
 
@@ -438,19 +433,12 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
-
         subsystems.vision.enableCameras(0);
         Command autoCommand = autoChooser.selectedCommand();
         if (fuelSim != null) {
             fuelSim.start();
         }
-        try {
-            scheduler.schedule(ShooterCommands.homeHood(subsystems.shooter));
-        } catch (Exception e) {
-            if (!Robot.consts.disableAllLogs()) {
-                Log.log("ROBOT/autonomousInit/HomeHoodScheduleFailed", e.toString());
-            }
-        }
+
         m_autonomousCommand = autoCommand;
         if (autoCommand != null) {
             scheduler.schedule(autoCommand);
@@ -477,17 +465,6 @@ public class Robot extends LoggedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        // Schedule a homing command for the hood when teleop starts so the hood is
-        // zeroed before driver control. This will be a no-op if the hood sensor is
-        // already triggered because homeHood handles the short-circuit case.
-        try {
-            scheduler.schedule(ShooterCommands.homeHood(subsystems.shooter));
-        } catch (Exception e) {
-            // Log but don't crash the robot if scheduling fails for any reason.
-            if (!Robot.consts.disableAllLogs()) {
-                Log.log("ROBOT/teleopInit/HomeHoodScheduleFailed", e.toString());
-            }
-        }
     }
 
     @Override
@@ -503,7 +480,9 @@ public class Robot extends LoggedRobot {
         if (fuelSim != null) {
             fuelSim.start();
         }
-        scheduler.schedule(autoCommand);
+        if (autoCommand != null) {
+            scheduler.schedule(autoCommand);
+        }
     }
 
     @Override
@@ -512,6 +491,11 @@ public class Robot extends LoggedRobot {
     @Override
     public void testExit() {}
 
+    /**
+     * Returns whether the robot is currently in test mode.
+     *
+     * @return True if in test mode.
+     */
     public static boolean isRobotTest() {
         return RobotModeTriggers.test().getAsBoolean();
     }
@@ -521,50 +505,34 @@ public class Robot extends LoggedRobot {
         if (fuelSim != null) {
             fuelSim.updateSim();
 
-            // Logic to launch fuel when dispensing and shooter is ready
+            // Example of how to integrate mechanism simulation with fuel simulation
             double currentTime = RobotController.getFPGATime() / 1.0e6;
-            if (subsystems.indexer.getExitRollerRPM() > 50.0
-                    && subsystems.shooter.getCurrentState().flywheelSpeed.in(RPM) > 500.0
-                    && subsystems.indexer.getSpindexerRPM() > 50.0
-                    && (currentTime - lastShotTime) > 0.1) { // 0.1s cooldown
 
-                var shooterState = subsystems.shooter.getCurrentState();
-
-                // Launch parameters
-                // Velocity is approx (RPM * radius / 2) because only one side is driven (per
-                // AimSolver)
-                double flywheelRadius = Robot.consts.shooter().kFlywheels().WHEEL_RADIUS_METERS();
-                double launchVelocity =
-                        (shooterState.flywheelSpeed.in(RadiansPerSecond) * flywheelRadius) / 2.0;
+            // TODO: Implement actual fuel launch logic tied to mechanism states
+            if (false) {
+                double flywheelRadius = SubsystemConstants.kShooter.kFlywheels.WHEEL_RADIUS_METERS;
+                double launchVelocity = (50 * flywheelRadius) / 2.0;
 
                 fuelSim.launchFuel(
                         MetersPerSecond.of(launchVelocity),
-                        Radians.of(Math.PI / 2 - shooterState.hoodAngle.in(Radian)),
-                        shooterState.turretAngle,
-                        Meters.of(
-                                Robot.consts
-                                        .shooter()
-                                        .kFlywheels()
-                                        .ShooterHeightMeters()) // height of shooter exit
-                        );
+                        Radians.of(Math.PI / 2),
+                        Degrees.of(0),
+                        Meters.of(SubsystemConstants.kShooter.kFlywheels.ShooterHeightMeters));
 
                 lastShotTime = currentTime;
-                if (!Robot.consts.shooter().kFlywheels().disableFlywheelsLogs()) {
+                if (!SubsystemConstants.disableAllLogs) {
                     Log.log("ROBOT/Simulation/FuelLaunched", true);
                 }
             }
         }
     }
 
+    /** Configures the fuel simulation environment. */
     private void configureFuelSim() {
         fuelSim = new FuelSim();
-        // fuelSim.spawnStartingFuel();
         fuelSim.start();
         SmartDashboard.putData(
-                Commands.runOnce(
-                                () -> {
-                                    fuelSim.clearFuel();
-                                })
+                Commands.runOnce(() -> fuelSim.clearFuel())
                         .withName("Clear Fuel")
                         .ignoringDisable(true));
         fuelSim.enableAirResistance();
@@ -572,8 +540,9 @@ public class Robot extends LoggedRobot {
         configureFuelSimRobot();
     }
 
+    /** Registers the robot chassis and intake zones with the fuel simulation. */
     private void configureFuelSimRobot() {
-        // Chassis is approx 21x21 inches (0.53m). With bumpers, approx 28x28 (0.71m).
+        // Chassis dimensions with bumpers
         double width = 0.71;
         double length = 0.71;
         double bumperHeight = 0.2;
@@ -585,7 +554,7 @@ public class Robot extends LoggedRobot {
                 () -> subsystems.swerve.getState().Pose,
                 subsystems.swerve::getFieldRelativeSpeeds);
 
-        // Register a front intake zone (0.1m deep, 0.4m wide, centered in front of bumper)
+        // Register a front intake zone
         fuelSim.registerIntake(
                 length / 2,
                 length / 2 + 0.1,
@@ -595,15 +564,19 @@ public class Robot extends LoggedRobot {
                 () -> Log.log("ROBOT/Simulation/FuelIntaked", true));
     }
 
+    /**
+     * Returns whether the robot is currently on the Blue alliance. Defaults to Blue if alliance is
+     * unknown.
+     *
+     * @return True if Blue alliance, false if Red.
+     */
     public static boolean isBlue() {
         Optional<Alliance> ally = DriverStation.getAlliance();
 
         if (ally.isPresent()) {
             return ally.get() == Alliance.Blue;
         } else {
-            // Default to blue if alliance is unknown (e.g., in simulation without alliance set)
-            // Log this so we know why things might be going to the blue side.
-            if (!Robot.consts.disableAllLogs()) {
+            if (!SubsystemConstants.disableAllLogs) {
                 Log.log("ROBOT/System/AllianceUnknown", true);
             }
             return true;

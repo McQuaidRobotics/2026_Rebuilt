@@ -1,5 +1,7 @@
 package igknighters.subsystems.swerve;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
@@ -18,26 +20,43 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import igknighters.Robot;
 import igknighters.constants.Conv;
-import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
+import igknighters.subsystems.swerve.swerveconstants.GeminiConsts;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
+/**
+ * Subsystem wrapper for the robot's swerve drive. This class wraps a {@link
+ * CommandSwerveDrivetrain} and provides a consistent interface for driving, path following, and
+ * vision integration.
+ *
+ * <p>It includes functionality to "disable" the swerve drive (using {@code isSwerveDisabled}),
+ * which is useful for testing other subsystems without the drive motors being active.
+ */
 public class Swerve extends SubsystemBase {
+    /** The actual CTRE-based swerve drivetrain. */
     CommandSwerveDrivetrain drivetrain;
-    CommonSwerveConsts commonSwerveConsts;
+
+    /** Flag to disable all drive motor outputs. */
     boolean isSwerveDisabled = false;
+
+    /** A dummy swerve instance for "no-op" operations when disabled. */
     DummySwerve dummySwerve = new DummySwerve();
 
+    /** Constructs a Swerve subsystem with the drive enabled. */
     public Swerve() {
         this(false);
     }
 
+    /**
+     * Constructs a Swerve subsystem with an option to disable it.
+     *
+     * @param isSwerveDisabled True if the swerve drive should start disabled.
+     */
     public Swerve(boolean isSwerveDisabled) {
         this.isSwerveDisabled = isSwerveDisabled;
         if (!isSwerveDisabled) {
-            drivetrain = Robot.consts.swerve().getCommonSwerveConsts().createDrivetrain(this);
-            commonSwerveConsts = Robot.consts.swerve().getCommonSwerveConsts();
+            drivetrain = GeminiConsts.createDrivetrain(this);
         }
     }
 
@@ -53,18 +72,33 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    /**
+     * Follows a single trajectory sample from Choreo.
+     *
+     * @param sample The {@link SwerveSample} to follow.
+     */
     public void followPath(SwerveSample sample) {
         if (!isSwerveDisabled) {
             drivetrain.followPath(sample);
         }
     }
 
+    /**
+     * Resets the robot's odometry to the specified pose.
+     *
+     * @param pose The new {@link Pose2d} for the robot.
+     */
     public void resetPose(Pose2d pose) {
         if (!isSwerveDisabled) {
             drivetrain.resetPose(pose);
         }
     }
 
+    /**
+     * Creates an {@link AutoFactory} for path planning and autonomous routines.
+     *
+     * @return A new AutoFactory instance.
+     */
     public AutoFactory createAutoFactory() {
         if (!isSwerveDisabled) {
             return drivetrain.createAutoFactory();
@@ -74,6 +108,12 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    /**
+     * Creates an {@link AutoFactory} with a custom trajectory logger.
+     *
+     * @param logger A consumer that receives trajectory samples for logging.
+     * @return A new AutoFactory instance.
+     */
     public AutoFactory createAutoFactory(TrajectoryLogger<SwerveSample> logger) {
         if (!isSwerveDisabled) {
             return drivetrain.createAutoFactory(logger);
@@ -83,6 +123,12 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    /**
+     * Returns a command that applies the given swerve request.
+     *
+     * @param requestSupplier A supplier for the {@link SwerveRequest} to apply.
+     * @return A command representing the request.
+     */
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         if (!isSwerveDisabled) {
             return drivetrain.applyRequest(requestSupplier);
@@ -91,6 +137,12 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    /**
+     * Returns a command for SysId quasistatic characterization.
+     *
+     * @param direction The direction to run the test.
+     * @return The SysId quasistatic command.
+     */
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         if (!isSwerveDisabled) {
             return drivetrain.sysIdQuasistatic(direction);
@@ -99,6 +151,12 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    /**
+     * Returns a command for SysId dynamic characterization.
+     *
+     * @param direction The direction to run the test.
+     * @return The SysId dynamic command.
+     */
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         if (!isSwerveDisabled) {
             return drivetrain.sysIdDynamic(direction);
@@ -107,12 +165,25 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    /**
+     * Adds a vision measurement to the drivetrain's pose estimator.
+     *
+     * @param visionPose The robot pose as seen by vision.
+     * @param timestamp The FPGA timestamp of the measurement.
+     */
     public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
         if (!isSwerveDisabled) {
             drivetrain.addVisionMeasurement(visionPose, timestamp);
         }
     }
 
+    /**
+     * Adds a vision measurement with custom standard deviations.
+     *
+     * @param visionRobotPoseMeters The robot pose from vision.
+     * @param timestampSeconds The FPGA timestamp.
+     * @param visionMeasurementStdDevs Standard deviations for the measurement [x, y, theta].
+     */
     public void addVisionMeasurement(
             Pose2d visionRobotPoseMeters,
             double timestampSeconds,
@@ -125,6 +196,11 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    /**
+     * Returns the current state of the swerve drivetrain, including pose and module data.
+     *
+     * @return The current {@link SwerveDriveState}.
+     */
     public SwerveDriveState getState() {
         if (!isSwerveDisabled) {
             return drivetrain.getState();
@@ -133,6 +209,11 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    /**
+     * Returns the current field-relative speeds of the robot.
+     *
+     * @return The {@link ChassisSpeeds} relative to the field.
+     */
     public ChassisSpeeds getFieldRelativeSpeeds() {
         if (!isSwerveDisabled) {
             var state = drivetrain.getState();
@@ -142,26 +223,46 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    /**
+     * Registers a telemetry function that will be called periodically with the drive state.
+     *
+     * @param telemetryFunction The function to call.
+     */
     public void registerTelemetry(Consumer<SwerveDriveState> telemetryFunction) {
         if (!isSwerveDisabled) {
             drivetrain.registerTelemetry(telemetryFunction);
         }
     }
 
+    /**
+     * Applies a control request directly to the drivetrain.
+     *
+     * @param request The {@link SwerveRequest} to apply.
+     */
     public void setControl(SwerveRequest request) {
         if (!isSwerveDisabled) {
             drivetrain.setControl(request);
         }
     }
 
+    /**
+     * Returns the maximum theoretical speed of the robot.
+     *
+     * @return Max speed in meters per second.
+     */
     public double getMaxSpeedMetersPerSecond() {
         if (!isSwerveDisabled) {
-            return commonSwerveConsts.getMaxSpeedMetersPerSecond();
+            return GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond);
         } else {
             return 0.0;
         }
     }
 
+    /**
+     * Returns the robot's current X acceleration from the IMU.
+     *
+     * @return Acceleration in Gs.
+     */
     public double getXAcceleration() {
         if (!isSwerveDisabled) {
             return drivetrain.getPigeon2().getAccelerationX().getValueAsDouble();
@@ -170,6 +271,11 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    /**
+     * Returns the robot's current Y acceleration from the IMU.
+     *
+     * @return Acceleration in Gs.
+     */
     public double getYAcceleration() {
         if (!isSwerveDisabled) {
             return drivetrain.getPigeon2().getAccelerationY().getValueAsDouble();
@@ -178,6 +284,11 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    /**
+     * Returns the robot's current rotational velocity from the IMU.
+     *
+     * @return Angular velocity in radians per second.
+     */
     public double getRotationalVelocity() {
         if (!isSwerveDisabled) {
             return drivetrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble()
@@ -190,20 +301,36 @@ public class Swerve extends SubsystemBase {
     private AutoTrajectory activeTrajectory = null;
     private final Timer autoTimer = new Timer();
 
+    /**
+     * Sets the currently active autonomous trajectory and restarts the timer.
+     *
+     * @param trajectory The {@link AutoTrajectory} being followed.
+     */
     public void setActiveTrajectory(AutoTrajectory trajectory) {
         this.activeTrajectory = trajectory;
-        autoTimer.restart(); // Reset and start the timer
+        autoTimer.restart();
     }
 
+    /** Clears the active trajectory and stops the timer. */
     public void clearActiveTrajectory() {
         this.activeTrajectory = null;
         autoTimer.stop();
     }
 
+    /**
+     * Returns the currently active autonomous trajectory.
+     *
+     * @return The active trajectory, or null if none.
+     */
     public AutoTrajectory getActiveTrajectory() {
         return activeTrajectory;
     }
 
+    /**
+     * Returns the time elapsed since the start of the current autonomous trajectory.
+     *
+     * @return Time in seconds.
+     */
     public double getAutoTime() {
         return autoTimer.get();
     }

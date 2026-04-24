@@ -1,48 +1,47 @@
 package igknighters.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import igknighters.commands.IndexerCommands;
-import igknighters.commands.IntakeCommands;
-import igknighters.commands.Shooter.AimingCommands;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
-import igknighters.subsystems.indexer.Indexer;
-import igknighters.subsystems.intake.AbstractIntake;
-import igknighters.subsystems.intake.Intake;
 import igknighters.subsystems.led.Led;
-import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 
+/**
+ * Central container for all robot subsystems. This class facilitates easy access to subsystems from
+ * the Robot class and during command binding.
+ */
 public class Subsystems {
+    /** The swerve drive subsystem. */
     public final Swerve swerve;
+
+    /** The vision subsystem (Limelight). */
     public final LimeLightVision vision;
+
+    /** The LED subsystem for visual feedback. */
     public final Led led;
-    public final Shooter shooter;
-    public final Indexer indexer;
-    public final AbstractIntake intake;
+
+    /** The Luma subsystem for object detection. */
     public final Luma luma;
+
+    /**
+     * Array of subsystems that require exclusive access (Locked resources). Used for publishing
+     * command data and managing command requirements.
+     */
     public final SubsystemBase[] lockedResources;
 
-    public Subsystems(
-            Swerve swerve,
-            LimeLightVision vision,
-            Led led,
-            Shooter shooter,
-            Indexer indexer,
-            Intake intake,
-            Luma luma) {
+    /**
+     * Constructs the Subsystems container with the provided instances.
+     *
+     * @param swerve The swerve drive subsystem.
+     * @param vision The vision subsystem.
+     * @param led The LED subsystem.
+     * @param luma The Luma subsystem.
+     */
+    public Subsystems(Swerve swerve, LimeLightVision vision, Led led, Luma luma) {
         this.swerve = swerve;
         this.vision = vision;
         this.led = led;
-        this.shooter = shooter;
         this.luma = luma;
-        this.intake = intake;
-        this.indexer = indexer;
-        this.lockedResources =
-                new SubsystemBase[] {swerve, shooter, indexer, intake, luma, vision, led};
-
-        this.indexer.setDefaultCommand(IndexerCommands.jorkIt(indexer).repeatedly());
-        this.intake.setDefaultCommand(IntakeCommands.holdAtStow(intake));
-        this.shooter.setDefaultCommand(AimingCommands.idleCommand(shooter));
+        this.lockedResources = new SubsystemBase[] {swerve, vision, led, luma};
     }
 }

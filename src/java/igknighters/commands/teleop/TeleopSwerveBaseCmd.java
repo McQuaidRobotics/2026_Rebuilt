@@ -6,6 +6,7 @@ import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.util.struct.StructSerializable;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
+import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.ControllerConstants;
@@ -66,13 +67,13 @@ public class TeleopSwerveBaseCmd extends Command {
         double processedY = magnitude * Math.sin(angle);
         if (Robot.isBlue()) {
 
-            if (!Robot.consts.disableAllLogs()) {
+            if (!SubsystemConstants.disableAllLogs) {
                 Log.log("ROBOT/TeleopSwerveBaseCmd", "Blue Alliance - No Inversion");
             }
             return new Translation2d(processedY, -processedX);
         } else {
 
-            if (!Robot.consts.disableAllLogs()) {
+            if (!SubsystemConstants.disableAllLogs) {
                 Log.log("ROBOT/TeleopSwerveBaseCmd", "Red Alliance - Inversion");
             }
             return new Translation2d(processedY, -processedX);
@@ -100,7 +101,7 @@ public class TeleopSwerveBaseCmd extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("ROBOT/Commands/Teleop/teleopCommand", "ENDED");
         }
     }
@@ -134,7 +135,7 @@ public class TeleopSwerveBaseCmd extends Command {
         //         rotation.getX(),
         //         rawRotationYSup.getAsDouble(),
         //         rotation.getY());
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("ROBOT/Commands/teleop/rawTranslationX", rawTranslationXSup.getAsDouble());
             Log.log("ROBOT/Commands/teleop/translationX", translation.getX());
             Log.log("ROBOT/Commands/teleop/rawTranslationY", rawTranslationYSup.getAsDouble());

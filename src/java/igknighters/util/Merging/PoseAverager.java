@@ -2,7 +2,7 @@ package igknighters.util.Merging;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import igknighters.Robot;
+import igknighters.constants.SubsystemConstants;
 import igknighters.util.log.Log;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ public class PoseAverager {
     /** Averages a list of Pose2d objects (translation + rotation). */
     public static Pose2d averagePose2ds(List<Pose2d> poses) {
         if (poses.isEmpty()) {
-            if (!Robot.consts.limelightVision().disableVisionLogs()) {
+            if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
                 Log.log("ROBOT/Subsystems/Vision/LimeLightVision/TagsSeen", "NO TAGS SEEN");
             }
             return null;
@@ -34,13 +34,13 @@ public class PoseAverager {
         double avgY = ySum / count;
         Rotation2d avgRot = new Rotation2d(Math.atan2(sinSum / count, cosSum / count));
 
-        if (!Robot.consts.limelightVision().disableVisionLogs()) {
+        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
             Log.log("ROBOT/Subsystems/Vision/LimeLightVision/RotationList", rotations.toString());
             Log.log("ROBOT/Subsystems/Vision/LimeLightVision/Rotation", avgRot.getDegrees());
         }
 
         Pose2d averaged = new Pose2d(avgX, avgY, avgRot);
-        if (!Robot.consts.limelightVision().disableVisionLogs()) {
+        if (!SubsystemConstants.kLimelightVision.disableVisionLogs) {
             Log.log("ROBOT/Subsystems/Vision/LimeLightVision/TagsSeen", averaged);
         }
 

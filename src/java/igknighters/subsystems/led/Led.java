@@ -2,7 +2,7 @@ package igknighters.subsystems.led;
 
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import igknighters.Robot;
+import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.led.driver.PWMDriver;
 import igknighters.util.log.Log;
 import wpilibExt.Tracer;
@@ -16,7 +16,7 @@ public class Led extends SubsystemBase {
     }
 
     public void animate(AddressableLEDBuffer buffer) {
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("ROBOT/Subsystems/LED/Animate", true);
         }
         pwm1.applyBuffer(buffer);
@@ -24,7 +24,7 @@ public class Led extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("ROBOT/Subsystems/LED/Periodic", true);
         }
         Tracer.startTrace("LedPeriodic");

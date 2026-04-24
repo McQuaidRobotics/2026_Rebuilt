@@ -1,27 +1,24 @@
 package igknighters.commands.teleop;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Translation2d;
-import igknighters.Robot;
 import igknighters.constants.DrivingSharedState;
+import igknighters.constants.SubsystemConstants;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
+import igknighters.subsystems.swerve.swerveconstants.GeminiConsts;
 import igknighters.util.log.Log;
 
 public class TeleopSwerveWithDetune extends TeleopSwerveBaseCmd {
     private double detune;
     private final SwerveRequest.FieldCentric m_driveRequest =
             new SwerveRequest.FieldCentric()
-                    .withDeadband(
-                            Robot.consts
-                                            .swerve()
-                                            .getCommonSwerveConsts()
-                                            .getMaxSpeedMetersPerSecond()
-                                    * 0.1)
+                    .withDeadband(GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond) * 0.1)
                     .withRotationalDeadband(RotationsPerSecond.of(0.75).in(RadiansPerSecond) * .1)
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
@@ -38,7 +35,7 @@ public class TeleopSwerveWithDetune extends TeleopSwerveBaseCmd {
         detune = DrivingSharedState.getInstance().detune;
         Translation2d vt = translationStick();
 
-        if (!Robot.consts.disableAllLogs()) {
+        if (!SubsystemConstants.disableAllLogs) {
             Log.log("ROBOT/Subsystems/Swerve/DETUNE", detune);
         }
 
@@ -46,17 +43,11 @@ public class TeleopSwerveWithDetune extends TeleopSwerveBaseCmd {
                 m_driveRequest
                         .withVelocityX(
                                 vt.getX()
-                                        * Robot.consts
-                                                .swerve()
-                                                .getCommonSwerveConsts()
-                                                .getMaxSpeedMetersPerSecond()
+                                        * GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond)
                                         * detune)
                         .withVelocityY(
                                 vt.getY()
-                                        * Robot.consts
-                                                .swerve()
-                                                .getCommonSwerveConsts()
-                                                .getMaxSpeedMetersPerSecond()
+                                        * GeminiConsts.kSpeedAt12Volts.in(MetersPerSecond)
                                         * detune)
                         .withRotationalRate(
                                 detune
