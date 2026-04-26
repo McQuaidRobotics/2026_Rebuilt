@@ -12,6 +12,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import igknighters.Robot;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
@@ -107,8 +108,8 @@ public class GeminiRobotConsts extends RobotConsts {
         }
 
         @Override
-        public SmartMotorControllerConfig getConfig(CANcoder caNcoder) {
-            return new SmartMotorControllerConfig()
+        public SmartMotorControllerConfig getConfig(CANcoder caNcoder, Subsystem subsystem) {
+            return new SmartMotorControllerConfig(subsystem)
                     .withControlMode(ControlMode.CLOSED_LOOP)
 
                     // Feedback Constants (PID Constants)
@@ -148,7 +149,7 @@ public class GeminiRobotConsts extends RobotConsts {
                     // In this example GearBox.fromReductionStages(3,4) is the same as
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
                     // your motor.
-                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(15)))
+                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
                     .withMotorInverted(
                             Robot.consts
                                     .intake()

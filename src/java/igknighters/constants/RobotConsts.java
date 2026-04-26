@@ -4,6 +4,8 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
 import igknighters.util.LerpTable;
 import yams.motorcontrollers.SmartMotorControllerConfig;
@@ -346,7 +348,7 @@ public abstract class RobotConsts {
 
         InvertedValue INVERTED();
 
-        SmartMotorControllerConfig getConfig(CANcoder caNcoder);
+        SmartMotorControllerConfig getConfig(CANcoder caNcoder, Subsystem subsystem);
 
         SensorDirectionValue SENSOR_DIRECTION();
 

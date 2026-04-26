@@ -19,84 +19,22 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
-import yams.gearing.GearBox;
-import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.PivotConfig;
 import yams.mechanisms.positional.Arm;
 import yams.mechanisms.positional.Pivot;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
-import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
-import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class IntakePivot extends SubsystemBase {
     private CANcoder pivotCancoder = new CANcoder(Robot.consts.intake().kPivot().CANCODER_ID(), Robot.consts.intake().kCANBUS());
-    private SmartMotorControllerConfig smcConfig =
-            new SmartMotorControllerConfig(this)
-                    .withControlMode(ControlMode.CLOSED_LOOP)
-
-                    // Feedback Constants (PID Constants)
-                    .withClosedLoopController(
-                            Robot.consts.intake().kPivot().kP(),
-                            Robot.consts.intake().kPivot().kI(),
-                            Robot.consts.intake().kPivot().kD(),
-                            RotationsPerSecond.of(
-                                    Robot.consts.intake().kPivot().MAX_SPEED_ROTATIONS_PER_SECOND()),
-                            RotationsPerSecondPerSecond.of(
-                                    Robot.consts
-                                            .intake()
-                                            .kPivot()
-                                            .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED()))
-                    .withSimClosedLoopController(
-                            10,
-                            Robot.consts.intake().kPivot().kI(),
-                            Robot.consts.intake().kPivot().kD(),
-                            DegreesPerSecond.of(360),
-                            DegreesPerSecondPerSecond.of(480))
-                    // Feedforward Constants
-                    .withFeedforward(
-                            new ArmFeedforward(
-                                    Robot.consts.intake().kPivot().kS(),
-                                    0,
-                                    Robot.consts.intake().kPivot().kV(),
-                                    Robot.consts.intake().kPivot().kA()))
-                    .withSimFeedforward(
-                            new ArmFeedforward(
-                                    Robot.consts.intake().kPivot().kS(),
-                                    0,
-                                    Robot.consts.intake().kPivot().kV(),
-                                    Robot.consts.intake().kPivot().kA()))
-                    // Telemetry name and verbosity level
-                    .withTelemetry("Intake Pivot Motor", TelemetryVerbosity.HIGH)
-                    // Gearing from the motor rotor to final shaft.
-                    // In this example GearBox.fromReductionStages(3,4) is the same as
-                    // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
-                    // your motor.
-                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(15)))
-                    .withMotorInverted(
-                            Robot.consts
-                                    .intake()
-                                    .kPivot()
-                                    .INVERTED()
-                                    .equals(InvertedValue.Clockwise_Positive))
-                    .withIdleMode(MotorMode.BRAKE)
-                    .withExternalEncoder(pivotCancoder)
-                    .withExternalEncoderZeroOffset(Rotations.of(Robot.consts.intake().kPivot().ENCODER_OFFSET()))
-
-                    .withStatorCurrentLimit(
-                            Amps.of(Robot.consts.intake().kPivot().STATOR_CURRENT_LIMIT()))
-                    .withClosedLoopRampRate(Seconds.of(0.25))
-                    .withOpenLoopRampRate(Seconds.of(0.25));
-
+    private SmartMotorControllerConfig smcConfig = Robot.consts.intake().kPivot().getConfig(pivotCancoder, this);
     // Vendor motor controller object
     private TalonFX pivotMotor = new TalonFX(Robot.consts.intake().kPivot().MOTOR_ID());
 
@@ -180,7 +118,7 @@ public class IntakePivot extends SubsystemBase {
 
     /** Creates a new ExampleSubsystem. */
     public IntakePivot() {
-        
+        smcConfig.withSubsystem(this);
     }
 
     /**
