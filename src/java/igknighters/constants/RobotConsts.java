@@ -1,10 +1,12 @@
 package igknighters.constants;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
 import igknighters.util.LerpTable;
+import yams.motorcontrollers.SmartMotorControllerConfig;
 
 public abstract class RobotConsts {
     public abstract CANBus getSuperStructureBus();
@@ -343,6 +345,8 @@ public abstract class RobotConsts {
         int MOTOR_ID();
 
         InvertedValue INVERTED();
+
+        SmartMotorControllerConfig getConfig(CANcoder caNcoder);
 
         SensorDirectionValue SENSOR_DIRECTION();
 

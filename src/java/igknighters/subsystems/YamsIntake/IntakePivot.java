@@ -10,12 +10,14 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -37,7 +39,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class IntakePivot extends SubsystemBase {
-
+    private CANcoder pivotCancoder = new CANcoder(Robot.consts.intake().kPivot().CANCODER_ID(), Robot.consts.intake().kCANBUS());
     private SmartMotorControllerConfig smcConfig =
             new SmartMotorControllerConfig(this)
                     .withControlMode(ControlMode.CLOSED_LOOP)
@@ -87,6 +89,9 @@ public class IntakePivot extends SubsystemBase {
                                     .INVERTED()
                                     .equals(InvertedValue.Clockwise_Positive))
                     .withIdleMode(MotorMode.BRAKE)
+                    .withExternalEncoder(pivotCancoder)
+                    .withExternalEncoderZeroOffset(Rotations.of(Robot.consts.intake().kPivot().ENCODER_OFFSET()))
+
                     .withStatorCurrentLimit(
                             Amps.of(Robot.consts.intake().kPivot().STATOR_CURRENT_LIMIT()))
                     .withClosedLoopRampRate(Seconds.of(0.25))
@@ -118,6 +123,7 @@ public class IntakePivot extends SubsystemBase {
 
     // Arm Mechanism
     private Pivot pivot = new Pivot(pivotConfig);
+
 
     /**
      * Set the angle of the arm, does not stop when the arm reaches the setpoint.
@@ -173,7 +179,9 @@ public class IntakePivot extends SubsystemBase {
     }
 
     /** Creates a new ExampleSubsystem. */
-    public IntakePivot() {}
+    public IntakePivot() {
+        
+    }
 
     /**
      * Example command factory method.
