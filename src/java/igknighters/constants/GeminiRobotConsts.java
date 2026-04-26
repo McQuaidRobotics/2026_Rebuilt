@@ -1,7 +1,6 @@
 package igknighters.constants;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
@@ -127,11 +126,11 @@ public class GeminiRobotConsts extends RobotConsts {
                                             .kPivot()
                                             .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED()))
                     .withSimClosedLoopController(
-                            10,
-                            Robot.consts.intake().kPivot().kI(),
+                            .3,
+                            0.02,
                             Robot.consts.intake().kPivot().kD(),
-                            RotationsPerSecond.of(3),
-                            RotationsPerSecondPerSecond.of(6))
+                            RotationsPerSecond.of(6),
+                            RotationsPerSecondPerSecond.of(15))
                     // Feedforward Constants
                     .withFeedforward(
                             new ArmFeedforward(
@@ -160,8 +159,7 @@ public class GeminiRobotConsts extends RobotConsts {
                                     .equals(InvertedValue.Clockwise_Positive))
                     .withIdleMode(MotorMode.BRAKE)
                     .withExternalEncoder(caNcoder)
-                    .withExternalEncoderZeroOffset(
-                            Rotations.of(Robot.consts.intake().kPivot().ENCODER_OFFSET()))
+                    .withUseExternalFeedbackEncoder(true)
                     .withStatorCurrentLimit(
                             Amps.of(Robot.consts.intake().kPivot().STATOR_CURRENT_LIMIT()))
                     .withClosedLoopRampRate(Seconds.of(0.25))

@@ -1,7 +1,6 @@
 package igknighters.constants;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
@@ -105,7 +104,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public SmartMotorControllerConfig getConfig(CANcoder caNcoder, Subsystem subsystem) {
-            return new SmartMotorControllerConfig()
+            return new SmartMotorControllerConfig(subsystem)
                     .withControlMode(ControlMode.CLOSED_LOOP)
 
                     // Feedback Constants (PID Constants)
@@ -157,15 +156,6 @@ public class SecondBotRobotConsts extends RobotConsts {
                                     .equals(InvertedValue.Clockwise_Positive))
                     .withIdleMode(MotorMode.BRAKE)
                     .withExternalEncoder(caNcoder)
-                    .withExternalEncoderZeroOffset(
-                            Rotations.of(Robot.consts.intake().kPivot().ENCODER_OFFSET()))
-                    .withExternalEncoderInverted(
-                            Robot.consts
-                                    .intake()
-                                    .kPivot()
-                                    .SENSOR_DIRECTION()
-                                    .equals(SensorDirectionValue.Clockwise_Positive))
-                    .withExternalEncoderGearing(1)
                     .withUseExternalFeedbackEncoder(
                             true) // this essentally says only use encoder not motor encoder
                     .withStatorCurrentLimit(

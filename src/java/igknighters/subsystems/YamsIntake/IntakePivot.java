@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package igknighters.subsystems.YamsIntake;
 
 import static edu.wpi.first.units.Units.Degrees;
@@ -11,6 +7,7 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -42,19 +39,31 @@ public class IntakePivot extends SubsystemBase {
     private PivotConfig pivotConfig =
             new PivotConfig(talonSmartMotorController)
                     // Soft limit is applied to the SmartMotorControllers PID
-                    .withMOI(Meters.of(0.25), Pounds.of(1))
+                    .withMOI(Meters.of(0.25), Pounds.of(.5))
                     .withSoftLimits(
                             Degrees.of(Robot.consts.intake().kPivot().MIN_ANGLE_DEGREES()),
                             Degrees.of(Robot.consts.intake().kPivot().MAX_ANGLE_DEGREES()))
                     // Hard limit is applied to the simulation.
                     .withHardLimit(
-                            Degrees.of(Robot.consts.intake().kPivot().MIN_ANGLE_DEGREES()),
-                            Degrees.of(Robot.consts.intake().kPivot().MAX_ANGLE_DEGREES()))
+                            Degrees.of(Robot.consts.intake().kPivot().MIN_ANGLE_DEGREES() - 10),
+                            Degrees.of(Robot.consts.intake().kPivot().MAX_ANGLE_DEGREES() + 10))
                     // Starting position is where your arm starts
                     .withStartingPosition(
                             Degrees.of(Robot.consts.intake().kPivot().STOWED_ANGLE_DEGREES()))
                     // Telemetry name and verbosity for the arm.
                     .withTelemetry("PivotArm", TelemetryVerbosity.HIGH);
+
+    private final CANcoderConfiguration turretCancoderConfig() {
+        var cfg = new CANcoderConfiguration();
+
+        cfg.MagnetSensor.MagnetOffset =
+                Robot.consts.shooter().kTurret().CANCODER_OFFSET_ROTATIONS();
+        cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.25;
+        cfg.MagnetSensor.SensorDirection =
+                Robot.consts.shooter().kTurret().CANCODER_DIRECTION(); // used to be c p
+
+        return cfg;
+    }
 
     // Arm Mechanism
     private Pivot pivot = new Pivot(pivotConfig);
@@ -114,7 +123,7 @@ public class IntakePivot extends SubsystemBase {
 
     /** Creates a new ExampleSubsystem. */
     public IntakePivot() {
-        smcConfig.withSubsystem(this);
+        this.pivotCancoder.getConfigurator().apply(turretCancoderConfig());
     }
 
     /**
