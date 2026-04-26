@@ -5,6 +5,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
 import igknighters.util.LerpTable;
+import yams.motorcontrollers.SmartMotorControllerConfig;
 
 public abstract class RobotConsts {
     public abstract CANBus getSuperStructureBus();
@@ -290,7 +291,10 @@ public abstract class RobotConsts {
     }
 
     public interface kSpindexerConsts {
+
         int LEADER_MOTOR_ID();
+
+        SmartMotorControllerConfig config();
 
         double WHEEL_RADIUS_METERS();
 
@@ -441,6 +445,8 @@ public abstract class RobotConsts {
 
     public interface kExitRollersConsts {
         int LEADER_MOTOR_ID();
+
+        SmartMotorControllerConfig config();
 
         double GEAR_RATIO();
 
