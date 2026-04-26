@@ -4,15 +4,9 @@
 
 package igknighters.subsystems.YamsIntake;
 
-import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -33,8 +27,11 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class IntakePivot extends SubsystemBase {
-    private CANcoder pivotCancoder = new CANcoder(Robot.consts.intake().kPivot().CANCODER_ID(), Robot.consts.intake().kCANBUS());
-    private SmartMotorControllerConfig smcConfig = Robot.consts.intake().kPivot().getConfig(pivotCancoder, this);
+    private CANcoder pivotCancoder =
+            new CANcoder(
+                    Robot.consts.intake().kPivot().CANCODER_ID(), Robot.consts.intake().kCANBUS());
+    private SmartMotorControllerConfig smcConfig =
+            Robot.consts.intake().kPivot().getConfig(pivotCancoder, this);
     // Vendor motor controller object
     private TalonFX pivotMotor = new TalonFX(Robot.consts.intake().kPivot().MOTOR_ID());
 
@@ -61,7 +58,6 @@ public class IntakePivot extends SubsystemBase {
 
     // Arm Mechanism
     private Pivot pivot = new Pivot(pivotConfig);
-
 
     /**
      * Set the angle of the arm, does not stop when the arm reaches the setpoint.

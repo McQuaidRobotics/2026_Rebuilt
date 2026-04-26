@@ -10,7 +10,6 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import igknighters.Robot;
@@ -118,7 +117,10 @@ public class GeminiRobotConsts extends RobotConsts {
                             Robot.consts.intake().kPivot().kI(),
                             Robot.consts.intake().kPivot().kD(),
                             RotationsPerSecond.of(
-                                    Robot.consts.intake().kPivot().MAX_SPEED_ROTATIONS_PER_SECOND()),
+                                    Robot.consts
+                                            .intake()
+                                            .kPivot()
+                                            .MAX_SPEED_ROTATIONS_PER_SECOND()),
                             RotationsPerSecondPerSecond.of(
                                     Robot.consts
                                             .intake()
@@ -158,13 +160,12 @@ public class GeminiRobotConsts extends RobotConsts {
                                     .equals(InvertedValue.Clockwise_Positive))
                     .withIdleMode(MotorMode.BRAKE)
                     .withExternalEncoder(caNcoder)
-                    .withExternalEncoderZeroOffset(Rotations.of(Robot.consts.intake().kPivot().ENCODER_OFFSET()))
-
+                    .withExternalEncoderZeroOffset(
+                            Rotations.of(Robot.consts.intake().kPivot().ENCODER_OFFSET()))
                     .withStatorCurrentLimit(
                             Amps.of(Robot.consts.intake().kPivot().STATOR_CURRENT_LIMIT()))
                     .withClosedLoopRampRate(Seconds.of(0.25))
                     .withOpenLoopRampRate(Seconds.of(0.25));
-
         }
 
         @Override
