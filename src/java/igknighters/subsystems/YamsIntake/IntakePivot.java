@@ -56,11 +56,10 @@ public class IntakePivot extends SubsystemBase {
     private final CANcoderConfiguration turretCancoderConfig() {
         var cfg = new CANcoderConfiguration();
 
-        cfg.MagnetSensor.MagnetOffset =
-                Robot.consts.shooter().kTurret().CANCODER_OFFSET_ROTATIONS();
+        cfg.MagnetSensor.MagnetOffset = Robot.consts.intake().kPivot().ENCODER_OFFSET();
         cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.25;
         cfg.MagnetSensor.SensorDirection =
-                Robot.consts.shooter().kTurret().CANCODER_DIRECTION(); // used to be c p
+                Robot.consts.intake().kPivot().SENSOR_DIRECTION(); // used to be c p
 
         return cfg;
     }

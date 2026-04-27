@@ -126,11 +126,11 @@ public class GeminiRobotConsts extends RobotConsts {
                                             .kPivot()
                                             .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED()))
                     .withSimClosedLoopController(
-                            .3,
+                            .22,
                             0.02,
                             Robot.consts.intake().kPivot().kD(),
-                            RotationsPerSecond.of(6),
-                            RotationsPerSecondPerSecond.of(15))
+                            RotationsPerSecond.of(12),
+                            RotationsPerSecondPerSecond.of(24))
                     // Feedforward Constants
                     .withFeedforward(
                             new ArmFeedforward(

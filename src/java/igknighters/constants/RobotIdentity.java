@@ -26,7 +26,7 @@ public class RobotIdentity {
             } else if (serialNumber.equals("TBD")) { // Placeholder for Demo Bot if different
                 robot = Robots.GEMINKNIGHT;
             } else {
-                robot = Robots.GEMINKNIGHT; // will default to GEMINIKNIGHT
+                robot = Robots.SECOND_BOT; // will default to GEMINIKNIGHT
             }
         }
         return robot;

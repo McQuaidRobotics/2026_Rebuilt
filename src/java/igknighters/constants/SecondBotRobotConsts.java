@@ -123,11 +123,11 @@ public class SecondBotRobotConsts extends RobotConsts {
                                             .kPivot()
                                             .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED()))
                     .withSimClosedLoopController(
-                            10,
-                            Robot.consts.intake().kPivot().kI(),
+                            .22,
+                            0.02,
                             Robot.consts.intake().kPivot().kD(),
-                            RotationsPerSecond.of(3),
-                            RotationsPerSecondPerSecond.of(6))
+                            RotationsPerSecond.of(12),
+                            RotationsPerSecondPerSecond.of(24))
                     // Feedforward Constants
                     .withFeedforward(
                             new ArmFeedforward(
@@ -148,16 +148,10 @@ public class SecondBotRobotConsts extends RobotConsts {
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
                     // your motor.
                     .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
-                    .withMotorInverted(
-                            Robot.consts
-                                    .intake()
-                                    .kPivot()
-                                    .INVERTED()
-                                    .equals(InvertedValue.Clockwise_Positive))
+                    .withMotorInverted(false)
                     .withIdleMode(MotorMode.BRAKE)
                     .withExternalEncoder(caNcoder)
-                    .withUseExternalFeedbackEncoder(
-                            true) // this essentally says only use encoder not motor encoder
+                    .withUseExternalFeedbackEncoder(true)
                     .withStatorCurrentLimit(
                             Amps.of(Robot.consts.intake().kPivot().STATOR_CURRENT_LIMIT()))
                     .withClosedLoopRampRate(Seconds.of(0.25))
