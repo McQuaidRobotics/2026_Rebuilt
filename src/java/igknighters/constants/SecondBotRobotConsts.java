@@ -8,9 +8,12 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import igknighters.Robot;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
@@ -110,30 +113,20 @@ public class SecondBotRobotConsts extends RobotConsts {
 
                     // Feedback Constants (PID Constants)
                     .withClosedLoopController(
-                            Robot.consts.intake().kPivot().kP(),
-                            Robot.consts.intake().kPivot().kI(),
-                            Robot.consts.intake().kPivot().kD(),
+                            45,
+                            0.0,
+                            0.0,
                             RotationsPerSecond.of(12),
                             RotationsPerSecondPerSecond.of(15))
                     .withSimClosedLoopController(
-                            .22,
-                            0.02,
-                            Robot.consts.intake().kPivot().kD(),
+                            .2,
+                            0.05,
+                            0.0,
                             RotationsPerSecond.of(24),
                             RotationsPerSecondPerSecond.of(36))
                     // Feedforward Constants
-                    .withFeedforward(
-                            new ArmFeedforward(
-                                    Robot.consts.intake().kPivot().kS(),
-                                    0,
-                                    Robot.consts.intake().kPivot().kV(),
-                                    Robot.consts.intake().kPivot().kA()))
-                    .withSimFeedforward(
-                            new ArmFeedforward(
-                                    Robot.consts.intake().kPivot().kS(),
-                                    0,
-                                    Robot.consts.intake().kPivot().kV(),
-                                    Robot.consts.intake().kPivot().kA()))
+                    .withFeedforward(new ArmFeedforward(0.0, 0, 0.0, 0.0))
+                    .withSimFeedforward(new ArmFeedforward(0.0, 0, 0.0, 0.0))
                     // Telemetry name and verbosity level
                     .withTelemetry("Intake Pivot Motor", TelemetryVerbosity.HIGH)
                     // Gearing from the motor rotor to final shaft.
@@ -143,7 +136,7 @@ public class SecondBotRobotConsts extends RobotConsts {
                     .withGearing(
                             new MechanismGearing(
                                     GearBox.fromReductionStages(
-                                            Robot.consts.intake().kPivot().GEAR_RATIO())))
+                                            1.0))) // just want to drive purely off encoder
                     .withMotorInverted(false)
                     .withIdleMode(MotorMode.BRAKE)
                     .withExternalEncoder(caNcoder)
@@ -151,8 +144,7 @@ public class SecondBotRobotConsts extends RobotConsts {
                     .withExternalEncoderZeroOffset(Rotations.of(0.21337890625))
                     .withExternalEncoderInverted(false)
                     .withUseExternalFeedbackEncoder(true)
-                    .withStatorCurrentLimit(
-                            Amps.of(Robot.consts.intake().kPivot().STATOR_CURRENT_LIMIT()))
+                    .withStatorCurrentLimit(Amps.of(15))
                     .withClosedLoopRampRate(Seconds.of(0.25))
                     .withOpenLoopRampRate(Seconds.of(0.25));
         }
@@ -173,23 +165,8 @@ public class SecondBotRobotConsts extends RobotConsts {
         }
 
         @Override
-        public InvertedValue INVERTED() {
-            return InvertedValue.CounterClockwise_Positive;
-        }
-
-        @Override
-        public SensorDirectionValue SENSOR_DIRECTION() {
-            return SensorDirectionValue.CounterClockwise_Positive;
-        }
-
-        @Override
         public int CANCODER_ID() {
             return 60;
-        }
-
-        @Override
-        public double GEAR_RATIO() {
-            return 15.0;
         }
 
         @Override
@@ -203,78 +180,8 @@ public class SecondBotRobotConsts extends RobotConsts {
         }
 
         @Override
-        public double MAX_SPEED_ROTATIONS_PER_SECOND() {
-            return 1.0;
-        }
-
-        @Override
-        public double MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED() {
-            return 0.5;
-        }
-
-        @Override
         public double ENCODER_OFFSET() {
             return 0.21337890625;
-        }
-
-        @Override
-        public double MAX_JERK() {
-            return 1.0;
-        }
-
-        @Override
-        public int STATOR_CURRENT_LIMIT() {
-            return 15;
-        }
-
-        @Override
-        public int SUPPLY_CURRENT_LIMIT() {
-            return 5;
-        }
-
-        @Override
-        public int SUPPLY_UPPER_LIMIT() {
-            return 15;
-        }
-
-        @Override
-        public double kP() {
-            return 45.0;
-        }
-
-        @Override
-        public double kI() {
-            return 0.0;
-        }
-
-        @Override
-        public double kD() {
-            return 0.0;
-        }
-
-        @Override
-        public double kS() {
-            return 0.0;
-        }
-
-        @Override
-        public double kV() {
-            return 0.0;
-        }
-
-        @Override
-        public double kA() {
-            return 0.0;
-        }
-
-        @Override
-        public double JKG_M2() {
-            return 0.01;
-        }
-
-        @Override
-        public double LENGTH_METERS() {
-            return 0.25;
         }
 
         @Override
@@ -290,103 +197,32 @@ public class SecondBotRobotConsts extends RobotConsts {
         }
 
         @Override
-        public InvertedValue INVERTED() {
-            return InvertedValue.CounterClockwise_Positive;
+        public SmartMotorControllerConfig getConfig(Subsystem subsystem) {
+            return new SmartMotorControllerConfig(subsystem)
+                    .withControlMode(ControlMode.CLOSED_LOOP)
+                    // Feedback Constants (PID Constants)
+                    .withClosedLoopController(0.3, 0.0, 0.0)
+                    .withFollowers(
+                            Pair.of(
+                                    new TalonFX(
+                                            Robot.consts.intake().kRollers().FOLLOWER_MOTOR_ID()),
+                                    false))
+                    .withSimClosedLoopController(0.1, 0.0, 0.0)
+                    // Feedforward Constants
+                    .withFeedforward(new SimpleMotorFeedforward(0.6, 0.15, 0.02))
+                    .withSimFeedforward(new SimpleMotorFeedforward(0.0, 0.0, 0.0))
+                    // Telemetry name and verbosity level
+                    .withTelemetry("Intake Rollers", TelemetryVerbosity.HIGH)
+                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
+                    // Motor properties to prevent over currenting.
+                    .withMotorInverted(false)
+                    .withIdleMode(MotorMode.COAST)
+                    .withStatorCurrentLimit(Amps.of(25));
         }
 
         @Override
         public int FOLLOWER_MOTOR_ID() {
             return 62;
-        }
-
-        @Override
-        public double DRIVE_RATIO() {
-            return 1.0;
-        }
-
-        @Override
-        public double WHEEL_RADIUS_METERS() {
-            return 0.0508;
-        }
-
-        @Override
-        public double GEAR_RATIO() {
-            return 1.0;
-        }
-
-        @Override
-        public double MOMENT_OF_INERTIA_KG_M2() {
-            return 0.02;
-        }
-
-        @Override
-        public double MAX_SPEED_RPM() {
-            return 4500.0;
-        }
-
-        @Override
-        public double MAX_ACCELERATION_RPM() {
-            return 5000.0;
-        }
-
-        @Override
-        public double MOTION_MAGIC_JERK() {
-            return 5000.0;
-        }
-
-        @Override
-        public int BEAM_BREAK_SENSOR_CHANNEL() {
-            return 0;
-        }
-
-        @Override
-        public int FORWARD_CURRENT_LIMIT() {
-            return 40;
-        }
-
-        @Override
-        public int REVERSE_CURRENT_LIMIT() {
-            return 30;
-        }
-
-        @Override
-        public int STATOR_CURRENT_LIMIT() {
-            return 35;
-        }
-
-        @Override
-        public int SUPPLY_CURRENT_LIMIT() {
-            return 25;
-        }
-
-        @Override
-        public double kP() {
-            return 0.3;
-        }
-
-        @Override
-        public double kI() {
-            return 0.1;
-        }
-
-        @Override
-        public double kD() {
-            return 0.0;
-        }
-
-        @Override
-        public double kS() {
-            return 0.6;
-        }
-
-        @Override
-        public double kV() {
-            return 0.15;
-        }
-
-        @Override
-        public double kA() {
-            return 0.02;
         }
 
         @Override

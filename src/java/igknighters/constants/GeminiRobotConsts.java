@@ -2,16 +2,17 @@ package igknighters.constants;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import igknighters.Robot;
@@ -118,43 +119,26 @@ public class GeminiRobotConsts extends RobotConsts {
                             new ProfiledPIDController(
                                     45.0, 0.0, 0.0, new TrapezoidProfile.Constraints(20, 30)))
                     .withSimClosedLoopController(
-                            .22,
-                            0.02,
-                            Robot.consts.intake().kPivot().kD(),
-                            RotationsPerSecond.of(12),
-                            RotationsPerSecondPerSecond.of(24))
+                            new ProfiledPIDController(
+                                    .2, 0.05, 0.0, new TrapezoidProfile.Constraints(20, 30)))
                     // Feedforward Constants
-                    .withFeedforward(
-                            new ArmFeedforward(
-                                    Robot.consts.intake().kPivot().kS(),
-                                    0,
-                                    Robot.consts.intake().kPivot().kV(),
-                                    Robot.consts.intake().kPivot().kA()))
-                    .withSimFeedforward(
-                            new ArmFeedforward(
-                                    Robot.consts.intake().kPivot().kS(),
-                                    0,
-                                    Robot.consts.intake().kPivot().kV(),
-                                    Robot.consts.intake().kPivot().kA()))
+                    .withFeedforward(new ArmFeedforward(0.0, 0, 0.0, 0.0))
+                    .withSimFeedforward(new ArmFeedforward(0.0, 0, 0.0, 0.0))
                     // Telemetry name and verbosity level
                     .withTelemetry("Intake Pivot Motor", TelemetryVerbosity.HIGH)
                     // Gearing from the motor rotor to final shaft.
                     // In this example GearBox.fromReductionStages(3,4) is the same as
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
                     // your motor.
-                    .withGearing(
-                            new MechanismGearing(
-                                    GearBox.fromReductionStages(
-                                            Robot.consts.intake().kPivot().GEAR_RATIO())))
+                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
                     .withMotorInverted(true)
                     .withIdleMode(MotorMode.BRAKE)
                     .withExternalEncoder(caNcoder)
                     .withExternalEncoderGearing(1)
                     .withExternalEncoderZeroOffset(Rotations.of(0.31982421875))
-                    .withExternalEncoderInverted(false)
+                    .withExternalEncoderInverted(true)
                     .withUseExternalFeedbackEncoder(true)
-                    .withStatorCurrentLimit(
-                            Amps.of(Robot.consts.intake().kPivot().STATOR_CURRENT_LIMIT()))
+                    .withStatorCurrentLimit(Amps.of(20))
                     .withClosedLoopRampRate(Seconds.of(0.25))
                     .withOpenLoopRampRate(Seconds.of(0.25));
         }
@@ -175,23 +159,8 @@ public class GeminiRobotConsts extends RobotConsts {
         }
 
         @Override
-        public InvertedValue INVERTED() {
-            return InvertedValue.Clockwise_Positive;
-        }
-
-        @Override
-        public SensorDirectionValue SENSOR_DIRECTION() {
-            return SensorDirectionValue.Clockwise_Positive;
-        }
-
-        @Override
         public int CANCODER_ID() {
             return 21;
-        }
-
-        @Override
-        public double GEAR_RATIO() {
-            return 15.0;
         }
 
         @Override
@@ -205,78 +174,8 @@ public class GeminiRobotConsts extends RobotConsts {
         }
 
         @Override
-        public double MAX_SPEED_ROTATIONS_PER_SECOND() {
-            return 1.0;
-        }
-
-        @Override
-        public double MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED() {
-            return 0.5;
-        }
-
-        @Override
         public double ENCODER_OFFSET() {
             return 0.31982421875;
-        }
-
-        @Override
-        public double MAX_JERK() {
-            return 1.0;
-        }
-
-        @Override
-        public int STATOR_CURRENT_LIMIT() {
-            return 20;
-        }
-
-        @Override
-        public int SUPPLY_CURRENT_LIMIT() {
-            return 20;
-        }
-
-        @Override
-        public int SUPPLY_UPPER_LIMIT() {
-            return 25;
-        }
-
-        @Override
-        public double kP() {
-            return 45.0;
-        }
-
-        @Override
-        public double kI() {
-            return 0.0;
-        }
-
-        @Override
-        public double kD() {
-            return 0.0;
-        }
-
-        @Override
-        public double kS() {
-            return 0.0;
-        }
-
-        @Override
-        public double kV() {
-            return 0.0;
-        }
-
-        @Override
-        public double kA() {
-            return 0.0;
-        }
-
-        @Override
-        public double JKG_M2() {
-            return 0.01;
-        }
-
-        @Override
-        public double LENGTH_METERS() {
-            return 0.25;
         }
 
         @Override
@@ -292,103 +191,32 @@ public class GeminiRobotConsts extends RobotConsts {
         }
 
         @Override
-        public InvertedValue INVERTED() {
-            return InvertedValue.Clockwise_Positive;
-        }
-
-        @Override
-        public double DRIVE_RATIO() {
-            return 1.0;
+        public SmartMotorControllerConfig getConfig(Subsystem subsystem) {
+            return new SmartMotorControllerConfig(subsystem)
+                    .withControlMode(ControlMode.CLOSED_LOOP)
+                    // Feedback Constants (PID Constants)
+                    .withClosedLoopController(0.3, 0.0, 0.0)
+                    .withFollowers(
+                            Pair.of(
+                                    new TalonFX(
+                                            Robot.consts.intake().kRollers().FOLLOWER_MOTOR_ID()),
+                                    false))
+                    .withSimClosedLoopController(0.1, 0.0, 0.0)
+                    // Feedforward Constants
+                    .withFeedforward(new SimpleMotorFeedforward(0.0, 0.0, 0.0))
+                    .withSimFeedforward(new SimpleMotorFeedforward(0.0, 0.0, 0.0))
+                    // Telemetry name and verbosity level
+                    .withTelemetry("Intake Rollers", TelemetryVerbosity.HIGH)
+                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
+                    // Motor properties to prevent over currenting.
+                    .withMotorInverted(true)
+                    .withIdleMode(MotorMode.COAST)
+                    .withStatorCurrentLimit(Amps.of(25));
         }
 
         @Override
         public int FOLLOWER_MOTOR_ID() {
             return 28;
-        }
-
-        @Override
-        public double WHEEL_RADIUS_METERS() {
-            return 0.0508;
-        }
-
-        @Override
-        public double GEAR_RATIO() {
-            return 1.0;
-        }
-
-        @Override
-        public double MOMENT_OF_INERTIA_KG_M2() {
-            return 0.02;
-        }
-
-        @Override
-        public double MAX_SPEED_RPM() {
-            return 3500.0;
-        }
-
-        @Override
-        public double MAX_ACCELERATION_RPM() {
-            return 1500.0;
-        }
-
-        @Override
-        public double MOTION_MAGIC_JERK() {
-            return 500.0;
-        }
-
-        @Override
-        public int BEAM_BREAK_SENSOR_CHANNEL() {
-            return 0;
-        }
-
-        @Override
-        public int FORWARD_CURRENT_LIMIT() {
-            return 40;
-        }
-
-        @Override
-        public int REVERSE_CURRENT_LIMIT() {
-            return 30;
-        }
-
-        @Override
-        public int STATOR_CURRENT_LIMIT() {
-            return 35;
-        }
-
-        @Override
-        public int SUPPLY_CURRENT_LIMIT() {
-            return 25;
-        }
-
-        @Override
-        public double kP() {
-            return 0.3;
-        }
-
-        @Override
-        public double kI() {
-            return 0.1;
-        }
-
-        @Override
-        public double kD() {
-            return 0.0;
-        }
-
-        @Override
-        public double kS() {
-            return 0.6;
-        }
-
-        @Override
-        public double kV() {
-            return 0.15;
-        }
-
-        @Override
-        public double kA() {
-            return 0.02;
         }
 
         @Override

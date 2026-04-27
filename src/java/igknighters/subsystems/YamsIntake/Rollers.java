@@ -4,76 +4,26 @@
 
 package igknighters.subsystems.YamsIntake;
 
-import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
-import yams.gearing.GearBox;
-import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
-import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
-import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class Rollers extends SubsystemBase {
 
-    private SmartMotorControllerConfig smcConfig =
-            new SmartMotorControllerConfig(this)
-                    .withControlMode(ControlMode.CLOSED_LOOP)
-                    // Feedback Constants (PID Constants)
-                    .withClosedLoopController(
-                            Robot.consts.intake().kRollers().kP(),
-                            Robot.consts.intake().kRollers().kI(),
-                            Robot.consts.intake().kRollers().kD())
-                    .withFollowers(
-                            Pair.of(
-                                    new TalonFX(
-                                            Robot.consts.intake().kRollers().FOLLOWER_MOTOR_ID()),
-                                    Robot.consts.intake().kRollers().DRIVE_RATIO() < 0))
-                    .withSimClosedLoopController(
-                            Robot.consts.intake().kRollers().kP(),
-                            Robot.consts.intake().kRollers().kI(),
-                            Robot.consts.intake().kRollers().kD())
-                    // Feedforward Constants
-                    .withFeedforward(
-                            new SimpleMotorFeedforward(
-                                    Robot.consts.intake().kRollers().kS(),
-                                    Robot.consts.intake().kRollers().kV(),
-                                    Robot.consts.intake().kRollers().kA()))
-                    .withSimFeedforward(
-                            new SimpleMotorFeedforward(
-                                    Robot.consts.intake().kRollers().kS(),
-                                    Robot.consts.intake().kRollers().kV(),
-                                    Robot.consts.intake().kRollers().kA()))
-                    // Telemetry name and verbosity level
-                    .withTelemetry("Rollers", TelemetryVerbosity.HIGH)
-                    .withGearing(
-                            new MechanismGearing(
-                                    GearBox.fromReductionStages(
-                                            Robot.consts.intake().kRollers().GEAR_RATIO())))
-                    // Motor properties to prevent over currenting.
-                    .withMotorInverted(
-                            Robot.consts
-                                    .intake()
-                                    .kRollers()
-                                    .INVERTED()
-                                    .equals(InvertedValue.Clockwise_Positive))
-                    .withIdleMode(MotorMode.COAST)
-                    .withStatorCurrentLimit(
-                            Amps.of(Robot.consts.intake().kRollers().STATOR_CURRENT_LIMIT()));
+    private SmartMotorControllerConfig smcConfig = Robot.consts.intake().kRollers().getConfig(this);
 
     // Vendor motor controller object
     private TalonFX roller = new TalonFX(Robot.consts.intake().kRollers().LEADER_MOTOR_ID());
@@ -85,13 +35,11 @@ public class Rollers extends SubsystemBase {
     private final FlyWheelConfig rollerConfig =
             new FlyWheelConfig(talonSmartMotorController)
                     // Diameter of the flywheel.
-                    .withDiameter(
-                            edu.wpi.first.units.Units.Meters.of(
-                                    Robot.consts.intake().kRollers().WHEEL_RADIUS_METERS() * 2))
+                    .withDiameter(Inches.of(4))
                     // Mass of the flywheel.
-                    .withMass(Pounds.of(1))
+                    .withMass(Pounds.of(.15))
                     // Maximum speed of the shooter.
-                    .withUpperSoftLimit(RPM.of(Robot.consts.intake().kRollers().MAX_SPEED_RPM()))
+                    .withUpperSoftLimit(RPM.of(5000))
                     // Telemetry name and verbosity for the arm.
                     .withTelemetry("IntakeRollers", TelemetryVerbosity.HIGH);
 
