@@ -113,22 +113,14 @@ public class SecondBotRobotConsts extends RobotConsts {
                             Robot.consts.intake().kPivot().kP(),
                             Robot.consts.intake().kPivot().kI(),
                             Robot.consts.intake().kPivot().kD(),
-                            RotationsPerSecond.of(
-                                    Robot.consts
-                                            .intake()
-                                            .kPivot()
-                                            .MAX_SPEED_ROTATIONS_PER_SECOND()),
-                            RotationsPerSecondPerSecond.of(
-                                    Robot.consts
-                                            .intake()
-                                            .kPivot()
-                                            .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED()))
+                            RotationsPerSecond.of(12),
+                            RotationsPerSecondPerSecond.of(15))
                     .withSimClosedLoopController(
                             .22,
                             0.02,
                             Robot.consts.intake().kPivot().kD(),
-                            RotationsPerSecond.of(12),
-                            RotationsPerSecondPerSecond.of(24))
+                            RotationsPerSecond.of(24),
+                            RotationsPerSecondPerSecond.of(36))
                     // Feedforward Constants
                     .withFeedforward(
                             new ArmFeedforward(
@@ -148,14 +140,17 @@ public class SecondBotRobotConsts extends RobotConsts {
                     // In this example GearBox.fromReductionStages(3,4) is the same as
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
                     // your motor.
-                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
+                    .withGearing(
+                            new MechanismGearing(
+                                    GearBox.fromReductionStages(
+                                            Robot.consts.intake().kPivot().GEAR_RATIO())))
                     .withMotorInverted(false)
                     .withIdleMode(MotorMode.BRAKE)
                     .withExternalEncoder(caNcoder)
                     .withExternalEncoderGearing(1)
                     .withExternalEncoderZeroOffset(Rotations.of(0.21337890625))
                     .withExternalEncoderInverted(false)
-                    .withUseExternalFeedbackEncoder(false)
+                    .withUseExternalFeedbackEncoder(true)
                     .withStatorCurrentLimit(
                             Amps.of(Robot.consts.intake().kPivot().STATOR_CURRENT_LIMIT()))
                     .withClosedLoopRampRate(Seconds.of(0.25))

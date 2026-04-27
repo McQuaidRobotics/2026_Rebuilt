@@ -116,7 +116,7 @@ public class GeminiRobotConsts extends RobotConsts {
                     // Feedback Constants (PID Constants)
                     .withClosedLoopController(
                             new ProfiledPIDController(
-                                    45.0, 0.0, 0.0, new TrapezoidProfile.Constraints(6, 12)))
+                                    45.0, 0.0, 0.0, new TrapezoidProfile.Constraints(20, 30)))
                     .withSimClosedLoopController(
                             .22,
                             0.02,
@@ -142,13 +142,16 @@ public class GeminiRobotConsts extends RobotConsts {
                     // In this example GearBox.fromReductionStages(3,4) is the same as
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
                     // your motor.
-                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
+                    .withGearing(
+                            new MechanismGearing(
+                                    GearBox.fromReductionStages(
+                                            Robot.consts.intake().kPivot().GEAR_RATIO())))
                     .withMotorInverted(true)
                     .withIdleMode(MotorMode.BRAKE)
                     .withExternalEncoder(caNcoder)
                     .withExternalEncoderGearing(1)
                     .withExternalEncoderZeroOffset(Rotations.of(0.31982421875))
-                    .withExternalEncoderInverted(true)
+                    .withExternalEncoderInverted(false)
                     .withUseExternalFeedbackEncoder(true)
                     .withStatorCurrentLimit(
                             Amps.of(Robot.consts.intake().kPivot().STATOR_CURRENT_LIMIT()))
