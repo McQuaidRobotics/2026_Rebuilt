@@ -1,6 +1,7 @@
 package igknighters.constants;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
@@ -151,7 +152,10 @@ public class SecondBotRobotConsts extends RobotConsts {
                     .withMotorInverted(false)
                     .withIdleMode(MotorMode.BRAKE)
                     .withExternalEncoder(caNcoder)
-                    .withUseExternalFeedbackEncoder(true)
+                    .withExternalEncoderGearing(1)
+                    .withExternalEncoderZeroOffset(Rotations.of(0.21337890625))
+                    .withExternalEncoderInverted(false)
+                    .withUseExternalFeedbackEncoder(false)
                     .withStatorCurrentLimit(
                             Amps.of(Robot.consts.intake().kPivot().STATOR_CURRENT_LIMIT()))
                     .withClosedLoopRampRate(Seconds.of(0.25))

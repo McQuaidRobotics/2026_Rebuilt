@@ -7,7 +7,6 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -30,7 +29,8 @@ public class IntakePivot extends SubsystemBase {
     private SmartMotorControllerConfig smcConfig =
             Robot.consts.intake().kPivot().getConfig(pivotCancoder, this);
     // Vendor motor controller object
-    private TalonFX pivotMotor = new TalonFX(Robot.consts.intake().kPivot().MOTOR_ID());
+    private TalonFX pivotMotor =
+            new TalonFX(Robot.consts.intake().kPivot().MOTOR_ID(), Robot.consts.intake().kCANBUS());
 
     // Create our SmartMotorController from our Spark and config with the Kraken.
     private SmartMotorController talonSmartMotorController =
@@ -52,17 +52,6 @@ public class IntakePivot extends SubsystemBase {
                             Degrees.of(Robot.consts.intake().kPivot().STOWED_ANGLE_DEGREES()))
                     // Telemetry name and verbosity for the arm.
                     .withTelemetry("PivotArm", TelemetryVerbosity.HIGH);
-
-    private final CANcoderConfiguration turretCancoderConfig() {
-        var cfg = new CANcoderConfiguration();
-
-        cfg.MagnetSensor.MagnetOffset = Robot.consts.intake().kPivot().ENCODER_OFFSET();
-        cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.25;
-        cfg.MagnetSensor.SensorDirection =
-                Robot.consts.intake().kPivot().SENSOR_DIRECTION(); // used to be c p
-
-        return cfg;
-    }
 
     // Arm Mechanism
     private Pivot pivot = new Pivot(pivotConfig);
@@ -121,9 +110,7 @@ public class IntakePivot extends SubsystemBase {
     }
 
     /** Creates a new ExampleSubsystem. */
-    public IntakePivot() {
-        this.pivotCancoder.getConfigurator().apply(turretCancoderConfig());
-    }
+    public IntakePivot() {}
 
     /**
      * Example command factory method.

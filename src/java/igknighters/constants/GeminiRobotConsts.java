@@ -1,6 +1,7 @@
 package igknighters.constants;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
@@ -10,6 +11,8 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import igknighters.Robot;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
@@ -112,19 +115,8 @@ public class GeminiRobotConsts extends RobotConsts {
 
                     // Feedback Constants (PID Constants)
                     .withClosedLoopController(
-                            Robot.consts.intake().kPivot().kP(),
-                            Robot.consts.intake().kPivot().kI(),
-                            Robot.consts.intake().kPivot().kD(),
-                            RotationsPerSecond.of(
-                                    Robot.consts
-                                            .intake()
-                                            .kPivot()
-                                            .MAX_SPEED_ROTATIONS_PER_SECOND()),
-                            RotationsPerSecondPerSecond.of(
-                                    Robot.consts
-                                            .intake()
-                                            .kPivot()
-                                            .MAX_ACCELERATION_ROTATIONS_PER_SECOND_SQUARED()))
+                            new ProfiledPIDController(
+                                    45.0, 0.0, 0.0, new TrapezoidProfile.Constraints(6, 12)))
                     .withSimClosedLoopController(
                             .22,
                             0.02,
@@ -151,14 +143,12 @@ public class GeminiRobotConsts extends RobotConsts {
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
                     // your motor.
                     .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
-                    .withMotorInverted(
-                            Robot.consts
-                                    .intake()
-                                    .kPivot()
-                                    .INVERTED()
-                                    .equals(InvertedValue.Clockwise_Positive))
+                    .withMotorInverted(true)
                     .withIdleMode(MotorMode.BRAKE)
                     .withExternalEncoder(caNcoder)
+                    .withExternalEncoderGearing(1)
+                    .withExternalEncoderZeroOffset(Rotations.of(0.31982421875))
+                    .withExternalEncoderInverted(true)
                     .withUseExternalFeedbackEncoder(true)
                     .withStatorCurrentLimit(
                             Amps.of(Robot.consts.intake().kPivot().STATOR_CURRENT_LIMIT()))

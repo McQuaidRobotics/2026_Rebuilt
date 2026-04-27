@@ -1,5 +1,6 @@
 package igknighters.constants;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 
 public class RobotIdentity {
@@ -7,8 +8,7 @@ public class RobotIdentity {
     public enum Robots {
         GEMINKNIGHT,
         DEMO_BOT,
-        SECOND_BOT,
-        UNKNOWN
+        SECOND_BOT
     }
 
     private static final String GEMINKNIGHT_SERIAL_NUMBER = "032B4B20";
@@ -26,6 +26,10 @@ public class RobotIdentity {
             } else if (serialNumber.equals("TBD")) { // Placeholder for Demo Bot if different
                 robot = Robots.GEMINKNIGHT;
             } else {
+                DriverStation.reportError(
+                        "THE SERIAL NUMBER OF THE ROBOT THAT THIS CODE IS DEPLOYED ON IS NOT IN"
+                                + " RobotIdentity.java",
+                        true);
                 robot = Robots.SECOND_BOT; // will default to GEMINIKNIGHT
             }
         }
