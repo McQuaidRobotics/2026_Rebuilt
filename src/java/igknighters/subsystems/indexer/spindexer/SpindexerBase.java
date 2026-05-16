@@ -6,7 +6,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public abstract class SpindexerBase extends SubsystemBase {
 
-    abstract Command setVelocity(AngularVelocity speed);
-    abstract void setVelocitySetpoint(AngularVelocity speed);
-    abstract AngularVelocity getVelocity();
+    public abstract Command setVelocity(AngularVelocity speed);
+
+    public abstract void setVelocitySetpoint(AngularVelocity speed);
+
+    public abstract AngularVelocity getVelocity();
 }

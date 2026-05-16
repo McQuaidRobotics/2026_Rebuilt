@@ -9,15 +9,15 @@ import edu.wpi.first.wpilibj2.command.Commands;
 public class SpindexerDisabled extends SpindexerBase {
 
     @Override
-    AngularVelocity getVelocity() {
+    public AngularVelocity getVelocity() {
         return RPM.of(0);
     }
+
     @Override
-    Command setVelocity(AngularVelocity speed) {
+    public Command setVelocity(AngularVelocity speed) {
         return Commands.none();
     }
+
     @Override
-    void setVelocitySetpoint(AngularVelocity speed) {
-        
-    }
+    public void setVelocitySetpoint(AngularVelocity speed) {}
 }

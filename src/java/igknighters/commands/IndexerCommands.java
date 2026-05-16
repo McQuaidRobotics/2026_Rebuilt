@@ -11,12 +11,12 @@ import java.util.function.BooleanSupplier;
 public class IndexerCommands {
 
     public static Command dispense(Indexer indexer) {
-        return indexer.runOnce(() -> indexer.goToState(IndexerState.DISPENSE_BALL))
-                .withName("DISPENSE");
+        return indexer.goToState(IndexerState.DISPENSE_BALL);
     }
 
     public static Command smartDispense(Indexer indexer) {
-        return indexer.run(
+
+        return Commands.run(
                 () -> {
                     if (ShootInformation.getInstance().canShoot().getAsBoolean()) {
                         indexer.goToState(IndexerState.DISPENSE_BALL);
@@ -27,23 +27,20 @@ public class IndexerCommands {
     }
 
     public static Command jorkIt(Indexer indexer) {
-        return indexer.run(() -> indexer.goToState(IndexerState.JORK_BACKWARD))
+        return indexer.goToState(IndexerState.JORK_BACKWARD)
                 .withTimeout(.1)
-                .andThen(() -> indexer.goToState(IndexerState.STOP))
-                .withTimeout(.1)
-                .andThen(
-                        indexer.run(() -> indexer.goToState(IndexerState.JORK_FORWARD))
-                                .withTimeout(.1))
-                .andThen(indexer.runOnce(() -> indexer.goToState(IndexerState.STOP)))
+                .andThen(indexer.goToState(IndexerState.STOP).withTimeout(.1))
+                .andThen(indexer.goToState(IndexerState.JORK_FORWARD).withTimeout(.1))
+                .andThen(indexer.goToState(IndexerState.STOP).withTimeout(.1))
                 .andThen(Commands.waitSeconds(.1));
     }
 
     public static Command unBlock(Indexer indexer) {
-        return indexer.runOnce(() -> indexer.goToState(IndexerState.AGITATE));
+        return indexer.goToState(IndexerState.AGITATE);
     }
 
     public static Command justStop(Indexer indexer) {
-        return indexer.runOnce(() -> indexer.goToState(IndexerState.STOP)).withName("JUST STOP");
+        return indexer.goToState(IndexerState.STOP).withName("JUST STOP");
     }
 
     public static BooleanSupplier isBallPresent() {

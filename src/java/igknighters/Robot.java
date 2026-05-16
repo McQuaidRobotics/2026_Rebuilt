@@ -523,9 +523,9 @@ public class Robot extends LoggedRobot {
 
             // Logic to launch fuel when dispensing and shooter is ready
             double currentTime = RobotController.getFPGATime() / 1.0e6;
-            if (subsystems.indexer.getExitRollerRPM() > 50.0
+            if (subsystems.exitRollers.getVelocity().in(RPM) > 50.0
                     && subsystems.shooter.getCurrentState().flywheelSpeed.in(RPM) > 500.0
-                    && subsystems.indexer.getSpindexerRPM() > 50.0
+                    && subsystems.spindexer.getVelocity().in(RPM) > 50.0
                     && (currentTime - lastShotTime) > 0.1) { // 0.1s cooldown
 
                 var shooterState = subsystems.shooter.getCurrentState();
