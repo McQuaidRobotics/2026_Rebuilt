@@ -10,7 +10,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -23,7 +25,9 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class ExitRollersFunctioning extends ExitRollersBase {
+public class ExitRollersFunctioning extends SubsystemBase {
+
+    private boolean disabled = true;
     private SmartMotorControllerConfig smcConfig =
             new SmartMotorControllerConfig(this)
                     .withControlMode(ControlMode.CLOSED_LOOP)
@@ -48,35 +52,51 @@ public class ExitRollersFunctioning extends ExitRollersBase {
                     .withIdleMode(MotorMode.COAST)
                     .withStatorCurrentLimit(Amps.of(40));
 
-    private TalonFX spindexerMotor =
-            new TalonFX(Robot.consts.indexer().kExitRollers().LEADER_MOTOR_ID());
+    private TalonFX spindexerMotor;
 
-    private SmartMotorController talonSMC =
-            new TalonFXWrapper(spindexerMotor, DCMotor.getKrakenX60(1), smcConfig);
+    public ExitRollersFunctioning() {
+        if (!disabled) {
+            spindexerMotor = new TalonFX(Robot.consts.indexer().kExitRollers().LEADER_MOTOR_ID());
+            talonSMC = new TalonFXWrapper(spindexerMotor, DCMotor.getKrakenX60(1), smcConfig);
+            shooterConfig =
+                    new FlyWheelConfig(talonSMC)
+                            // Diameter of the flywheel.
+                            .withDiameter(Inches.of(4))
+                            // Mass of the flywheel.
+                            .withMass(Pounds.of(1))
+                            // Maximum speed of the shooter.
+                            .withUpperSoftLimit(RPM.of(5000))
+                            // Telemetry name and verbosity for the arm.
+                            .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
+            shooter = new FlyWheel(shooterConfig);
+        } else {
+            DriverStation.reportWarning(
+                    "EXIT ROLLERS ARE DISABLED BE WARNED OOOOOHHHHH SCCAARRRRYRYYYYYYYY"
+                            + " WAAAAHHHAHAH OOOOOOOHHHH HAAAAA",
+                    null);
+        }
+    }
 
-    private final FlyWheelConfig shooterConfig =
-            new FlyWheelConfig(talonSMC)
-                    // Diameter of the flywheel.
-                    .withDiameter(Inches.of(4))
-                    // Mass of the flywheel.
-                    .withMass(Pounds.of(1))
-                    // Maximum speed of the shooter.
-                    .withUpperSoftLimit(RPM.of(5000))
-                    // Telemetry name and verbosity for the arm.
-                    .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
+    private SmartMotorController talonSMC;
 
-    private FlyWheel shooter = new FlyWheel(shooterConfig);
+    private FlyWheelConfig shooterConfig;
+
+    private FlyWheel shooter;
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        shooter.updateTelemetry();
+        if (!disabled) {
+            shooter.updateTelemetry();
+        }
     }
 
     @Override
     public void simulationPeriodic() {
         // This method will be called once per scheduler run during simulation
-        shooter.simIterate();
+        if (!disabled) {
+            shooter.simIterate();
+        }
     }
 
     /**
@@ -85,7 +105,11 @@ public class ExitRollersFunctioning extends ExitRollersBase {
      * @return Shooter velocity.
      */
     public AngularVelocity getVelocity() {
-        return shooter.getSpeed();
+        if (!disabled) {
+            return shooter.getSpeed();
+        } else {
+            return RPM.of(0.0);
+        }
     }
 
     /**
@@ -95,7 +119,11 @@ public class ExitRollersFunctioning extends ExitRollersBase {
      * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
      */
     public Command setVelocity(AngularVelocity speed) {
-        return shooter.run(speed);
+        if (!disabled) {
+            return shooter.run(speed);
+        } else {
+            return this.run(null);
+        }
     }
 
     /**
@@ -104,7 +132,9 @@ public class ExitRollersFunctioning extends ExitRollersBase {
      * @param speed Speed to set
      */
     public void setVelocitySetpoint(AngularVelocity speed) {
-        shooter.setMechanismVelocitySetpoint(speed);
+        if (!disabled) {
+            shooter.setMechanismVelocitySetpoint(speed);
+        }
     }
 
     /**

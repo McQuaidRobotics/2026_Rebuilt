@@ -9,7 +9,7 @@ import igknighters.commands.Shooter.AimingCommands;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.indexer.Indexer;
-import igknighters.subsystems.indexer.launcherRollers.ExitRollersBase;
+import igknighters.subsystems.indexer.launcherRollers.ExitRollersFunctioning;
 import igknighters.subsystems.indexer.spindexer.SpindexerBase;
 import igknighters.subsystems.intake.AbstractIntake;
 import igknighters.subsystems.intake.Intake;
@@ -23,7 +23,7 @@ public class Subsystems {
     public final Led led;
     public final Shooter shooter;
     public final Indexer indexer;
-    public final ExitRollersBase exitRollers;
+    public final ExitRollersFunctioning exitRollers;
     public final SpindexerBase spindexer;
     public final AbstractIntake intake;
     public final Luma luma;

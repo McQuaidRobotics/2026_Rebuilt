@@ -8,12 +8,12 @@ import igknighters.subsystems.indexer.launcherRollers.*;
 import igknighters.subsystems.indexer.spindexer.*;
 
 public class Indexer {
-    public ExitRollersBase exitRollers;
+    public ExitRollersFunctioning exitRollers;
     public SpindexerBase spindexer;
 
     public Indexer() {
         spindexer = new SpindexerFunctioning();
-        exitRollers = new ExitRollersDisabled();
+        exitRollers = new ExitRollersFunctioning();
     }
 
     public Command goToState(IndexerState state) {
