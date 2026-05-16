@@ -3,28 +3,22 @@ package igknighters.subsystems.indexer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.subsystems.indexer.launcherRollers.*;
-import igknighters.subsystems.indexer.launcherRollers.ExitRollers;
+import igknighters.subsystems.indexer.launcherRollers.ExitRollersFunctioning;
 import igknighters.subsystems.indexer.spindexer.*;
-import igknighters.subsystems.indexer.spindexer.Spindexer;
-import igknighters.subsystems.indexer.spindexer.SpindexerSim;
+import igknighters.subsystems.indexer.spindexer.SpindexerFunctioning;
+import igknighters.subsystems.indexer.spindexer.SpindexerFunctioning;
 import org.littletonrobotics.junction.Logger;
 
 public class Indexer extends SubsystemBase {
-    private Spindexer spindexer;
-    private ExitRollers exitRollers;
+    private ExitRollersBase exitRollers;
+    private SpindexerBase spindexer;
     private double goalSpindexerRPM = 0.0;
     private double goalExitRollerRPM = 0.0;
     private final IndexerVisualizer visualizer = new IndexerVisualizer();
 
     public Indexer() {
-        if (Robot.isReal()) {
-            spindexer = new SpindexerReal();
-            exitRollers = new ExitRollersReal();
-
-        } else {
-            spindexer = new SpindexerSim();
-            exitRollers = new ExitRollersSim();
-        }
+        spindexer = new SpindexerFunctioning();
+        exitRollers = new ExitRollersDisabled();
     }
 
     public void setRPM(double RPM) {
