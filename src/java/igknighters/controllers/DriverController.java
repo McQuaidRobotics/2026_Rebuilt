@@ -4,9 +4,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.IntakeCommands;
 import igknighters.commands.Shooter.AimingCommands;
@@ -15,7 +15,6 @@ import igknighters.commands.SwerveCommands;
 import igknighters.commands.Wayfinder;
 import igknighters.constants.DrivingSharedState;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.intake.IntakeState;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -152,19 +151,32 @@ public class DriverController {
     public void bind(final Subsystems subsystems) {
         var swerve = subsystems.swerve;
         var intake = subsystems.intake;
+        var shooter = subsystems.shooter;
+        var indexer = subsystems.indexer;
 
-        this.LT.whileTrue(IntakeCommands.holdAtIntake(subsystems.intake));
-        this.RT
-                .whileTrue(HigherOrderCommands.rapidFireStream(subsystems))
-                .onFalse(HigherOrderCommands.IdleShooter(subsystems));
-        this.DPR.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
-        this.RB.whileTrue(HigherOrderCommands.forceDispense(subsystems));
-        this.LB.whileTrue(IntakeCommands.intakeWhileSlightJorking(intake));
+        this.LT.whileTrue(
+                Commands.startEnd(
+                        () -> intake.setMode(igknighters.subsystems.intake.Intake.Mode.INTAKING),
+                        () -> intake.setMode(igknighters.subsystems.intake.Intake.Mode.STOWED)));
+        this.RT.whileTrue(
+                Commands.startEnd(
+                        () -> shooter.setMode(igknighters.subsystems.shooter.Shooter.Mode.AIMING),
+                        () ->
+                                shooter.setMode(
+                                        igknighters.subsystems.shooter.Shooter.Mode
+                                                .AUTO_AIMING_IDLE)));
+        this.A.whileTrue(
+                Commands.startEnd(
+                        () -> indexer.setMode(igknighters.subsystems.indexer.Indexer.Mode.DISPENSE),
+                        () -> indexer.setMode(igknighters.subsystems.indexer.Indexer.Mode.IDLE)));
+        this.B.whileTrue(
+                Commands.startEnd(
+                        () -> indexer.setMode(igknighters.subsystems.indexer.Indexer.Mode.UNJAM),
+                        () -> indexer.setMode(igknighters.subsystems.indexer.Indexer.Mode.IDLE)));
+
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
-        this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
-        this.Y.onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.FULL_STOW));
-        this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
-        this.A.and(this.B).whileTrue(Wayfinder.driveToSafeSpot(swerve));
+        this.DPD.whileTrue(ShooterCommands.homeHood(shooter));
+        this.X.whileTrue(Commands.runOnce(() -> shooter.resetHoodEncoder()));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

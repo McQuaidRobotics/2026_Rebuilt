@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.RPM;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.Robot;
+import igknighters.constants.DrivingSharedState;
 import igknighters.subsystems.intake.pivot.Pivot;
 import igknighters.subsystems.intake.pivot.PivotReal;
 import igknighters.subsystems.intake.pivot.PivotSim;
@@ -16,6 +17,13 @@ import igknighters.util.log.Log;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends AbstractIntake {
+    public enum Mode {
+        INTAKING,
+        PROTECTED,
+        STOWED
+    }
+
+    private Mode currentMode = Mode.STOWED;
     private final Pivot pivot;
     public boolean isStowed = false;
     private final Rollers rollers;
@@ -32,6 +40,14 @@ public class Intake extends AbstractIntake {
             rollers = new RollersSim();
         }
         visualizer = new IntakeVisualizer();
+    }
+
+    public void setMode(Mode mode) {
+        this.currentMode = mode;
+    }
+
+    public Mode getMode() {
+        return currentMode;
     }
 
     public void setRollerSpeed(AngularVelocity velo) {
@@ -114,6 +130,24 @@ public class Intake extends AbstractIntake {
 
     @Override
     public void periodic() {
+        Mode activeMode = currentMode;
+        if (DrivingSharedState.getInstance().underTrench && activeMode != Mode.STOWED) {
+            activeMode = Mode.PROTECTED;
+        }
+
+        switch (activeMode) {
+            case INTAKING:
+                goTo(IntakeState.Intake);
+                break;
+            case PROTECTED:
+                goTo(IntakeState.partialStow);
+                break;
+            case STOWED:
+            default:
+                goTo(IntakeState.Stowed);
+                break;
+        }
+
         pivot.periodic();
         rollers.periodic();
         if (Robot.isRobotTest()) {
@@ -123,6 +157,7 @@ public class Intake extends AbstractIntake {
                     "ROBOT/TEST/INTAKE/CURRENT_ROLLER_SPEED", rollers.getSpeed().in(RPM));
             Logger.recordOutput("ROBOT/TEST/INTAKE/GOAL_PIVOT_ANGLE", goalPivotAngleDegrees);
             Logger.recordOutput("ROBOT/TEST/INTAKE/GOAL_ROLLER_SPEED", goalRollerSpeed);
+            Logger.recordOutput("ROBOT/TEST/INTAKE/MODE", currentMode.name());
         }
         if (!Robot.isReal()) {
             visualizer.update(pivot.getAngle().in(Degrees), rollers.getSpeed().in(RPM));

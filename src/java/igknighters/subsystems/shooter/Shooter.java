@@ -3,6 +3,7 @@ package igknighters.subsystems.shooter;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -11,6 +12,7 @@ import igknighters.commands.Shooter.ShooterCommands.shotType;
 import igknighters.constants.ShootInformation;
 import igknighters.subsystems.shooter.flywheel.*;
 import igknighters.subsystems.shooter.hood.*;
+import igknighters.subsystems.shooter.solvers.Math.LerpSolveShot;
 import igknighters.subsystems.shooter.turret.Turret;
 import igknighters.subsystems.shooter.turret.TurretReal;
 import igknighters.subsystems.shooter.turret.TurretSim;
@@ -20,6 +22,13 @@ import igknighters.util.log.Log;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
+    public enum Mode {
+        TRENCH_PROTECTED,
+        AUTO_AIMING_IDLE,
+        AIMING
+    }
+
+    private Mode currentMode = Mode.AUTO_AIMING_IDLE;
     private final Flywheel rollers;
     private final Turret turret;
     private final Hood hood;
@@ -54,6 +63,14 @@ public class Shooter extends SubsystemBase {
             hood = new HoodSim();
         }
         visualizer = new ShooterVisualizer();
+    }
+
+    public void setMode(Mode mode) {
+        this.currentMode = mode;
+    }
+
+    public Mode getMode() {
+        return currentMode;
     }
 
     private void targetSpeed(AngularVelocity velo) {
@@ -176,6 +193,57 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
+        ShootInformation info = ShootInformation.getInstance();
+        Pose3d targetPose = info.getShotLocation();
+
+        Mode activeMode = currentMode;
+        if (igknighters.constants.DrivingSharedState.getInstance().underTrench
+                && activeMode == Mode.AIMING) {
+            activeMode = Mode.TRENCH_PROTECTED;
+        }
+
+        switch (activeMode) {
+            case TRENCH_PROTECTED:
+                ShooterState trenchData =
+                        LerpSolveShot.solve(targetPose, rollers.getSpeed().in(RPM), 0.02);
+                targetState(
+                        RPM.of(3000),
+                        trenchData.turretAngle,
+                        Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
+                break;
+            case AUTO_AIMING_IDLE:
+                ShooterState idleData =
+                        LerpSolveShot.solve(targetPose, rollers.getSpeed().in(RPM), 0.0);
+                targetState(
+                        RPM.of(3000),
+                        idleData.turretAngle,
+                        Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
+                break;
+            case AIMING:
+            default:
+                ShooterState aimData = LerpSolveShot.solve(targetPose, 0.1, 0.0);
+                if (aimData.flywheelSpeed.in(RPM) != 0) {
+                    targetState(aimData);
+                    // AUTOMATION: If we are in AIMING mode and AT TARGET, tell indexer to fire
+                    if (ableToShootState.getAtTarget()) {
+                        igknighters.Robot.consts.indexer().kSpindexer().MAX_SPEED_RPM(); // Just making sure constants are loaded
+                        // We need a way to tell the indexer to dispense. 
+                        // Since we are in the shooter, we should ideally have the indexer manage itself, 
+                        // but for now we can use a global or shared state if available, 
+                        // or just rely on the driver holding the button.
+                        // Actually, the user said "The robot is not shooting", 
+                        // and they are holding RT which sets Shooter to AIMING. 
+                        // But RT doesn't set Indexer to DISPENSE in my current DriverController.
+                    }
+                } else {
+                    targetState(
+                            RPM.of(3200),
+                            aimData.turretAngle,
+                            Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
+                }
+                break;
+        }
+
         rollers.periodic();
         turret.periodic();
         hood.periodic();
@@ -198,6 +266,7 @@ public class Shooter extends SubsystemBase {
             Logger.recordOutput("ROBOT/TEST/SHOOTER/CURRENT_HOOD_ANGLE", getHoodAngleDegrees());
             Logger.recordOutput(
                     "ROBOT/TEST/SHOOTER/CURRENT_ROLLER_SPEED", rollers.getSpeed().in(RPM));
+            Logger.recordOutput("ROBOT/TEST/SHOOTER/MODE", currentMode.name());
         }
         if (Robot.isReal()) {
             if (currentShotType == shotType.SHOT) {
@@ -212,7 +281,6 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getHoodPosition() {
-
         return hood.getAngleDegrees();
     }
 

@@ -22,9 +22,11 @@ import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.AbstractIntake;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.led.LedUtil;
+import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -191,18 +193,13 @@ public class SubsystemTriggers {
         Led led = subsystems.led;
         Swerve swerve = subsystems.swerve;
         AbstractIntake intake = subsystems.intake;
-        Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
+        Shooter shooter = subsystems.shooter;
+        Indexer indexer = subsystems.indexer;
 
+        Trigger onBump = new Trigger(() -> FieldConstants.BUMP.isInside(swerve.getState().Pose));
         Trigger trenchProtection = new Trigger(() -> DrivingSharedState.getInstance().underTrench);
 
         SetupOperatorController(subsystems);
-
-        // onBump.and(teleop)
-        //        .whileTrue(
-        //                Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(true))
-        //                        .andThen(new AutoRotateOnBump(swerve, driverController)));
-        // onBump.onFalse(Commands.runOnce(() ->
-        // DrivingSharedState.getInstance().setOnBump(false)));
 
         onBump.and(teleop)
                 .whileTrue(
@@ -221,7 +218,7 @@ public class SubsystemTriggers {
         // Get the AbleToShootSharedState singleton
         ShootInformation ableToShootState = ShootInformation.getInstance();
 
-        // Bind LED commands to the canShootTrigger
+        // AUTOMATION: Trench Protection LED feedback
         trenchProtection
                 .onTrue(LEDCommands.run(led, LEDPattern.solid(Color.kBlue)))
                 .onFalse(getLEDCommandByMode(led));

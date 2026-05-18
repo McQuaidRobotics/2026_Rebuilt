@@ -21,4 +21,8 @@ public abstract class AbstractIntake extends SubsystemBase {
     public abstract void setRollerSpeed(AngularVelocity speed);
 
     public abstract boolean isStowed();
+
+    public abstract void setMode(Intake.Mode mode);
+
+    public abstract Intake.Mode getMode();
 }

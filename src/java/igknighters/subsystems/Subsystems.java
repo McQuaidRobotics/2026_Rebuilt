@@ -40,9 +40,5 @@ public class Subsystems {
         this.indexer = indexer;
         this.lockedResources =
                 new SubsystemBase[] {swerve, shooter, indexer, intake, luma, vision, led};
-
-        this.indexer.setDefaultCommand(IndexerCommands.jorkIt(indexer).repeatedly());
-        this.intake.setDefaultCommand(IntakeCommands.holdAtStow(intake));
-        this.shooter.setDefaultCommand(AimingCommands.idleCommand(shooter));
     }
 }
