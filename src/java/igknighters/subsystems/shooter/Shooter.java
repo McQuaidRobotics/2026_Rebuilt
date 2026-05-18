@@ -226,13 +226,17 @@ public class Shooter extends SubsystemBase {
                     targetState(aimData);
                     // AUTOMATION: If we are in AIMING mode and AT TARGET, tell indexer to fire
                     if (ableToShootState.getAtTarget()) {
-                        igknighters.Robot.consts.indexer().kSpindexer().MAX_SPEED_RPM(); // Just making sure constants are loaded
-                        // We need a way to tell the indexer to dispense. 
-                        // Since we are in the shooter, we should ideally have the indexer manage itself, 
-                        // but for now we can use a global or shared state if available, 
+                        igknighters.Robot.consts
+                                .indexer()
+                                .kSpindexer()
+                                .MAX_SPEED_RPM(); // Just making sure constants are loaded
+                        // We need a way to tell the indexer to dispense.
+                        // Since we are in the shooter, we should ideally have the indexer manage
+                        // itself,
+                        // but for now we can use a global or shared state if available,
                         // or just rely on the driver holding the button.
-                        // Actually, the user said "The robot is not shooting", 
-                        // and they are holding RT which sets Shooter to AIMING. 
+                        // Actually, the user said "The robot is not shooting",
+                        // and they are holding RT which sets Shooter to AIMING.
                         // But RT doesn't set Indexer to DISPENSE in my current DriverController.
                     }
                 } else {

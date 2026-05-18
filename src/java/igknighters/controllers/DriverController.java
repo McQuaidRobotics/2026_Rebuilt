@@ -159,12 +159,33 @@ public class DriverController {
                         () -> intake.setMode(igknighters.subsystems.intake.Intake.Mode.INTAKING),
                         () -> intake.setMode(igknighters.subsystems.intake.Intake.Mode.STOWED)));
         this.RT.whileTrue(
-                Commands.startEnd(
-                        () -> shooter.setMode(igknighters.subsystems.shooter.Shooter.Mode.AIMING),
-                        () ->
-                                shooter.setMode(
-                                        igknighters.subsystems.shooter.Shooter.Mode
-                                                .AUTO_AIMING_IDLE)));
+                edu.wpi.first.wpilibj2.command.Commands.parallel(
+                        edu.wpi.first.wpilibj2.command.Commands.startEnd(
+                                () ->
+                                        shooter.setMode(
+                                                igknighters.subsystems.shooter.Shooter.Mode.AIMING),
+                                () ->
+                                        shooter.setMode(
+                                                igknighters.subsystems.shooter.Shooter.Mode
+                                                        .AUTO_AIMING_IDLE)),
+                        edu.wpi.first.wpilibj2.command.Commands.startEnd(
+                                        () -> {
+                                            if (igknighters.constants.ShootInformation.getInstance()
+                                                    .getAtTarget()) {
+                                                indexer.setMode(
+                                                        igknighters.subsystems.indexer.Indexer.Mode
+                                                                .DISPENSE);
+                                            } else {
+                                                indexer.setMode(
+                                                        igknighters.subsystems.indexer.Indexer.Mode
+                                                                .IDLE);
+                                            }
+                                        },
+                                        () ->
+                                                indexer.setMode(
+                                                        igknighters.subsystems.indexer.Indexer.Mode
+                                                                .IDLE))
+                                .repeatedly()));
         this.A.whileTrue(
                 Commands.startEnd(
                         () -> indexer.setMode(igknighters.subsystems.indexer.Indexer.Mode.DISPENSE),

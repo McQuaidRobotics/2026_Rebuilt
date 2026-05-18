@@ -1,9 +1,6 @@
 package igknighters.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import igknighters.commands.IndexerCommands;
-import igknighters.commands.IntakeCommands;
-import igknighters.commands.Shooter.AimingCommands;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.indexer.Indexer;
