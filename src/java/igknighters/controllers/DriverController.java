@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.IntakeCommands;
 import igknighters.commands.Shooter.AimingCommands;
@@ -15,7 +14,6 @@ import igknighters.commands.SwerveCommands;
 import igknighters.commands.Wayfinder;
 import igknighters.constants.DrivingSharedState;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.intake.IntakeState;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -154,17 +152,17 @@ public class DriverController {
         var intake = subsystems.intake;
 
         this.LT.whileTrue(IntakeCommands.holdAtIntake(subsystems.intake));
-        this.RT
-                .whileTrue(HigherOrderCommands.rapidFireStream(subsystems))
-                .onFalse(HigherOrderCommands.IdleShooter(subsystems));
-        this.DPR.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
-        this.RB.whileTrue(HigherOrderCommands.forceDispense(subsystems));
-        this.LB.whileTrue(IntakeCommands.intakeWhileSlightJorking(intake));
+        // this.RT
+        //         .whileTrue(HigherOrderCommands.rapidFireStream(subsystems))
+        // .onFalse(HigherOrderCommands.IdleShooter(subsystems));
+        // this.DPR.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
+        // this.RB.whileTrue(HigherOrderCommands.forceDispense(subsystems));
+        // this.LB.whileTrue(IntakeCommands.intakeWhileSlightJorking(intake));
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
-        this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
-        this.Y.onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.FULL_STOW));
-        this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
-        this.A.and(this.B).whileTrue(Wayfinder.driveToSafeSpot(swerve));
+        // this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
+        // this.Y.onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.FULL_STOW));
+        // this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
+        // this.A.and(this.B).whileTrue(Wayfinder.driveToSafeSpot(swerve));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

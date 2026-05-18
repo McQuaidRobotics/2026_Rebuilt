@@ -11,6 +11,7 @@ import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.subsystems.shooter.solvers.Math.LerpSolveShot;
 import igknighters.util.TunableValues;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class ShooterCommands {
@@ -104,6 +105,26 @@ public class ShooterCommands {
                                     shooter.resetHoodEncoder();
                                 }))
                 .withName("HOOD IS DOWN ON SENSOR");
+    }
+
+    public static Command manualRelativeControl(
+            Shooter shooter,
+            DoubleSupplier turretSpeedSupplier,
+            DoubleSupplier hoodSpeedSupplier,
+            DoubleSupplier rpmDeltaSupplier) {
+        return shooter.run(
+                        () -> {
+                            double turretSpeed = turretSpeedSupplier.getAsDouble();
+                            double hoodSpeed = hoodSpeedSupplier.getAsDouble();
+                            double rpmDelta = rpmDeltaSupplier.getAsDouble();
+                            shooter.targetState(
+                                    RPM.of(shooter.goalRPM).plus(RPM.of(rpmDelta * 0.02)),
+                                    Degrees.of(shooter.goalTurretAngleDegrees)
+                                            .plus(Degrees.of(turretSpeed * 0.02)),
+                                    Degrees.of(shooter.goalHoodAngleDegrees)
+                                            .plus(Degrees.of(hoodSpeed * 0.02)));
+                        })
+                .withName("Manual Relative Shooter Control");
     }
 
     public static enum shotType {

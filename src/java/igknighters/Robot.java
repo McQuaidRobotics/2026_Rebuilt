@@ -34,6 +34,7 @@ import igknighters.constants.RobotConsts;
 import igknighters.constants.RobotIdentity;
 import igknighters.constants.SecondBotRobotConsts;
 import igknighters.controllers.DriverController;
+import igknighters.controllers.OperatorController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
@@ -76,6 +77,7 @@ public class Robot extends LoggedRobot {
     public static TurretPosePredError turret_pred_error = new TurretPosePredError();
 
     private final DriverController driverController = new DriverController(0);
+    private final OperatorController operatorController = new OperatorController(1);
 
     public final Subsystems subsystems;
 
@@ -85,7 +87,7 @@ public class Robot extends LoggedRobot {
     private final boolean kUseLimelight = true;
 
     private Telemetry logger;
-    TunableDouble detune = TunableValues.getDouble("Tunables/Detune", 1.0);
+    TunableDouble detune = TunableValues.getDouble("Tunables/Detune", 0.5);
     TunableDouble targetingP = TunableValues.getDouble("Tunables/TargetingP", 0.07);
     TunableDouble targetingI = TunableValues.getDouble("Tunables/TargetingI", 0.00);
     TunableDouble targetingD = TunableValues.getDouble("Tunables/TargetingD", 0.00);
@@ -172,7 +174,7 @@ public class Robot extends LoggedRobot {
 
     public void setUpSwerve(Subsystems subsystems) {
         subsystems.swerve.setDefaultCommand(
-                new TeleopSwerveWithDetune(subsystems.swerve, driverController, 1.0));
+                new TeleopSwerveWithDetune(subsystems.swerve, driverController, .5));
 
         logger = new Telemetry(subsystems.swerve.getMaxSpeedMetersPerSecond(), subsystems);
         subsystems.swerve.registerTelemetry(logger::telemeterize);
@@ -248,6 +250,7 @@ public class Robot extends LoggedRobot {
         setUpAutos(subsystems);
         setUpTest(subsystems);
         bindDriverController();
+        bindOperatorController();
 
         pose_pred = new RobotPosePredictor(subsystems.swerve);
 
@@ -277,8 +280,13 @@ public class Robot extends LoggedRobot {
         setUpAutos(subsystems);
         setUpTest(subsystems);
         bindDriverController();
+        bindOperatorController();
 
         subsystemTriggers.SetupTriggers(subsystems, driverController, poseSupplier());
+    }
+
+    public void bindOperatorController() {
+        operatorController.bind(subsystems);
     }
 
     public Pose3d getTurretPose(double turretAngleDegrees) {

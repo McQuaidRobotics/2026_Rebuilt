@@ -28,9 +28,9 @@ public class Shooter extends SubsystemBase {
     private final ShooterVisualizer visualizer;
 
     private ShootInformation ableToShootState = ShootInformation.getInstance();
-    private double goalRPM = 100.0;
-    private double goalTurretAngleDegrees = 10.0;
-    private double goalHoodAngleDegrees = 10.0;
+    public double goalRPM = 100.0;
+    public double goalTurretAngleDegrees = 10.0;
+    public double goalHoodAngleDegrees = 10.0;
     private LerpTable rpmTable =
             new LerpTable(
                     new LerpTableEntry[] {
