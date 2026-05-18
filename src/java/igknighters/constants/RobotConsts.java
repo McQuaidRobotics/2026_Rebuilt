@@ -1,4 +1,4 @@
-package igknighters.constants;
+﻿package igknighters.constants;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -295,6 +295,8 @@ public abstract class RobotConsts {
     public interface kSpindexerConsts {
         int LEADER_MOTOR_ID();
 
+        SmartMotorControllerConfig getConfig(Subsystem subsystem);
+
         double WHEEL_RADIUS_METERS();
 
         double GEAR_RATIO();
@@ -376,6 +378,8 @@ public abstract class RobotConsts {
 
     public interface kExitRollersConsts {
         int LEADER_MOTOR_ID();
+
+        SmartMotorControllerConfig getConfig(Subsystem subsystem);
 
         double GEAR_RATIO();
 

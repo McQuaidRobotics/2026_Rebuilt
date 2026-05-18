@@ -3,7 +3,6 @@ package igknighters.subsystems;
 import static edu.wpi.first.units.Units.RPM;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import igknighters.commands.IndexerCommands;
 import igknighters.commands.Shooter.AimingCommands;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
@@ -52,14 +51,15 @@ public class Subsystems {
         this.spindexer = indexer.spindexer;
         this.exitRollers = indexer.exitRollers;
         this.lockedResources =
-                new SubsystemBase[] {swerve, shooter, spindexer, exitRollers, rollers, pivot, luma, vision, led};
-
+                new SubsystemBase[] {
+                    swerve, shooter, spindexer, exitRollers, rollers, pivot, luma, vision, led
+                };
 
         this.pivot.setDefaultCommand(pivot.targetAngle(YamIntakeState.STOWED.pivotAngle));
         this.rollers.setDefaultCommand(
                 rollers.targetVelocity(YamIntakeState.STOWED.rollerVelocity));
 
-        this.spindexer.setDefaultCommand(IndexerCommands.jorkIt(indexer).repeatedly());
+        this.spindexer.setDefaultCommand(indexer.idleSpindexer());
         this.exitRollers.setDefaultCommand(this.exitRollers.setVelocity(RPM.of(0.0)));
         this.shooter.setDefaultCommand(AimingCommands.idleCommand(shooter));
     }

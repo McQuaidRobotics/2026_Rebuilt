@@ -12,6 +12,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import yams.gearing.GearBox;
@@ -27,7 +28,7 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class ExitRollersFunctioning extends SubsystemBase {
 
-    private boolean disabled = true;
+    private boolean disabled = false;
     private SmartMotorControllerConfig smcConfig =
             new SmartMotorControllerConfig(this)
                     .withControlMode(ControlMode.CLOSED_LOOP)
@@ -40,7 +41,7 @@ public class ExitRollersFunctioning extends SubsystemBase {
                     .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
                     .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
                     // Telemetry name and verbosity level
-                    .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
+                    .withTelemetry("EXIT ROLLERS", TelemetryVerbosity.HIGH)
                     // Gearing from the motor rotor to final shaft.
                     // In this example GearBox.fromReductionStages(3,4) is the same as
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
@@ -67,13 +68,13 @@ public class ExitRollersFunctioning extends SubsystemBase {
                             // Maximum speed of the shooter.
                             .withUpperSoftLimit(RPM.of(5000))
                             // Telemetry name and verbosity for the arm.
-                            .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
+                            .withTelemetry("EXIT ROLLERS", TelemetryVerbosity.HIGH);
             shooter = new FlyWheel(shooterConfig);
         } else {
             DriverStation.reportWarning(
                     "EXIT ROLLERS ARE DISABLED BE WARNED OOOOOHHHHH SCCAARRRRYRYYYYYYYY"
                             + " WAAAAHHHAHAH OOOOOOOHHHH HAAAAA",
-                    null);
+                    false);
         }
     }
 
@@ -122,7 +123,7 @@ public class ExitRollersFunctioning extends SubsystemBase {
         if (!disabled) {
             return shooter.run(speed);
         } else {
-            return this.run(null);
+            return Commands.none();
         }
     }
 
@@ -144,6 +145,10 @@ public class ExitRollersFunctioning extends SubsystemBase {
      * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
      */
     public Command set(double dutyCycle) {
-        return shooter.set(dutyCycle);
+        if (!disabled) {
+            return shooter.set(dutyCycle);
+        } else {
+            return Commands.none();
+        }
     }
 }

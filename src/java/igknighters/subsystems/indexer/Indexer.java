@@ -26,4 +26,12 @@ public class Indexer {
         spindexer.setVelocitySetpoint(RPM.of(state.getSpindexerRPM()));
         exitRollers.setVelocitySetpoint(RPM.of(state.getExitRollerRPM()));
     }
+
+    public Command idleSpindexer() {
+        return Commands.repeatingSequence(
+                spindexer.setVelocity(RPM.of(1000)).withTimeout(.2),
+                spindexer.setVelocity(RPM.of(0.0)).withTimeout(.2),
+                spindexer.setVelocity(RPM.of(-1000)).withTimeout(.2),
+                spindexer.setVelocity(RPM.of(0.0)).withTimeout(.2));
+    }
 }
