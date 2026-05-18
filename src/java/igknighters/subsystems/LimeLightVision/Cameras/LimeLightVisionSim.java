@@ -1,6 +1,7 @@
 package igknighters.subsystems.LimeLightVision.Cameras;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import igknighters.subsystems.LimeLightVision.Helpers.VisionSimulator;
 import igknighters.util.Merging.PoseAverager;
 import java.util.ArrayList;
@@ -82,5 +83,10 @@ public class LimeLightVisionSim extends LimeLights {
     @Override
     public List<Integer> getVisibleTagIds() {
         return visibleTagIds;
+    }
+
+    @Override
+    public Pose3d getRelativeTagPose(int tagId) {
+        return null;
     }
 }

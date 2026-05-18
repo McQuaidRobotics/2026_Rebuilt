@@ -1,10 +1,13 @@
 package igknighters.subsystems.LimeLightVision.Cameras;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotController;
 import igknighters.Robot;
 import igknighters.subsystems.LimeLightVision.Helpers.LimelightHelpers;
+import igknighters.subsystems.LimeLightVision.Helpers.LimelightHelpers.LimelightResults;
+import igknighters.subsystems.LimeLightVision.Helpers.LimelightHelpers.LimelightTarget_Fiducial;
 import igknighters.util.Merging.PoseAverager;
 import igknighters.util.log.Log;
 import java.util.ArrayList;
@@ -145,5 +148,20 @@ public class LimeLightVisionReal extends LimeLights {
     /** Returns the last timestamp from vision measurements. */
     public double getLastTimeStamp() {
         return lastTimeStamp;
+    }
+
+    @Override
+    public Pose3d getRelativeTagPose(int tagId) {
+        for (String cameraName : cameraNames) {
+            LimelightResults results = LimelightHelpers.getLatestResults(cameraName);
+            if (results != null && results.targets_Fiducials != null) {
+                for (LimelightTarget_Fiducial tag : results.targets_Fiducials) {
+                    if ((int) tag.fiducialID == tagId) {
+                        return tag.getTargetPose_RobotSpace();
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

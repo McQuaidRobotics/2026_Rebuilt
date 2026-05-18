@@ -3,7 +3,7 @@ package igknighters.constants;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import igknighters.constants.SubsystemConstants.kShooter.kHood;
+import igknighters.Robot;
 import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
 import igknighters.subsystems.swerve.swerveconstants.SwerveConsts;
 import igknighters.util.LerpTable;
@@ -407,30 +407,43 @@ public class SecondBotRobotConsts extends RobotConsts {
     }
 
     public static class GeminiHoodLerpAngleConsts implements kHoodAngleConsts {
-        static LerpTable HOOD_LERP =
+        // Standard high-velocity shots for 4ft target
+        static LerpTable HOOD_LERP_NON_DEMO =
                 new LerpTable(
                         new LerpTableEntry[] {
-                            new LerpTableEntry(
-                                    1.5,
-                                    kHood.MIN_ANGLE_DEGREES), // this is a shortfall but i dont know
-                            // how to acces other consts within
-                            // this file
-                            new LerpTableEntry(2.5, 25.0),
-                            new LerpTableEntry(3.5, 30.0),
-                            new LerpTableEntry(4.5, 34.0),
-                            new LerpTableEntry(5.5, 34.0),
-                            new LerpTableEntry(6.0, 38.0),
-                            new LerpTableEntry(10.0, 45)
+                            new LerpTableEntry(1.5, 18.6), // Clamped to min
+                            new LerpTableEntry(2.5, 18.6), // Clamped to min
+                            new LerpTableEntry(3.5, 20.1),
+                            new LerpTableEntry(4.5, 26.3),
+                            new LerpTableEntry(5.5, 27.7),
+                            new LerpTableEntry(6.0, 32.2),
+                            new LerpTableEntry(10.0, 41.5)
+                        });
+
+        // High-arc "Soft" shots for 4ft target
+        static LerpTable HOOD_LERP_DEMO =
+                new LerpTable(
+                        new LerpTableEntry[] {
+                            new LerpTableEntry(1.5, 18.6), // Min physical angle
+                            new LerpTableEntry(2.5, 30.0),
+                            new LerpTableEntry(3.5, 45.0), // Max efficiency angle
+                            new LerpTableEntry(4.5, 45.0),
+                            new LerpTableEntry(5.5, 45.0),
+                            new LerpTableEntry(6.0, 45.0),
+                            new LerpTableEntry(10.0, 45.0)
                         });
 
         @Override
         public LerpTable table() {
-            return HOOD_LERP;
+            if (Robot.ISDEMO) {
+                return HOOD_LERP_DEMO;
+            }
+            return HOOD_LERP_NON_DEMO;
         }
     }
 
     public static class GeminiRPMConsts implements kRPMConsts {
-        static LerpTable RPM_LERP =
+        static LerpTable RPM_LERP_NON_DEMO =
                 new LerpTable(
                         new LerpTableEntry[] {
                             new LerpTableEntry(1.5, 2700),
@@ -449,28 +462,64 @@ public class SecondBotRobotConsts extends RobotConsts {
                             new LerpTableEntry(20, 6000)
                         });
 
-        @Override
-        public LerpTable table() {
-            return RPM_LERP;
-        }
-    }
-
-    public static class GeminiTimeOfFlightConsts implements kTOFConsts {
-        static LerpTable TIME_OF_FLIGHT_LERP =
+        static LerpTable RPM_LERP_DEMO =
                 new LerpTable(
                         new LerpTableEntry[] {
-                            new LerpTableEntry(1, 1.1),
-                            new LerpTableEntry(2.5, 1.1),
-                            new LerpTableEntry(3.5, 1.1),
-                            new LerpTableEntry(4, 1.1),
-                            new LerpTableEntry(4.5, 1.1),
-                            new LerpTableEntry(5.5, 1.15),
-                            new LerpTableEntry(6, 1)
+                            new LerpTableEntry(1.5, 2100), // Bare minimum to reach 4ft at 18.6 deg
+                            new LerpTableEntry(2.0, 2000),
+                            new LerpTableEntry(
+                                    2.5, 1950), // Lower RPM possible due to higher hood angle
+                            new LerpTableEntry(3.0, 1900),
+                            new LerpTableEntry(3.5, 1850),
+                            new LerpTableEntry(4.0, 1950),
+                            new LerpTableEntry(4.5, 2100),
+                            new LerpTableEntry(5.2, 2300),
+                            new LerpTableEntry(6.0, 2600),
+                            new LerpTableEntry(8.0, 3200),
+                            new LerpTableEntry(10.0, 3800),
+                            new LerpTableEntry(20.0, 5500)
                         });
 
         @Override
         public LerpTable table() {
-            return TIME_OF_FLIGHT_LERP;
+            if (Robot.ISDEMO) {
+                return RPM_LERP_DEMO;
+            }
+            return RPM_LERP_NON_DEMO;
+        }
+    }
+
+    public static class GeminiTimeOfFlightConsts implements kTOFConsts {
+        // Standard "Line Drive" flight times
+        static LerpTable TIME_OF_FLIGHT_LERP_NON_DEMO =
+                new LerpTable(
+                        new LerpTableEntry[] {
+                            new LerpTableEntry(1.0, 1.1),
+                            new LerpTableEntry(2.5, 1.1),
+                            new LerpTableEntry(3.5, 1.1),
+                            new LerpTableEntry(4.5, 1.1),
+                            new LerpTableEntry(5.5, 1.15),
+                            new LerpTableEntry(6.0, 1.0)
+                        });
+
+        // "Rainbow" shot flight times (longer airtime)
+        static LerpTable TIME_OF_FLIGHT_LERP_DEMO =
+                new LerpTable(
+                        new LerpTableEntry[] {
+                            new LerpTableEntry(1.5, 0.6),
+                            new LerpTableEntry(2.5, 0.9),
+                            new LerpTableEntry(3.5, 1.2),
+                            new LerpTableEntry(4.5, 1.3),
+                            new LerpTableEntry(5.5, 1.4),
+                            new LerpTableEntry(6.0, 1.5)
+                        });
+
+        @Override
+        public LerpTable table() {
+            if (Robot.ISDEMO) {
+                return TIME_OF_FLIGHT_LERP_DEMO;
+            }
+            return TIME_OF_FLIGHT_LERP_NON_DEMO;
         }
     }
 

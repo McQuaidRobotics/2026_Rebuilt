@@ -1,6 +1,7 @@
 package igknighters.subsystems.LimeLightVision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.constants.SubsystemConstants;
@@ -57,5 +58,9 @@ public class LimeLightVision extends SubsystemBase {
             Log.log("ROBOT/Subsystems/Vison/Limelight/ENABLED", true);
         }
         return vision.getRobotPoseFromVision(yaw, yawRate, pitch, pitchRate, roll, rollRate);
+    }
+
+    public Pose3d getRelativeTagPose(int tagId) {
+        return vision.getRelativeTagPose(tagId);
     }
 }
