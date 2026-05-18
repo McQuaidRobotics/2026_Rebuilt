@@ -1,6 +1,7 @@
 package igknighters.constants;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
@@ -918,6 +919,35 @@ public class SecondBotRobotConsts extends RobotConsts {
         }
 
         @Override
+        public SmartMotorControllerConfig getConfig(Subsystem subsystem) {
+            final SmartMotorControllerConfig smcConfig =
+            new SmartMotorControllerConfig(subsystem)
+                    .withControlMode(ControlMode.CLOSED_LOOP)
+                    // Feedback Constants (PID Constants)
+                    .withClosedLoopController(
+                            .5, 0, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
+                    .withSimClosedLoopController(
+                            .5, 0, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
+                    // Feedforward Constants
+                    .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+                    .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+                    // Telemetry name and verbosity level
+                    .withTelemetry("Spindexer Motor Controller", TelemetryVerbosity.HIGH)
+                    // Gearing from the motor rotor to final shaft.
+                    // In this example GearBox.fromReductionStages(3,4) is the same as
+                    // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
+                    // your motor.
+                    // You could also use .withGearing(12) which does the same thing.
+                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(4)))
+                    // Motor properties to prevent over currenting.
+                    .withMotorInverted(false)
+                    .withIdleMode(MotorMode.COAST)
+                    .withStatorCurrentLimit(Amps.of(40));
+
+            return smcConfig;
+        }
+
+        @Override
         public double WHEEL_RADIUS_METERS() {
             return 0.0508;
         }
@@ -1017,6 +1047,35 @@ public class SecondBotRobotConsts extends RobotConsts {
         @Override
         public int LEADER_MOTOR_ID() {
             return 58;
+        }
+
+        @Override
+        public SmartMotorControllerConfig getConfig(Subsystem subsystem) {
+            final SmartMotorControllerConfig smcConfig =
+                new SmartMotorControllerConfig(subsystem)
+                    .withControlMode(ControlMode.CLOSED_LOOP)
+                    // Feedback Constants (PID Constants)
+                    .withClosedLoopController(
+                            .3, 0.1, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
+                    .withSimClosedLoopController(
+                            .3, 0.1, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
+                    // Feedforward Constants
+                    .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+                    .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+                    // Telemetry name and verbosity level
+                    .withTelemetry("EXIT ROLLERS", TelemetryVerbosity.HIGH)
+                    // Gearing from the motor rotor to final shaft.
+                    // In this example GearBox.fromReductionStages(3,4) is the same as
+                    // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
+                    // your motor.
+                    // You could also use .withGearing(12) which does the same thing.
+                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(5)))
+                    // Motor properties to prevent over currenting.
+                    .withMotorInverted(false)
+                    .withIdleMode(MotorMode.COAST)
+                    .withStatorCurrentLimit(Amps.of(40));
+
+            return smcConfig;
         }
 
         @Override

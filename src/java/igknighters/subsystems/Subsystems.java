@@ -11,7 +11,7 @@ import igknighters.subsystems.YamsIntake.Rollers;
 import igknighters.subsystems.YamsIntake.YamIntake;
 import igknighters.subsystems.YamsIntake.YamIntakeState;
 import igknighters.subsystems.indexer.Indexer;
-import igknighters.subsystems.indexer.launcherRollers.ExitRollersFunctioning;
+import igknighters.subsystems.indexer.launcherRollers.ExitRollersBase;
 import igknighters.subsystems.indexer.spindexer.SpindexerBase;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
@@ -26,7 +26,7 @@ public class Subsystems {
     public final IntakePivot pivot;
     public final Rollers rollers;
     public final YamIntake intake;
-    public final ExitRollersFunctioning exitRollers;
+    public final ExitRollersBase exitRollers;
     public final SpindexerBase spindexer;
     public final Luma luma;
     public final SubsystemBase[] lockedResources;
