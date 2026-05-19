@@ -398,95 +398,41 @@ public class GeminiRobotConsts extends RobotConsts {
         }
 
         @Override
-        public int FOLLOWER_MOTOR_ID() {
-            return 22;
+        public SmartMotorControllerConfig getConfig(Subsystem subsystem, TalonFX follower) {
+            return new SmartMotorControllerConfig(subsystem)
+                    .withControlMode(ControlMode.CLOSED_LOOP)
+                    // Feedback Constants (PID Constants)
+                    .withClosedLoopController(new ProfiledPIDController(0.3, 0.1, 0.0, new TrapezoidProfile.Constraints(5800, 5800)))
+                    .withFollowers(
+                            Pair.of(
+                                    follower,
+                                    true))
+                    .withSimClosedLoopController(new ProfiledPIDController(0.3, 0.1, 0.0, new TrapezoidProfile.Constraints(5800, 5800)))
+                    // Feedforward Constants
+                    .withFeedforward(new SimpleMotorFeedforward(0.17, 0.1, 0.02))
+                    .withSimFeedforward(new SimpleMotorFeedforward(0.17, 0.1, 0.02))
+                    // Telemetry name and verbosity level
+                    .withTelemetry("Flywheels", TelemetryVerbosity.HIGH)
+                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
+                    // Motor properties to prevent over currenting.
+                    .withMotorInverted(false)
+                    .withIdleMode(MotorMode.COAST)
+                    .withStatorCurrentLimit(Amps.of(40));
         }
 
         @Override
-        public InvertedValue INVERTED() {
-            return InvertedValue.Clockwise_Positive;
+        public int FOLLOWER_MOTOR_ID() {
+            return 22;
         }
-
         @Override
         public double WHEEL_RADIUS_METERS() {
             return 0.0508;
         }
-
-        @Override
-        public double GEAR_RATIO() {
-            return 1.0;
-        }
-
-        @Override
-        public double MOMENT_OF_INERTIA_KG_M2() {
-            return 0.02;
-        }
-
-        @Override
-        public double MAX_SPEED_RPM() {
-            return 5000.0;
-        }
-
-        @Override
-        public double MAX_ACCELERATION_RPM() {
-            return 3000.0;
-        }
-
-        @Override
-        public double MOTION_MAGIC_JERK() {
-            return 100.0;
-        }
-
-        @Override
-        public int BEAM_BREAK_SENSOR_CHANNEL() {
-            return 0;
-        }
-
-        @Override
-        public double kP() {
-            return 0.3;
-        }
-
-        @Override
-        public double kI() {
-            return 0.1;
-        }
-
-        @Override
-        public double kD() {
-            return 0.0;
-        }
-
-        @Override
-        public double kS() {
-            return 0.17;
-        }
-
-        @Override
-        public double kV() {
-            return 0.1;
-        }
-
-        @Override
-        public double kA() {
-            return 0.02;
-        }
-
         @Override
         public double ShooterHeightMeters() {
             return 0.5;
         }
-
-        @Override
-        public double PEAK_CURRENT_LIMIT() {
-            return 40;
-        }
-
-        @Override
-        public double SUPPLY_CURRENT_LIMIT() {
-            return 30;
-        }
-
+        
         @Override
         public boolean disableFlywheelsLogs() {
             return false;

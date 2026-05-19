@@ -2,6 +2,7 @@ package igknighters.constants;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -75,43 +76,16 @@ public abstract class RobotConsts {
     }
 
     public interface kFlywheelsConsts {
+
+        SmartMotorControllerConfig getConfig(Subsystem subsystem, TalonFX follower);
+
         int LEADER_MOTOR_ID();
 
         int FOLLOWER_MOTOR_ID();
 
-        InvertedValue INVERTED();
-
         double WHEEL_RADIUS_METERS();
 
-        double GEAR_RATIO();
-
-        double MOMENT_OF_INERTIA_KG_M2();
-
-        double MAX_SPEED_RPM();
-
-        double MAX_ACCELERATION_RPM();
-
-        double MOTION_MAGIC_JERK();
-
-        int BEAM_BREAK_SENSOR_CHANNEL();
-
-        double kP();
-
-        double kI();
-
-        double kD();
-
-        double kS();
-
-        double kV();
-
-        double kA();
-
         double ShooterHeightMeters();
-
-        double PEAK_CURRENT_LIMIT();
-
-        double SUPPLY_CURRENT_LIMIT();
 
         boolean disableFlywheelsLogs();
 
