@@ -6,6 +6,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.commands.Shooter.AimingCommands;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
+import igknighters.subsystems.YamShooter.Shooter;
+import igknighters.subsystems.YamShooter.flywheels.Flywheels;
+import igknighters.subsystems.YamShooter.hood.Hood;
+import igknighters.subsystems.YamShooter.turret.Turret;
 import igknighters.subsystems.YamsIntake.IntakePivot;
 import igknighters.subsystems.YamsIntake.Rollers;
 import igknighters.subsystems.YamsIntake.YamIntake;
@@ -14,7 +18,6 @@ import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.indexer.launcherRollers.ExitRollersBase;
 import igknighters.subsystems.indexer.spindexer.SpindexerBase;
 import igknighters.subsystems.led.Led;
-import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 
 public class Subsystems {
@@ -29,6 +32,9 @@ public class Subsystems {
     public final ExitRollersBase exitRollers;
     public final SpindexerBase spindexer;
     public final Luma luma;
+    public final Turret turret;
+    public final Hood hood;
+    public final Flywheels flywheels;
     public final SubsystemBase[] lockedResources;
 
     public Subsystems(
@@ -50,9 +56,12 @@ public class Subsystems {
         this.rollers = intake.rollers;
         this.spindexer = indexer.spindexer;
         this.exitRollers = indexer.exitRollers;
+        this.hood = shooter.hood;
+        this.flywheels = shooter.flywheels;
+        this.turret = shooter.turret;
         this.lockedResources =
                 new SubsystemBase[] {
-                    swerve, shooter, spindexer, exitRollers, rollers, pivot, luma, vision, led
+                    swerve, flywheels, turret, hood, spindexer, exitRollers, rollers, pivot, luma, vision, led
                 };
 
         this.pivot.setDefaultCommand(pivot.targetAngle(YamIntakeState.STOWED.pivotAngle));

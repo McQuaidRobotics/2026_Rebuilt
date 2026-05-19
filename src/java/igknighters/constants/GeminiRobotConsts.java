@@ -29,6 +29,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
+import yams.motorcontrollers.simulation.Sensor;
 
 public class GeminiRobotConsts extends RobotConsts {
 
@@ -103,7 +104,7 @@ public class GeminiRobotConsts extends RobotConsts {
     public static class GeminiPivotConsts implements kPivotConsts {
         @Override
         public int MOTOR_ID() {
-            return 18;
+            return 15;
         }
 
         @Override
@@ -184,7 +185,7 @@ public class GeminiRobotConsts extends RobotConsts {
     public static class GeminiRollersConsts implements kRollersConsts {
         @Override
         public int LEADER_MOTOR_ID() {
-            return 20;
+            return 16;
         }
 
         @Override
@@ -213,7 +214,7 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public int FOLLOWER_MOTOR_ID() {
-            return 28;
+            return 17;
         }
 
         @Override
@@ -394,7 +395,7 @@ public class GeminiRobotConsts extends RobotConsts {
     public static class GeminiFlywheelsConsts implements kFlywheelsConsts {
         @Override
         public int LEADER_MOTOR_ID() {
-            return 23;
+            return 21;
         }
 
         @Override
@@ -442,17 +443,41 @@ public class GeminiRobotConsts extends RobotConsts {
     public static class GeminiTurretConsts implements kTurretConsts {
         @Override
         public int MOTOR_ID() {
-            return 24;
+            return 18;
         }
 
         @Override
-        public SensorDirectionValue CANCODER_DIRECTION() {
-            return SensorDirectionValue.CounterClockwise_Positive;
-        }
+        public SmartMotorControllerConfig getConfig(Subsystem subsystem, CANcoder caNcoder) {
+            return new SmartMotorControllerConfig(subsystem)
+                    .withControlMode(ControlMode.CLOSED_LOOP)
 
-        @Override
-        public InvertedValue MOTOR_INVERTED() {
-            return InvertedValue.CounterClockwise_Positive;
+                    // Feedback Constants (PID Constants)
+                    .withClosedLoopController(
+                            new ProfiledPIDController(
+                                    75.0, 0.15, 0.0, new TrapezoidProfile.Constraints(200, 500)))
+                    .withSimClosedLoopController(
+                            new ProfiledPIDController(
+                                    4, 0.05, 0.0, new TrapezoidProfile.Constraints(200, 500)))
+                    // Feedforward Constants
+                    .withFeedforward(new ArmFeedforward(0.0, 0, 0.0, 0.0))
+                    .withSimFeedforward(new ArmFeedforward(0.0, 0, 0.0, 0.0))
+                    // Telemetry name and verbosity level
+                    .withTelemetry("Turret Motor", TelemetryVerbosity.HIGH)
+                    // Gearing from the motor rotor to final shaft.
+                    // In this example GearBox.fromReductionStages(3,4) is the same as
+                    // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
+                    // your motor.
+                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(16.2)))
+                    .withMotorInverted(true)
+                    .withIdleMode(MotorMode.BRAKE)
+                    .withExternalEncoder(caNcoder)
+                    .withExternalEncoderGearing(1)
+                    .withExternalEncoderZeroOffset(Rotations.of(-0.250732421875))
+                    .withExternalEncoderInverted(true)
+                    .withUseExternalFeedbackEncoder(true)
+                    .withStatorCurrentLimit(Amps.of(20))
+                    .withClosedLoopRampRate(Seconds.of(0.25))
+                    .withOpenLoopRampRate(Seconds.of(0.25));
         }
 
         @Override
@@ -462,12 +487,7 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public int CANCODER_ID() {
-            return 25;
-        }
-
-        @Override
-        public double CANCODER_OFFSET_ROTATIONS() {
-            return -0.250732421875;
+            return 19;
         }
 
         @Override
@@ -486,61 +506,6 @@ public class GeminiRobotConsts extends RobotConsts {
         }
 
         @Override
-        public double MAX_SPEED_RPM() {
-            return 200.0;
-        }
-
-        @Override
-        public double MAX_ACCELERATION_RPM() {
-            return 500.0;
-        }
-
-        @Override
-        public double MAX_JERK() {
-            return 300;
-        }
-
-        @Override
-        public int STATOR_CURRENT_LIMIT() {
-            return 40;
-        }
-
-        @Override
-        public int SUPPLY_CURRENT_LIMIT() {
-            return 30;
-        }
-
-        @Override
-        public double kP() {
-            return 75.0;
-        }
-
-        @Override
-        public double kI() {
-            return 0.15;
-        }
-
-        @Override
-        public double kD() {
-            return 0.0;
-        }
-
-        @Override
-        public double kS() {
-            return 0.0;
-        }
-
-        @Override
-        public double kV() {
-            return 0.0;
-        }
-
-        @Override
-        public double kA() {
-            return 0.0;
-        }
-
-        @Override
         public boolean disableTurretLogs() {
             return false;
         }
@@ -549,7 +514,36 @@ public class GeminiRobotConsts extends RobotConsts {
     public static class GeminiHoodConsts implements kHoodConsts {
         @Override
         public int MOTOR_ID() {
-            return 26;
+            return 20;
+        }
+
+        @Override
+        public SmartMotorControllerConfig getConfig(Subsystem subsystem) {
+            return new SmartMotorControllerConfig(subsystem)
+                    .withControlMode(ControlMode.CLOSED_LOOP)
+
+                    // Feedback Constants (PID Constants)
+                    .withClosedLoopController(
+                            new ProfiledPIDController(
+                                    4.0, 0.0, 0.0, new TrapezoidProfile.Constraints(12, 24)))
+                    .withSimClosedLoopController(
+                            new ProfiledPIDController(
+                                    4, 0.05, 0.0, new TrapezoidProfile.Constraints(12, 24)))
+                    // Feedforward Constants
+                    .withFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
+                    .withSimFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
+                    // Telemetry name and verbosity level
+                    .withTelemetry("Intake Pivot Motor", TelemetryVerbosity.HIGH)
+                    // Gearing from the motor rotor to final shaft.
+                    // In this example GearBox.fromReductionStages(3,4) is the same as
+                    // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
+                    // your motor.
+                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
+                    .withMotorInverted(true)
+                    .withIdleMode(MotorMode.BRAKE)
+                    .withStatorCurrentLimit(Amps.of(20))
+                    .withClosedLoopRampRate(Seconds.of(0.25))
+                    .withOpenLoopRampRate(Seconds.of(0.25));
         }
 
         @Override
@@ -565,66 +559,6 @@ public class GeminiRobotConsts extends RobotConsts {
         @Override
         public double MIN_ANGLE_DEGREES() {
             return 18.6;
-        }
-
-        @Override
-        public double MAX_SPEED_R_P_S() {
-            return 12.0;
-        }
-
-        @Override
-        public double MAX_ACCEL_R_P_S_S() {
-            return 24.0;
-        }
-
-        @Override
-        public double MAX_JERK() {
-            return 1.0;
-        }
-
-        @Override
-        public int STATOR_CURRENT_LIMIT() {
-            return 30;
-        }
-
-        @Override
-        public int SUPPLY_CURRENT_LIMIT() {
-            return 20;
-        }
-
-        @Override
-        public double kP() {
-            return 4.0;
-        }
-
-        @Override
-        public double kI() {
-            return 0.0;
-        }
-
-        @Override
-        public double kD() {
-            return 0.0;
-        }
-
-        @Override
-        public double kS() {
-            return 0.27;
-        }
-
-        @Override
-        public double kV() {
-            return 0.0;
-        }
-
-        @Override
-        public double kA() {
-            return 0.0;
-        }
-
-        @Override
-        public double JKG_M2() {
-            return 0.01;
         }
 
         @Override
@@ -663,7 +597,7 @@ public class GeminiRobotConsts extends RobotConsts {
     public static class GeminiSpindexerConsts implements kSpindexerConsts {
         @Override
         public int LEADER_MOTOR_ID() {
-            return 16;
+            return 13;
         }
 
         @Override
@@ -791,7 +725,7 @@ public class GeminiRobotConsts extends RobotConsts {
     public static class GeminiExitRollersConsts implements kExitRollersConsts {
         @Override
         public int LEADER_MOTOR_ID() {
-            return 17;
+            return 14;
         }
 
         @Override

@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
 import igknighters.util.LerpTable;
 import yams.motorcontrollers.SmartMotorControllerConfig;
+import yams.motorcontrollers.simulation.Sensor;
 
 public abstract class RobotConsts {
     public abstract CANBus getSuperStructureBus();
@@ -97,43 +98,17 @@ public abstract class RobotConsts {
     public interface kTurretConsts {
         int MOTOR_ID();
 
-        SensorDirectionValue CANCODER_DIRECTION();
-
-        InvertedValue MOTOR_INVERTED();
+        SmartMotorControllerConfig getConfig(Subsystem subsystem, CANcoder caNcoder);
 
         double TURRET_ROBOT_DISTANCE_FROM_CENTERS();
 
         int CANCODER_ID();
-
-        double CANCODER_OFFSET_ROTATIONS();
 
         double GEAR_RATIO();
 
         double MAX_ANGLE_DEGREES();
 
         double MIN_ANGLE_DEGREES();
-
-        double MAX_SPEED_RPM();
-
-        double MAX_ACCELERATION_RPM();
-
-        double MAX_JERK();
-
-        int STATOR_CURRENT_LIMIT();
-
-        int SUPPLY_CURRENT_LIMIT();
-
-        double kP();
-
-        double kI();
-
-        double kD();
-
-        double kS();
-
-        double kV();
-
-        double kA();
 
         boolean disableTurretLogs();
     }
@@ -143,33 +118,11 @@ public abstract class RobotConsts {
 
         double MOTOR_ROTS_TO_HOOD_DEGREES();
 
-        double MAX_ANGLE_DEGREES();
+        SmartMotorControllerConfig getConfig(Subsystem subsystem);
 
         double MIN_ANGLE_DEGREES();
 
-        double MAX_SPEED_R_P_S();
-
-        double MAX_ACCEL_R_P_S_S();
-
-        double MAX_JERK();
-
-        int STATOR_CURRENT_LIMIT();
-
-        int SUPPLY_CURRENT_LIMIT();
-
-        double kP();
-
-        double kI();
-
-        double kD();
-
-        double kS();
-
-        double kV();
-
-        double kA();
-
-        double JKG_M2();
+        double MAX_ANGLE_DEGREES();
 
         double LENGTH_METERS();
 
