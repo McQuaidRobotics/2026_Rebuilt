@@ -30,7 +30,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 
 public class SecondBotRobotConsts extends RobotConsts {
-
+    // ID STANDARD - START AT 12 INCREASE IN ORDER OF HEIGHT ON ROBOT
     public static final boolean disableAllLogs = true;
     public static final CANBus superStructure = new CANBus("SuperStructureBus");
 
@@ -62,11 +62,6 @@ public class SecondBotRobotConsts extends RobotConsts {
     @Override
     public kShooterConsts shooter() {
         return new GeminiV2ShooterConsts();
-    }
-
-    @Override
-    public kClimberConsts climber() {
-        return new GeminiClimberConsts();
     }
 
     @Override
@@ -104,7 +99,7 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiPivotConsts implements kPivotConsts {
         @Override
         public int MOTOR_ID() {
-            return 61;
+            return 15;
         }
 
         @Override
@@ -194,7 +189,7 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiRollersConsts implements kRollersConsts {
         @Override
         public int LEADER_MOTOR_ID() {
-            return 59;
+            return 16;
         }
 
         @Override
@@ -223,7 +218,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public int FOLLOWER_MOTOR_ID() {
-            return 62;
+            return 17;
         }
 
         @Override
@@ -406,7 +401,7 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiFlywheelsConsts implements kFlywheelsConsts {
         @Override
         public int LEADER_MOTOR_ID() {
-            return 15;
+            return 21;
         }
 
         @Override
@@ -416,7 +411,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public int FOLLOWER_MOTOR_ID() {
-            return 4;
+            return 22;
         }
 
         @Override
@@ -508,7 +503,7 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiTurretConsts implements kTurretConsts {
         @Override
         public int MOTOR_ID() {
-            return 56;
+            return 18;
         }
 
         @Override
@@ -523,7 +518,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public int CANCODER_ID() {
-            return 56;
+            return 19;
         }
 
         @Override
@@ -615,7 +610,7 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiHoodConsts implements kHoodConsts {
         @Override
         public int MOTOR_ID() {
-            return 32;
+            return 20;
         }
 
         @Override
@@ -709,192 +704,6 @@ public class SecondBotRobotConsts extends RobotConsts {
         }
     }
 
-    public static class GeminiClimberConsts implements kClimberConsts {
-        @Override
-        public CANBus kCANBUS() {
-            return superStructure;
-        }
-
-        @Override
-        public kChainsawConsts kChainsaw() {
-            return new GeminiChainsawConsts();
-        }
-
-        @Override
-        public kServosConsts kServos() {
-            return new GeminiServosConsts();
-        }
-    }
-
-    public static class GeminiChainsawConsts implements kChainsawConsts {
-        @Override
-        public int LEFT_MOTOR_ID() {
-            return 15;
-        }
-
-        @Override
-        public int BUMPER_SENSOR_ID() {
-            return 5;
-        }
-
-        @Override
-        public int MAX_HEIGHT_SENSOR_ID() {
-            return 8;
-        }
-
-        @Override
-        public int MIN_HEIGHT_SENSOR_ID() {
-            return 6;
-        }
-
-        @Override
-        public int MIDDLE_HEIGHT_SENSOR_ID() {
-            return 7;
-        }
-
-        @Override
-        public boolean disableChainsawLogs() {
-            return true;
-        }
-
-        @Override
-        public double MOMENT_OF_INERTIA_KG_M2() {
-            return 0.05;
-        }
-
-        @Override
-        public double kP() {
-            return 0.8;
-        }
-
-        @Override
-        public double kI() {
-            return 0.0;
-        }
-
-        @Override
-        public double kD() {
-            return 0.0;
-        }
-
-        @Override
-        public double kS() {
-            return 0.2;
-        }
-
-        @Override
-        public double kG() {
-            return 0.2;
-        }
-
-        @Override
-        public double kV() {
-            return 0.0;
-        }
-
-        @Override
-        public double kA() {
-            return 0.0;
-        }
-
-        @Override
-        public double MAX_JERK() {
-            return 0.05;
-        }
-
-        @Override
-        public double MAX_VELOCITY_METERS_PER_SECOND() {
-            return 0.50;
-        }
-
-        @Override
-        public boolean inverted() {
-            return false;
-        }
-
-        @Override
-        public double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED() {
-            return 0.20;
-        }
-
-        @Override
-        public double GEAR_RATIO() {
-            return 25.0;
-        }
-
-        @Override
-        public double INCHES_TO_ROTATIONS() {
-            return 1 / 4.5;
-        }
-
-        @Override
-        public double ROTATIONS_TO_INCHES() {
-            return 4.5;
-        }
-
-        @Override
-        public double MAX_HEIGHT_INCHES() {
-            return 20.0;
-        }
-
-        @Override
-        public double MIN_HEIGHT_INCHES() {
-            return 0.0;
-        }
-
-        @Override
-        public double MIDDLE_HEIGHT_INCHES() {
-            return 10.0;
-        }
-
-        @Override
-        public double LENGTH_METERS() {
-            return 0.5;
-        }
-
-        @Override
-        public double MASS() {
-            return 4.0;
-        }
-
-        @Override
-        public double PEAK_FORWARD_CURRENT_LIMIT() {
-            return 40;
-        }
-
-        @Override
-        public double PEAK_REVERSE_CURRENT_LIMIT() {
-            return 30;
-        }
-
-        @Override
-        public double STATOR_CURRENT_LIMIT() {
-            return 50;
-        }
-
-        @Override
-        public double SUPPLY_CURRENT_LIMIT() {
-            return 50;
-        }
-    }
-
-    public static class GeminiServosConsts implements kServosConsts {
-        @Override
-        public int SERVO_PORT_1() {
-            return 9;
-        }
-
-        @Override
-        public double MAX_ANGLE_DEGREES() {
-            return 90.0;
-        }
-
-        @Override
-        public double MIN_ANGLE_DEGREES() {
-            return 0.0;
-        }
-    }
-
     public static class GeminiIndexerConsts implements kIndexerConsts {
         @Override
         public CANBus kCANBUS() {
@@ -915,34 +724,35 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiSpindexerConsts implements kSpindexerConsts {
         @Override
         public int LEADER_MOTOR_ID() {
-            return 57;
+            return 13; // TODO THIS IS THE SAME AS DARK KNIGHT STEER MOTOR I CHANGED TO FIX
         }
 
         @Override
         public SmartMotorControllerConfig getConfig(Subsystem subsystem) {
             final SmartMotorControllerConfig smcConfig =
-            new SmartMotorControllerConfig(subsystem)
-                    .withControlMode(ControlMode.CLOSED_LOOP)
-                    // Feedback Constants (PID Constants)
-                    .withClosedLoopController(
-                            .5, 0, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
-                    .withSimClosedLoopController(
-                            .5, 0, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
-                    // Feedforward Constants
-                    .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
-                    .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
-                    // Telemetry name and verbosity level
-                    .withTelemetry("Spindexer Motor Controller", TelemetryVerbosity.HIGH)
-                    // Gearing from the motor rotor to final shaft.
-                    // In this example GearBox.fromReductionStages(3,4) is the same as
-                    // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
-                    // your motor.
-                    // You could also use .withGearing(12) which does the same thing.
-                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(4)))
-                    // Motor properties to prevent over currenting.
-                    .withMotorInverted(false)
-                    .withIdleMode(MotorMode.COAST)
-                    .withStatorCurrentLimit(Amps.of(40));
+                    new SmartMotorControllerConfig(subsystem)
+                            .withControlMode(ControlMode.CLOSED_LOOP)
+                            // Feedback Constants (PID Constants)
+                            .withClosedLoopController(
+                                    .5, 0, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
+                            .withSimClosedLoopController(
+                                    .5, 0, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
+                            // Feedforward Constants
+                            .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+                            .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+                            // Telemetry name and verbosity level
+                            .withTelemetry("Spindexer Motor Controller", TelemetryVerbosity.HIGH)
+                            // Gearing from the motor rotor to final shaft.
+                            // In this example GearBox.fromReductionStages(3,4) is the same as
+                            // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox
+                            // attached to
+                            // your motor.
+                            // You could also use .withGearing(12) which does the same thing.
+                            .withGearing(new MechanismGearing(GearBox.fromReductionStages(4)))
+                            // Motor properties to prevent over currenting.
+                            .withMotorInverted(false)
+                            .withIdleMode(MotorMode.COAST)
+                            .withStatorCurrentLimit(Amps.of(40));
 
             return smcConfig;
         }
@@ -1046,34 +856,35 @@ public class SecondBotRobotConsts extends RobotConsts {
     public static class GeminiExitRollersConsts implements kExitRollersConsts {
         @Override
         public int LEADER_MOTOR_ID() {
-            return 58;
+            return 14;
         }
 
         @Override
         public SmartMotorControllerConfig getConfig(Subsystem subsystem) {
             final SmartMotorControllerConfig smcConfig =
-                new SmartMotorControllerConfig(subsystem)
-                    .withControlMode(ControlMode.CLOSED_LOOP)
-                    // Feedback Constants (PID Constants)
-                    .withClosedLoopController(
-                            .3, 0.1, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
-                    .withSimClosedLoopController(
-                            .3, 0.1, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
-                    // Feedforward Constants
-                    .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
-                    .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
-                    // Telemetry name and verbosity level
-                    .withTelemetry("EXIT ROLLERS", TelemetryVerbosity.HIGH)
-                    // Gearing from the motor rotor to final shaft.
-                    // In this example GearBox.fromReductionStages(3,4) is the same as
-                    // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
-                    // your motor.
-                    // You could also use .withGearing(12) which does the same thing.
-                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(5)))
-                    // Motor properties to prevent over currenting.
-                    .withMotorInverted(false)
-                    .withIdleMode(MotorMode.COAST)
-                    .withStatorCurrentLimit(Amps.of(40));
+                    new SmartMotorControllerConfig(subsystem)
+                            .withControlMode(ControlMode.CLOSED_LOOP)
+                            // Feedback Constants (PID Constants)
+                            .withClosedLoopController(
+                                    .3, 0.1, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
+                            .withSimClosedLoopController(
+                                    .3, 0.1, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
+                            // Feedforward Constants
+                            .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+                            .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
+                            // Telemetry name and verbosity level
+                            .withTelemetry("EXIT ROLLERS", TelemetryVerbosity.HIGH)
+                            // Gearing from the motor rotor to final shaft.
+                            // In this example GearBox.fromReductionStages(3,4) is the same as
+                            // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox
+                            // attached to
+                            // your motor.
+                            // You could also use .withGearing(12) which does the same thing.
+                            .withGearing(new MechanismGearing(GearBox.fromReductionStages(5)))
+                            // Motor properties to prevent over currenting.
+                            .withMotorInverted(false)
+                            .withIdleMode(MotorMode.COAST)
+                            .withStatorCurrentLimit(Amps.of(40));
 
             return smcConfig;
         }

@@ -143,9 +143,9 @@ public class DarkKnightConsts extends CommonSwerveConsts {
                             .withDriveFrictionVoltage(kDriveFrictionVoltage);
 
     // Front Left
-    private static final int kFrontLeftDriveMotorId = 57;
-    private static final int kFrontLeftSteerMotorId = 58;
-    private static final int kFrontLeftEncoderId = 23;
+    private static final int kFrontLeftDriveMotorId = 1;
+    private static final int kFrontLeftSteerMotorId = 3;
+    private static final int kFrontLeftEncoderId = 2;
     private static final Angle kFrontLeftEncoderOffset = Rotations.of(0.10693359375);
     private static final boolean kFrontLeftSteerMotorInverted = true;
     private static final boolean kFrontLeftEncoderInverted = false;
@@ -154,9 +154,9 @@ public class DarkKnightConsts extends CommonSwerveConsts {
     private static final Distance kFrontLeftYPos = Inches.of(10.5);
 
     // Front Right
-    private static final int kFrontRightDriveMotorId = 2;
-    private static final int kFrontRightSteerMotorId = 55;
-    private static final int kFrontRightEncoderId = 21;
+    private static final int kFrontRightDriveMotorId = 10;
+    private static final int kFrontRightSteerMotorId = 12;
+    private static final int kFrontRightEncoderId = 11;
     private static final Angle kFrontRightEncoderOffset = Rotations.of(0.345458984375);
     private static final boolean kFrontRightSteerMotorInverted = true;
     private static final boolean kFrontRightEncoderInverted = false;
@@ -165,9 +165,9 @@ public class DarkKnightConsts extends CommonSwerveConsts {
     private static final Distance kFrontRightYPos = Inches.of(-10.5);
 
     // Back Left
-    private static final int kBackLeftDriveMotorId = 3;
-    private static final int kBackLeftSteerMotorId = 50;
-    private static final int kBackLeftEncoderId = 14;
+    private static final int kBackLeftDriveMotorId = 4;
+    private static final int kBackLeftSteerMotorId = 6;
+    private static final int kBackLeftEncoderId = 5;
     private static final Angle kBackLeftEncoderOffset = Rotations.of(0.06005859375);
     private static final boolean kBackLeftSteerMotorInverted = true;
     private static final boolean kBackLeftEncoderInverted = false;
@@ -176,9 +176,9 @@ public class DarkKnightConsts extends CommonSwerveConsts {
     private static final Distance kBackLeftYPos = Inches.of(10.5);
 
     // Back Right
-    private static final int kBackRightDriveMotorId = 56;
-    private static final int kBackRightSteerMotorId = 5;
-    private static final int kBackRightEncoderId = 22;
+    private static final int kBackRightDriveMotorId = 7;
+    private static final int kBackRightSteerMotorId = 9;
+    private static final int kBackRightEncoderId = 8;
     private static final Angle kBackRightEncoderOffset = Rotations.of(0.042236328125);
     private static final boolean kBackRightSteerMotorInverted = true;
     private static final boolean kBackRightEncoderInverted = false;

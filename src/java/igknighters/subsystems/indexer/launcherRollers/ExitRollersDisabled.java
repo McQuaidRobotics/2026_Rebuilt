@@ -18,7 +18,5 @@ public class ExitRollersDisabled extends ExitRollersBase {
     }
 
     @Override
-    public void setVelocitySetpoint(AngularVelocity speed) {
-        
-    }
+    public void setVelocitySetpoint(AngularVelocity speed) {}
 }

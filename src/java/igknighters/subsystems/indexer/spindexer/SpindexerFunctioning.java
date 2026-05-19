@@ -1,55 +1,29 @@
 package igknighters.subsystems.indexer.spindexer;
 
-import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
-import yams.gearing.GearBox;
-import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
-import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
-import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class SpindexerFunctioning extends SpindexerBase {
     private SmartMotorControllerConfig smcConfig =
-            new SmartMotorControllerConfig(this)
-                    .withControlMode(ControlMode.CLOSED_LOOP)
-                    // Feedback Constants (PID Constants)
-                    .withClosedLoopController(
-                            50, 0, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(50))
-                    .withSimClosedLoopController(
-                            50, 0, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(50))
-                    // Feedforward Constants
-                    .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
-                    .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
-                    // Telemetry name and verbosity level
-                    .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
-                    // Gearing from the motor rotor to final shaft.
-                    // In this example GearBox.fromReductionStages(3,4) is the same as
-                    // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
-                    // your motor.
-                    // You could also use .withGearing(12) which does the same thing.
-                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
-                    // Motor properties to prevent over currenting.
-                    .withMotorInverted(false)
-                    .withIdleMode(MotorMode.COAST)
-                    .withStatorCurrentLimit(Amps.of(40));
+            Robot.consts.indexer().kSpindexer().getConfig(this);
 
     private TalonFX spindexerMotor =
-            new TalonFX(Robot.consts.indexer().kSpindexer().LEADER_MOTOR_ID());
+            new TalonFX(
+                    Robot.consts.indexer().kSpindexer().LEADER_MOTOR_ID(),
+                    Robot.consts.indexer().kCANBUS());
 
     private SmartMotorController talonSMC =
             new TalonFXWrapper(spindexerMotor, DCMotor.getKrakenX60(1), smcConfig);
@@ -63,7 +37,7 @@ public class SpindexerFunctioning extends SpindexerBase {
                     // Maximum speed of the shooter.
                     .withUpperSoftLimit(RPM.of(5000))
                     // Telemetry name and verbosity for the arm.
-                    .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
+                    .withTelemetry("Spindexer Mechanism", TelemetryVerbosity.HIGH);
 
     private FlyWheel shooter = new FlyWheel(shooterConfig);
 

@@ -1,4 +1,4 @@
-﻿package igknighters.constants;
+package igknighters.constants;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -17,8 +17,6 @@ public abstract class RobotConsts {
     public abstract boolean disableAllLogs();
 
     public abstract kShooterConsts shooter();
-
-    public abstract kClimberConsts climber();
 
     public abstract kIndexerConsts indexer();
 
@@ -204,84 +202,6 @@ public abstract class RobotConsts {
         int REVERSE_LIMIT_SWITCH_ID();
 
         boolean disableHoodLogs();
-    }
-
-    public interface kClimberConsts {
-        CANBus kCANBUS();
-
-        kChainsawConsts kChainsaw();
-
-        kServosConsts kServos();
-    }
-
-    public interface kChainsawConsts {
-        int LEFT_MOTOR_ID();
-
-        int BUMPER_SENSOR_ID();
-
-        int MAX_HEIGHT_SENSOR_ID();
-
-        int MIN_HEIGHT_SENSOR_ID();
-
-        int MIDDLE_HEIGHT_SENSOR_ID();
-
-        boolean disableChainsawLogs();
-
-        double MOMENT_OF_INERTIA_KG_M2();
-
-        double kP();
-
-        double kI();
-
-        double kD();
-
-        double kS();
-
-        double kG();
-
-        double kV();
-
-        double kA();
-
-        double MAX_JERK();
-
-        double MAX_VELOCITY_METERS_PER_SECOND();
-
-        boolean inverted();
-
-        double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED();
-
-        double GEAR_RATIO();
-
-        double INCHES_TO_ROTATIONS();
-
-        double ROTATIONS_TO_INCHES();
-
-        double MAX_HEIGHT_INCHES();
-
-        double MIN_HEIGHT_INCHES();
-
-        double MIDDLE_HEIGHT_INCHES();
-
-        double LENGTH_METERS();
-
-        double MASS();
-
-        double PEAK_FORWARD_CURRENT_LIMIT();
-
-        double PEAK_REVERSE_CURRENT_LIMIT();
-
-        double STATOR_CURRENT_LIMIT();
-
-        double SUPPLY_CURRENT_LIMIT();
-    }
-
-    public interface kServosConsts {
-        int SERVO_PORT_1();
-
-        double MAX_ANGLE_DEGREES();
-
-        double MIN_ANGLE_DEGREES();
     }
 
     public interface kIndexerConsts {
