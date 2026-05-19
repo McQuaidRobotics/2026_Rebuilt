@@ -423,6 +423,11 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledInit() {
+        subsystems.shooter.goalRPM = 0.0;
+        subsystems.shooter.goalTurretAngleDegrees = 0.0;
+        subsystems.shooter.goalHoodAngleDegrees =
+                Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES();
+
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().clearComposedCommands();
         subsystems.swerve.setDefaultCommand(

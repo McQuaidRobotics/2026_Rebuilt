@@ -15,6 +15,10 @@ public class IndexerCommands {
                 .withName("DISPENSE");
     }
 
+    public static Command goToState(Indexer indexer, IndexerState state) {
+        return indexer.run(() -> indexer.goToState(state));
+    }
+
     public static Command smartDispense(Indexer indexer) {
         return indexer.run(
                 () -> {

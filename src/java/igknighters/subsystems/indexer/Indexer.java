@@ -1,5 +1,7 @@
 package igknighters.subsystems.indexer;
 
+import static edu.wpi.first.units.Units.RPM;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import igknighters.subsystems.indexer.launcherRollers.*;
@@ -48,7 +50,8 @@ public class Indexer extends SubsystemBase {
     }
 
     public void stop() {
-        spindexer.stop();
+        spindexer.goToRPM(0.0);
+        exitRollers.setSpeedRPM(0.0);
     }
 
     @Override

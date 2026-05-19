@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.subsystems.Subsystems;
+import igknighters.subsystems.indexer.IndexerState;
 import java.util.function.DoubleSupplier;
 
 public class OperatorController {
@@ -94,9 +95,8 @@ public class OperatorController {
                                 -deadband(controller.getRightY(), 0.1)
                                         * 200.0)); // Flywheel: 100 RPM/s
 
-        this.RT
-                .whileTrue(IndexerCommands.dispense(subsystems.indexer))
-                .whileFalse(IndexerCommands.jorkIt(subsystems.indexer));
+        this.RT.whileTrue(
+                IndexerCommands.goToState(subsystems.indexer, IndexerState.DISPENSE_BALL));
     }
 
     private double deadband(double val, double deadband) {

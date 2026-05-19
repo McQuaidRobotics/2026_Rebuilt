@@ -114,6 +114,10 @@ public class Shooter extends SubsystemBase {
         return atSpeed && atTurretAngle && atHoodAngle;
     }
 
+    public void stopAll() {
+        rollers.setSpeed(RPM.of(0.0));
+    }
+
     public boolean atRealTarget(
             double toleranceRPM, double toleranceDegrees, double toleranceHoodDegrees) {
         boolean atSpeed = Math.abs(rollers.getSpeed().in(RPM) - goalRPM) < toleranceRPM;
