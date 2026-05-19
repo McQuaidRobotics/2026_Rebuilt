@@ -18,8 +18,13 @@ public class Indexer {
 
     public Command goToState(IndexerState state) {
         return Commands.parallel(
-                spindexer.setVelocity(RPM.of(state.getSpindexerRPM())),
-                exitRollers.setVelocity(RPM.of(state.getExitRollerRPM())));
+                spindexer
+                        .setVelocity(RPM.of(state.getSpindexerRPM()))
+                        .withName("SET SPEED SPINDEXER AT, " + state.getSpindexerRPM() + " RPM"),
+                exitRollers
+                        .setVelocity(RPM.of(state.getExitRollerRPM()))
+                        .withName(
+                                "SET SPEED EXIT ROLLERS AT, " + state.getExitRollerRPM() + " RPM"));
     }
 
     public void goToStateNotCommand(IndexerState state) {
@@ -29,9 +34,10 @@ public class Indexer {
 
     public Command idleSpindexer() {
         return Commands.repeatingSequence(
-                spindexer.setVelocity(RPM.of(1000)).withTimeout(.2),
-                spindexer.setVelocity(RPM.of(0.0)).withTimeout(.2),
-                spindexer.setVelocity(RPM.of(-1000)).withTimeout(.2),
-                spindexer.setVelocity(RPM.of(0.0)).withTimeout(.2));
+                        spindexer.setVelocity(RPM.of(1000)).withTimeout(.2),
+                        spindexer.setVelocity(RPM.of(0.0)).withTimeout(.2),
+                        spindexer.setVelocity(RPM.of(-1000)).withTimeout(.2),
+                        spindexer.setVelocity(RPM.of(0.0)).withTimeout(.2))
+                .withName("IDLE SPINDEXER - DEFAULT COMMAND");
     }
 }

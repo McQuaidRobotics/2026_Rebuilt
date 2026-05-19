@@ -28,7 +28,7 @@ public class HigherOrderCommands {
 
         return Commands.parallel(
                         shooterCommand.repeatedly(),
-                        IndexerCommands.smartDispense(subsystems.indexer))
+                        IndexerCommands.smartDispense(subsystems.indexer).repeatedly())
                 .withName("SMART STREAM");
     }
 

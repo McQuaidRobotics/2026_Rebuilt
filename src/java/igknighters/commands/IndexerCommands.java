@@ -11,7 +11,7 @@ import java.util.function.BooleanSupplier;
 public class IndexerCommands {
 
     public static Command dispense(Indexer indexer) {
-        return indexer.goToState(IndexerState.DISPENSE_BALL);
+        return indexer.goToState(IndexerState.DISPENSE_BALL).withName("DISPENSE THE BALL");
     }
 
     public static Command smartDispense(Indexer indexer) {
@@ -19,9 +19,9 @@ public class IndexerCommands {
         return Commands.run(
                 () -> {
                     if (ShootInformation.getInstance().canShoot().getAsBoolean()) {
-                        indexer.goToState(IndexerState.DISPENSE_BALL);
+                        indexer.goToStateNotCommand(IndexerState.DISPENSE_BALL);
                     } else {
-                        indexer.goToState(IndexerState.STOP);
+                        indexer.goToStateNotCommand(IndexerState.STOP);
                     }
                 });
     }
