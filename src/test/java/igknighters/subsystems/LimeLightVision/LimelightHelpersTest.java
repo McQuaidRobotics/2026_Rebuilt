@@ -2,19 +2,43 @@ package igknighters.subsystems.LimeLightVision;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import igknighters.subsystems.LimeLightVision.Cameras.LimeLightVisionReal;
 import java.util.Arrays;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class LimelightHelpersTest {
+    LimeLightVisionReal vision;
+
     @BeforeAll
     public static void setupNetworkTables() {
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         inst.startServer("testTables.json", "testTables.json", 10000);
+    }
+
+    @BeforeEach
+    public void setup() {
+        try {
+            HAL.initialize(500, 0);
+        } catch (Exception e) {
+        }
+
+        // Reset the CommandScheduler
+        CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().unregisterAllSubsystems();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().unregisterAllSubsystems();
     }
 
     @Test
@@ -23,7 +47,7 @@ public class LimelightHelpersTest {
         String cam2 = "limelight-cam2";
         double rot1 = 1;
         double rot2 = 359;
-        LimeLightVisionReal vision = new LimeLightVisionReal(cam1, cam2);
+        vision = new LimeLightVisionReal(cam1, cam2);
 
         // Fake botpose array: [x, y, z, roll, pitch, yaw, latency, tagCount, ...]
         double[] fakeBotpose1 = new double[18];

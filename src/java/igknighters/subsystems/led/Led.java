@@ -7,12 +7,17 @@ import igknighters.subsystems.led.driver.PWMDriver;
 import igknighters.util.log.Log;
 import wpilibExt.Tracer;
 
-public class Led extends SubsystemBase {
+public class Led extends SubsystemBase implements AutoCloseable {
 
     public final PWMDriver pwm1;
 
     public Led(int length, int numberOfStrips) {
         pwm1 = new PWMDriver(0, length, numberOfStrips, 60);
+    }
+
+    @Override
+    public void close() {
+        pwm1.close();
     }
 
     public void animate(AddressableLEDBuffer buffer) {

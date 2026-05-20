@@ -6,7 +6,7 @@ import igknighters.Robot;
 import igknighters.util.log.Log;
 import monologue.Logged;
 
-public class PWMDriver implements Logged {
+public class PWMDriver implements Logged, AutoCloseable {
 
     private final AddressableLED led;
     private AddressableLEDBuffer previousBuffer;
@@ -24,6 +24,11 @@ public class PWMDriver implements Logged {
         led.setLength(length);
         led.start();
         previousBuffer = new AddressableLEDBuffer(length);
+    }
+
+    @Override
+    public void close() {
+        led.close();
     }
 
     /**

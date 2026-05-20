@@ -13,7 +13,7 @@ import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 
-public class Subsystems {
+public class Subsystems implements AutoCloseable {
     public final Swerve swerve;
     public final LimeLightVision vision;
     public final Led led;
@@ -44,5 +44,18 @@ public class Subsystems {
         this.indexer.setDefaultCommand(IndexerCommands.jorkIt(indexer).repeatedly());
         this.intake.setDefaultCommand(IntakeCommands.holdAtStow(intake));
         this.shooter.setDefaultCommand(AimingCommands.idleCommand(shooter));
+    }
+
+    @Override
+    public void close() {
+        for (var resource : lockedResources) {
+            if (resource instanceof AutoCloseable) {
+                try {
+                    ((AutoCloseable) resource).close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

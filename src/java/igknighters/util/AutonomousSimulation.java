@@ -127,4 +127,8 @@ public class AutonomousSimulation {
         driverSim.setRightBumper(false);
         DriverStationSim.notifyNewData();
     }
+
+    public void tearDown() {
+        robot.close();
+    }
 }

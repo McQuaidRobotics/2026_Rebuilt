@@ -297,6 +297,14 @@ public class Robot extends LoggedRobot {
         return () -> subsystems.swerve.getState().Pose;
     }
 
+    @Override
+    public void close() {
+        super.close();
+        if (subsystems != null) {
+            subsystems.close();
+        }
+    }
+
     public Pose3d getHoodPose(double hoodAngleDegrees) {
         double dx = 0.09; // X offset from turret center to hood
         double dy = 0.0; // Y offset from turret center to hood

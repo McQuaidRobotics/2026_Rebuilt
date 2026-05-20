@@ -37,9 +37,10 @@ public class AutonomousSimDemoTest {
 
     @AfterEach
     public void tearDown() {
-        robot.close();
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterAllSubsystems();
+        aiSim.tearDown();
+        robot.close();
     }
 
     @Test
@@ -58,6 +59,10 @@ public class AutonomousSimDemoTest {
 
         // Run simulation for 200 ticks (approx 4 seconds at 20ms/tick)
         for (int i = 0; i < 200; i++) {
+            double x = Math.sin(i / 200.0 * Math.PI * 2);
+            double y = Math.cos(i / 200.0 * Math.PI * 2);
+            aiSim.setForward(x);
+            aiSim.setStrafe(y);
             // Update the simulation data
             DriverStationSim.notifyNewData();
 
