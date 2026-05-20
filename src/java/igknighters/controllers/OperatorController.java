@@ -1,6 +1,7 @@
 package igknighters.controllers;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.IndexerCommands;
@@ -11,41 +12,8 @@ import java.util.function.DoubleSupplier;
 
 public class OperatorController {
 
-    private final CommandXboxController controller;
-
-    /** Button: 1 */
-    protected final Trigger A;
-
-    /** Button: 2 */
-    protected final Trigger B;
-
-    /** Button: 3 */
-    protected final Trigger X;
-
-    /** Button: 4 */
-    protected final Trigger Y;
-
-    /** Left Center; Button: 7 */
-    protected final Trigger Back;
-
-    /** Right Center; Button: 8 */
-    protected final Trigger Start;
-
-    /** Left Bumper; Button: 5 */
-    protected final Trigger LB;
-
-    /** Right Bumper; Button: 6 */
-    protected final Trigger RB;
-
-    /** Left Stick; Button: 9 */
-    protected final Trigger LS;
-
-    /** Right Stick; Button: 10 */
-    protected final Trigger RS;
-
-    /** Left Trigger; Axis: 2 */
-    protected final Trigger LT;
-
+    private final CommandJoystick flightStick;
+    private final CommandJoystick flightThrottle;
     /** Right Trigger; Axis: 3 */
     protected final Trigger RT;
 
@@ -63,23 +31,13 @@ public class OperatorController {
 
     public OperatorController(int port) {
         DriverStation.silenceJoystickConnectionWarning(true);
-        controller = new CommandXboxController(port);
-        A = controller.a();
-        B = controller.b();
-        X = controller.x();
-        Y = controller.y();
-        LB = controller.leftBumper();
-        RB = controller.rightBumper();
-        Back = controller.back();
-        Start = controller.start();
-        LS = controller.leftStick();
-        RS = controller.rightStick();
-        LT = controller.leftTrigger(0.25);
-        RT = controller.rightTrigger(0.25);
-        DPR = controller.povRight();
-        DPD = controller.povDown();
-        DPL = controller.povLeft();
-        DPU = controller.povUp();
+        flightStick = new CommandJoystick(port);
+        flightThrottle = new CommandJoystick(port + 1);
+        DPR = flightStick.povRight();
+        DPD = flightStick.povDown();
+        DPL = flightStick.povLeft();
+        DPU = flightStick.povUp();
+        RT = flightStick.button(0); // TODO: NEED TO FIND THE PORT OF BUTTON
     }
 
     public void bind(final Subsystems subsystems) {
@@ -89,10 +47,10 @@ public class OperatorController {
         shooter.setDefaultCommand(
                 ShooterCommands.manualRelativeControl(
                         shooter,
-                        () -> -deadband(controller.getLeftX(), 0.1) * 80.0, // Turret: 50 deg/s
-                        () -> -deadband(controller.getLeftY(), 0.1) * 40.0, // Hood: 20 deg/s
+                        () -> -deadband(flightStick.getZ(), 0.1) * 80.0, // Turret: 50 deg/s
+                        () -> -deadband(flightStick.getX(), 0.1) * 40.0, // Hood: 20 deg/s
                         () ->
-                                -deadband(controller.getRightY(), 0.1)
+                                -deadband(flightThrottle.getRawAxis(4), 0.1) // TODO: NEED TO FIND THE SPOT AXIS
                                         * 200.0)); // Flywheel: 100 RPM/s
 
         this.RT.whileTrue(
@@ -111,11 +69,17 @@ public class OperatorController {
         }
     }
 
-    public DoubleSupplier leftStickX() {
-        return controller::getLeftX;
+    public DoubleSupplier getHorizontalAxisFlightStick() {
+        return flightStick::getY; // this is flipped because on a controller the y axis is horizontal
     }
 
-    public DoubleSupplier leftStickY() {
-        return () -> -controller.getLeftY();
+    public DoubleSupplier getVerticalAxisFlightStick() {
+        return flightStick::getX; 
     }
+
+    public DoubleSupplier getTwistAxisFlightStick() {
+        return flightStick::getZ;
+    }
+
+
 }
