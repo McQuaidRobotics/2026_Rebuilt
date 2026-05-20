@@ -50,8 +50,8 @@ public class OperatorController {
                         () -> -deadband(flightStick.getZ(), 0.1) * 80.0, // Turret: 50 deg/s
                         () -> -deadband(flightStick.getX(), 0.1) * 40.0, // Hood: 20 deg/s
                         () ->
-                                -deadband(flightThrottle.getRawAxis(4), 0.1) // TODO: NEED TO FIND THE SPOT AXIS
-                                        * 200.0)); // Flywheel: 100 RPM/s
+                                -deadband(flightThrottle.getX(), 0.1)
+                                        * 200.0)); // Flywheel: 200 RPM/s
 
         this.RT.whileTrue(
                 IndexerCommands.goToState(subsystems.indexer, IndexerState.DISPENSE_BALL));
