@@ -150,15 +150,26 @@ public class LimeLightVisionReal extends LimeLights {
         return lastTimeStamp;
     }
 
-    @Override
     public Pose3d getRelativeTagPose(int tagId) {
         for (String cameraName : cameraNames) {
             LimelightResults results = LimelightHelpers.getLatestResults(cameraName);
-            if (results != null && results.targets_Fiducials != null) {
-                for (LimelightTarget_Fiducial tag : results.targets_Fiducials) {
-                    if ((int) tag.fiducialID == tagId) {
-                        return tag.getTargetPose_RobotSpace();
-                    }
+
+            if (results == null) {
+                // System.out.println("Debug: No results object for " + cameraName);
+                continue;
+            }
+
+            if (results.targets_Fiducials == null || results.targets_Fiducials.length == 0) {
+                // This is the most common failure point
+                // System.out.println("Debug: No Fiducial targets found in JSON for " + cameraName);
+                continue;
+            }
+
+            for (LimelightTarget_Fiducial tag : results.targets_Fiducials) {
+                // System.out.println("Debug: Found Tag ID " + tag.fiducialID);
+
+                if ((int) tag.fiducialID == tagId) {
+                    return tag.getTargetPose_RobotSpace();
                 }
             }
         }

@@ -47,7 +47,7 @@ public class Subsystems {
         this.intake.setDefaultCommand(IntakeCommands.holdAtStow(intake));
 
         if (Robot.ISDEMO) {
-            this.shooter.setDefaultCommand(new TargetTagCommand(shooter, vision, swerve, 7));
+            this.shooter.setDefaultCommand(new TargetTagCommand(shooter, vision, swerve, 20));
         } else {
             this.shooter.setDefaultCommand(AimingCommands.idleCommand(shooter));
         }

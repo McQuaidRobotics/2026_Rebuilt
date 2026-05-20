@@ -84,7 +84,7 @@ public class Robot extends LoggedRobot {
 
     private final boolean kUseLimelight = true;
 
-    public static boolean ISDEMO = false;
+    public static boolean ISDEMO = true;
 
     private Telemetry logger;
     TunableDouble detune = TunableValues.getDouble("Tunables/Detune", 1.0);

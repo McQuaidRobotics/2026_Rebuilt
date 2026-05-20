@@ -12,6 +12,7 @@ import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.subsystems.shooter.solvers.Math.LerpSolveShot;
 import igknighters.subsystems.swerve.Swerve;
+import igknighters.util.log.Log;
 
 public class TargetTagCommand extends Command {
     private final Shooter shooter;
@@ -33,9 +34,10 @@ public class TargetTagCommand extends Command {
         if (tagPoseRelative != null) {
             // Convert robot-relative tagPose to field-relative
             Pose3d robotPose = new Pose3d(swerve.getState().Pose);
+            Log.log("Robot/Commands/Shooter/ROBOT POSE", robotPose);
             Pose3d fieldRelativeTagPose =
                     robotPose.plus(new Transform3d(new Pose3d(), tagPoseRelative));
-
+            Log.log("Robot/Commands/Shooter/FIELD RELATIVE TAG POSE", fieldRelativeTagPose);
             ShooterState state =
                     LerpSolveShot.solve(
                             fieldRelativeTagPose,

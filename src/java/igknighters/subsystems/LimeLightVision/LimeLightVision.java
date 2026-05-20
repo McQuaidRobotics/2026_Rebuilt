@@ -13,6 +13,7 @@ import java.util.List;
 
 public class LimeLightVision extends SubsystemBase {
     private LimeLights vision;
+    int iterations = 0;
 
     public LimeLightVision() {
         if (Robot.isReal()) {
@@ -57,10 +58,17 @@ public class LimeLightVision extends SubsystemBase {
         if (!Robot.consts.limelightVision().disableVisionLogs()) {
             Log.log("ROBOT/Subsystems/Vison/Limelight/ENABLED", true);
         }
-        return vision.getRobotPoseFromVision(yaw, yawRate, pitch, pitchRate, roll, rollRate);
+        if (!Robot.ISDEMO) {
+            return vision.getRobotPoseFromVision(yaw, yawRate, pitch, pitchRate, roll, rollRate);
+        } else {
+            return null;
+        }
     }
 
     public Pose3d getRelativeTagPose(int tagId) {
-        return vision.getRelativeTagPose(tagId);
+        Log.log("ROBOT/Subsystems/Vision/Limelight/GETING TAG POSE", iterations++);
+        Pose3d tagPose = vision.getRelativeTagPose(tagId);
+        Log.log("ROBOT/Subsystems/Vision/Limelight/RELATIVE TAG POSE", tagPose);
+        return tagPose;
     }
 }

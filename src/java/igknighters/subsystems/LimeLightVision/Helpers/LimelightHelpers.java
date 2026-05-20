@@ -167,6 +167,9 @@ public class LimelightHelpers {
         }
 
         public Pose3d getTargetPose_RobotSpace() {
+            for (double thingyMaB : targetPose_RobotSpace) {
+                System.out.println(thingyMaB);
+            }
             return toPose3D(targetPose_RobotSpace);
         }
 
