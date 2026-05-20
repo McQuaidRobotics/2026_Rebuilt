@@ -6,6 +6,7 @@ import igknighters.commands.IntakeCommands;
 import igknighters.commands.Shooter.AimingCommands;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
+import igknighters.subsystems.VRSystem.VRSystem;
 import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.intake.AbstractIntake;
 import igknighters.subsystems.intake.Intake;
@@ -21,6 +22,7 @@ public class Subsystems {
     public final Indexer indexer;
     public final AbstractIntake intake;
     public final Luma luma;
+    public final VRSystem vrSystem;
     public final SubsystemBase[] lockedResources;
 
     public Subsystems(
@@ -38,8 +40,9 @@ public class Subsystems {
         this.luma = luma;
         this.intake = intake;
         this.indexer = indexer;
+        this.vrSystem = new VRSystem(swerve);
         this.lockedResources =
-                new SubsystemBase[] {swerve, shooter, indexer, intake, luma, vision, led};
+                new SubsystemBase[] {swerve, shooter, indexer, intake, luma, vision, led, vrSystem};
 
         this.indexer.setDefaultCommand(IndexerCommands.jorkIt(indexer).repeatedly());
         this.intake.setDefaultCommand(IntakeCommands.holdAtStow(intake));
