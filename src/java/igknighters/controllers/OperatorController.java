@@ -2,7 +2,6 @@ package igknighters.controllers;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.Shooter.ShooterCommands;
@@ -14,6 +13,7 @@ public class OperatorController {
 
     private final CommandJoystick flightStick;
     private final CommandJoystick flightThrottle;
+
     /** Right Trigger; Axis: 3 */
     protected final Trigger RT;
 
@@ -37,7 +37,7 @@ public class OperatorController {
         DPD = flightStick.povDown();
         DPL = flightStick.povLeft();
         DPU = flightStick.povUp();
-        RT = flightStick.button(0); // TODO: NEED TO FIND THE PORT OF BUTTON
+        RT = flightStick.button(1);
     }
 
     public void bind(final Subsystems subsystems) {
@@ -47,11 +47,11 @@ public class OperatorController {
         shooter.setDefaultCommand(
                 ShooterCommands.manualRelativeControl(
                         shooter,
-                        () -> -deadband(flightStick.getZ(), 0.1) * 80.0, // Turret: 50 deg/s
-                        () -> -deadband(flightStick.getX(), 0.1) * 40.0, // Hood: 20 deg/s
+                        () -> -deadband(flightStick.getRawAxis(4), 0.1) * 80.0, // Turret: 50 deg/s
+                        () -> deadband(flightStick.getRawAxis(1), 0.1) * 40.0, // Hood: 20 deg/s
                         () ->
-                                -deadband(flightThrottle.getX(), 0.1)
-                                        * 200.0)); // Flywheel: 200 RPM/s
+                                Math.max(0, deadband(-flightThrottle.getX() + 1.0, 0.02))
+                                        * 2000.0)); // Flywheel: 200 RPM/s
 
         this.RT.whileTrue(
                 IndexerCommands.goToState(subsystems.indexer, IndexerState.DISPENSE_BALL));
@@ -70,16 +70,15 @@ public class OperatorController {
     }
 
     public DoubleSupplier getHorizontalAxisFlightStick() {
-        return flightStick::getY; // this is flipped because on a controller the y axis is horizontal
+        return flightStick
+                ::getY; // this is flipped because on a controller the y axis is horizontal
     }
 
     public DoubleSupplier getVerticalAxisFlightStick() {
-        return flightStick::getX; 
+        return flightStick::getX;
     }
 
     public DoubleSupplier getTwistAxisFlightStick() {
         return flightStick::getZ;
     }
-
-
 }

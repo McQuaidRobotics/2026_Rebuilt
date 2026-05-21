@@ -11,6 +11,7 @@ import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.subsystems.shooter.solvers.Math.LerpSolveShot;
 import igknighters.util.TunableValues;
+import igknighters.util.log.Log;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -111,14 +112,17 @@ public class ShooterCommands {
             Shooter shooter,
             DoubleSupplier turretSpeedSupplier,
             DoubleSupplier hoodSpeedSupplier,
-            DoubleSupplier rpmDeltaSupplier) {
+            DoubleSupplier rpmRequestSupplier) {
         return shooter.run(
                         () -> {
                             double turretSpeed = turretSpeedSupplier.getAsDouble();
                             double hoodSpeed = hoodSpeedSupplier.getAsDouble();
-                            double rpmDelta = rpmDeltaSupplier.getAsDouble();
+                            double rpmRequest = rpmRequestSupplier.getAsDouble();
+                            Log.log("ROBOT/Commands/MANUAL CONTROL/RPM_REQUEST", rpmRequest);
+                            Log.log("ROBOT/Commands/MANUAL CONTROL/TURRET_SPEED", turretSpeed);
+                            Log.log("ROBOT/Commands/MANUAL CONTROL/HOOD_SPEED", hoodSpeed);
                             shooter.targetState(
-                                    RPM.of(shooter.goalRPM).plus(RPM.of(rpmDelta * 0.02)),
+                                    RPM.of(rpmRequest),
                                     Degrees.of(shooter.goalTurretAngleDegrees)
                                             .plus(Degrees.of(turretSpeed * 0.02)),
                                     Degrees.of(shooter.goalHoodAngleDegrees)
