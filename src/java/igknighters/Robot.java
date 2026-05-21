@@ -33,7 +33,9 @@ import igknighters.constants.GeminiRobotConsts;
 import igknighters.constants.RobotConsts;
 import igknighters.constants.RobotIdentity;
 import igknighters.constants.SecondBotRobotConsts;
-import igknighters.controllers.DriverController;
+import igknighters.constants.ShootInformation;
+import igknighters.controllers.Controller;
+import igknighters.controllers.DriverControllerHotas;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
@@ -75,7 +77,7 @@ public class Robot extends LoggedRobot {
     public static RobotPosePredError pose_pred_error = new RobotPosePredError();
     public static TurretPosePredError turret_pred_error = new TurretPosePredError();
 
-    private final DriverController driverController = new DriverController(0);
+    private final Controller driverController = new DriverControllerHotas(0);
 
     public final Subsystems subsystems;
 
@@ -343,6 +345,8 @@ public class Robot extends LoggedRobot {
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
         pose_pred.setVelocitiesAndPose();
+        ShootInformation.getInstance()
+                .setShotModifier(driverController.getShotModifier().getAsDouble());
 
         if (underTrench()) {
             DrivingSharedState.getInstance().setUnderTrench(true);

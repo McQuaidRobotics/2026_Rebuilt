@@ -7,7 +7,7 @@ import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.Robot;
-import igknighters.controllers.DriverController;
+import igknighters.controllers.Controller;
 import igknighters.subsystems.swerve.Swerve;
 
 public class SlowedDownShooting extends TeleopSwerveBaseCmd {
@@ -23,7 +23,7 @@ public class SlowedDownShooting extends TeleopSwerveBaseCmd {
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
 
-    public SlowedDownShooting(Swerve swerve, DriverController controller) {
+    public SlowedDownShooting(Swerve swerve, Controller controller) {
         super(swerve, controller);
         addRequirements(swerve);
     }

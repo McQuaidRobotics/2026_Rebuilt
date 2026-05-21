@@ -20,7 +20,7 @@ import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.constants.ShootInformation;
-import igknighters.controllers.DriverController;
+import igknighters.controllers.Controller;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.intake.AbstractIntake;
 import igknighters.subsystems.led.Led;
@@ -185,9 +185,7 @@ public class SubsystemTriggers {
     }
 
     public void SetupTriggers(
-            Subsystems subsystems,
-            DriverController driverController,
-            Supplier<Pose2d> poseSupplier) {
+            Subsystems subsystems, Controller driverController, Supplier<Pose2d> poseSupplier) {
         Led led = subsystems.led;
         Swerve swerve = subsystems.swerve;
         AbstractIntake intake = subsystems.intake;

@@ -6,7 +6,7 @@ import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.util.struct.StructSerializable;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
-import igknighters.controllers.DriverController;
+import igknighters.controllers.Controller;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.ControllerConstants;
 import igknighters.util.TunableValues;
@@ -22,18 +22,21 @@ public class TeleopSwerveBaseCmd extends Command {
     private final DoubleSupplier rawTranslationYSup;
     private final DoubleSupplier rawRotationXSup;
     private final DoubleSupplier rawRotationYSup;
+    private final DoubleSupplier throttleSup;
 
     private final TunableDouble translationMod;
     private final TunableDouble rotationMod;
     private static final boolean demo = false;
 
-    public TeleopSwerveBaseCmd(Swerve swerve, DriverController controller) {
+    public TeleopSwerveBaseCmd(Swerve swerve, Controller controller) {
         this.swerve = swerve;
 
-        this.rawTranslationXSup = controller.leftStickX();
-        this.rawTranslationYSup = controller.leftStickY();
-        this.rawRotationXSup = controller.rightStickX();
-        this.rawRotationYSup = controller.rightStickY();
+        this.rawTranslationXSup = controller.getTranslationX();
+        this.rawTranslationYSup = controller.getTranslationY();
+        this.rawRotationXSup = controller.getRotationX();
+        this.throttleSup = controller.getThrottle();
+
+        this.rawRotationYSup = controller.getRotationY();
 
         if (demo) { //
             translationMod = TunableValues.getDouble("DemoSwerveTranslationModifier", 0.8);
@@ -60,7 +63,8 @@ public class TeleopSwerveBaseCmd extends Command {
         double rawMagnitude = solveJoystickDiagonalDelta(rawX, rawY);
         rawMagnitude = MathUtil.clamp(rawMagnitude, -1, 1);
         double magnitude =
-                ControllerConstants.TELEOP_TRANSLATION_AXIS_CURVE.lerpKeepSign(rawMagnitude);
+                ControllerConstants.TELEOP_TRANSLATION_AXIS_CURVE.lerpKeepSign(rawMagnitude)
+                        * throttleSup.getAsDouble();
         if (demo) magnitude *= translationMod.value();
         double processedX = magnitude * Math.cos(angle);
         double processedY = magnitude * Math.sin(angle);

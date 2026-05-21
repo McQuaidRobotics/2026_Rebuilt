@@ -147,7 +147,7 @@ public class LerpSolveShot {
         ShootInformation.getInstance().setPossibleShot(requiredTableRpm < 6000);
 
         return new ShooterState(
-                RPM.of(requiredTableRpm),
+                RPM.of(requiredTableRpm * ShootInformation.getInstance().getShotModifier()),
                 Radians.of(robotRelativeTurretAngle.getRadians()),
                 Degrees.of(finalHoodAngle));
     }

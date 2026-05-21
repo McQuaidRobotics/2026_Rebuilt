@@ -8,7 +8,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.Robot;
-import igknighters.controllers.DriverController;
+import igknighters.controllers.Controller;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.log.Log;
 
@@ -28,12 +28,7 @@ public class TeleopSwerveHeadingCmd extends TeleopSwerveBaseCmd {
     private final PIDController rotationController;
 
     public TeleopSwerveHeadingCmd(
-            Swerve swerve,
-            DriverController controller,
-            double heading,
-            double kP,
-            double kI,
-            double kD) {
+            Swerve swerve, Controller controller, double heading, double kP, double kI, double kD) {
         super(swerve, controller);
         rotationController = new PIDController(kP, kI, kD);
         this.heading = heading;

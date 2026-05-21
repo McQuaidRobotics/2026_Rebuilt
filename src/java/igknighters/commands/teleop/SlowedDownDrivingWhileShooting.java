@@ -5,7 +5,6 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.Robot;
-import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 
 public class SlowedDownDrivingWhileShooting extends TeleopSwerveBaseCmd {
@@ -26,7 +25,8 @@ public class SlowedDownDrivingWhileShooting extends TeleopSwerveBaseCmd {
 
     // changed from 1 to 2
 
-    public SlowedDownDrivingWhileShooting(Swerve swerve, DriverController controller) {
+    public SlowedDownDrivingWhileShooting(
+            Swerve swerve, igknighters.controllers.Controller controller) {
         super(swerve, controller);
         addRequirements(swerve);
     }

@@ -19,7 +19,7 @@ import igknighters.subsystems.intake.IntakeState;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-public class DriverController {
+public class DriverControllerXBOX extends Controller {
 
     // Define the bindings for the controller
 
@@ -78,7 +78,7 @@ public class DriverController {
     protected final Trigger DPL;
 
     /** for button idx (nice for sim) {@link edu.wpi.first.wpilibj.XboxController.Button} */
-    public DriverController(int port) {
+    public DriverControllerXBOX(int port) {
         DriverStation.silenceJoystickConnectionWarning(true);
         controller = new CommandXboxController(port);
         A = controller.a();
@@ -190,7 +190,7 @@ public class DriverController {
      *
      * @return A supplier for the value of the right stick x axis
      */
-    public DoubleSupplier rightStickX() {
+    public DoubleSupplier getRotationX() {
         return () -> -controller.getRightX();
     }
 
@@ -200,8 +200,8 @@ public class DriverController {
      * @param deadband the deadband to apply to the stick
      * @return A supplier for the value of the right stick x axis
      */
-    public DoubleSupplier rightStickX(double deadband) {
-        return deadbandSupplier(rightStickX(), deadband);
+    public DoubleSupplier getRotationX(double deadband) {
+        return deadbandSupplier(getRotationX(), deadband);
     }
 
     /**
@@ -209,8 +209,18 @@ public class DriverController {
      *
      * @return A supplier for the value of the right stick y axis
      */
-    public DoubleSupplier rightStickY() {
+    public DoubleSupplier getRotationY() {
         return controller::getRightY;
+    }
+
+    @Override
+    public DoubleSupplier getThrottle() {
+        return () -> 1.0;
+    }
+
+    @Override
+    public DoubleSupplier getShotModifier() {
+        return () -> 1.0;
     }
 
     /**
@@ -220,7 +230,7 @@ public class DriverController {
      * @return A supplier for the value of the right stick y axis
      */
     public DoubleSupplier rightStickY(double deadband) {
-        return deadbandSupplier(rightStickY(), deadband);
+        return deadbandSupplier(getRotationY(), deadband);
     }
 
     /**
@@ -228,7 +238,7 @@ public class DriverController {
      *
      * @return A supplier for the value of the left stick x axis
      */
-    public DoubleSupplier leftStickX() {
+    public DoubleSupplier getTranslationX() {
         return controller::getLeftX;
     }
 
@@ -239,7 +249,7 @@ public class DriverController {
      * @return A supplier for the value of the left stick x axis
      */
     public DoubleSupplier leftStickX(double deadband) {
-        return deadbandSupplier(leftStickX(), deadband);
+        return deadbandSupplier(getTranslationX(), deadband);
     }
 
     /**
@@ -247,7 +257,7 @@ public class DriverController {
      *
      * @return A supplier for the value of the left stick y axis
      */
-    public DoubleSupplier leftStickY() {
+    public DoubleSupplier getTranslationY() {
         return () -> -controller.getLeftY();
     }
 
@@ -258,7 +268,7 @@ public class DriverController {
      * @return A supplier for the value of the left stick y axis
      */
     public DoubleSupplier leftStickY(double deadband) {
-        return deadbandSupplier(leftStickY(), deadband);
+        return deadbandSupplier(getTranslationY(), deadband);
     }
 
     /**

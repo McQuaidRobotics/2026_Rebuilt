@@ -10,7 +10,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.Robot;
-import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.log.Log;
 
@@ -35,7 +34,7 @@ public class TeleopSwerveTargetingFutureCmd extends TeleopSwerveBaseCmd {
 
     public TeleopSwerveTargetingFutureCmd(
             Swerve swerve,
-            DriverController controller,
+            igknighters.controllers.Controller controller,
             Pose2d targetPose,
             double lookaheadTimeSeconds,
             double kP,

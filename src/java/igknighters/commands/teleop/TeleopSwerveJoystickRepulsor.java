@@ -9,7 +9,7 @@ import igknighters.Robot;
 import igknighters.commands.Repulsor;
 import igknighters.commands.Repulsor.obstacle;
 import igknighters.constants.FieldConstants;
-import igknighters.controllers.DriverController;
+import igknighters.controllers.Controller;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.subsystems.swerve.swerveconstants.ControllerConstants;
 import igknighters.util.TunableValues;
@@ -31,13 +31,13 @@ public class TeleopSwerveJoystickRepulsor extends Command {
     private final TunableDouble rotationMod;
     private static final boolean demo = false;
 
-    public TeleopSwerveJoystickRepulsor(Swerve swerve, DriverController controller) {
+    public TeleopSwerveJoystickRepulsor(Swerve swerve, Controller controller) {
         this.swerve = swerve;
 
-        this.rawTranslationXSup = controller.leftStickX();
-        this.rawTranslationYSup = controller.leftStickY();
-        this.rawRotationXSup = controller.rightStickX();
-        this.rawRotationYSup = controller.rightStickY();
+        this.rawTranslationXSup = controller.getTranslationX();
+        this.rawTranslationYSup = controller.getTranslationY();
+        this.rawRotationXSup = controller.getRotationX();
+        this.rawRotationYSup = controller.getRotationY();
 
         if (demo) {
             translationMod = TunableValues.getDouble("DemoSwerveTranslationModifier", 0.8);

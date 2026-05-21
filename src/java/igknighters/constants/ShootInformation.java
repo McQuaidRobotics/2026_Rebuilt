@@ -25,6 +25,7 @@ public class ShootInformation {
     private boolean atTarget = false;
     private boolean beingControlled = false;
     private boolean possibleShot = false;
+    private double shotModifier = 1.0;
     private final Trigger atComandedStateTrigger;
     private final Trigger beingControlledTrigger;
     private final Trigger possibleShotTrigger;
@@ -36,6 +37,14 @@ public class ShootInformation {
         this.beingControlledTrigger = new Trigger(this::isBeingControlled);
         this.possibleShotTrigger = new Trigger(this::isPossibleShot);
         this.useOperatorControlLocationTrigger = new Trigger(this::isUsingOperatorControlLocation);
+    }
+
+    public void setShotModifier(double modifier) {
+        this.shotModifier = modifier;
+    }
+
+    public double getShotModifier() {
+        return this.shotModifier;
     }
 
     public ShootingData getPassData(String path) {

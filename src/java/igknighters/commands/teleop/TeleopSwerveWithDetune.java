@@ -8,7 +8,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.Robot;
 import igknighters.constants.DrivingSharedState;
-import igknighters.controllers.DriverController;
+import igknighters.controllers.Controller;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.log.Log;
 
@@ -26,7 +26,7 @@ public class TeleopSwerveWithDetune extends TeleopSwerveBaseCmd {
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
 
-    public TeleopSwerveWithDetune(Swerve swerve, DriverController controller, double detune) {
+    public TeleopSwerveWithDetune(Swerve swerve, Controller controller, double detune) {
         super(swerve, controller);
         this.detune = detune;
         addRequirements(swerve);

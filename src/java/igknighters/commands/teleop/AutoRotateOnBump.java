@@ -9,7 +9,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.Robot;
 import igknighters.constants.DrivingSharedState;
-import igknighters.controllers.DriverController;
+import igknighters.controllers.Controller;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.log.Log;
 
@@ -28,7 +28,7 @@ public class AutoRotateOnBump extends TeleopSwerveBaseCmd {
                     .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
 
-    public AutoRotateOnBump(Swerve swerve, DriverController controller) {
+    public AutoRotateOnBump(Swerve swerve, Controller controller) {
         super(swerve, controller);
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
         addRequirements(swerve);
