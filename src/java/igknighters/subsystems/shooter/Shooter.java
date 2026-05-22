@@ -89,18 +89,11 @@ public class Shooter extends SubsystemBase {
             Log.log("ROBOT/Subsystems/Shooter/TARGETING/HoodAngle", hoodAngle.in(Degrees));
         }
         beingControlled = true;
-        if (hoodAngle.in(Degrees) < Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()) {
-            hood.goToAngle(Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
-        } else if (hoodAngle.in(Degrees) > Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES()) {
-            hood.goToAngle(Degrees.of(Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES()));
-        } else {
-            hood.goToAngle(hoodAngle);
-        }
+        hood.goToAngle(hoodAngle);
         targetSpeed(velo);
         goToTurretAngle(turretAngle);
         goalRPM = velo.in(RPM);
         goalTurretAngleDegrees = turret.wrapAngleDegrees(turretAngle.in(Degrees));
-        goalHoodAngleDegrees = hoodAngle.in(Degrees);
     }
 
     public void targetState(ShooterState state) {

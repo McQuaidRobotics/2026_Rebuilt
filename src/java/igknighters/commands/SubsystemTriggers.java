@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.LEDCommands.LEDSection;
 import igknighters.commands.Shooter.AimingCommands;
 import igknighters.commands.Shooter.ShooterCommands;
-import igknighters.commands.teleop.AutoRotateOnBump;
 import igknighters.commands.teleop.SlowedDownDrivingWhileShooting;
 import igknighters.constants.Conv;
 import igknighters.constants.DrivingSharedState;
@@ -204,27 +203,28 @@ public class SubsystemTriggers {
         // onBump.onFalse(Commands.runOnce(() ->
         // DrivingSharedState.getInstance().setOnBump(false)));
 
-        onBump.and(teleop)
-                .whileTrue(
-                        Commands.sequence(
-                                Commands.runOnce(
-                                        () -> DrivingSharedState.getInstance().setOnBump(true)),
-                                new AutoRotateOnBump(swerve, driverController)));
-        onBump.onFalse(Commands.runOnce(() -> DrivingSharedState.getInstance().setOnBump(false)));
+        // onBump.and(teleop)
+        //         .whileTrue(
+        //                 Commands.sequence(
+        //                         Commands.runOnce(
+        //                                 () -> DrivingSharedState.getInstance().setOnBump(true)),
+        //                         new AutoRotateOnBump(swerve, driverController)));
+        // onBump.onFalse(Commands.runOnce(() ->
+        // DrivingSharedState.getInstance().setOnBump(false)));
 
         falseOnce().and(disabled).whileTrue(disabledLED(led));
 
         autonomous.onTrue(autoLED(led));
 
-        teleop.whileTrue(teleopLED(led));
+        teleop.whileTrue(autoLED(led));
 
         // Get the AbleToShootSharedState singleton
         ShootInformation ableToShootState = ShootInformation.getInstance();
 
         // Bind LED commands to the canShootTrigger
-        trenchProtection
-                .onTrue(LEDCommands.run(led, LEDPattern.solid(Color.kBlue)))
-                .onFalse(getLEDCommandByMode(led));
+        // trenchProtection
+        //         .onTrue(LEDCommands.run(led, LEDPattern.solid(Color.kBlue)))
+        //         .onFalse(getLEDCommandByMode(led));
         ableToShootState
                 .canShoot()
                 .whileTrue(LEDCommands.run(led, LEDPattern.solid(Color.kMagenta)))

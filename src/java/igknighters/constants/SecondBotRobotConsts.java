@@ -701,7 +701,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public boolean disableTurretLogs() {
-            return true;
+            return false;
         }
     }
 

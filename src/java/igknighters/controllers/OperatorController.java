@@ -3,6 +3,7 @@ package igknighters.controllers;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import igknighters.Robot;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.subsystems.Subsystems;
@@ -47,14 +48,25 @@ public class OperatorController {
         shooter.setDefaultCommand(
                 ShooterCommands.manualRelativeControl(
                         shooter,
-                        () -> -deadband(flightStick.getRawAxis(4), 0.1) * 80.0, // Turret: 50 deg/s
-                        () -> deadband(flightStick.getRawAxis(1), 0.1) * 40.0, // Hood: 20 deg/s
+                        () ->
+                                (-deadband(flightStick.getRawAxis(0), 0.1) * 120.0
+                                        + -deadband(flightStick.getRawAxis(4), .1)
+                                                * 20), // Turret: 50 deg/s
+                        () -> getAngleDegrees(), // Hood: 20 deg/s
                         () ->
                                 Math.max(0, deadband(-flightThrottle.getX() + 1.0, 0.02))
-                                        * 2000.0)); // Flywheel: 200 RPM/s
+                                        * 3000.0)); // Flywheel: 200 RPM/s
 
         this.RT.whileTrue(
                 IndexerCommands.goToState(subsystems.indexer, IndexerState.DISPENSE_BALL));
+    }
+
+    private double getAngleDegrees() {
+        return ((-flightThrottle.getY() + 1.0)
+                        / 2.0
+                        * (Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES()
+                                - Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES())
+                + Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES());
     }
 
     private double deadband(double val, double deadband) {

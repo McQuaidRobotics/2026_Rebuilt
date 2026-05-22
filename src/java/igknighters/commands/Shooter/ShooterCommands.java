@@ -111,12 +111,12 @@ public class ShooterCommands {
     public static Command manualRelativeControl(
             Shooter shooter,
             DoubleSupplier turretSpeedSupplier,
-            DoubleSupplier hoodSpeedSupplier,
+            DoubleSupplier hoodAngleSuplier,
             DoubleSupplier rpmRequestSupplier) {
         return shooter.run(
                         () -> {
                             double turretSpeed = turretSpeedSupplier.getAsDouble();
-                            double hoodSpeed = hoodSpeedSupplier.getAsDouble();
+                            double hoodSpeed = hoodAngleSuplier.getAsDouble();
                             double rpmRequest = rpmRequestSupplier.getAsDouble();
                             Log.log("ROBOT/Commands/MANUAL CONTROL/RPM_REQUEST", rpmRequest);
                             Log.log("ROBOT/Commands/MANUAL CONTROL/TURRET_SPEED", turretSpeed);
@@ -125,8 +125,7 @@ public class ShooterCommands {
                                     RPM.of(rpmRequest),
                                     Degrees.of(shooter.goalTurretAngleDegrees)
                                             .plus(Degrees.of(turretSpeed * 0.02)),
-                                    Degrees.of(shooter.goalHoodAngleDegrees)
-                                            .plus(Degrees.of(hoodSpeed * 0.02)));
+                                    Degrees.of(hoodSpeed));
                         })
                 .withName("Manual Relative Shooter Control");
     }
