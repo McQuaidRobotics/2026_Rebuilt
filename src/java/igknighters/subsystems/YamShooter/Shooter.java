@@ -1,6 +1,5 @@
 package igknighters.subsystems.YamShooter;
 
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
@@ -24,14 +23,12 @@ public class Shooter {
     double goalRPM = 0.0;
     double goalHoodAngle = Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES();
     double goalTurretAngle = 0.0;
-   
-   
+
     public static enum shotType {
         PASS,
         SHOT
     }
-   
-   
+
     public Shooter() {
         hood = new HoodFunctioning();
         flywheels = new FlywheelsFunctioning();
@@ -52,25 +49,25 @@ public class Shooter {
     }
 
     public ShooterState getCurrentState() {
-        return new ShooterState(
-            flywheels.getVelocity(),
-            hood.getAngle(),
-            turret.getAngle()
-        );
+        return new ShooterState(flywheels.getVelocity(), hood.getAngle(), turret.getAngle());
     }
 
-
-    public boolean atGoal(AngularVelocity rpmTolerance, Angle hoodAngleTolerance, Angle turretAngleTolerance) {
+    public boolean atGoal(
+            AngularVelocity rpmTolerance, Angle hoodAngleTolerance, Angle turretAngleTolerance) {
         boolean atRPM = Math.abs(flywheels.getVelocity().in(RPM) - goalRPM) < rpmTolerance.in(RPM);
 
-        boolean atHoodAngle = Math.abs(hood.getAngle().in(Degrees) - goalHoodAngle) < hoodAngleTolerance.in(Degrees);
-        
-        boolean atTurretAngle = Math.abs(turret.getAngle().in(Degrees) - goalTurretAngle) < turretAngleTolerance.in(Degrees);
-        
+        boolean atHoodAngle =
+                Math.abs(hood.getAngle().in(Degrees) - goalHoodAngle)
+                        < hoodAngleTolerance.in(Degrees);
+
+        boolean atTurretAngle =
+                Math.abs(turret.getAngle().in(Degrees) - goalTurretAngle)
+                        < turretAngleTolerance.in(Degrees);
+
         return atRPM && atHoodAngle && atTurretAngle;
     }
 
-    public boolean atTarget(ShooterState state){
+    public boolean atTarget(ShooterState state) {
         return atTarget(state.flywheelSpeed, state.hoodAngle, state.turretAngle);
     }
 
@@ -79,7 +76,8 @@ public class Shooter {
 
         boolean atHoodAngle = Math.abs(hood.getAngle().in(Degrees) - hoodAngle.in(Degrees)) < 5;
 
-        boolean atTurretAngle = Math.abs(turret.getAngle().in(Degrees) - turretAngle.in(Degrees)) < 5;
+        boolean atTurretAngle =
+                Math.abs(turret.getAngle().in(Degrees) - turretAngle.in(Degrees)) < 5;
 
         return atRPM && atHoodAngle && atTurretAngle;
     }
@@ -89,9 +87,8 @@ public class Shooter {
     }
 
     public boolean isHoodSensorTripped() {
-    
+
         return hood.isLimitSwitchTripped();
-    
     }
 
     public void setRollerVoltage(double voltage) {
@@ -101,6 +98,4 @@ public class Shooter {
     public void periodic() {
         ableToShootState.setAtTarget(atGoal(RPM.of(50), Degrees.of(2), Degrees.of(5)));
     }
-
-
 }

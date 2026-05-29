@@ -3,13 +3,10 @@ package igknighters.constants;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
 import igknighters.util.LerpTable;
 import yams.motorcontrollers.SmartMotorControllerConfig;
-import yams.motorcontrollers.simulation.Sensor;
 
 public abstract class RobotConsts {
     public abstract CANBus getSuperStructureBus();

@@ -19,13 +19,10 @@ public class HoodDisabled extends Hood {
     }
 
     @Override
-    public void zeroAt(Angle angle) {
-    }
+    public void zeroAt(Angle angle) {}
 
     @Override
-    public void setVoltage(double voltage) {
-        
-    }
+    public void setVoltage(double voltage) {}
 
     @Override
     public Command setAngleAndStop(Angle angle, Angle tolerance) {
@@ -38,12 +35,10 @@ public class HoodDisabled extends Hood {
     }
 
     @Override
-    public void setAngleSetpoint(Angle angle) {
-        
-    }
+    public void setAngleSetpoint(Angle angle) {}
+
     @Override
     public boolean isAt(Angle angle, Angle tolerance) {
         return true;
     }
-    
 }

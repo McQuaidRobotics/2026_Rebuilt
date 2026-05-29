@@ -37,8 +37,8 @@ import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
-import igknighters.subsystems.YamsIntake.YamIntake;
 import igknighters.subsystems.YamShooter.Shooter;
+import igknighters.subsystems.YamsIntake.YamIntake;
 import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.swerve.Swerve;
@@ -341,7 +341,7 @@ public class Robot extends LoggedRobot {
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
-        
+
         pose_pred.setVelocitiesAndPose();
 
         if (underTrench()) {
@@ -416,7 +416,6 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledInit() {
 
-        
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().clearComposedCommands();
         subsystems.swerve.setDefaultCommand(

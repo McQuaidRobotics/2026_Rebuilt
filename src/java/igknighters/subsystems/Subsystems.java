@@ -61,7 +61,17 @@ public class Subsystems {
         this.turret = shooter.turret;
         this.lockedResources =
                 new SubsystemBase[] {
-                    swerve, flywheels, turret, hood, spindexer, exitRollers, rollers, pivot, luma, vision, led
+                    swerve,
+                    flywheels,
+                    turret,
+                    hood,
+                    spindexer,
+                    exitRollers,
+                    rollers,
+                    pivot,
+                    luma,
+                    vision,
+                    led
                 };
 
         this.pivot.setDefaultCommand(pivot.targetAngle(YamIntakeState.STOWED.pivotAngle));

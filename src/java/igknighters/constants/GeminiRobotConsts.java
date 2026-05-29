@@ -9,8 +9,6 @@ import static edu.wpi.first.units.Units.Seconds;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -29,7 +27,6 @@ import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
-import yams.motorcontrollers.simulation.Sensor;
 
 public class GeminiRobotConsts extends RobotConsts {
 
@@ -403,12 +400,13 @@ public class GeminiRobotConsts extends RobotConsts {
             return new SmartMotorControllerConfig(subsystem)
                     .withControlMode(ControlMode.CLOSED_LOOP)
                     // Feedback Constants (PID Constants)
-                    .withClosedLoopController(new ProfiledPIDController(0.3, 0.1, 0.0, new TrapezoidProfile.Constraints(5800, 5800)))
-                    .withFollowers(
-                            Pair.of(
-                                    follower,
-                                    true))
-                    .withSimClosedLoopController(new ProfiledPIDController(0.3, 0.1, 0.0, new TrapezoidProfile.Constraints(5800, 5800)))
+                    .withClosedLoopController(
+                            new ProfiledPIDController(
+                                    0.3, 0.1, 0.0, new TrapezoidProfile.Constraints(5800, 5800)))
+                    .withFollowers(Pair.of(follower, true))
+                    .withSimClosedLoopController(
+                            new ProfiledPIDController(
+                                    0.3, 0.1, 0.0, new TrapezoidProfile.Constraints(5800, 5800)))
                     // Feedforward Constants
                     .withFeedforward(new SimpleMotorFeedforward(0.17, 0.1, 0.02))
                     .withSimFeedforward(new SimpleMotorFeedforward(0.17, 0.1, 0.02))
@@ -425,15 +423,17 @@ public class GeminiRobotConsts extends RobotConsts {
         public int FOLLOWER_MOTOR_ID() {
             return 22;
         }
+
         @Override
         public double WHEEL_RADIUS_METERS() {
             return 0.0508;
         }
+
         @Override
         public double ShooterHeightMeters() {
             return 0.5;
         }
-        
+
         @Override
         public boolean disableFlywheelsLogs() {
             return false;

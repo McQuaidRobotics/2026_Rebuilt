@@ -15,8 +15,6 @@ import igknighters.subsystems.YamShooter.Shooter.shotType;
 import igknighters.subsystems.YamShooter.ShooterState;
 import igknighters.subsystems.YamShooter.ShootingData;
 import igknighters.subsystems.YamShooter.solvers.Math.LerpSolveShot;
-
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class AimingCommands {
@@ -33,6 +31,7 @@ public class AimingCommands {
     public static Pose2d getTurretPose() {
         return getShooterPoseWithOffset(() -> Robot.pose_pred.getDynamicPredictedPose()).get();
     }
+
     public static Command idleShooter(Shooter shooter) {
 
         ShootInformation info = ShootInformation.getInstance();
@@ -51,8 +50,12 @@ public class AimingCommands {
                             RPM.of(3000),
                             targetingData.turretAngle,
                             Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
-                }, shooter.hood, shooter.flywheels, shooter.turret);
+                },
+                shooter.hood,
+                shooter.flywheels,
+                shooter.turret);
     }
+
     /**
      * aims without changing hood or rpm so that the shooter can go under bump
      *
@@ -64,7 +67,8 @@ public class AimingCommands {
     public static Command idleHoodCommand(Shooter shooter) {
 
         ShootInformation info = ShootInformation.getInstance();
-        return shooter.hood.targetAngle(Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
+        return shooter.hood.targetAngle(
+                Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
     }
 
     public static Command idleFlywheelCommand(Shooter shooter) {

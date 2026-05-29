@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,20 +22,32 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class TurretFunctioning extends Turret {
-    private final CANcoder turretCancoder = new CANcoder(Robot.consts.shooter().kTurret().CANCODER_ID(), Robot.consts.shooter().kCANBUS());
+    private final CANcoder turretCancoder =
+            new CANcoder(
+                    Robot.consts.shooter().kTurret().CANCODER_ID(),
+                    Robot.consts.shooter().kCANBUS());
 
-    private final SmartMotorControllerConfig turretConfig = Robot.consts.shooter().kTurret().getConfig(this, turretCancoder);
+    private final SmartMotorControllerConfig turretConfig =
+            Robot.consts.shooter().kTurret().getConfig(this, turretCancoder);
 
-    private final TalonFX turretMotor = new TalonFX(Robot.consts.shooter().kTurret().MOTOR_ID(), Robot.consts.shooter().kCANBUS());
+    private final TalonFX turretMotor =
+            new TalonFX(
+                    Robot.consts.shooter().kTurret().MOTOR_ID(), Robot.consts.shooter().kCANBUS());
 
-    private final SmartMotorController turretController = new TalonFXWrapper(turretMotor, DCMotor.getKrakenX60(1), turretConfig);
+    private final SmartMotorController turretController =
+            new TalonFXWrapper(turretMotor, DCMotor.getKrakenX60(1), turretConfig);
 
-    private final PivotConfig pivotConfig = new PivotConfig(turretController)
-        .withStartingPosition(Degrees.of(0.0))
-        .withSoftLimits(Degrees.of(Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES()), Degrees.of(Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES()))
-        .withHardLimit(Degrees.of(Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES() - 10), Degrees.of(Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES() + 10))
-        .withMOI(Meters.of(.2), Pounds.of(7))
-        .withTelemetry("Turret Motor", TelemetryVerbosity.HIGH); // Telemetry;
+    private final PivotConfig pivotConfig =
+            new PivotConfig(turretController)
+                    .withStartingPosition(Degrees.of(0.0))
+                    .withSoftLimits(
+                            Degrees.of(Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES()),
+                            Degrees.of(Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES()))
+                    .withHardLimit(
+                            Degrees.of(Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES() - 10),
+                            Degrees.of(Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES() + 10))
+                    .withMOI(Meters.of(.2), Pounds.of(7))
+                    .withTelemetry("Turret Motor", TelemetryVerbosity.HIGH); // Telemetry;
 
     private final Pivot turret = new Pivot(pivotConfig);
 
@@ -83,7 +94,6 @@ public class TurretFunctioning extends Turret {
     /** Run sysId on the {@link Arm} */
     public Command sysId() {
         return turret.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
-        
     }
 
     public Angle getAngle() {
@@ -93,7 +103,6 @@ public class TurretFunctioning extends Turret {
     public boolean isAt(Angle angle, Angle tolerance) {
         return turret.isNear(angle, tolerance).getAsBoolean();
     }
-
 
     /**
      * Example command factory method.

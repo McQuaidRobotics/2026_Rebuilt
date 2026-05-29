@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.RPM;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,8 +19,11 @@ import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class FlywheelsFunctioning extends Flywheels {
 
-    private TalonFX followerMotor = new TalonFX(Robot.consts.shooter().kFlywheels().FOLLOWER_MOTOR_ID(), Robot.consts.shooter().kCANBUS());
-     private SmartMotorControllerConfig smcConfig =
+    private TalonFX followerMotor =
+            new TalonFX(
+                    Robot.consts.shooter().kFlywheels().FOLLOWER_MOTOR_ID(),
+                    Robot.consts.shooter().kCANBUS());
+    private SmartMotorControllerConfig smcConfig =
             Robot.consts.shooter().kFlywheels().getConfig(this, followerMotor);
 
     private TalonFX leaderMotor =
@@ -31,7 +33,7 @@ public class FlywheelsFunctioning extends Flywheels {
 
     private TalonFXConfiguration getConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        
+
         config.CurrentLimits.StatorCurrentLimit = 35;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
@@ -78,10 +80,12 @@ public class FlywheelsFunctioning extends Flywheels {
     public AngularVelocity getVelocity() {
         return shooter.getSpeed();
     }
+
     @Override
     public void setVoltage(double voltage) {
-        shooter.set(voltage/12);
+        shooter.set(voltage / 12);
     }
+
     /**
      * Set the shooter velocity.
      *

@@ -76,9 +76,14 @@ public class ShooterCommands {
         // return Commands.run(() -> shooter.setHoodVoltage(-1)).until(()
         // ->shooter.isHoodSensorHit());
         if (shooter.isHoodSensorTripped()) {
-            return Commands.runOnce(() -> shooter.hood.zeroAt(Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES())));
+            return Commands.runOnce(
+                    () ->
+                            shooter.hood.zeroAt(
+                                    Degrees.of(
+                                            Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES())));
         }
-        return shooter.hood.run(() -> shooter.hood.setVoltage(-1))
+        return shooter.hood
+                .run(() -> shooter.hood.setVoltage(-1))
                 .until(() -> shooter.isHoodSensorTripped())
                 .withTimeout(3.0)
                 .withName("DRIVE DOWN HAS NOT HIT THE SENSOR YET HOME HOOD") // failsafe, can be
@@ -90,7 +95,12 @@ public class ShooterCommands {
                         Commands.runOnce(
                                 () -> {
                                     shooter.hood.setVoltage(0);
-                                    shooter.hood.zeroAt(Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
+                                    shooter.hood.zeroAt(
+                                            Degrees.of(
+                                                    Robot.consts
+                                                            .shooter()
+                                                            .kHood()
+                                                            .MIN_ANGLE_DEGREES()));
                                 }))
                 .withName("HOOD IS DOWN ON SENSOR");
     }
