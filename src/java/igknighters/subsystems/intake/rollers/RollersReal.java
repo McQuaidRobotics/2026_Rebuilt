@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.Robot;
 import igknighters.util.log.Log;
@@ -66,7 +65,7 @@ public class RollersReal extends Rollers {
         config.CurrentLimits.StatorCurrentLimit = 35.0;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = Robot.consts.intake().kRollers().INVERTED();
 
         config.Feedback.SensorToMechanismRatio = Robot.consts.intake().kRollers().GEAR_RATIO();
 
