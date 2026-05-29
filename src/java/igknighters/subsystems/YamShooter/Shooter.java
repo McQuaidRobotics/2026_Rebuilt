@@ -3,14 +3,17 @@ package igknighters.subsystems.YamShooter;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
 import igknighters.constants.ShootInformation;
 import igknighters.subsystems.YamShooter.flywheels.Flywheels;
 import igknighters.subsystems.YamShooter.flywheels.FlywheelsFunctioning;
 import igknighters.subsystems.YamShooter.hood.Hood;
 import igknighters.subsystems.YamShooter.hood.HoodFunctioning;
+import igknighters.subsystems.YamShooter.solvers.Math.LerpSolveShot;
 import igknighters.subsystems.YamShooter.turret.Turret;
 import igknighters.subsystems.YamShooter.turret.TurretFunctioning;
 
@@ -36,10 +39,10 @@ public class Shooter {
     }
 
     public void targetState(ShooterState state) {
-        targetState(state.flywheelSpeed, state.hoodAngle, state.turretAngle);
+        targetState(state.flywheelSpeed, state.turretAngle, state.hoodAngle);
     }
 
-    public void targetState(AngularVelocity rpm, Angle hoodAngle, Angle turretAngle) {
+    public void targetState(AngularVelocity rpm, Angle turretAngle, Angle hoodAngle) {
         goalRPM = rpm.in(RPM);
         goalHoodAngle = hoodAngle.in(Degrees);
         goalTurretAngle = turretAngle.in(Degrees);
@@ -97,5 +100,38 @@ public class Shooter {
 
     public void periodic() {
         ableToShootState.setAtTarget(atGoal(RPM.of(50), Degrees.of(2), Degrees.of(5)));
+    }
+
+    // IDLE DEFAULT COMMANDS
+    public Command idleHoodCommand(Shooter shooter) {
+        return shooter.hood
+                .targetAngle(Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()))
+                .withName("IDLE THE HOOD : DEFAULT COMMAND");
+    }
+
+    public Command idleFlywheelCommand(Shooter shooter) {
+        return shooter.flywheels
+                .setVelocity(RPM.of(3000))
+                .withName("IDLE THE FLYWHEELS : DEFAULT COMMAND");
+    }
+
+    public Command idleTurretCommand(Shooter shooter) {
+
+        ShootInformation info = ShootInformation.getInstance();
+        return shooter.turret
+                .run(
+                        () -> {
+                            info.setBeingControlled(false);
+                            Pose3d targetPose = info.getShotLocation();
+
+                            ShooterState targetingData =
+                                    LerpSolveShot.solve(
+                                            targetPose,
+                                            shooter.getCurrentState().flywheelSpeed.in(RPM),
+                                            0.0);
+
+                            shooter.turret.targetAngle(targetingData.turretAngle);
+                        })
+                .withName("IDLING THE TURRET : DEFAULT COMMAND");
     }
 }

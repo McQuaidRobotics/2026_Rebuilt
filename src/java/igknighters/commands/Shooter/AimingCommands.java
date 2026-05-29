@@ -57,46 +57,6 @@ public class AimingCommands {
                 .withName("IDLE ENTIRE SHOOTER : NOT DEFAULT COMMAND");
     }
 
-    /**
-     * aims without changing hood or rpm so that the shooter can go under bump
-     *
-     * @param shooter
-     * @param robotPoseSupplier
-     * @param robotVelocitySupplier
-     * @return
-     */
-    public static Command idleHoodCommand(Shooter shooter) {
-        return shooter.hood
-                .targetAngle(Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()))
-                .withName("IDLE THE HOOD : DEFAULT COMMAND");
-    }
-
-    public static Command idleFlywheelCommand(Shooter shooter) {
-        return shooter.flywheels
-                .setVelocity(RPM.of(3000))
-                .withName("IDLE THE FLYWHEELS : DEFAULT COMMAND");
-    }
-
-    public static Command idleTurretCommand(Shooter shooter) {
-
-        ShootInformation info = ShootInformation.getInstance();
-        return shooter.turret
-                .run(
-                        () -> {
-                            info.setBeingControlled(false);
-                            Pose3d targetPose = info.getShotLocation();
-
-                            ShooterState targetingData =
-                                    LerpSolveShot.solve(
-                                            targetPose,
-                                            shooter.getCurrentState().flywheelSpeed.in(RPM),
-                                            0.0);
-
-                            shooter.turret.targetAngle(targetingData.turretAngle);
-                        })
-                .withName("IDLING THE TURRET : DEFAULT COMMAND");
-    }
-
     public static shotType getShotType() {
         ShootInformation info = ShootInformation.getInstance();
         if (info.shouldPass()) {

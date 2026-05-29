@@ -537,7 +537,7 @@ public class SecondBotRobotConsts extends RobotConsts {
                                     4.0, 0.0, 0.0, new TrapezoidProfile.Constraints(12, 24)))
                     .withSimClosedLoopController(
                             new ProfiledPIDController(
-                                    4, 0.05, 0.0, new TrapezoidProfile.Constraints(12, 24)))
+                                    1, 0.05, 0.0, new TrapezoidProfile.Constraints(12, 24)))
                     // Feedforward Constants
                     .withFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
                     .withSimFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
@@ -547,7 +547,7 @@ public class SecondBotRobotConsts extends RobotConsts {
                     // In this example GearBox.fromReductionStages(3,4) is the same as
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
                     // your motor.
-                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
+                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(15)))
                     .withMotorInverted(true)
                     .withIdleMode(MotorMode.BRAKE)
                     .withStatorCurrentLimit(Amps.of(20))

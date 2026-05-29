@@ -58,7 +58,7 @@ public class HigherOrderCommands {
         return AimingCommands.idleShooter(subsystems.shooter)
                 .alongWith(IndexerCommands.jorkIt(subsystems.indexer).repeatedly())
                 .alongWith(Commands.runOnce(() -> DrivingSharedState.getInstance().setDetune(1.0)))
-                .withName("IDLING THE SHOOTER");
+                .withName("IDLING THE SHOOTER : HIGHER ORDER COMMAND");
     }
 
     public static Command forceDispense(Subsystems subsystems) {

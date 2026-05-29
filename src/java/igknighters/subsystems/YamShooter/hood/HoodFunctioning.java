@@ -14,6 +14,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
+import igknighters.constants.Conv;
 import yams.mechanisms.config.PivotConfig;
 import yams.mechanisms.config.SensorConfig;
 import yams.mechanisms.positional.Arm;
@@ -39,50 +40,29 @@ public class HoodFunctioning extends Hood {
 
     private final SmartMotorController hoodController =
             new TalonFXWrapper(hoodMotor, DCMotor.getKrakenX44(1), hoodConfig);
-
+    // i have configured the SMCC to have a ratio of 15 so when i want to set a limit it cant be 15
+    // degrees it must be 1 rotation and it will do the math
     private PivotConfig pivotConfig =
             new PivotConfig(hoodController)
                     // Soft limit is applied to the SmartMotorControllers PID
                     .withMOI(Meters.of(0.25), Pounds.of(.5))
                     .withSoftLimits(
-                            Rotations.of(
-                                    Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()
-                                            / Robot.consts
-                                                    .shooter()
-                                                    .kHood()
-                                                    .MOTOR_ROTS_TO_HOOD_DEGREES()),
-                            Rotations.of(
-                                    Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES()
-                                            / Robot.consts
-                                                    .shooter()
-                                                    .kHood()
-                                                    .MOTOR_ROTS_TO_HOOD_DEGREES()))
+                            Rotations.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()),
+                            Rotations.of(Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES()))
                     // Hard limit is applied to the simulation.
                     .withHardLimit(
                             Rotations.of(
                                     Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()
-                                                    / Robot.consts
-                                                            .shooter()
-                                                            .kHood()
-                                                            .MOTOR_ROTS_TO_HOOD_DEGREES()
-                                            - 10),
-                            Rotations.of(
-                                    Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES()
-                                                    / Robot.consts
-                                                            .shooter()
-                                                            .kHood()
-                                                            .MOTOR_ROTS_TO_HOOD_DEGREES()
-                                            + 10))
+                                            - 5), // in rotations
+                            Rotations.of(Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES() + 5))
                     // Starting position is where your arm starts
                     .withStartingPosition(
                             Rotations.of(
-                                    Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()
-                                            / Robot.consts
-                                                    .shooter()
-                                                    .kHood()
-                                                    .MOTOR_ROTS_TO_HOOD_DEGREES()))
+                                    Conv.DEGREES_TO_ROTATIONS
+                                            * (Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()
+                                                    + 5)))
                     // Telemetry name and verbosity for the arm.
-                    .withTelemetry("Hood Pivot", TelemetryVerbosity.HIGH);
+                    .withTelemetry("Shooter Hood", TelemetryVerbosity.HIGH);
 
     private Pivot hood = new Pivot(pivotConfig);
 
@@ -91,17 +71,12 @@ public class HoodFunctioning extends Hood {
                     .withField(
                             "Switch", dio::get,
                             false) // Add a Field to the sensor named "Beam" whose value is
-                    // dio.get() and defaults to false
-                    .withSimulatedValue(
-                            "Switch",
-                            Seconds.of(.5),
-                            Seconds.of(.7),
-                            true) // Change the "Beam" field to true between 3s and 4s into a match
                     .withSimulatedValue(
                             "Switch",
                             hood.isNear(
-                                    Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()),
-                                    Degrees.of(2)),
+                                    Rotations.of(
+                                            Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()),
+                                    Rotations.of(.01)),
                             true) // Change "Beam" field to true when the arm is near 40deg +- 2deg
                     .getSensor(); // Get the sensor.
 
@@ -112,10 +87,7 @@ public class HoodFunctioning extends Hood {
      * @return A command.
      */
     public Command targetAngle(Angle angle) {
-        return hood.run(
-                Rotations.of(
-                        angle.in(Degrees)
-                                / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES()));
+        return hood.run(Rotations.of(angle.in(Degrees)));
     }
 
     /**
@@ -127,11 +99,7 @@ public class HoodFunctioning extends Hood {
      * @return A Command
      */
     public Command setAngleAndStop(Angle angle, Angle tolerance) {
-        return hood.runTo(
-                Rotations.of(
-                        angle.in(Degrees)
-                                / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES()),
-                tolerance); // force to rotations
+        return hood.runTo(angle, tolerance); // force to rotations
     }
 
     /**
@@ -140,19 +108,17 @@ public class HoodFunctioning extends Hood {
      * @param angle Angle to go to.
      */
     public void setAngleSetpoint(Angle angle) {
-        hood.setMechanismPositionSetpoint(
-                Rotations.of(
-                        angle.in(Degrees)
-                                / Robot.consts
-                                        .shooter()
-                                        .kHood()
-                                        .MOTOR_ROTS_TO_HOOD_DEGREES())); // force to rotations
+
+        // Angle goalAngle =
+        //         Rotations.of(
+        //                 angle.in(Degrees)
+        //                         / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES());
+        hood.setMechanismPositionSetpoint(angle);
     }
 
     @Override
     public void zeroAt(Angle angle) {
-        hoodMotor.setPosition(
-                angle.in(Degrees) / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES());
+        hoodController.setEncoderPosition(angle);
     }
 
     /**
@@ -220,8 +186,9 @@ public class HoodFunctioning extends Hood {
         if (limitSwitch.getAsBoolean("Switch") && !hasZeroed) {
             hasZeroed = true;
             zeroAt(Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
-        } else {
-            hasZeroed = false;
+        } else if (!limitSwitch.getAsBoolean("Switch")) {
+            hasZeroed =
+                    false; // to ensure no spaming config aplies. Only becomes false once off sensor
         }
         // This method will be called once per scheduler run
         hood.updateTelemetry();

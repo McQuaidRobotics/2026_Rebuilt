@@ -538,7 +538,7 @@ public class GeminiRobotConsts extends RobotConsts {
                     // In this example GearBox.fromReductionStages(3,4) is the same as
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
                     // your motor.
-                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
+                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(15)))
                     .withMotorInverted(true)
                     .withIdleMode(MotorMode.BRAKE)
                     .withStatorCurrentLimit(Amps.of(20))

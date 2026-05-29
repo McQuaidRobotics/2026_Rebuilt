@@ -3,7 +3,6 @@ package igknighters.subsystems;
 import static edu.wpi.first.units.Units.RPM;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import igknighters.commands.Shooter.AimingCommands;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.YamShooter.Shooter;
@@ -80,8 +79,8 @@ public class Subsystems {
 
         this.spindexer.setDefaultCommand(indexer.idleSpindexer());
         this.exitRollers.setDefaultCommand(this.exitRollers.setVelocity(RPM.of(0.0)));
-        this.flywheels.setDefaultCommand(AimingCommands.idleFlywheelCommand(shooter));
-        this.turret.setDefaultCommand(AimingCommands.idleTurretCommand(shooter));
-        this.hood.setDefaultCommand(AimingCommands.idleHoodCommand(shooter));
+        this.flywheels.setDefaultCommand(shooter.idleFlywheelCommand(shooter));
+        this.turret.setDefaultCommand(shooter.idleTurretCommand(shooter));
+        this.hood.setDefaultCommand(shooter.idleHoodCommand(shooter));
     }
 }
