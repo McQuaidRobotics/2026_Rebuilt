@@ -234,6 +234,7 @@ public class Robot extends LoggedRobot {
 
     public Robot() {
         setUpRobotConsts();
+
         setUpAdvantageScope();
         setUpCommandLogging();
         subsystems =
