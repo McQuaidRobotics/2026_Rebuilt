@@ -36,24 +36,25 @@ public class AimingCommands {
 
         ShootInformation info = ShootInformation.getInstance();
         return Commands.run(
-                () -> {
-                    info.setBeingControlled(false);
-                    Pose3d targetPose = info.getShotLocation();
+                        () -> {
+                            info.setBeingControlled(false);
+                            Pose3d targetPose = info.getShotLocation();
 
-                    ShooterState targetingData =
-                            LerpSolveShot.solve(
-                                    targetPose,
-                                    shooter.getCurrentState().flywheelSpeed.in(RPM),
-                                    0.0);
+                            ShooterState targetingData =
+                                    LerpSolveShot.solve(
+                                            targetPose,
+                                            shooter.getCurrentState().flywheelSpeed.in(RPM),
+                                            0.0);
 
-                    shooter.targetState(
-                            RPM.of(3000),
-                            targetingData.turretAngle,
-                            Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
-                },
-                shooter.hood,
-                shooter.flywheels,
-                shooter.turret);
+                            shooter.targetState(
+                                    RPM.of(3000),
+                                    targetingData.turretAngle,
+                                    Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
+                        },
+                        shooter.hood,
+                        shooter.flywheels,
+                        shooter.turret)
+                .withName("IDLE ENTIRE SHOOTER : NOT DEFAULT COMMAND");
     }
 
     /**
@@ -65,32 +66,35 @@ public class AimingCommands {
      * @return
      */
     public static Command idleHoodCommand(Shooter shooter) {
-
-        ShootInformation info = ShootInformation.getInstance();
-        return shooter.hood.targetAngle(
-                Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
+        return shooter.hood
+                .targetAngle(Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()))
+                .withName("IDLE THE HOOD : DEFAULT COMMAND");
     }
 
     public static Command idleFlywheelCommand(Shooter shooter) {
-        return shooter.flywheels.setVelocity(RPM.of(3000));
+        return shooter.flywheels
+                .setVelocity(RPM.of(3000))
+                .withName("IDLE THE FLYWHEELS : DEFAULT COMMAND");
     }
 
     public static Command idleTurretCommand(Shooter shooter) {
 
         ShootInformation info = ShootInformation.getInstance();
-        return shooter.turret.run(
-                () -> {
-                    info.setBeingControlled(false);
-                    Pose3d targetPose = info.getShotLocation();
+        return shooter.turret
+                .run(
+                        () -> {
+                            info.setBeingControlled(false);
+                            Pose3d targetPose = info.getShotLocation();
 
-                    ShooterState targetingData =
-                            LerpSolveShot.solve(
-                                    targetPose,
-                                    shooter.getCurrentState().flywheelSpeed.in(RPM),
-                                    0.0);
+                            ShooterState targetingData =
+                                    LerpSolveShot.solve(
+                                            targetPose,
+                                            shooter.getCurrentState().flywheelSpeed.in(RPM),
+                                            0.0);
 
-                    shooter.turret.targetAngle(targetingData.turretAngle);
-                });
+                            shooter.turret.targetAngle(targetingData.turretAngle);
+                        })
+                .withName("IDLING THE TURRET : DEFAULT COMMAND");
     }
 
     public static shotType getShotType() {
@@ -152,48 +156,65 @@ public class AimingCommands {
 
     public static Command shootWithProtectionAndAgregiousMaxHeight(Shooter shooter) {
         return Commands.run(
-                () -> {
-                    Boolean underTrenchCheck = DrivingSharedState.getInstance().underTrench;
-                    if (underTrenchCheck) {
-                        idleOnce(shooter);
-                    } else {
-                        shootOnce(shooter);
-                    }
-                });
+                        () -> {
+                            Boolean underTrenchCheck = DrivingSharedState.getInstance().underTrench;
+                            if (underTrenchCheck) {
+                                idleOnce(shooter);
+                            } else {
+                                shootOnce(shooter);
+                            }
+                        },
+                        shooter.turret,
+                        shooter.hood,
+                        shooter.flywheels)
+                .withName("SHOOT WITH PROTECTION AND AGRETIOUS MAX HEIGHT");
     }
 
     public static Command shootWithProtection(Shooter shooter) {
 
         return Commands.run(
-                () -> {
-                    Boolean underTrenchCheck = DrivingSharedState.getInstance().underTrench;
-                    if (underTrenchCheck) {
-                        idleOnce(shooter);
-                    } else {
-                        shootOnce(shooter);
-                    }
-                });
+                        () -> {
+                            Boolean underTrenchCheck = DrivingSharedState.getInstance().underTrench;
+                            if (underTrenchCheck) {
+                                idleOnce(shooter);
+                            } else {
+                                shootOnce(shooter);
+                            }
+                        },
+                        shooter.turret,
+                        shooter.hood,
+                        shooter.flywheels)
+                .withName("SHOOT WITH PROTECTION");
     }
 
     public static Command SHOOT_AT_TARGET(Shooter shooter, Pose3d targetPose) {
         return Commands.run(
-                () -> {
-                    ShooterState targetingData =
-                            LerpSolveShot.solve(
-                                    targetPose,
-                                    shooter.getCurrentState().flywheelSpeed.in(RPM),
-                                    0.02);
+                        () -> {
+                            ShooterState targetingData =
+                                    LerpSolveShot.solve(
+                                            targetPose,
+                                            shooter.getCurrentState().flywheelSpeed.in(RPM),
+                                            0.02);
 
-                    if (targetingData.flywheelSpeed.in(RPM) != 0) {
-                        shooter.targetState(targetingData);
-                    } else {
-                        // shot is imposible so we should idle the shooter rpm at like 4000 so it
-                        // spins up faster
-                        shooter.targetState(
-                                RPM.of(3000),
-                                targetingData.turretAngle,
-                                Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
-                    }
-                });
+                            if (targetingData.flywheelSpeed.in(RPM) != 0) {
+                                shooter.targetState(targetingData);
+                            } else {
+                                // shot is imposible so we should idle the shooter rpm at like 4000
+                                // so it
+                                // spins up faster
+                                shooter.targetState(
+                                        RPM.of(3000),
+                                        targetingData.turretAngle,
+                                        Degrees.of(
+                                                Robot.consts
+                                                        .shooter()
+                                                        .kHood()
+                                                        .MIN_ANGLE_DEGREES()));
+                            }
+                        },
+                        shooter.turret,
+                        shooter.hood,
+                        shooter.flywheels)
+                .withName("SHOOT AT TARGET");
     }
 }
