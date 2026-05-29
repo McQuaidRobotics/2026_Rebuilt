@@ -19,4 +19,6 @@ public abstract class Hood extends SubsystemBase{
     public abstract void zeroAt(Angle angle);
 
     public abstract boolean isLimitSwitchTripped();
+
+    public abstract void setVoltage(double voltage);
 }

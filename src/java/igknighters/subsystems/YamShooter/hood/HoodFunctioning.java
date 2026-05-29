@@ -3,6 +3,8 @@ package igknighters.subsystems.YamShooter.hood;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.Rotation;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -42,15 +44,15 @@ public class HoodFunctioning extends Hood {
     // Soft limit is applied to the SmartMotorControllers PID
     .withMOI(Meters.of(0.25), Pounds.of(.5))
     .withSoftLimits(
-                            Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()),
-                            Degrees.of(Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES()))
+                            Rotations.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES() / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES()),
+                            Rotations.of(Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES() / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES()))
                     // Hard limit is applied to the simulation.
                     .withHardLimit(
-                            Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES() - 10),
-                            Degrees.of(Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES() + 10))
+                            Rotations.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES() / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES() - 10),
+                            Rotations.of(Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES() / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES() + 10))
                     // Starting position is where your arm starts
                     .withStartingPosition(
-                            Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()))
+                            Rotations.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES() / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES()))
                     // Telemetry name and verbosity for the arm.
                     .withTelemetry("Hood Pivot", TelemetryVerbosity.HIGH);
 
@@ -68,7 +70,7 @@ public class HoodFunctioning extends Hood {
      * @return A command.
      */
     public Command targetAngle(Angle angle) {
-        return hood.run(angle);
+        return hood.run(Rotations.of(angle.in(Degrees) / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES()));
     }
 
     /**
@@ -80,7 +82,7 @@ public class HoodFunctioning extends Hood {
      * @return A Command
      */
     public Command setAngleAndStop(Angle angle, Angle tolerance) {
-        return hood.runTo(angle, tolerance);
+        return hood.runTo(Rotations.of(angle.in(Degrees) / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES()), tolerance); // force to rotations
     }
 
     /**
@@ -89,7 +91,7 @@ public class HoodFunctioning extends Hood {
      * @param angle Angle to go to.
      */
     public void setAngleSetpoint(Angle angle) {
-        hood.setMechanismPositionSetpoint(angle);
+        hood.setMechanismPositionSetpoint(Rotations.of(angle.in(Degrees) / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES())); // force to rotations
     }
 
 
@@ -113,11 +115,14 @@ public class HoodFunctioning extends Hood {
     }
 
     public Angle getAngle() {
-        return hood.getAngle();
+        // hood in rots
+        return Degrees.of(hood.getAngle().in(Rotations) * Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES());
     }
 
     public boolean isAt(Angle angle, Angle tolerance) {
-        return hood.isNear(angle, tolerance).getAsBoolean();
+
+        // this will take a actuall angle like 30 and convert it to rotations with the conversion factor. The motor is told gear ratio of 1:1
+        return hood.isNear(Rotations.of(angle.in(Degrees) / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES()), tolerance).getAsBoolean();
     }
 
     @Override
@@ -136,6 +141,11 @@ public class HoodFunctioning extends Hood {
     public boolean exampleCondition() {
         // Query some boolean state, such as a digital sensor.
         return false;
+    }
+
+    @Override
+    public void setVoltage(double voltage) {
+        hood.set(voltage/12.0);
     }
 
     @Override

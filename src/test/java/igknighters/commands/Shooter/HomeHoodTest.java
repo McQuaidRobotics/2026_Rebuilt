@@ -1,12 +1,13 @@
 package igknighters.commands.Shooter;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import igknighters.Robot;
 import igknighters.constants.GeminiRobotConsts;
-import igknighters.subsystems.shooter.Shooter;
+import igknighters.subsystems.YamShooter.Shooter;
 import org.junit.jupiter.api.Test;
 
 public class HomeHoodTest {
@@ -33,7 +34,7 @@ public class HomeHoodTest {
 
         assertEquals(
                 Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES(),
-                shooter.getHoodAngleDegrees(),
+                shooter.getCurrentState().hoodAngle.in(Degrees),
                 1e-6);
 
         scheduler.cancelAll();

@@ -10,4 +10,6 @@ public abstract class Flywheels extends SubsystemBase {
     public abstract Command setVelocity(AngularVelocity velocity);
 
     public abstract AngularVelocity getVelocity();
+
+    public abstract void setVoltage(double voltage);
 }

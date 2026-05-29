@@ -12,7 +12,10 @@ public class FlywheelsDisabled extends Flywheels {
     public Command setVelocity(AngularVelocity velocity) {
         return Commands.none();
     }
-
+    @Override
+    public void setVoltage(double voltage) {
+        
+    }
     @Override
     public void setVelocitySetpoint(AngularVelocity velocity) {
         

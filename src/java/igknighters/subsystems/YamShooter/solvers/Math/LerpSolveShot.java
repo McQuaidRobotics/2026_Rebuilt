@@ -1,4 +1,4 @@
-package igknighters.subsystems.shooter.solvers.Math;
+package igknighters.subsystems.YamShooter.solvers.Math;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
@@ -12,7 +12,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import igknighters.FieldVisualizer;
 import igknighters.Robot;
 import igknighters.constants.ShootInformation;
-import igknighters.subsystems.shooter.ShooterState;
+import igknighters.subsystems.YamShooter.ShooterState;
 import igknighters.util.*;
 import igknighters.util.log.Log;
 

@@ -6,14 +6,17 @@ import static edu.wpi.first.units.Units.RPM;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
-import igknighters.commands.Shooter.ShooterCommands.shotType;
 import igknighters.constants.DrivingSharedState;
 import igknighters.constants.ShootInformation;
-import igknighters.subsystems.shooter.Shooter;
-import igknighters.subsystems.shooter.ShooterState;
-import igknighters.subsystems.shooter.ShootingData;
-import igknighters.subsystems.shooter.solvers.Math.LerpSolveShot;
+import igknighters.subsystems.YamShooter.Shooter;
+import igknighters.subsystems.YamShooter.Shooter.shotType;
+import igknighters.subsystems.YamShooter.ShooterState;
+import igknighters.subsystems.YamShooter.ShootingData;
+import igknighters.subsystems.YamShooter.solvers.Math.LerpSolveShot;
+
+import java.util.Set;
 import java.util.function.Supplier;
 
 public class AimingCommands {
@@ -30,19 +33,10 @@ public class AimingCommands {
     public static Pose2d getTurretPose() {
         return getShooterPoseWithOffset(() -> Robot.pose_pred.getDynamicPredictedPose()).get();
     }
-
-    /**
-     * aims without changing hood or rpm so that the shooter can go under bump
-     *
-     * @param shooter
-     * @param robotPoseSupplier
-     * @param robotVelocitySupplier
-     * @return
-     */
-    public static Command idleCommand(Shooter shooter) {
+    public static Command idleShooter(Shooter shooter) {
 
         ShootInformation info = ShootInformation.getInstance();
-        return shooter.run(
+        return Commands.run(
                 () -> {
                     info.setBeingControlled(false);
                     Pose3d targetPose = info.getShotLocation();
@@ -57,6 +51,41 @@ public class AimingCommands {
                             RPM.of(3000),
                             targetingData.turretAngle,
                             Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
+                }, shooter.hood, shooter.flywheels, shooter.turret);
+    }
+    /**
+     * aims without changing hood or rpm so that the shooter can go under bump
+     *
+     * @param shooter
+     * @param robotPoseSupplier
+     * @param robotVelocitySupplier
+     * @return
+     */
+    public static Command idleHoodCommand(Shooter shooter) {
+
+        ShootInformation info = ShootInformation.getInstance();
+        return shooter.hood.targetAngle(Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
+    }
+
+    public static Command idleFlywheelCommand(Shooter shooter) {
+        return shooter.flywheels.setVelocity(RPM.of(3000));
+    }
+
+    public static Command idleTurretCommand(Shooter shooter) {
+
+        ShootInformation info = ShootInformation.getInstance();
+        return shooter.turret.run(
+                () -> {
+                    info.setBeingControlled(false);
+                    Pose3d targetPose = info.getShotLocation();
+
+                    ShooterState targetingData =
+                            LerpSolveShot.solve(
+                                    targetPose,
+                                    shooter.getCurrentState().flywheelSpeed.in(RPM),
+                                    0.0);
+
+                    shooter.turret.targetAngle(targetingData.turretAngle);
                 });
     }
 
@@ -118,7 +147,7 @@ public class AimingCommands {
     public static double maxHeightMeters = 4.8;
 
     public static Command shootWithProtectionAndAgregiousMaxHeight(Shooter shooter) {
-        return shooter.run(
+        return Commands.run(
                 () -> {
                     Boolean underTrenchCheck = DrivingSharedState.getInstance().underTrench;
                     if (underTrenchCheck) {
@@ -131,7 +160,7 @@ public class AimingCommands {
 
     public static Command shootWithProtection(Shooter shooter) {
 
-        return shooter.run(
+        return Commands.run(
                 () -> {
                     Boolean underTrenchCheck = DrivingSharedState.getInstance().underTrench;
                     if (underTrenchCheck) {
@@ -143,7 +172,7 @@ public class AimingCommands {
     }
 
     public static Command SHOOT_AT_TARGET(Shooter shooter, Pose3d targetPose) {
-        return shooter.run(
+        return Commands.run(
                 () -> {
                     ShooterState targetingData =
                             LerpSolveShot.solve(

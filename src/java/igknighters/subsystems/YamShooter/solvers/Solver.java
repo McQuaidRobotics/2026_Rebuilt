@@ -1,4 +1,4 @@
-package igknighters.subsystems.shooter.solvers;
+package igknighters.subsystems.YamShooter.solvers;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import igknighters.subsystems.shooter.ShooterState;
+import igknighters.subsystems.YamShooter.ShooterState;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 

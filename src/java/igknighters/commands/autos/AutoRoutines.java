@@ -24,7 +24,7 @@ import igknighters.commands.SwerveCommands;
 import igknighters.constants.RobotConsts;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.YamsIntake.YamIntakeState;
-import igknighters.subsystems.shooter.ShooterState;
+import igknighters.subsystems.YamShooter.ShooterState;
 import java.util.function.Supplier;
 
 public class AutoRoutines extends AutoCommands {
@@ -582,7 +582,7 @@ public class AutoRoutines extends AutoCommands {
                                                 subsystems.intake.targetState(
                                                         YamIntakeState.DEPLOYED),
                                                 Commands.sequence(
-                                                        subsystems.shooter.runOnce(
+                                                        Commands.runOnce(
                                                                 () ->
                                                                         subsystems.shooter
                                                                                 .targetState(
@@ -595,7 +595,7 @@ public class AutoRoutines extends AutoCommands {
                                                                                                         .consts
                                                                                                         .shooter()
                                                                                                         .kHood()
-                                                                                                        .MIN_ANGLE_DEGREES()))),
+                                                                                                        .MIN_ANGLE_DEGREES())), subsystems.shooter.hood, subsystems.shooter.flywheels,subsystems.shooter.turret),
                                                         Commands.waitSeconds(1.0),
                                                         HigherOrderCommands.rapidFireStream(
                                                                 subsystems)),

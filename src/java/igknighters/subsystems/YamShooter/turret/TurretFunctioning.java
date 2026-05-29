@@ -34,9 +34,9 @@ public class TurretFunctioning extends Turret {
     private final PivotConfig pivotConfig = new PivotConfig(turretController)
         .withStartingPosition(Degrees.of(0.0))
         .withSoftLimits(Degrees.of(Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES()), Degrees.of(Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES()))
-        .withHardLimit(Degrees.of(Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES()), Degrees.of(Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES()))
+        .withHardLimit(Degrees.of(Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES() - 10), Degrees.of(Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES() + 10))
         .withMOI(Meters.of(.2), Pounds.of(7))
-        .withTelemetry("Pivot Motor", TelemetryVerbosity.HIGH); // Telemetry;
+        .withTelemetry("Turret Motor", TelemetryVerbosity.HIGH); // Telemetry;
 
     private final Pivot turret = new Pivot(pivotConfig);
 

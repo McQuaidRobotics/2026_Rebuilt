@@ -16,7 +16,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -39,9 +38,9 @@ import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.YamsIntake.YamIntake;
+import igknighters.subsystems.YamShooter.Shooter;
 import igknighters.subsystems.indexer.Indexer;
 import igknighters.subsystems.led.Led;
-import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.FuelSim;
 import igknighters.util.RobotPosePredError;
@@ -302,7 +301,7 @@ public class Robot extends LoggedRobot {
         double dy = 0.0; // Y offset from turret center to hood
         double dz = 0.12; // z offset from turret pivot to hood pivot
 
-        Pose3d turretPose = getTurretPose(-subsystems.shooter.getTurretAngleDegrees());
+        Pose3d turretPose = getTurretPose(-subsystems.shooter.turret.getAngle().in(Degrees));
 
         Pose3d hoodPosition =
                 turretPose.transformBy(
@@ -358,24 +357,24 @@ public class Robot extends LoggedRobot {
         if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()
                     .updateTurret(
-                            subsystems.shooter.getTurretAngleDegrees(),
+                            subsystems.shooter.turret.getAngle().in(Degrees),
                             subsystems.swerve.getState().Pose);
             Logger.recordOutput(
                     "componentPoses",
                     new Pose3d[] {
-                        getTurretPose(subsystems.shooter.getTurretAngleDegrees()),
-                        getHoodPose(subsystems.shooter.getHoodAngleDegrees())
+                        getTurretPose(subsystems.shooter.turret.getAngle().in(Degrees)),
+                        getHoodPose(subsystems.shooter.hood.getAngle().in(Degrees))
                     });
         } else {
             FieldVisualizer.getInstance()
                     .updateTurret(
-                            subsystems.shooter.getTurretAngleDegrees(),
+                            subsystems.shooter.turret.getAngle().in(Degrees),
                             subsystems.swerve.getState().Pose);
             Logger.recordOutput(
                     "componentPoses",
                     new Pose3d[] {
-                        getTurretPose(subsystems.shooter.getTurretAngleDegrees()),
-                        getHoodPose(subsystems.shooter.getHoodAngleDegrees())
+                        getTurretPose(subsystems.shooter.turret.getAngle().in(Degrees)),
+                        getHoodPose(subsystems.shooter.hood.getAngle().in(Degrees))
                     });
         }
 

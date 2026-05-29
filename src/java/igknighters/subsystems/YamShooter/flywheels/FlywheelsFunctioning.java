@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -27,6 +28,19 @@ public class FlywheelsFunctioning extends Flywheels {
             new TalonFX(
                     Robot.consts.shooter().kFlywheels().LEADER_MOTOR_ID(),
                     Robot.consts.shooter().kCANBUS());
+
+    private TalonFXConfiguration getConfig() {
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        
+        config.CurrentLimits.StatorCurrentLimit = 35;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
+
+        return config;
+    }
+
+    public FlywheelsFunctioning() {
+        followerMotor.getConfigurator().apply(getConfig()); // give folower current limits
+    }
 
     private SmartMotorController talonSMC =
             new TalonFXWrapper(leaderMotor, DCMotor.getKrakenX60(1), smcConfig);
@@ -64,7 +78,10 @@ public class FlywheelsFunctioning extends Flywheels {
     public AngularVelocity getVelocity() {
         return shooter.getSpeed();
     }
-
+    @Override
+    public void setVoltage(double voltage) {
+        shooter.set(voltage/12);
+    }
     /**
      * Set the shooter velocity.
      *

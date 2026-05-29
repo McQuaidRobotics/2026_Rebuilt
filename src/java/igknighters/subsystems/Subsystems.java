@@ -70,6 +70,8 @@ public class Subsystems {
 
         this.spindexer.setDefaultCommand(indexer.idleSpindexer());
         this.exitRollers.setDefaultCommand(this.exitRollers.setVelocity(RPM.of(0.0)));
-        this.shooter.setDefaultCommand(AimingCommands.idleCommand(shooter));
+        this.flywheels.setDefaultCommand(AimingCommands.idleFlywheelCommand(shooter));
+        this.turret.setDefaultCommand(AimingCommands.idleTurretCommand(shooter));
+        this.hood.setDefaultCommand(AimingCommands.idleHoodCommand(shooter));
     }
 }

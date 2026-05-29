@@ -7,7 +7,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.Robot;
-import igknighters.subsystems.shooter.ShootingData;
+import igknighters.subsystems.YamShooter.ShootingData;
 import igknighters.util.log.Log;
 import java.util.function.Supplier;
 

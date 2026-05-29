@@ -14,18 +14,24 @@ import igknighters.subsystems.YamShooter.hood.Hood;
 import igknighters.subsystems.YamShooter.hood.HoodFunctioning;
 import igknighters.subsystems.YamShooter.turret.Turret;
 import igknighters.subsystems.YamShooter.turret.TurretFunctioning;
-import igknighters.subsystems.shooter.ShooterState;
-import igknighters.subsystems.shooter.ShootingData;
 
 public class Shooter {
     public Hood hood;
     public Flywheels flywheels;
     public Turret turret;
+    public shotType currentShotType = shotType.SHOT;
     private ShootInformation ableToShootState = ShootInformation.getInstance();
     double goalRPM = 0.0;
     double goalHoodAngle = Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES();
     double goalTurretAngle = 0.0;
-    
+   
+   
+    public static enum shotType {
+        PASS,
+        SHOT
+    }
+   
+   
     public Shooter() {
         hood = new HoodFunctioning();
         flywheels = new FlywheelsFunctioning();
@@ -43,6 +49,14 @@ public class Shooter {
         hood.setAngleSetpoint(hoodAngle);
         flywheels.setVelocitySetpoint(rpm);
         turret.setAngleSetpoint(turretAngle);
+    }
+
+    public ShooterState getCurrentState() {
+        return new ShooterState(
+            flywheels.getVelocity(),
+            hood.getAngle(),
+            turret.getAngle()
+        );
     }
 
 
@@ -70,10 +84,18 @@ public class Shooter {
         return atRPM && atHoodAngle && atTurretAngle;
     }
 
+    public shotType getShotType() {
+        return currentShotType;
+    }
+
     public boolean isHoodSensorTripped() {
     
         return hood.isLimitSwitchTripped();
     
+    }
+
+    public void setRollerVoltage(double voltage) {
+        flywheels.setVoltage(voltage);
     }
 
     public void periodic() {

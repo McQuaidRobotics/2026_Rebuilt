@@ -1,4 +1,4 @@
-package igknighters.subsystems.shooter;
+package igknighters.subsystems.YamShooter;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;

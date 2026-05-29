@@ -1,4 +1,4 @@
-package igknighters.subsystems.shooter;
+package igknighters.subsystems.YamShooter;
 
 import edu.wpi.first.math.geometry.Pose3d;
 
