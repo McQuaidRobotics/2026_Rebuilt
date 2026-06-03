@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import java.util.ArrayList;
 import java.util.List;
-import monologue.GlobalField;
+import org.littletonrobotics.junction.Logger;
 import wayfinder.controllers.CircularSlewRateLimiter;
 import wayfinder.controllers.PositionalController;
 import wayfinder.controllers.Types.ChassisConstraints;
@@ -83,7 +83,7 @@ public class RepulsorFieldPlanner {
                                     .plus(netForceVec.rotateBy(limited.minus(targetDirection))),
                             target.getRotation());
         }
-        GlobalField.setObject("intermediatePose", intermediatePose);
+        Logger.recordOutput("Pose/Wayfinder/IntermediatePose", intermediatePose);
         return controller.calculate(
                 period,
                 measurement,
