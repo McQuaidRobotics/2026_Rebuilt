@@ -29,7 +29,6 @@ In your `Swerve` subsystem, initialize the generator with your robot's physical 
 
 ```java
 SwerveSetpointGenerator generator = new SwerveSetpointGenerator(
-    logger,
     moduleLocations,
     driveMotor,        // DCMotorExt for torque curves
     angleMotor,
@@ -86,6 +85,25 @@ When a new game is released:
     *   `strength`: How hard the obstacle pushes. Start at `1.0`.
     *   `maxRange`: How far away the robot starts to feel the push. Usually `0.5` to `1.5` meters.
 4.  **Visualize:** Use the `RepulsorFieldPlanner.getArrows()` method to visualize the field in AdvantageScope to ensure there are no "dead zones" where the robot gets stuck.
+
+## WayfinderManager: The Easy Interface
+
+For easy maintenance, use the `WayfinderManager` class. it consolidates all library features into a single, static-accessible API.
+
+### Usage Example:
+```java
+// 1. Setup (in RobotContainer or Subsystem constructor)
+WayfinderManager.setup(myPositionalController, mySetpointGenerator);
+
+// 2. Add Obstacles
+WayfinderManager.addObstacle(new Obstacle.TeardropObstacle(...));
+
+// 3. Toggle Debugging
+WayfinderManager.setArrowsEnabled(true);
+
+// 4. Calculate (in your command's execute)
+SwerveSetpoint setpoint = WayfinderManager.calculate(dt, pose, speeds, target, constraints);
+```
 
 ---
 

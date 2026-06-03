@@ -221,10 +221,10 @@ public class FieldConstants {
 
     public static class BUMP {
 
-        public static final double HALF_Y_FIELD_METERS =
+        public static final double HALF_X_METERS =
                 (15.0 + (16 * Math.sqrt(2)))
                         * Conv.INCHES_TO_METERS; // adding the distance from center to corner
-        public static final double HALF_HEIGHT_METERS = 109 * Conv.INCHES_TO_METERS;
+        public static final double HALF_Y_METERS = 109 * Conv.INCHES_TO_METERS;
 
         public static final double BUMP_1_X_METERS = 182.11 * Conv.INCHES_TO_METERS;
         public static final double BUMP_2_X_METERS = 468.89 * Conv.INCHES_TO_METERS;
@@ -242,10 +242,10 @@ public class FieldConstants {
             }
 
             // Bump 1
-            if (x >= BUMP_1_X_METERS - HALF_Y_FIELD_METERS
-                    && x <= BUMP_1_X_METERS + HALF_Y_FIELD_METERS) {
-                if (y >= BUMP_1_Y_METERS - HALF_HEIGHT_METERS
-                        && y <= BUMP_1_Y_METERS + HALF_HEIGHT_METERS) {
+            if (x >= BUMP_1_X_METERS - HALF_X_METERS
+                    && x <= BUMP_1_X_METERS + HALF_X_METERS) {
+                if (y >= BUMP_1_Y_METERS - HALF_Y_METERS
+                        && y <= BUMP_1_Y_METERS + HALF_Y_METERS) {
                     if (!Robot.consts.disableAllLogs()) {
                         Log.log("ROBOT/Commands/BumpProtection: inside bump 1", true);
                     }
@@ -254,10 +254,10 @@ public class FieldConstants {
             }
 
             // Bump 2
-            if (x >= BUMP_2_X_METERS - HALF_Y_FIELD_METERS
-                    && x <= BUMP_2_X_METERS + HALF_Y_FIELD_METERS) {
-                if (y >= BUMP_2_Y_METERS - HALF_HEIGHT_METERS
-                        && y <= BUMP_2_Y_METERS + HALF_HEIGHT_METERS) {
+            if (x >= BUMP_2_X_METERS - HALF_X_METERS
+                    && x <= BUMP_2_X_METERS + HALF_X_METERS) {
+                if (y >= BUMP_2_Y_METERS - HALF_Y_METERS
+                        && y <= BUMP_2_Y_METERS + HALF_Y_METERS) {
                     if (!Robot.consts.disableAllLogs()) {
                         Log.log("ROBOT/Commands/BumpProtection: inside bump 2", true);
                     }

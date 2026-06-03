@@ -80,6 +80,62 @@ public abstract class Obstacle {
         }
     }
 
+    public static class RectangleObstacle extends Obstacle {
+
+        private final Translation2d locBottomLeft;
+        private final Translation2d dimensions; // width and height
+        private final double primaryMaxRange;
+
+        public RectangleObstacle(
+                Translation2d locBottomLeft,
+                Translation2d dimensions,
+                double primaryStrength,
+                double primaryMaxRange) {
+            super(primaryStrength, true);
+            this.locBottomLeft = locBottomLeft;
+            this.dimensions = dimensions;
+            this.primaryMaxRange = primaryMaxRange;
+        }
+
+        @Override
+        public Translation2d getForceAtPosition(Translation2d position, Translation2d goal) {
+            // 1. Calculate the boundaries of the rectangle
+            double minX = locBottomLeft.getX();
+            double maxX = minX + dimensions.getX();
+            double minY = locBottomLeft.getY();
+            double maxY = minY + dimensions.getY();
+
+            // 2. Clamp the robot's position to the bounds of the rectangle 
+            // to find the closest point on (or inside) the obstacle.
+            double closestX = MathUtil.clamp(position.getX(), minX, maxX);
+            double closestY = MathUtil.clamp(position.getY(), minY, maxY);
+            Translation2d closestPoint = new Translation2d(closestX, closestY);
+
+            // 3. Calculate distance and vector from the closest point to the robot
+            Translation2d surfaceToRobot = position.minus(closestPoint);
+            double dist = surfaceToRobot.getNorm();
+
+            // If the robot is perfectly on the edge or inside, give it a tiny offset
+            // so we don't divide by zero or lose the direction vector.
+            if (MathUtil.isNear(0, dist, 1e-2)) {
+                dist = 1e-2;
+                // Default push direction upwards if we are exactly dead-center inside
+                surfaceToRobot = new Translation2d(0, dist); 
+            }
+
+            // 4. If the robot is outside the maximum field of influence, no force is applied
+            if (dist > primaryMaxRange) {
+                return Translation2d.kZero;
+            }
+
+            // 5. Calculate the force magnitude using the base class function
+            double forceMag = distToForceMag(dist, primaryMaxRange);
+
+            // 6. Return the force vector matching the direction away from the rectangle
+            return new Translation2d(forceMag, surfaceToRobot.getAngle());
+        }
+    }
+
     public static class TeardropObstacle extends Obstacle {
         private final Translation2d loc;
         private final double primaryMaxRange;
