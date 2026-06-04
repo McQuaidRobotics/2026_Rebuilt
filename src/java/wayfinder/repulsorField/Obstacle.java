@@ -81,6 +81,168 @@ public abstract class Obstacle {
         }
     }
 
+    /** Represents a Gaussian (bell-curve) obstacle in the field. */
+    public static class GaussianObstacle extends Obstacle {
+        private final Translation2d loc; // Center peak of the curve (h, k)
+        private final double amplitude; // Peak height of the bump (positive or negative)
+        private final double
+                sigma; // Controls the width/spread of the tall bit (Standard Deviation)
+        private final double extension; // Half-width bounds from peak along the base axis
+        private final boolean horizontal; // true = peaks left/right, false = peaks up/down
+        private final double primaryMaxRange;
+        private final String name;
+
+        public GaussianObstacle(
+                Translation2d loc,
+                double amplitude,
+                double sigma,
+                double extension,
+                double maxRange,
+                boolean horizontal,
+                double primaryStrength,
+                String name) {
+            super(primaryStrength, true);
+            this.loc = loc;
+            this.amplitude = amplitude;
+            this.sigma = sigma;
+            this.extension = extension;
+            this.horizontal = horizontal;
+            this.primaryMaxRange = maxRange;
+            this.name = name;
+        }
+
+        public void visualizePath() {
+            Pose2d[] path = new Pose2d[20];
+            double scaleFactor = extension / 10.0;
+            for (int i = 0; i < 20; i++) {
+                double independent = (i - 10) * scaleFactor;
+                double gaussianExponent = -Math.pow(independent, 2) / (2 * Math.pow(sigma, 2));
+
+                if (!horizontal) {
+                    double x_cord = independent + loc.getX();
+                    double y_cord = amplitude * Math.exp(gaussianExponent) + loc.getY();
+                    path[i] = new Pose2d(x_cord, y_cord, Rotation2d.kZero);
+                } else {
+                    double y_cord = independent + loc.getY();
+                    double x_cord = amplitude * Math.exp(gaussianExponent) + loc.getX();
+                    path[i] = new Pose2d(x_cord, y_cord, Rotation2d.kZero);
+                }
+            }
+
+            Logger.recordOutput("ROBOT/WAYFINDER/CURVE/" + name, path);
+        }
+
+        @Override
+        public Translation2d getForceAtPosition(Translation2d position, Translation2d goal) {
+            double closestX;
+            double closestY;
+            double normalAngleRad;
+            boolean isInsidePocket = false;
+
+            if (!horizontal) {
+                // Vertical Gaussian: y = amplitude * exp(-(x-h)^2 / (2*sigma^2)) + k
+                closestX =
+                        MathUtil.clamp(
+                                position.getX(), loc.getX() - extension, loc.getX() + extension);
+
+                double dx = closestX - loc.getX();
+                double gaussianExponent = -Math.pow(dx, 2) / (2 * Math.pow(sigma, 2));
+                closestY = amplitude * Math.exp(gaussianExponent) + loc.getY();
+
+                // Strict boundary check: within extension and captured under/over the bell curve
+                boolean withinExtension = Math.abs(position.getX() - loc.getX()) <= extension;
+                if (withinExtension) {
+                    double rimY =
+                            amplitude * Math.exp(-Math.pow(extension, 2) / (2 * Math.pow(sigma, 2)))
+                                    + loc.getY();
+                    if (amplitude > 0) {
+                        // Upward bump: Inside means caught between the tall peak and the lower rim
+                        isInsidePocket = position.getY() <= closestY && position.getY() >= rimY;
+                    } else {
+                        // Downward bump: Inside means caught between the low peak and the higher
+                        // rim
+                        isInsidePocket = position.getY() >= closestY && position.getY() <= rimY;
+                    }
+                }
+
+                // Derivative dy/dx = -(amplitude * (x - h) / sigma^2) * exp(...)
+                double tangentSlope =
+                        -(amplitude * dx / Math.pow(sigma, 2)) * Math.exp(gaussianExponent);
+                normalAngleRad = Math.atan2(1.0, -tangentSlope);
+            } else {
+                // Horizontal Gaussian: x = amplitude * exp(-(y-k)^2 / (2*sigma^2)) + h
+                closestY =
+                        MathUtil.clamp(
+                                position.getY(), loc.getY() - extension, loc.getY() + extension);
+
+                double dy = closestY - loc.getY();
+                double gaussianExponent = -Math.pow(dy, 2) / (2 * Math.pow(sigma, 2));
+                closestX = amplitude * Math.exp(gaussianExponent) + loc.getX();
+
+                // Strict boundary check
+                boolean withinExtension = Math.abs(position.getY() - loc.getY()) <= extension;
+                if (withinExtension) {
+                    double rimX =
+                            amplitude * Math.exp(-Math.pow(extension, 2) / (2 * Math.pow(sigma, 2)))
+                                    + loc.getX();
+                    if (amplitude > 0) {
+                        // Rightward bump
+                        isInsidePocket = position.getX() <= closestX && position.getX() >= rimX;
+                    } else {
+                        // Leftward bump
+                        isInsidePocket = position.getX() >= closestX && position.getX() <= rimX;
+                    }
+                }
+
+                // Derivative dx/dy = -(amplitude * (y - k) / sigma^2) * exp(...)
+                double tangentSlopeInverse =
+                        -(amplitude * dy / Math.pow(sigma, 2)) * Math.exp(gaussianExponent);
+                normalAngleRad = Math.atan2(-tangentSlopeInverse, 1.0);
+            }
+
+            visualizePath();
+
+            Translation2d closestPointOnCurve = new Translation2d(closestX, closestY);
+            double distance = position.getDistance(closestPointOnCurve);
+
+            // If outside the bounded pocket AND too far away, drop calculation
+            if (!isInsidePocket && (distance > primaryMaxRange || distance < 1e-4)) {
+                return new Translation2d(0, 0);
+            }
+
+            Rotation2d forceDirection = new Rotation2d(normalAngleRad);
+
+            // Dynamic flip to ensure vector always pushes AWAY from the curve surface
+            Translation2d vectorToRobot = position.minus(closestPointOnCurve);
+            double dotProduct =
+                    vectorToRobot.getX() * forceDirection.getCos()
+                            + vectorToRobot.getY() * forceDirection.getSin();
+
+            if (dotProduct < 0) {
+                forceDirection = forceDirection.rotateBy(Rotation2d.fromDegrees(180));
+            }
+
+            if (isInsidePocket) {
+                forceDirection = forceDirection.rotateBy(Rotation2d.fromDegrees(180));
+            }
+
+            double distanceToMin;
+            if (horizontal) {
+                distanceToMin = MathUtil.clamp(Math.abs(position.getY() - loc.getY()), 0, .4);
+            } else {
+                distanceToMin = MathUtil.clamp(Math.abs(position.getX() - loc.getX()), 0, .4);
+            }
+
+            // EJECTION RULE: Apply localized force profiles based on pocket state
+            double forceMag =
+                    isInsidePocket
+                            ? distToForceMag(distanceToMin, extension)
+                            : distToForceMag(distance, primaryMaxRange);
+
+            return new Translation2d(forceMag, forceDirection);
+        }
+    }
+
     /** Represents a parabolic obstacle in the field. */
     public static class ParabolicObstacle extends Obstacle {
         private final Translation2d loc; // Vertex (h, k)
@@ -117,7 +279,7 @@ public abstract class Obstacle {
                 path[i] = new Pose2d(x_cord, y_cord, Rotation2d.kZero);
             }
 
-            Logger.recordOutput("ROBOT/WAYFINDER/CURVE", path);
+            Logger.recordOutput("ROBOT/WAYFINDER/CURVE/" + name, path);
         }
 
         @Override
@@ -125,7 +287,7 @@ public abstract class Obstacle {
             double closestX;
             double closestY;
             double normalAngleRad;
-            System.out.println("Processing parabolic obstacle: " + name);
+            // System.out.println("Processing parabolic obstacle: " + name);
             boolean isInsidePocket = false;
 
             if (!horizontal) {
@@ -169,6 +331,7 @@ public abstract class Obstacle {
                 }
 
                 double tangentSlopeInverse = 2 * a * (closestY - loc.getY());
+
                 normalAngleRad = Math.atan2(-tangentSlopeInverse, 1.0);
             }
 
@@ -194,10 +357,21 @@ public abstract class Obstacle {
                 forceDirection = forceDirection.rotateBy(Rotation2d.fromDegrees(180));
             }
 
+            if (isInsidePocket) {
+                forceDirection = forceDirection.rotateBy(Rotation2d.fromDegrees(180));
+            }
+
+            double distanceToMin;
+            if (horizontal) {
+                distanceToMin = MathUtil.clamp(Math.abs(position.getY() - loc.getY()), 0, .4);
+            } else {
+                distanceToMin = MathUtil.clamp(Math.abs(position.getX() - loc.getX()), 0, .4);
+            }
+
             // EJECTION RULE: If trapped in the shaded region, apply max force
             double forceMag =
                     isInsidePocket
-                            ? distToForceMag(0.1, primaryMaxRange)
+                            ? distToForceMag(distanceToMin, extension)
                             : distToForceMag(distance, primaryMaxRange);
 
             return new Translation2d(forceMag, forceDirection);

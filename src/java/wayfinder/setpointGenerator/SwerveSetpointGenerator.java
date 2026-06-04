@@ -114,6 +114,7 @@ public class SwerveSetpointGenerator {
             Speeds desiredSpeeds,
             Optional<ChassisConstraints> constraintsOpt,
             double dt) {
+        double initialTime = RobotController.getFPGATime() / 1000000.0;
         double inputVoltage = RobotController.getBatteryVoltage();
         if (Double.isNaN(inputVoltage)) {
             inputVoltage = 12.0;
@@ -234,7 +235,13 @@ public class SwerveSetpointGenerator {
         Logger.recordOutput("Wayfinder/SwerveSetpointGenerator/Final_Vars/minS", vars.minS);
         Logger.recordOutput(
                 "Wayfinder/SwerveSetpointGenerator/Final_Vars/inputVoltage", vars.inputVoltage);
+        double finalTime = RobotController.getFPGATime() / 1000000.0;
 
+        if (finalTime - initialTime > 0.01) {
+            System.out.println("-------------------------------------------------");
+            System.out.println("Setpoint generation time: " + (finalTime - initialTime));
+            System.out.println("-------------------------------------------------");
+        }
         return new SwerveSetpoint(Speeds.fromRobotRelative(retSpeeds), outputStates, heading);
     }
 

@@ -224,6 +224,7 @@ public class FieldConstants {
         public static final double HALF_X_METERS =
                 (15.0 + (16 * Math.sqrt(2)))
                         * Conv.INCHES_TO_METERS; // adding the distance from center to corner
+        public static final double HALF_BUMP_X_METERS = 15 * Conv.INCHES_TO_METERS;
         public static final double HALF_Y_METERS = 109 * Conv.INCHES_TO_METERS;
 
         public static final double BUMP_1_X_METERS = 182.11 * Conv.INCHES_TO_METERS;

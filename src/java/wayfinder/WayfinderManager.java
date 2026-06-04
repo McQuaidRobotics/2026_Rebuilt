@@ -114,7 +114,13 @@ public class WayfinderManager {
         // 3. Debug visualization
         if (arrowsEnabled) {
             Logger.recordOutput(
-                    "Pose/Wayfinder/Arrows", planner.getArrows(targetPose.getTranslation(), 25, 8));
+                    "Pose/Wayfinder/Arrows",
+                    planner.getArrows(
+                            targetPose.getTranslation(),
+                            currentPose.getTranslation(),
+                            10,
+                            9,
+                            true));
         }
 
         if (heatMapEnabled) {
@@ -123,8 +129,8 @@ public class WayfinderManager {
                     planner.getHeatMap(
                             targetPose.getTranslation(),
                             currentPose.getTranslation(),
-                            18,
-                            9,
+                            10,
+                            10,
                             0.3,
                             true));
         }

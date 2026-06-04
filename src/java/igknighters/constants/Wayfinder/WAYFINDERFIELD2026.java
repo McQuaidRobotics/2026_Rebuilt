@@ -10,11 +10,13 @@ public class WAYFINDERFIELD2026 {
     private static final Translation2d[] BUMP_VERTICIES =
             new Translation2d[] {
                 new Translation2d(
-                        FieldConstants.BUMP.BUMP_1_X_METERS - FieldConstants.BUMP.HALF_X_METERS,
+                        FieldConstants.BUMP.BUMP_1_X_METERS
+                                - FieldConstants.BUMP.HALF_BUMP_X_METERS,
                         FieldConstants.BUMP.BUMP_1_Y_METERS
                                 - FieldConstants.BUMP.HALF_Y_METERS), // Bottom-left vertex BUMP 1
                 new Translation2d(
-                        FieldConstants.BUMP.BUMP_2_X_METERS - FieldConstants.BUMP.HALF_X_METERS,
+                        FieldConstants.BUMP.BUMP_2_X_METERS
+                                - FieldConstants.BUMP.HALF_BUMP_X_METERS,
                         FieldConstants.BUMP.BUMP_2_Y_METERS
                                 - FieldConstants.BUMP.HALF_Y_METERS), // Bottom-left vertex BUMP 2
             };
@@ -28,9 +30,9 @@ public class WAYFINDERFIELD2026 {
                     new Obstacle.RectangleObstacle(
                             BUMP_VERTICIES[i],
                             new Translation2d(
-                                    FieldConstants.BUMP.HALF_X_METERS * 2,
+                                    FieldConstants.BUMP.HALF_BUMP_X_METERS * 2,
                                     FieldConstants.BUMP.HALF_Y_METERS * 2),
-                            .30,
+                            .80,
                             .5);
         }
     }
@@ -41,7 +43,7 @@ public class WAYFINDERFIELD2026 {
         BUMP_FEATURES_STUDS = new Obstacle[BUMP_VERTICIES.length * 4];
 
         // Cache full width and height measurements for clarity
-        final double width = FieldConstants.BUMP.HALF_X_METERS * 2;
+        final double width = FieldConstants.BUMP.HALF_BUMP_X_METERS * 2;
         final double height = FieldConstants.BUMP.HALF_Y_METERS * 2;
 
         // Define the translation offsets for the 4 corners of the bump rectangle
@@ -67,15 +69,83 @@ public class WAYFINDERFIELD2026 {
         }
     }
 
+    private static final Obstacle[] BUMP_GAUSSIAN_OBSTACLES;
+
+    static {
+        BUMP_GAUSSIAN_OBSTACLES = new Obstacle[BUMP_VERTICIES.length * 4];
+        double extrusionLength = 2; // how far it sticks out in meters (Amplitude)
+        double maxRange = 1.5;
+        double strength = 1.5;
+
+        double halfX = FieldConstants.BUMP.HALF_BUMP_X_METERS;
+        double halfY = FieldConstants.BUMP.HALF_Y_METERS;
+
+        // Tuning parameter for the Gaussian width.
+        // Setting sigma to halfY / 2.0 means the extension captures exactly 2 standard
+        // deviations (95% of the curve), giving it a smooth, natural bell taper to the corners.
+        double sigma = halfY / 2.5;
+
+        for (int i = 0; i < BUMP_VERTICIES.length; i++) {
+            // Calculate the physical center-Y line of the bump
+            double yCenter = BUMP_VERTICIES[i].getY() + halfY;
+
+            // Base x-coordinates of the flat left and right sides of the bump
+            double xBumpLeftBase = BUMP_VERTICIES[i].getX();
+            double xBumpRightBase = BUMP_VERTICIES[i].getX() + (halfX * 2);
+
+            // LEFT CAP: Base centered at left edge. Amplitude is negative to bulge left <-
+            BUMP_GAUSSIAN_OBSTACLES[i * 4] =
+                    new Obstacle.GaussianObstacle(
+                            new Translation2d(xBumpLeftBase, yCenter),
+                            -extrusionLength, // Negative extends the peak leftward
+                            sigma,
+                            halfY, // Extension bounds it to the top/bottom corners
+                            maxRange,
+                            true, // Horizontal profile
+                            strength,
+                            "BUMP_LEFT OF BUMP: " + (i + 1));
+
+            BUMP_GAUSSIAN_OBSTACLES[i * 4 + 1] =
+                    new Obstacle.TeardropObstacle(
+                            new Translation2d(xBumpLeftBase - extrusionLength, yCenter),
+                            strength / 3.0,
+                            .15,
+                            .05,
+                            strength / 4,
+                            -.1);
+
+            // RIGHT CAP: Base centered at right edge. Amplitude is positive to bulge right ->
+            BUMP_GAUSSIAN_OBSTACLES[i * 4 + 2] =
+                    new Obstacle.GaussianObstacle(
+                            new Translation2d(xBumpRightBase, yCenter),
+                            extrusionLength, // Positive extends the peak rightward
+                            sigma,
+                            halfY, // Extension bounds it to top/bottom corners
+                            maxRange,
+                            true, // Horizontal profile
+                            strength,
+                            "BUMP_RIGHT OF BUMP: " + (i + 1));
+
+            BUMP_GAUSSIAN_OBSTACLES[i * 4 + 3] =
+                    new Obstacle.TeardropObstacle(
+                            new Translation2d(xBumpRightBase + extrusionLength, yCenter),
+                            strength / 3.0,
+                            .15,
+                            .05,
+                            strength / 4,
+                            .1);
+        }
+    }
+
     private static final Obstacle[] BUMP_PARABOLA_OBSTACLES;
 
     static {
         BUMP_PARABOLA_OBSTACLES = new Obstacle[BUMP_VERTICIES.length * 4];
         double extrusionLength = 1.5; // how far it sticks out in meters
-        double maxRange = 1.5;
+        double maxRange = .5;
         double strength = 1.5;
 
-        double halfX = FieldConstants.BUMP.HALF_X_METERS;
+        double halfX = FieldConstants.BUMP.HALF_BUMP_X_METERS;
         double halfY = FieldConstants.BUMP.HALF_Y_METERS;
 
         // Corrected algebraic derivation for a horizontal parabola: x = a * y^2
@@ -131,11 +201,16 @@ public class WAYFINDERFIELD2026 {
         }
     }
 
+    private static final double wallStrength = 2.5;
     private static final Obstacle[] WALL_OBSTACLES = {
-        new Obstacle.HorizontalObstacle(0, .5, .5, true), // bottom wall
-        new Obstacle.HorizontalObstacle(FieldConstants.Y_FIELD, .5, .75, false), // top wall
-        new Obstacle.VerticalObstacle(0, .5, .75, true), // left wall
-        new Obstacle.VerticalObstacle(FieldConstants.X_FIELD, .5, .75, false) // right wall
+        // the .1 is to help with the fact that the center of the robot is what the pose is. The .1
+        // is added to ensure the robot doesn't collide with the wall
+        new Obstacle.HorizontalObstacle(0 + .1, wallStrength, .75, true), // bottom wall
+        new Obstacle.HorizontalObstacle(
+                FieldConstants.Y_FIELD - .1, wallStrength, .75, false), // top wall
+        new Obstacle.VerticalObstacle(0 + .1, wallStrength, .75, true), // left wall
+        new Obstacle.VerticalObstacle(
+                FieldConstants.X_FIELD - .1, wallStrength, .75, false) // right wall
     };
 
     public static final Obstacle[] ALL_OBSTACLES;
@@ -146,7 +221,7 @@ public class WAYFINDERFIELD2026 {
                                 WALL_OBSTACLES,
                                 BUMP_OBSTACLES_PURE_RECTANGLES,
                                 BUMP_FEATURES_STUDS,
-                                BUMP_PARABOLA_OBSTACLES)
+                                BUMP_GAUSSIAN_OBSTACLES)
                         .flatMap(Stream::of)
                         .toArray(Obstacle[]::new);
     }
