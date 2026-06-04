@@ -46,9 +46,10 @@ public class BigBoyWayfinderCommands {
                                                     new wayfinder.controllers.Types.Constraints(
                                                             swerve.commonSwerveConsts
                                                                     .getMaxSpeedMetersPerSecond(),
-                                                            1),
+                                                            2,
+                                                            4),
                                                     new wayfinder.controllers.Types.Constraints(
-                                                            2, 1)));
+                                                            3, 6, 6)));
 
                             double vx = setpoint.fieldSpeeds().vx();
                             double vy = setpoint.fieldSpeeds().vy();

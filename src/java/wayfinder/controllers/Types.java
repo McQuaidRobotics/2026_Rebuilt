@@ -8,24 +8,26 @@ public class Types {
         public static final State kZero = new State(0, 0);
     }
 
-    public interface Controller<Measurement, MeasurementRate, Target, Constraints> {
+    // FIX: Renamed the 4th generic parameter from 'Constraints' to 'ConstraintType'
+    public interface Controller<Measurement, MeasurementRate, Target, ConstraintType> {
         MeasurementRate calculate(
                 double period,
                 Measurement measurement,
                 MeasurementRate measurementRate,
                 Target target,
-                Constraints constraints);
+                ConstraintType constraints); // Uses the generic type parameter
 
         void reset(Measurement measurement, MeasurementRate measurementRate, Target target);
 
         boolean isDone(Measurement measurement, Target target);
     }
 
-    public record Constraints(double maxVelocity, double maxAcceleration) {}
+    // This is the concrete record that was being hidden!
+    public record Constraints(double maxVelocity, double maxAcceleration, double maxJerk) {}
 
     public record ChassisConstraints(Constraints translation, Constraints rotation) {
         public static final ChassisConstraints kZero =
-                new ChassisConstraints(new Constraints(0, 0), new Constraints(0, 0));
+                new ChassisConstraints(new Constraints(0, 0, 0), new Constraints(0, 0, 0));
     }
 
     public interface PathFollower {
