@@ -67,7 +67,7 @@ public class Localizer {
 
         double gyroOmega = swerve.getRotationalVelocity();
         Pose2d currentPose = swerveState.Pose;
-        ChassisSpeeds robotSpeeds = swerve.getFieldRelativeSpeeds();
+        ChassisSpeeds robotSpeeds = swerve.getState().Speeds;
 
         // 4. Pass the true field-relative accelerations into the predictor
         inertialPosePredictor.update(
@@ -123,16 +123,30 @@ public class Localizer {
 
     /**
      * Blends real-world physics velocity tracking with planned Choreo trajectory velocities.
+     * Returns FIELD-RELATIVE speeds for the rest of the robot to use.
      *
      * @param lookaheadTimeSeconds Future time horizon in SECONDS
      */
     public ChassisSpeeds getPredictedVelocity(double lookaheadTimeSeconds) {
-        ChassisSpeeds inertialVelocity =
+        // 1. Get the ROBOT-RELATIVE predicted velocity from our physics engine
+        ChassisSpeeds robotRelativeInertialVelocity =
                 inertialPosePredictor.predictVelocity(lookaheadTimeSeconds);
+
+        // 2. Get the PREDICTED HEADING to accurately rotate these speeds into the field frame
+        Rotation2d predictedHeading = getPredictedPose(lookaheadTimeSeconds).getRotation();
+
+        // 3. Convert to FIELD-RELATIVE speeds using WPILib's built-in kinematics
+        ChassisSpeeds fieldRelativeInertialVelocity =
+                ChassisSpeeds.fromRobotRelativeSpeeds(
+                        robotRelativeInertialVelocity.vxMetersPerSecond,
+                        robotRelativeInertialVelocity.vyMetersPerSecond,
+                        robotRelativeInertialVelocity.omegaRadiansPerSecond,
+                        predictedHeading);
+
         AutoTrajectory activeTraj = swerve.getActiveTrajectory();
 
         if (activeTraj == null) {
-            return inertialVelocity;
+            return fieldRelativeInertialVelocity;
         }
 
         double futureTime = swerve.getAutoTime() + lookaheadTimeSeconds;
@@ -141,18 +155,21 @@ public class Localizer {
 
         if (futureSampleOptional.isPresent()) {
             SwerveSample sample = futureSampleOptional.get();
+            // Choreo trajectory samples natively provide FIELD-RELATIVE velocities
             ChassisSpeeds plannedVelocity = new ChassisSpeeds(sample.vx, sample.vy, sample.omega);
 
             double physicsTrust = 0.70;
+
+            // 4. Safely blend our Field-Relative physics with the Field-Relative Choreo plan
             return new ChassisSpeeds(
-                    (inertialVelocity.vxMetersPerSecond * physicsTrust)
+                    (fieldRelativeInertialVelocity.vxMetersPerSecond * physicsTrust)
                             + (plannedVelocity.vxMetersPerSecond * (1.0 - physicsTrust)),
-                    (inertialVelocity.vyMetersPerSecond * physicsTrust)
+                    (fieldRelativeInertialVelocity.vyMetersPerSecond * physicsTrust)
                             + (plannedVelocity.vyMetersPerSecond * (1.0 - physicsTrust)),
-                    (inertialVelocity.omegaRadiansPerSecond * physicsTrust)
+                    (fieldRelativeInertialVelocity.omegaRadiansPerSecond * physicsTrust)
                             + (plannedVelocity.omegaRadiansPerSecond * (1.0 - physicsTrust)));
         }
 
-        return inertialVelocity;
+        return fieldRelativeInertialVelocity;
     }
 }
