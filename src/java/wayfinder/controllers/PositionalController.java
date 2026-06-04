@@ -36,13 +36,21 @@ public class PositionalController
             FieldSpeeds measurementRate,
             Pose2d target,
             ChassisConstraints constraints) {
-        double translationX =
-                -(target.getTranslation().getX() - measurement.getTranslation().getX()) * .5;
-        double translationY =
-                -(target.getTranslation().getY() - measurement.getTranslation().getY()) * .5;
-        double rotation =
-                (target.getRotation().getRadians() - measurement.getRotation().getRadians()) * .5;
-        return new FieldSpeeds(translationX, translationY, rotation);
+        var translation =
+                translationController.calculate(
+                        period,
+                        measurement.getTranslation(),
+                        measurementRate.toVelocity2d(),
+                        target.getTranslation(),
+                        constraints.translation());
+        var rotation =
+                rotationalController.calculate(
+                        period,
+                        measurement.getRotation(),
+                        measurementRate.omega(),
+                        target.getRotation(),
+                        constraints.rotation());
+        return new FieldSpeeds(translation.getVX(), translation.getVY(), rotation);
     }
 
     @Override
