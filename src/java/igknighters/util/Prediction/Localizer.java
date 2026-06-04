@@ -7,6 +7,7 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.Merging.PoseMerger;
@@ -119,6 +120,31 @@ public class Localizer {
                 futureSampleOptional.map(SwerveSample::getPose).orElse(inertialPose);
 
         return PoseMerger.trustedMerge(inertialPose, plannedFuturePose);
+    }
+
+    public ChassisSpeeds getInstantaneousTurretFieldSpeeds(Translation2d turretPosition) {
+        ChassisSpeeds fieldRelativeCurrentRobotSpeeds = swerve.getFieldRelativeSpeeds();
+        double omega = fieldRelativeCurrentRobotSpeeds.omegaRadiansPerSecond;
+
+        // Field-centric linear velocity contributions from chassis translation
+        double baseVxFc = fieldRelativeCurrentRobotSpeeds.vxMetersPerSecond;
+        double baseVyFc = fieldRelativeCurrentRobotSpeeds.vyMetersPerSecond;
+
+        // Robot-centric linear velocity contributions from chassis rotation (w x r)
+        double tangentialVxRc = -omega * turretPosition.getY();
+        double tangentialVyRc = omega * turretPosition.getX();
+
+        // Rotate the robot-centric tangential velocity into the field-centric frame
+        Translation2d tangentialVelocityRc = new Translation2d(tangentialVxRc, tangentialVyRc);
+        Translation2d tangentialVelocityFc =
+                tangentialVelocityRc.rotateBy(swerve.getState().Pose.getRotation());
+
+        // Fuse field-centric translation and field-centric rotation velocities together
+        double apparatusSpeedX = baseVxFc + tangentialVelocityFc.getX();
+        double apparatusSpeedY = baseVyFc + tangentialVelocityFc.getY();
+
+        // Return the final field-centric ChassisSpeeds
+        return new ChassisSpeeds(apparatusSpeedX, apparatusSpeedY, omega);
     }
 
     /**

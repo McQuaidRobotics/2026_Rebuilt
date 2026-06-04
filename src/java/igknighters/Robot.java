@@ -598,7 +598,24 @@ public class Robot extends LoggedRobot {
                 length,
                 bumperHeight,
                 () -> subsystems.swerve.getState().Pose,
-                subsystems.swerve::getFieldRelativeSpeeds);
+                () ->
+                        Localizer.getInstance()
+                                .getInstantaneousTurretFieldSpeeds(
+                                        new Translation2d(
+                                                Conv.INCHES_TO_METERS
+                                                        * -Robot.consts
+                                                                .shooter()
+                                                                .kTurret()
+                                                                .TURRET_ROBOT_DISTANCE_FROM_CENTERS_INCHES()
+                                                        * Math.sqrt(2)
+                                                        / 2,
+                                                Conv.INCHES_TO_METERS
+                                                        * -Robot.consts
+                                                                .shooter()
+                                                                .kTurret()
+                                                                .TURRET_ROBOT_DISTANCE_FROM_CENTERS_INCHES()
+                                                        * Math.sqrt(2)
+                                                        / 2)));
 
         // Register a front intake zone (0.1m deep, 0.4m wide, centered in front of bumper)
         fuelSim.registerIntake(
