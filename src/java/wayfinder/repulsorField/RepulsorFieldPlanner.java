@@ -136,4 +136,47 @@ public class RepulsorFieldPlanner {
 
         return arrows;
     }
+
+    public Pose2d[] getHeatMap(
+            Translation2d goal,
+            Translation2d current,
+            double xCount,
+            double yCount,
+            double pushScale,
+            boolean simplify) {
+        final double FIELD_WIDTH = FieldConstants.Y_FIELD - .1;
+        double FIELD_LENGTH = FieldConstants.X_FIELD - .1;
+
+        if (simplify) {
+            if (current != null) {
+                // by simplifying will only show the critical points
+                if (current.getX() < FIELD_LENGTH / 2) {
+                    FIELD_LENGTH = FIELD_LENGTH / 2;
+                }
+            }
+        }
+        Pose2d[] heatMap = new Pose2d[(int) (xCount * yCount + yCount + 1)];
+        for (int x = 0; x <= xCount; x++) {
+            for (int y = 0; y <= yCount; y++) {
+                Translation2d translation =
+                        new Translation2d(
+                                (x * (FIELD_LENGTH) / xCount) + .05,
+                                (y * FIELD_WIDTH / yCount) + .05);
+                Translation2d force = getForce(translation, goal);
+                Rotation2d rotation;
+                if (force.getNorm() > 1e-6) { // if its a non-zero force
+                    rotation = force.getAngle();
+                    translation =
+                            translation.plus(
+                                    force.times(pushScale)); // push the translation a little bit to
+                    // demonstrate where something will go
+                } else {
+                    rotation = Rotation2d.kZero;
+                }
+                heatMap[x * (int) yCount + y] = new Pose2d(translation, rotation);
+            }
+        }
+
+        return heatMap;
+    }
 }
