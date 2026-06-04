@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Radians;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import igknighters.FieldVisualizer;
@@ -14,6 +15,7 @@ import igknighters.Robot;
 import igknighters.constants.ShootInformation;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.util.*;
+import igknighters.util.Prediction.Localizer;
 import igknighters.util.log.Log;
 
 public class LerpSolveShot {
@@ -36,9 +38,14 @@ public class LerpSolveShot {
     public static ShooterState solve(
             Pose3d goalPose, double currentRPM, double latencyCompensation) {
 
-        Pose3d shooterPose = Robot.turret_pred.getPredictedPose().get();
+        Pose3d shooterPose =
+                new Pose3d(
+                        Robot.turret_pred.getPredictedPose(.05).getX(),
+                        Robot.turret_pred.getPredictedPose(.05).getY(),
+                        Robot.consts.shooter().kFlywheels().ShooterHeightMeters(),
+                        new Rotation3d(Robot.turret_pred.getPredictedPose(.05).getRotation()));
 
-        ChassisSpeeds robotSpeeds = Robot.pose_pred.getDynamicPredictedSpeeds();
+        ChassisSpeeds robotSpeeds = Localizer.getInstance().getPredictedVelocity(.05);
         Translation2d rawRobotVelocity =
                 new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
         double kConversion = Robot.consts.shooter().kFlywheels().RPM_TO_METERS_PER_SECOND_FACTOR();

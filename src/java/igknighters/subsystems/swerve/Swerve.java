@@ -19,8 +19,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import igknighters.Robot;
 import igknighters.constants.Conv;
 import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
-import igknighters.util.Prediction.InertialPosePredictor;
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -62,20 +60,21 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     * Wraps a Choreo AutoTrajectory command with automatic lifecycle tracking.
-     * This automatically sets the active trajectory for the pose predictor when the path starts,
-     * and clears it safely when the path finishes or is interrupted.
+     * Wraps a Choreo AutoTrajectory command with automatic lifecycle tracking. This automatically
+     * sets the active trajectory for the pose predictor when the path starts, and clears it safely
+     * when the path finishes or is interrupted.
      *
      * @param trajectory The Choreo trajectory to track and follow.
      * @return A decorated command ready for autonomous compositions.
      */
     public Command followWithPrediction(AutoTrajectory trajectory) {
-        return trajectory.spawnCmd()
-            // 1. Before the path starts executing, update the predictor's active target path
-            .beforeStarting(() -> this.setActiveTrajectory(trajectory))
-            
-            // 2. Regardless of a normal exit or an emergency interruption, clear the track 
-            .finallyDo((interrupted) -> this.clearActiveTrajectory());
+        return trajectory
+                .spawnCmd()
+                // 1. Before the path starts executing, update the predictor's active target path
+                .beforeStarting(() -> this.setActiveTrajectory(trajectory))
+
+                // 2. Regardless of a normal exit or an emergency interruption, clear the track
+                .finallyDo((interrupted) -> this.clearActiveTrajectory());
     }
 
     public void resetPose(Pose2d pose) {

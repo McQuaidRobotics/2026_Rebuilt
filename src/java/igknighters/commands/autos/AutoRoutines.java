@@ -152,7 +152,11 @@ public class AutoRoutines extends AutoCommands {
         AutoTrajectory swipe1In = routine.trajectory("ORBIT_LEFT_2.traj");
         AutoTrajectory loopDiDoop = routine.trajectory("ORBIT_LEFT_3.traj");
 
-        routine.active().onTrue(Commands.sequence(swipe1Out.resetOdometry(), subsystems.swerve.followWithPrediction(swipe1Out)));
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                swipe1Out.resetOdometry(),
+                                subsystems.swerve.followWithPrediction(swipe1Out)));
 
         swipe1Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
 
@@ -415,7 +419,11 @@ public class AutoRoutines extends AutoCommands {
         AutoRoutine routine = autoFactory.newRoutine("Orbit Pass to Self Right");
         AutoTrajectory trajectory = routine.trajectory("PASS_TO_SELF_BUMP_1.traj");
 
-        routine.active().onTrue(Commands.sequence(trajectory.resetOdometry(), subsystems.swerve.followWithPrediction(trajectory)));
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                trajectory.resetOdometry(),
+                                subsystems.swerve.followWithPrediction(trajectory)));
 
         trajectory.atTime("HIPPO").onTrue(HigherOrderCommands.hippoShoot(subsystems));
 
@@ -434,7 +442,11 @@ public class AutoRoutines extends AutoCommands {
         AutoRoutine routine = autoFactory.newRoutine("Mean Routine");
         AutoTrajectory meanTrajectory = routine.trajectory("MEAN_AUTO_1.traj");
 
-        routine.active().onTrue(meanTrajectory.resetOdometry().andThen(swerve.followWithPrediction(meanTrajectory)));
+        routine.active()
+                .onTrue(
+                        meanTrajectory
+                                .resetOdometry()
+                                .andThen(swerve.followWithPrediction(meanTrajectory)));
         // steal balls from them we shouldnt get too many bc intake backwards but any balls shot is
         // better then none
         meanTrajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
@@ -487,11 +499,7 @@ public class AutoRoutines extends AutoCommands {
                                         IntakeCommands.holdAtIntake(subsystems.intake),
                                         subsystems.swerve.followWithPrediction(intakeTrajectory))));
 
-        intakeTrajectory
-                .done()
-                .onTrue(
-                        
-                                subsystems.swerve.followWithPrediction(scoringTrajectory));
+        intakeTrajectory.done().onTrue(subsystems.swerve.followWithPrediction(scoringTrajectory));
 
         scoringTrajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
 
@@ -504,7 +512,11 @@ public class AutoRoutines extends AutoCommands {
         AutoTrajectory swipe1Out = routine.trajectory("ORBIT_RIGHT_1.traj");
         AutoTrajectory swipe1In = routine.trajectory("ORBIT_RIGHT_2.traj");
         AutoTrajectory swipe2Loop = routine.trajectory("ORBIT_RIGHT_3.traj");
-        routine.active().onTrue(Commands.sequence(swipe1Out.resetOdometry(), subsystems.swerve.followWithPrediction(swipe1Out)));
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                swipe1Out.resetOdometry(),
+                                subsystems.swerve.followWithPrediction(swipe1Out)));
 
         swipe1Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
         swipe1Out.done().onTrue(subsystems.swerve.followWithPrediction(swipe1In));
@@ -561,7 +573,11 @@ public class AutoRoutines extends AutoCommands {
         AutoRoutine routine = autoFactory.newRoutine("Center Preload");
         AutoTrajectory move_traj = routine.trajectory("CENTER_SIMPLE.traj");
 
-        routine.active().onTrue(Commands.sequence(move_traj.resetOdometry(), subsystems.swerve.followWithPrediction(move_traj)));
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                move_traj.resetOdometry(),
+                                subsystems.swerve.followWithPrediction(move_traj)));
 
         move_traj.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
 
