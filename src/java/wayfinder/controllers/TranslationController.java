@@ -10,7 +10,7 @@ import wayfinder.controllers.Types.State;
 import wpilibExt.Velocity2d;
 
 /**
- * A translation controller that implements feedback and trapezoidal motion profiling on the
+ * A translation controller that implements feedback and various motion profiling schemes on the
  * distance to the target position and then extrapolates those into X and Y velocities.
  */
 public abstract class TranslationController
@@ -39,9 +39,108 @@ public abstract class TranslationController
         this.kD = kD;
     }
 
+    /** S-Curve (Jerk-Limited) Profile Controller */
+    private static final class SCurve extends TranslationController {
+        private final boolean replanning;
+        private final double positionTolerance;
+
+        private double prevError, totalError;
+        private State prevSetpoint = State.kZero;
+        private double prevSetpointVel = 0.0;
+
+        public SCurve(
+                double kP, double kI, double kD, boolean replanning, double positionTolerance) {
+            super(kP, kI, kD);
+            this.replanning = replanning;
+            this.positionTolerance = positionTolerance;
+        }
+
+        @Override
+        public boolean isDone(Translation2d measurement, Translation2d target) {
+            return measurement.getDistance(target) < positionTolerance
+                    && MathUtil.isNear(prevSetpoint.velocity(), 0.0, 0.01);
+        }
+
+        @Override
+        public void reset(
+                Translation2d measurement, Velocity2d measurementVelo, Translation2d target) {
+            prevError = 0;
+            totalError = 0;
+            final Rotation2d direction = target.minus(measurement).getAngle();
+            final double distance = measurement.getDistance(target);
+
+            prevSetpoint = new State(-distance, measurementVelo.speedInDirection(direction));
+            prevSetpointVel = prevSetpoint.velocity();
+        }
+
+        @Override
+        public Velocity2d calculate(
+                double period,
+                Translation2d measurement,
+                Velocity2d measurementVelo,
+                Translation2d target,
+                Constraints constraints) {
+
+            Logger.recordOutput("Wayfinder/TranslationController/Mode", "SCurve");
+
+            if (isDone(measurement, target)) {
+                return Velocity2d.kZero;
+            }
+
+            final double distance = measurement.getDistance(target);
+            final Rotation2d direction = target.minus(measurement).getAngle();
+            final double velo = measurementVelo.speedInDirection(direction);
+
+            // Calculate current acceleration step from the change in previous velocity setpoints
+            double currentAcceleration = (prevSetpoint.velocity() - prevSetpointVel) / period;
+
+            State setpoint =
+                    DynamicSCurveProfile.calculate(
+                            period,
+                            replanning ? -distance : prevSetpoint.position(),
+                            replanning ? velo : prevSetpoint.velocity(),
+                            replanning ? 0.0 : currentAcceleration,
+                            0.0,
+                            0.0,
+                            0.0,
+                            constraints.maxVelocity(),
+                            constraints.maxAcceleration(),
+                            constraints.maxJerk());
+
+            double positionError = distance + prevSetpoint.position();
+
+            Logger.recordOutput("Wayfinder/TranslationController/SCurveError", positionError);
+
+            double errorDerivative = (positionError - prevError) / period;
+            if (kI > 0) {
+                totalError +=
+                        MathUtil.clamp(
+                                positionError * period,
+                                -constraints.maxAcceleration() * period / kI,
+                                constraints.maxAcceleration() * period / kI);
+            }
+
+            prevError = positionError;
+            prevSetpointVel = prevSetpoint.velocity();
+            prevSetpoint = setpoint;
+
+            double dirVelo =
+                    (kP * positionError)
+                            + (kI * totalError)
+                            + (kD * errorDerivative)
+                            + setpoint.velocity();
+
+            dirVelo =
+                    MathUtil.clamp(dirVelo, -constraints.maxVelocity(), constraints.maxVelocity());
+
+            return new Velocity2d(dirVelo * direction.getCos(), dirVelo * direction.getSin());
+        }
+    }
+
+    /** Trapezoidal Profile Controller (Original) */
     private static final class Profiled extends TranslationController {
         private final boolean replanning;
-        private final double positionTolerance; // Added for robust completion checking
+        private final double positionTolerance;
 
         private double prevError, totalError;
         private State prevSetpoint = State.kZero;
@@ -55,7 +154,6 @@ public abstract class TranslationController
 
         @Override
         public boolean isDone(Translation2d measurement, Translation2d target) {
-            // FIX: Checks that BOTH the virtual profile is finished AND the physical robot is close
             return measurement.getDistance(target) < positionTolerance
                     && MathUtil.isNear(prevSetpoint.velocity(), 0.0, 0.01);
         }
@@ -64,7 +162,7 @@ public abstract class TranslationController
         public void reset(
                 Translation2d measurement, Velocity2d measurementVelo, Translation2d target) {
             prevError = 0;
-            totalError = 0; // FIX: Prevent integral windup from previous runs
+            totalError = 0;
             final Rotation2d direction = target.minus(measurement).getAngle();
             final double distance = measurement.getDistance(target);
             prevSetpoint = new State(-distance, measurementVelo.speedInDirection(direction));
@@ -119,17 +217,15 @@ public abstract class TranslationController
                             + (kD * errorDerivative)
                             + setpoint.velocity();
 
-            // Safety cap to prevent output exceeding maximum constraints
             dirVelo =
                     MathUtil.clamp(dirVelo, -constraints.maxVelocity(), constraints.maxVelocity());
-
             return new Velocity2d(dirVelo * direction.getCos(), dirVelo * direction.getSin());
         }
     }
 
+    /** Unprofiled Controller */
     private static final class UnProfiled extends TranslationController {
         private final double deadband;
-
         private double prevError, totalError;
 
         public UnProfiled(double kP, double kI, double kD, double deadband) {
@@ -146,7 +242,7 @@ public abstract class TranslationController
         public void reset(
                 Translation2d measurement, Velocity2d measurementVelo, Translation2d target) {
             prevError = 0;
-            totalError = 0; // FIX: Prevent integral windup from previous runs
+            totalError = 0;
         }
 
         @Override
@@ -175,13 +271,18 @@ public abstract class TranslationController
             prevError = positionError;
 
             double dirVelo = (kP * positionError) + (kI * totalError) + (kD * errorDerivative);
-
-            // FIX: Added clamping to prevent the unprofiled mode from demanding impossible speeds
             dirVelo =
                     MathUtil.clamp(dirVelo, -constraints.maxVelocity(), constraints.maxVelocity());
 
             return new Velocity2d(dirVelo * direction.getCos(), dirVelo * direction.getSin());
         }
+    }
+
+    // Static factory methods to expose the inner classes safely
+
+    public static TranslationController scurve(
+            double kP, double kI, double kD, boolean replanning, double positionTolerance) {
+        return new SCurve(kP, kI, kD, replanning, positionTolerance);
     }
 
     public static TranslationController profiled(
