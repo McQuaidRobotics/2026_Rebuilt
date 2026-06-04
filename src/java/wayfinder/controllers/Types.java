@@ -10,7 +10,11 @@ public class Types {
 
     public interface Controller<Measurement, MeasurementRate, Target, Constraints> {
         MeasurementRate calculate(
-                double period, Measurement measurement, MeasurementRate measurementRate, Target target, Constraints constraints);
+                double period,
+                Measurement measurement,
+                MeasurementRate measurementRate,
+                Target target,
+                Constraints constraints);
 
         void reset(Measurement measurement, MeasurementRate measurementRate, Target target);
 

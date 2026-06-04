@@ -3,7 +3,6 @@ package wayfinder.repulsorField;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import wpilibExt.MutTranslation2d;
 
 public abstract class Obstacle {
     double strength;
@@ -105,7 +104,7 @@ public abstract class Obstacle {
             double minY = locBottomLeft.getY();
             double maxY = minY + dimensions.getY();
 
-            // 2. Clamp the robot's position to the bounds of the rectangle 
+            // 2. Clamp the robot's position to the bounds of the rectangle
             // to find the closest point on (or inside) the obstacle.
             double closestX = MathUtil.clamp(position.getX(), minX, maxX);
             double closestY = MathUtil.clamp(position.getY(), minY, maxY);
@@ -120,7 +119,7 @@ public abstract class Obstacle {
             if (MathUtil.isNear(0, dist, 1e-2)) {
                 dist = 1e-2;
                 // Default push direction upwards if we are exactly dead-center inside
-                surfaceToRobot = new Translation2d(0, dist); 
+                surfaceToRobot = new Translation2d(0, dist);
             }
 
             // 4. If the robot is outside the maximum field of influence, no force is applied
@@ -130,7 +129,9 @@ public abstract class Obstacle {
 
             // 5. Calculate the force magnitude using the base class function
             double forceMag = distToForceMag(dist, primaryMaxRange);
-
+            if (forceMag >= 1000) {
+                // System.out.println("Invalid force detected!");
+            }
             // 6. Return the force vector matching the direction away from the rectangle
             return new Translation2d(forceMag, surfaceToRobot.getAngle());
         }
@@ -275,21 +276,28 @@ public abstract class Obstacle {
         final double y;
         final double maxRange;
 
-        final MutTranslation2d output = new MutTranslation2d();
-
         public HorizontalObstacle(double y, double strength, double maxRange, boolean positive) {
             super(strength, positive);
             this.y = y;
             this.maxRange = maxRange;
         }
 
-        public MutTranslation2d getForceAtPosition(Translation2d position, Translation2d goal) {
-            output.set(Translation2d.kZero);
-            var dist = Math.abs(position.getY() - y);
+        @Override
+        public Translation2d getForceAtPosition(Translation2d position, Translation2d goal) {
+            double dist = Math.abs(position.getY() - y);
+            // System.out.println(
+            //    "HorizontalObstacle force at position: "
+            //            + position.getX()
+            //            + ", "
+            //            + position.getY());
             if (dist < maxRange) {
-                output.set(0, distToForceMag(y - position.getY(), maxRange));
+                double forceMag = distToForceMag(y - position.getY(), maxRange);
+                if (forceMag >= 1000) {
+                    // System.out.println("Invalid force detected!");
+                }
+                return new Translation2d(0.0, forceMag);
             }
-            return output;
+            return new Translation2d(); // Defaults to (0.0, 0.0)
         }
     }
 
@@ -297,21 +305,28 @@ public abstract class Obstacle {
         final double x;
         final double maxRange;
 
-        final MutTranslation2d output = new MutTranslation2d();
-
         public VerticalObstacle(double x, double strength, double maxRange, boolean positive) {
             super(strength, positive);
             this.x = x;
             this.maxRange = maxRange;
         }
 
-        public MutTranslation2d getForceAtPosition(Translation2d position, Translation2d goal) {
-            output.set(Translation2d.kZero);
-            var dist = Math.abs(position.getX() - x);
+        @Override
+        public Translation2d getForceAtPosition(Translation2d position, Translation2d goal) {
+            double dist = Math.abs(position.getX() - x);
+            // System.out.println(
+            //      "VerticalObstacle force at position: "
+            //              + position.getX()
+            //              + ", "
+            //              + position.getY());
             if (dist < maxRange) {
-                output.set(distToForceMag(x - position.getX(), maxRange), 0);
+                double forceMag = distToForceMag(x - position.getX(), maxRange);
+                if (forceMag >= 1000) {
+                    // System.out.println("Invalid force detected!");
+                }
+                return new Translation2d(forceMag, 0.0);
             }
-            return output;
+            return new Translation2d(); // Defaults to (0.0, 0.0)
         }
     }
 }

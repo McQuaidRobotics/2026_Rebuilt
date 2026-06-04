@@ -33,6 +33,7 @@ import igknighters.constants.GeminiRobotConsts;
 import igknighters.constants.RobotConsts;
 import igknighters.constants.RobotIdentity;
 import igknighters.constants.SecondBotRobotConsts;
+import igknighters.constants.Wayfinder.WAYFINDERFIELD2026;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
@@ -58,6 +59,10 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import wayfinder.WayfinderManager;
+import wayfinder.controllers.PositionalController;
+import wayfinder.controllers.RotationalController;
+import wayfinder.controllers.TranslationController;
 
 public class Robot extends LoggedRobot {
 
@@ -230,8 +235,19 @@ public class Robot extends LoggedRobot {
         Logger.start();
     }
 
+    public void setupWayfinder(Subsystems subsystems) {
+        WayfinderManager.setup(
+                new PositionalController(
+                        TranslationController.profiled(.1, 0, 0, false),
+                        RotationalController.profiled(.1, 0, false)),
+                subsystems.swerve.commonSwerveConsts.createSetpointGenerator());
+        WayfinderManager.addObstacles(WAYFINDERFIELD2026.ALL_OBSTACLES);
+        WayfinderManager.setArrowsEnabled(true);
+    }
+
     public Robot() {
         setUpRobotConsts();
+
         setUpAdvantageScope();
         setUpCommandLogging();
         subsystems =
@@ -244,6 +260,7 @@ public class Robot extends LoggedRobot {
                         new Intake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
+        setupWayfinder(subsystems);
         publishCommandsAndSubystems(subsystems);
         setUpAutos(subsystems);
         setUpTest(subsystems);
@@ -272,6 +289,7 @@ public class Robot extends LoggedRobot {
                         new Intake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
+        setupWayfinder(subsystems);
         pose_pred = new RobotPosePredictor(subsystems.swerve);
         publishCommandsAndSubystems(subsystems);
         setUpAutos(subsystems);

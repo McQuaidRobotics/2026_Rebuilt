@@ -5,9 +5,7 @@ import wpilibExt.Speeds.FieldSpeeds;
 import wpilibExt.Speeds.RobotSpeeds;
 
 public record SwerveSetpoint(
-        RobotSpeeds speeds,
-        AdvancedSwerveModuleState[] moduleStates,
-        Rotation2d heading) {
+        RobotSpeeds speeds, AdvancedSwerveModuleState[] moduleStates, Rotation2d heading) {
     public static SwerveSetpoint zeroed() {
         return new SwerveSetpoint(
                 RobotSpeeds.kZero,

@@ -25,7 +25,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Swerve extends SubsystemBase {
     CommandSwerveDrivetrain drivetrain;
-    CommonSwerveConsts commonSwerveConsts;
+    public CommonSwerveConsts commonSwerveConsts;
     boolean isSwerveDisabled = false;
     DummySwerve dummySwerve = new DummySwerve();
 
@@ -37,8 +37,8 @@ public class Swerve extends SubsystemBase {
         this.isSwerveDisabled = isSwerveDisabled;
         if (!isSwerveDisabled) {
             drivetrain = Robot.consts.swerve().getCommonSwerveConsts().createDrivetrain(this);
-            commonSwerveConsts = Robot.consts.swerve().getCommonSwerveConsts();
         }
+        commonSwerveConsts = Robot.consts.swerve().getCommonSwerveConsts();
     }
 
     @Override
