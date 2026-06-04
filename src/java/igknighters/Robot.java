@@ -242,7 +242,7 @@ public class Robot extends LoggedRobot {
                 subsystems.swerve.commonSwerveConsts.createSetpointGenerator());
         WayfinderManager.addObstacles(WAYFINDERFIELD2026.ALL_OBSTACLES);
         WayfinderManager.setArrowsEnabled(true);
-        WayfinderManager.setHeatMapEnabled(true);
+        WayfinderManager.setHeatMapEnabled(false);
     }
 
     public Robot() {

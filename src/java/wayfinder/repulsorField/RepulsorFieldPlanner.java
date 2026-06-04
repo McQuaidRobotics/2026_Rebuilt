@@ -115,14 +115,41 @@ public class RepulsorFieldPlanner {
                         .getRadians());
     }
 
-    public Pose2d[] getArrows(Translation2d goal, double xCount, double yCount) {
-        final double FIELD_WIDTH = FieldConstants.Y_FIELD;
-        final double FIELD_LENGTH = FieldConstants.X_FIELD;
-        Pose2d[] arrows = new Pose2d[(int) (xCount * yCount + yCount + 1)];
-        for (int x = 0; x <= xCount; x++) {
-            for (int y = 0; y <= yCount; y++) {
+    public Pose2d[] getArrows(
+            Translation2d goal,
+            Translation2d current,
+            double xCount,
+            double yCount,
+            boolean simplify) {
+
+        // if simplified show 16 grid regions (formed by a 5x5 vector line intersection)
+        final double FIELD_WIDTH = FieldConstants.Y_FIELD - .1;
+        double FIELD_LENGTH = FieldConstants.X_FIELD - .1;
+        double startX = 0.05;
+        double startY = 0.05;
+        double numX = xCount;
+        double numY = yCount;
+        double rangeX = FIELD_LENGTH - startX - 0.05;
+        double rangeY = FIELD_WIDTH - startY - 0.05;
+
+        if (simplify) {
+            numX = 4;
+            numY = 4;
+            startX = current.getX() - 1;
+            startY = current.getY() - 1;
+            rangeX = 2;
+            rangeY = 2;
+        }
+
+        // FIX 1: Allocate room for the inclusive bounds (e.g., 5 * 5 = 25 entries)
+        int strideY = (int) numY + 1;
+        int strideX = (int) numX + 1;
+        Pose2d[] arrows = new Pose2d[strideX * strideY];
+
+        for (int x = 0; x <= numX; x++) {
+            for (int y = 0; y <= numY; y++) {
                 Translation2d translation =
-                        new Translation2d(x * (FIELD_LENGTH) / xCount, y * FIELD_WIDTH / yCount);
+                        new Translation2d(x * (rangeX) / numX + startX, y * rangeY / numY + startY);
                 Translation2d force = getForce(translation, goal);
                 Rotation2d rotation;
                 if (force.getNorm() > 1e-6) {
@@ -130,7 +157,9 @@ public class RepulsorFieldPlanner {
                 } else {
                     rotation = Rotation2d.kZero;
                 }
-                arrows[x * (int) yCount + y] = new Pose2d(translation, rotation);
+
+                // FIX 2: Use the total row count (strideY) to step across columns safely
+                arrows[x * strideY + y] = new Pose2d(translation, rotation);
             }
         }
 

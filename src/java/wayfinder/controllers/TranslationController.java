@@ -99,7 +99,7 @@ public abstract class TranslationController
                             period,
                             replanning ? -distance : prevSetpoint.position(),
                             replanning ? velo : prevSetpoint.velocity(),
-                            replanning ? 0.0 : currentAcceleration,
+                            currentAcceleration,
                             0.0,
                             0.0,
                             0.0,
