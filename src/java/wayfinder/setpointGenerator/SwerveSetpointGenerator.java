@@ -45,6 +45,20 @@ public class SwerveSetpointGenerator {
             wheelFrictionForce,
             torqueLoss;
 
+    /**
+     * Creates a new SwerveSetpointGenerator.
+     *
+     * @param moduleLocations
+     * @param driveMotor
+     * @param angleMotor
+     * @param driveStatorCurrentLimitAmps
+     * @param driveSupplyCurrentLimitAmps
+     * @param massKg
+     * @param moiKgMetersSquared
+     * @param wheelDiameterMeters
+     * @param wheelCoF
+     * @param torqueLoss
+     */
     public SwerveSetpointGenerator(
             final Translation2d[] moduleLocations,
             final DCMotorExt driveMotor,
@@ -143,12 +157,20 @@ public class SwerveSetpointGenerator {
         vars.inputVoltage = inputVoltage;
 
         Logger.recordOutput("Wayfinder/SwerveSetpointGenerator/BeginningVars/dt", vars.dt);
-        Logger.recordOutput("Wayfinder/SwerveSetpointGenerator/BeginningVars/prevSpeeds", vars.prevSpeeds);
-        Logger.recordOutput("Wayfinder/SwerveSetpointGenerator/BeginningVars/desiredSpeeds", vars.desiredSpeeds);
-        Logger.recordOutput("Wayfinder/SwerveSetpointGenerator/BeginningVars/desiredModuleStates", vars.desiredModuleStates);
-        Logger.recordOutput("Wayfinder/SwerveSetpointGenerator/BeginningVars/prevModuleStates", vars.prevModuleStates);
+        Logger.recordOutput(
+                "Wayfinder/SwerveSetpointGenerator/BeginningVars/prevSpeeds", vars.prevSpeeds);
+        Logger.recordOutput(
+                "Wayfinder/SwerveSetpointGenerator/BeginningVars/desiredSpeeds",
+                vars.desiredSpeeds);
+        Logger.recordOutput(
+                "Wayfinder/SwerveSetpointGenerator/BeginningVars/desiredModuleStates",
+                vars.desiredModuleStates);
+        Logger.recordOutput(
+                "Wayfinder/SwerveSetpointGenerator/BeginningVars/prevModuleStates",
+                vars.prevModuleStates);
         Logger.recordOutput("Wayfinder/SwerveSetpointGenerator/BeginningVars/minS", vars.minS);
-        Logger.recordOutput("Wayfinder/SwerveSetpointGenerator/BeginningVars/inputVoltage", vars.inputVoltage);
+        Logger.recordOutput(
+                "Wayfinder/SwerveSetpointGenerator/BeginningVars/inputVoltage", vars.inputVoltage);
 
         checkNeedToSteer(vars);
         makeVectors(vars);
@@ -199,12 +221,19 @@ public class SwerveSetpointGenerator {
         }
 
         Logger.recordOutput("Wayfinder/SwerveSetpointGenerator/Final_Vars/dt", vars.dt);
-        Logger.recordOutput("Wayfinder/SwerveSetpointGenerator/Final_Vars/prevSpeeds", vars.prevSpeeds);
-        Logger.recordOutput("Wayfinder/SwerveSetpointGenerator/Final_Vars/desiredSpeeds", vars.desiredSpeeds);
-        Logger.recordOutput("Wayfinder/SwerveSetpointGenerator/Final_Vars/desiredModuleStates", vars.desiredModuleStates);
-        Logger.recordOutput("Wayfinder/SwerveSetpointGenerator/Final_Vars/prevModuleStates", vars.prevModuleStates);
+        Logger.recordOutput(
+                "Wayfinder/SwerveSetpointGenerator/Final_Vars/prevSpeeds", vars.prevSpeeds);
+        Logger.recordOutput(
+                "Wayfinder/SwerveSetpointGenerator/Final_Vars/desiredSpeeds", vars.desiredSpeeds);
+        Logger.recordOutput(
+                "Wayfinder/SwerveSetpointGenerator/Final_Vars/desiredModuleStates",
+                vars.desiredModuleStates);
+        Logger.recordOutput(
+                "Wayfinder/SwerveSetpointGenerator/Final_Vars/prevModuleStates",
+                vars.prevModuleStates);
         Logger.recordOutput("Wayfinder/SwerveSetpointGenerator/Final_Vars/minS", vars.minS);
-        Logger.recordOutput("Wayfinder/SwerveSetpointGenerator/Final_Vars/inputVoltage", vars.inputVoltage);
+        Logger.recordOutput(
+                "Wayfinder/SwerveSetpointGenerator/Final_Vars/inputVoltage", vars.inputVoltage);
 
         return new SwerveSetpoint(Speeds.fromRobotRelative(retSpeeds), outputStates, heading);
     }

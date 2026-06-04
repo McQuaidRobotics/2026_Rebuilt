@@ -242,10 +242,8 @@ public class FieldConstants {
             }
 
             // Bump 1
-            if (x >= BUMP_1_X_METERS - HALF_X_METERS
-                    && x <= BUMP_1_X_METERS + HALF_X_METERS) {
-                if (y >= BUMP_1_Y_METERS - HALF_Y_METERS
-                        && y <= BUMP_1_Y_METERS + HALF_Y_METERS) {
+            if (x >= BUMP_1_X_METERS - HALF_X_METERS && x <= BUMP_1_X_METERS + HALF_X_METERS) {
+                if (y >= BUMP_1_Y_METERS - HALF_Y_METERS && y <= BUMP_1_Y_METERS + HALF_Y_METERS) {
                     if (!Robot.consts.disableAllLogs()) {
                         Log.log("ROBOT/Commands/BumpProtection: inside bump 1", true);
                     }
@@ -254,10 +252,8 @@ public class FieldConstants {
             }
 
             // Bump 2
-            if (x >= BUMP_2_X_METERS - HALF_X_METERS
-                    && x <= BUMP_2_X_METERS + HALF_X_METERS) {
-                if (y >= BUMP_2_Y_METERS - HALF_Y_METERS
-                        && y <= BUMP_2_Y_METERS + HALF_Y_METERS) {
+            if (x >= BUMP_2_X_METERS - HALF_X_METERS && x <= BUMP_2_X_METERS + HALF_X_METERS) {
+                if (y >= BUMP_2_Y_METERS - HALF_Y_METERS && y <= BUMP_2_Y_METERS + HALF_Y_METERS) {
                     if (!Robot.consts.disableAllLogs()) {
                         Log.log("ROBOT/Commands/BumpProtection: inside bump 2", true);
                     }

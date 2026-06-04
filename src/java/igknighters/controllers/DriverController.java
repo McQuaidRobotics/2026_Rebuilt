@@ -2,10 +2,12 @@ package igknighters.controllers;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import igknighters.commands.BigBoyWayfinderCommands;
 import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.IntakeCommands;
@@ -164,7 +166,10 @@ public class DriverController {
         this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
         this.Y.onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.FULL_STOW));
         this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
-        this.A.and(this.B).whileTrue(Wayfinder.driveToSafeSpot(swerve));
+        this.A.and(this.B)
+                .whileTrue(
+                        BigBoyWayfinderCommands.driveToPositionWhileWhippingIt(
+                                swerve, new Pose2d(new Translation2d(1, 3), new Rotation2d())));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {
