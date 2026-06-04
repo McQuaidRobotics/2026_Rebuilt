@@ -238,8 +238,8 @@ public class Robot extends LoggedRobot {
     public void setupWayfinder(Subsystems subsystems) {
         WayfinderManager.setup(
                 new PositionalController(
-                        TranslationController.profiled(.1, 0, 0, false),
-                        RotationalController.profiled(.1, 0, false)),
+                        TranslationController.profiled(10.0, 0.0, 0.0, false, 0.0),
+                        RotationalController.profiled(5.0, 0.0, false, 0.0)),
                 subsystems.swerve.commonSwerveConsts.createSetpointGenerator());
         WayfinderManager.addObstacles(WAYFINDERFIELD2026.ALL_OBSTACLES);
         WayfinderManager.setArrowsEnabled(true);

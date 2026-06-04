@@ -15,15 +15,6 @@ import wpilibExt.Velocity2d;
  */
 public abstract class TranslationController
         implements Controller<Translation2d, Velocity2d, Translation2d, Constraints> {
-    // These classes don't use the wpilib classes for a few reasons:
-    // - in order for the trapezoidal profile in wpilib to be dynamic you have to recreate the
-    // object
-    // each cycle
-    // - the wpilib classes are harder to introspect for me with weird behavior
-    // - i wanted to implement them myself to understand them better :3
-    //
-    // If you would like to use this in your own code feel free to implement this using the wpilib
-    // classes
 
     @Override
     public abstract Velocity2d calculate(
@@ -50,18 +41,22 @@ public abstract class TranslationController
 
     private static final class Profiled extends TranslationController {
         private final boolean replanning;
+        private final double positionTolerance; // Added for robust completion checking
 
         private double prevError, totalError;
         private State prevSetpoint = State.kZero;
 
-        public Profiled(double kP, double kI, double kD, boolean replanning) {
+        public Profiled(
+                double kP, double kI, double kD, boolean replanning, double positionTolerance) {
             super(kP, kI, kD);
             this.replanning = replanning;
+            this.positionTolerance = positionTolerance;
         }
 
         @Override
         public boolean isDone(Translation2d measurement, Translation2d target) {
-            return MathUtil.isNear(prevSetpoint.position(), 0.0, 0.001)
+            // FIX: Checks that BOTH the virtual profile is finished AND the physical robot is close
+            return measurement.getDistance(target) < positionTolerance
                     && MathUtil.isNear(prevSetpoint.velocity(), 0.0, 0.01);
         }
 
@@ -69,6 +64,7 @@ public abstract class TranslationController
         public void reset(
                 Translation2d measurement, Velocity2d measurementVelo, Translation2d target) {
             prevError = 0;
+            totalError = 0; // FIX: Prevent integral windup from previous runs
             final Rotation2d direction = target.minus(measurement).getAngle();
             final double distance = measurement.getDistance(target);
             prevSetpoint = new State(-distance, measurementVelo.speedInDirection(direction));
@@ -122,6 +118,8 @@ public abstract class TranslationController
                             + (kI * totalError)
                             + (kD * errorDerivative)
                             + setpoint.velocity();
+
+            // Safety cap to prevent output exceeding maximum constraints
             dirVelo =
                     MathUtil.clamp(dirVelo, -constraints.maxVelocity(), constraints.maxVelocity());
 
@@ -144,9 +142,11 @@ public abstract class TranslationController
             return measurement.getDistance(target) < deadband;
         }
 
+        @Override
         public void reset(
                 Translation2d measurement, Velocity2d measurementVelo, Translation2d target) {
             prevError = 0;
+            totalError = 0; // FIX: Prevent integral windup from previous runs
         }
 
         @Override
@@ -176,13 +176,17 @@ public abstract class TranslationController
 
             double dirVelo = (kP * positionError) + (kI * totalError) + (kD * errorDerivative);
 
+            // FIX: Added clamping to prevent the unprofiled mode from demanding impossible speeds
+            dirVelo =
+                    MathUtil.clamp(dirVelo, -constraints.maxVelocity(), constraints.maxVelocity());
+
             return new Velocity2d(dirVelo * direction.getCos(), dirVelo * direction.getSin());
         }
     }
 
     public static TranslationController profiled(
-            double kP, double kI, double kD, boolean replanning) {
-        return new Profiled(kP, kI, kD, replanning);
+            double kP, double kI, double kD, boolean replanning, double positionTolerance) {
+        return new Profiled(kP, kI, kD, replanning, positionTolerance);
     }
 
     public static TranslationController unprofiled(

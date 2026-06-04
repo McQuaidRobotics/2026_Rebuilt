@@ -6,9 +6,11 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
+import igknighters.constants.DrivingSharedState;
 import igknighters.subsystems.swerve.Swerve;
 import wayfinder.WayfinderManager;
 import wayfinder.controllers.Types.ChassisConstraints;
@@ -27,8 +29,12 @@ public class BigBoyWayfinderCommands {
                         .withRotationalDeadband(
                                 RotationsPerSecond.of(1.5).in(RadiansPerSecond) * .01)
                         .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage)
-                        .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
-        return swerve.run(
+                        .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo)
+                        .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
+        return swerve.startRun(
+                        () -> {
+                            DrivingSharedState.getInstance().shouldDisableBumpProtection = true;
+                        },
                         () -> {
                             SwerveSetpoint setpoint =
                                     WayfinderManager.calculate(
@@ -54,6 +60,8 @@ public class BigBoyWayfinderCommands {
                                             .withVelocityY(MetersPerSecond.of(vy))
                                             .withRotationalRate(RadiansPerSecond.of(omega)));
                         })
-                .until(SwerveCommands.isAt(swerve, targetPose, 0.1, 0.1));
+                .until(SwerveCommands.isAt(swerve, targetPose, 0.1, 0.1))
+                .finallyDo(
+                        () -> DrivingSharedState.getInstance().shouldDisableBumpProtection = false);
     }
 }
