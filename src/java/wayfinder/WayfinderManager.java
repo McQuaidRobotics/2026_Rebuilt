@@ -25,6 +25,7 @@ public class WayfinderManager {
     private static SwerveSetpointGenerator generator;
 
     private static boolean arrowsEnabled = false;
+    private static boolean heatMapEnabled = false;
     private static SwerveSetpoint lastSetpoint = SwerveSetpoint.zeroed();
     private static PositionalController controller;
 
@@ -63,6 +64,13 @@ public class WayfinderManager {
         arrowsEnabled = enabled;
         if (!enabled) {
             Logger.recordOutput("Pose/Wayfinder/Arrows", new Pose2d[0]);
+        }
+    }
+
+    public static void setHeatMapEnabled(boolean enabled) {
+        heatMapEnabled = enabled;
+        if (!enabled) {
+            Logger.recordOutput("Pose/Wayfinder/HeatMap", new Pose2d[0]);
         }
     }
 
@@ -107,6 +115,18 @@ public class WayfinderManager {
         if (arrowsEnabled) {
             Logger.recordOutput(
                     "Pose/Wayfinder/Arrows", planner.getArrows(targetPose.getTranslation(), 25, 8));
+        }
+
+        if (heatMapEnabled) {
+            Logger.recordOutput(
+                    "Pose/Wayfinder/HeatMap",
+                    planner.getHeatMap(
+                            targetPose.getTranslation(),
+                            currentPose.getTranslation(),
+                            18,
+                            9,
+                            0.3,
+                            true));
         }
 
         return lastSetpoint;

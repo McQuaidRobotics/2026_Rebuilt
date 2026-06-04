@@ -14,6 +14,7 @@ import igknighters.constants.DrivingSharedState;
 import igknighters.subsystems.swerve.Swerve;
 import wayfinder.WayfinderManager;
 import wayfinder.controllers.Types.ChassisConstraints;
+import wayfinder.controllers.Types.Constraints;
 import wayfinder.setpointGenerator.SwerveSetpoint;
 
 public class BigBoyWayfinderCommands {
@@ -43,13 +44,12 @@ public class BigBoyWayfinderCommands {
                                             swerve.getState().Speeds,
                                             targetPose,
                                             new ChassisConstraints(
-                                                    new wayfinder.controllers.Types.Constraints(
+                                                    new Constraints(
                                                             swerve.commonSwerveConsts
                                                                     .getMaxSpeedMetersPerSecond(),
-                                                            2,
+                                                            4,
                                                             4),
-                                                    new wayfinder.controllers.Types.Constraints(
-                                                            3, 6, 6)));
+                                                    new Constraints(3, 6, 6)));
 
                             double vx = setpoint.fieldSpeeds().vx();
                             double vy = setpoint.fieldSpeeds().vy();

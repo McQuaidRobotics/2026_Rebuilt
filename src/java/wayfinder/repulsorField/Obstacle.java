@@ -1,8 +1,10 @@
 package wayfinder.repulsorField;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import org.littletonrobotics.junction.Logger;
 
 public abstract class Obstacle {
     double strength;
@@ -76,6 +78,129 @@ public abstract class Obstacle {
             double sideways = sidewaysMag * Math.signum(Math.sin(sidewaysTheta.getRadians()));
             var sidewaysAngle = targetToLocAngle.rotateBy(Rotation2d.kCCW_90deg);
             return new Translation2d(sideways, sidewaysAngle).plus(initial);
+        }
+    }
+
+    /** Represents a parabolic obstacle in the field. */
+    public static class ParabolicObstacle extends Obstacle {
+        private final Translation2d loc; // Vertex (h, k)
+        private final double a; // Convexity coefficient
+        private final double extension; // Half-width bounds from vertex
+        private final boolean horizontal; // true = opens left/right, false = opens up/down
+        private final double primaryMaxRange;
+        private final String name;
+
+        public ParabolicObstacle(
+                Translation2d loc,
+                double a,
+                double extension,
+                double maxRange,
+                boolean horizontal,
+                double primaryStrength,
+                String name) {
+            super(primaryStrength, true);
+            this.loc = loc;
+            this.a = a;
+            this.extension = extension;
+            this.horizontal = horizontal;
+            this.primaryMaxRange = maxRange;
+            this.name = name;
+        }
+
+        public void visualizePath() {
+            Pose2d[] path = new Pose2d[20];
+            double scaleFactor = extension / 10.0; // Adjust scale factor as needed
+            for (int i = 0; i < 20; i++) {
+                // Calculate path points (simplified for demonstration)
+                double y_cord = (i - 10) * scaleFactor + loc.getY();
+                double x_cord = a * Math.pow(y_cord - loc.getY(), 2) + loc.getX();
+                path[i] = new Pose2d(x_cord, y_cord, Rotation2d.kZero);
+            }
+
+            Logger.recordOutput("ROBOT/WAYFINDER/CURVE", path);
+        }
+
+        @Override
+        public Translation2d getForceAtPosition(Translation2d position, Translation2d goal) {
+            double closestX;
+            double closestY;
+            double normalAngleRad;
+            System.out.println("Processing parabolic obstacle: " + name);
+            boolean isInsidePocket = false;
+
+            if (!horizontal) {
+                // Vertical parabola: y = a*(x - h)^2 + k
+                closestX =
+                        MathUtil.clamp(
+                                position.getX(), loc.getX() - extension, loc.getX() + extension);
+                closestY = a * Math.pow(closestX - loc.getX(), 2) + loc.getY();
+
+                // Strict boundary check: Must be within the X extensions AND between the curve and
+                // the rim
+                boolean withinExtension = Math.abs(position.getX() - loc.getX()) <= extension;
+                if (withinExtension) {
+                    double rimY = a * Math.pow(extension, 2) + loc.getY();
+                    if (a > 0) {
+                        isInsidePocket = position.getY() >= closestY && position.getY() <= rimY;
+                    } else {
+                        isInsidePocket = position.getY() <= closestY && position.getY() >= rimY;
+                    }
+                }
+
+                double tangentSlope = 2 * a * (closestX - loc.getX());
+                normalAngleRad = Math.atan2(1.0, -tangentSlope);
+            } else {
+                // Horizontal parabola: x = a*(y - k)^2 + h
+                closestY =
+                        MathUtil.clamp(
+                                position.getY(), loc.getY() - extension, loc.getY() + extension);
+                closestX = a * Math.pow(closestY - loc.getY(), 2) + loc.getX();
+
+                // Strict boundary check: Must be within the Y extensions AND between the curve and
+                // the rim
+                boolean withinExtension = Math.abs(position.getY() - loc.getY()) <= extension;
+                if (withinExtension) {
+                    double rimX = a * Math.pow(extension, 2) + loc.getX();
+                    if (a > 0) {
+                        isInsidePocket = position.getX() >= closestX && position.getX() <= rimX;
+                    } else {
+                        isInsidePocket = position.getX() <= closestX && position.getX() >= rimX;
+                    }
+                }
+
+                double tangentSlopeInverse = 2 * a * (closestY - loc.getY());
+                normalAngleRad = Math.atan2(-tangentSlopeInverse, 1.0);
+            }
+
+            visualizePath();
+
+            Translation2d closestPointOnCurve = new Translation2d(closestX, closestY);
+            double distance = position.getDistance(closestPointOnCurve);
+
+            // If outside the bounded pocket AND too far away, drop calculation
+            if (!isInsidePocket && (distance > primaryMaxRange || distance < 1e-4)) {
+                return new Translation2d(0, 0);
+            }
+
+            Rotation2d forceDirection = new Rotation2d(normalAngleRad);
+
+            // Dynamic flip to ensure vector always pushes AWAY from the curve
+            Translation2d vectorToRobot = position.minus(closestPointOnCurve);
+            double dotProduct =
+                    vectorToRobot.getX() * forceDirection.getCos()
+                            + vectorToRobot.getY() * forceDirection.getSin();
+
+            if (dotProduct < 0) {
+                forceDirection = forceDirection.rotateBy(Rotation2d.fromDegrees(180));
+            }
+
+            // EJECTION RULE: If trapped in the shaded region, apply max force
+            double forceMag =
+                    isInsidePocket
+                            ? distToForceMag(0.1, primaryMaxRange)
+                            : distToForceMag(distance, primaryMaxRange);
+
+            return new Translation2d(forceMag, forceDirection);
         }
     }
 
