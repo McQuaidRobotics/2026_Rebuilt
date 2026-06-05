@@ -16,7 +16,7 @@ import wpilibExt.Speeds.FieldSpeeds;
 public class RepulsorFieldPlanner {
     private final PositionalController controller;
     private final CircularSlewRateLimiter rotationRateLimiter =
-            new CircularSlewRateLimiter(Math.PI * 5.0);
+            new CircularSlewRateLimiter(Math.PI * 8.0);
     private final List<Obstacle> fixedObstacles = new ArrayList<>();
 
     // Removed the global netForceVec since we will instantiate it locally

@@ -23,6 +23,7 @@ import wpilibExt.DCMotorExt;
 // https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/tuner-swerve/index.html
 public class DemoBotConsts extends CommonSwerveConsts {
     // Both sets of gains need to be tuned to your individual robot.
+    // Both sets of gains need to be tuned to your individual robot.
     public Translation2d[] getModulePositions() {
         return new Translation2d[] {
             new Translation2d(BackLeft.LocationX, BackLeft.LocationY),
@@ -33,7 +34,7 @@ public class DemoBotConsts extends CommonSwerveConsts {
     }
 
     public double getWheelCoF() {
-        return 2; // griplock
+        return 1.8; // griplock
     }
 
     public double getMassKg() {
@@ -41,7 +42,7 @@ public class DemoBotConsts extends CommonSwerveConsts {
     }
 
     public double getMomentOfInertiaKgMetersSquared() {
-        return 10; // IDK WHAT REAL LIFE IS
+        return 5.3; // IDK WHAT REAL LIFE IS
     }
 
     public double getWheelDiameterMeters() {
@@ -52,12 +53,12 @@ public class DemoBotConsts extends CommonSwerveConsts {
     public SwerveSetpointGenerator createSetpointGenerator() {
         return new SwerveSetpointGenerator(
                 getModulePositions(),
-                new DCMotorExt(DCMotor.getKrakenX60(1), 1),
-                DCMotor.getKrakenX60(1),
-                kDriveGearRatio,
+                new DCMotorExt(DCMotor.getKrakenX60(1).withReduction(kDriveGearRatio), 1),
+                DCMotor.getKrakenX60(1).withReduction(kSteerGearRatio),
                 40,
                 40,
                 getMassKg(),
+                getMomentOfInertiaKgMetersSquared(),
                 getWheelDiameterMeters(),
                 getWheelCoF(),
                 0.0);

@@ -74,8 +74,9 @@ public class WAYFINDERFIELD2026 {
     static {
         BUMP_GAUSSIAN_OBSTACLES = new Obstacle[BUMP_VERTICIES.length * 4];
         double extrusionLength = 2; // how far it sticks out in meters (Amplitude)
-        double maxRange = 1.5;
-        double strength = 1.5;
+        double maxRange = 4;
+        double strength = .5;
+        double offsetOffBump = .8;
 
         double halfX = FieldConstants.BUMP.HALF_BUMP_X_METERS;
         double halfY = FieldConstants.BUMP.HALF_Y_METERS;
@@ -90,8 +91,8 @@ public class WAYFINDERFIELD2026 {
             double yCenter = BUMP_VERTICIES[i].getY() + halfY;
 
             // Base x-coordinates of the flat left and right sides of the bump
-            double xBumpLeftBase = BUMP_VERTICIES[i].getX();
-            double xBumpRightBase = BUMP_VERTICIES[i].getX() + (halfX * 2);
+            double xBumpLeftBase = BUMP_VERTICIES[i].getX() - offsetOffBump;
+            double xBumpRightBase = BUMP_VERTICIES[i].getX() + (halfX * 2) + offsetOffBump;
 
             // LEFT CAP: Base centered at left edge. Amplitude is negative to bulge left <-
             BUMP_GAUSSIAN_OBSTACLES[i * 4] =
@@ -142,8 +143,8 @@ public class WAYFINDERFIELD2026 {
     static {
         BUMP_PARABOLA_OBSTACLES = new Obstacle[BUMP_VERTICIES.length * 4];
         double extrusionLength = 1.5; // how far it sticks out in meters
-        double maxRange = .5;
-        double strength = 1.5;
+        double maxRange = 2.0;
+        double strength = .5;
 
         double halfX = FieldConstants.BUMP.HALF_BUMP_X_METERS;
         double halfY = FieldConstants.BUMP.HALF_Y_METERS;
@@ -201,7 +202,7 @@ public class WAYFINDERFIELD2026 {
         }
     }
 
-    private static final double wallStrength = 2.5;
+    private static final double wallStrength = .3;
     private static final Obstacle[] WALL_OBSTACLES = {
         // the .1 is to help with the fact that the center of the robot is what the pose is. The .1
         // is added to ensure the robot doesn't collide with the wall
@@ -221,7 +222,7 @@ public class WAYFINDERFIELD2026 {
                                 WALL_OBSTACLES,
                                 BUMP_OBSTACLES_PURE_RECTANGLES,
                                 BUMP_FEATURES_STUDS,
-                                BUMP_GAUSSIAN_OBSTACLES)
+                                BUMP_PARABOLA_OBSTACLES)
                         .flatMap(Stream::of)
                         .toArray(Obstacle[]::new);
     }
