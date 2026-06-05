@@ -29,4 +29,9 @@ public class TurretDisabled extends Turret {
     public boolean isAt(Angle angle, Angle tolerance) {
         return true;
     }
+
+    @Override
+    public Angle wrapAngle(Angle angle) {
+        return Degrees.of(0.0);
+    }
 }

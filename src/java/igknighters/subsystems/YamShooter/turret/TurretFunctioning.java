@@ -1,8 +1,6 @@
 package igknighters.subsystems.YamShooter.turret;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -46,10 +44,24 @@ public class TurretFunctioning extends Turret {
                     .withHardLimit(
                             Degrees.of(Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES() - 10),
                             Degrees.of(Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES() + 10))
-                    .withMOI(Meters.of(.2), Pounds.of(7))
+                    .withMOI(.15)
                     .withTelemetry("Turret Motor", TelemetryVerbosity.HIGH); // Telemetry;
 
     private final Pivot turret = new Pivot(pivotConfig);
+
+    @Override
+    public Angle wrapAngle(Angle angle) {
+        double ogDegrees = angle.in(Degrees);
+        double maxDegrees = Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES();
+        double MIN_ANGLE_DEGREES = Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES();
+
+        double width = maxDegrees - MIN_ANGLE_DEGREES;
+
+        double newDegs =
+                MIN_ANGLE_DEGREES + (((ogDegrees - MIN_ANGLE_DEGREES) % width + width) % width);
+
+        return Degrees.of(newDegs);
+    }
 
     /**
      * Set the angle of the arm, does not stop when the arm reaches the setpoint.

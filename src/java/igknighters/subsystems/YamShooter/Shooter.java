@@ -21,6 +21,7 @@ public class Shooter {
     public Hood hood;
     public Flywheels flywheels;
     public Turret turret;
+    ShooterStatusIndicators status = new ShooterStatusIndicators();
     public shotType currentShotType = shotType.SHOT;
     private ShootInformation ableToShootState = ShootInformation.getInstance();
     double goalRPM = 0.0;
@@ -45,14 +46,14 @@ public class Shooter {
     public void targetState(AngularVelocity rpm, Angle turretAngle, Angle hoodAngle) {
         goalRPM = rpm.in(RPM);
         goalHoodAngle = hoodAngle.in(Degrees);
-        goalTurretAngle = turretAngle.in(Degrees);
+        goalTurretAngle = turret.wrapAngle(turretAngle).in(Degrees);
         hood.setAngleSetpoint(hoodAngle);
         flywheels.setVelocitySetpoint(rpm);
         turret.setAngleSetpoint(turretAngle);
     }
 
     public ShooterState getCurrentState() {
-        return new ShooterState(flywheels.getVelocity(), hood.getAngle(), turret.getAngle());
+        return new ShooterState(flywheels.getVelocity(), turret.getAngle(), hood.getAngle());
     }
 
     public boolean atGoal(
@@ -100,6 +101,10 @@ public class Shooter {
 
     public void periodic() {
         ableToShootState.setAtTarget(atGoal(RPM.of(50), Degrees.of(2), Degrees.of(5)));
+        status.update(
+                Math.abs(flywheels.getVelocity().in(RPM) - goalRPM) < 50,
+                Math.abs(turret.getAngle().in(Degrees) - goalTurretAngle) < 5,
+                Math.abs(hood.getAngle().in(Degrees) - goalHoodAngle) < 5);
     }
 
     // IDLE DEFAULT COMMANDS
@@ -130,7 +135,7 @@ public class Shooter {
                                             shooter.getCurrentState().flywheelSpeed.in(RPM),
                                             0.0);
 
-                            shooter.turret.targetAngle(targetingData.turretAngle);
+                            shooter.turret.setAngleSetpoint(targetingData.turretAngle);
                         })
                 .withName("IDLING THE TURRET : DEFAULT COMMAND");
     }

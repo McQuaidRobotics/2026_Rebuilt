@@ -301,7 +301,7 @@ public class Robot extends LoggedRobot {
         double dy = 0.0; // Y offset from turret center to hood
         double dz = 0.12; // z offset from turret pivot to hood pivot
 
-        Pose3d turretPose = getTurretPose(-subsystems.shooter.turret.getAngle().in(Degrees));
+        Pose3d turretPose = getTurretPose(subsystems.shooter.turret.getAngle().in(Degrees));
 
         Pose3d hoodPosition =
                 turretPose.transformBy(
@@ -310,7 +310,7 @@ public class Robot extends LoggedRobot {
                                 dy,
                                 dz,
                                 new Rotation3d(
-                                        0.0, hoodAngleDegrees * Conv.DEGREES_TO_RADIANS, 0.0)));
+                                        0.0, hoodAngleDegrees * Conv.DEGREES_TO_RADIANS, 0)));
         return hoodPosition;
     }
 
@@ -343,6 +343,7 @@ public class Robot extends LoggedRobot {
         //         subsystems.luma.getClosestGamePiece());
 
         pose_pred.setVelocitiesAndPose();
+        subsystems.shooter.periodic();
 
         if (underTrench()) {
             DrivingSharedState.getInstance().setUnderTrench(true);
@@ -524,11 +525,15 @@ public class Robot extends LoggedRobot {
 
             // Logic to launch fuel when dispensing and shooter is ready
             double currentTime = RobotController.getFPGATime() / 1.0e6;
-            if (subsystems.exitRollers.getVelocity().in(RPM) > 50.0
-                    && subsystems.shooter.getCurrentState().flywheelSpeed.in(RPM) > 500.0
-                    && subsystems.spindexer.getVelocity().in(RPM) > 50.0
-                    && (currentTime - lastShotTime) > 0.1) { // 0.1s cooldown
-
+            boolean exitRollersActive = subsystems.exitRollers.getVelocity().in(RPM) > 50.0;
+            boolean shooterReady =
+                    subsystems.shooter.getCurrentState().flywheelSpeed.in(RPM) > 500.0;
+            boolean spindexerActive = subsystems.spindexer.getVelocity().in(RPM) > 50.0;
+            boolean timeDeltaValid = (currentTime - lastShotTime) > 0.1;
+            if (exitRollersActive
+                    && shooterReady
+                    && spindexerActive
+                    && timeDeltaValid) { // 0.1s cooldown
                 var shooterState = subsystems.shooter.getCurrentState();
 
                 // Launch parameters

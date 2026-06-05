@@ -139,9 +139,7 @@ public class HoodFunctioning extends Hood {
 
     public Angle getAngle() {
         // hood in rots
-        return Degrees.of(
-                hood.getAngle().in(Rotations)
-                        * Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES());
+        return hood.getAngle();
     }
 
     public boolean isAt(Angle angle, Angle tolerance) {

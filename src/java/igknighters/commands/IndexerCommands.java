@@ -23,7 +23,9 @@ public class IndexerCommands {
                     } else {
                         indexer.goToStateNotCommand(IndexerState.STOP);
                     }
-                });
+                },
+                indexer.exitRollers,
+                indexer.spindexer);
     }
 
     public static Command jorkIt(Indexer indexer) {

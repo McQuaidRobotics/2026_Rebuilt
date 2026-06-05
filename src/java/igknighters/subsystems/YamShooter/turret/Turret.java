@@ -14,4 +14,6 @@ public abstract class Turret extends SubsystemBase {
     public abstract Angle getAngle();
 
     public abstract boolean isAt(Angle angle, Angle tolerance);
+
+    public abstract Angle wrapAngle(Angle angle);
 }
