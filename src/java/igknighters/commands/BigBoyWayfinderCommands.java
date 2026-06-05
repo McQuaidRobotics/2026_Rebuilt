@@ -46,9 +46,10 @@ public class BigBoyWayfinderCommands {
                                             new ChassisConstraints(
                                                     new Constraints(
                                                             swerve.commonSwerveConsts
-                                                                    .getMaxSpeedMetersPerSecond(),
-                                                            10,
-                                                            20),
+                                                                            .getMaxSpeedMetersPerSecond()
+                                                                    / 2,
+                                                            4,
+                                                            8),
                                                     new Constraints(6, 9, 15)));
 
                             double vx = setpoint.fieldSpeeds().vx();

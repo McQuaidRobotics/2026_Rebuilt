@@ -118,9 +118,9 @@ public class WayfinderManager {
                     planner.getArrows(
                             targetPose.getTranslation(),
                             currentPose.getTranslation(),
+                            20,
                             10,
-                            9,
-                            true));
+                            false));
         }
 
         if (heatMapEnabled) {
@@ -129,10 +129,10 @@ public class WayfinderManager {
                     planner.getHeatMap(
                             targetPose.getTranslation(),
                             currentPose.getTranslation(),
-                            10,
+                            20,
                             10,
                             0.3,
-                            true));
+                            false));
         }
 
         return lastSetpoint;

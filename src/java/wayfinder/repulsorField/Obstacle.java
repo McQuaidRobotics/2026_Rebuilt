@@ -228,9 +228,9 @@ public abstract class Obstacle {
 
             double distanceToMin;
             if (horizontal) {
-                distanceToMin = MathUtil.clamp(Math.abs(position.getY() - loc.getY()), 0, .4);
+                distanceToMin = MathUtil.clamp(Math.abs(position.getY() - loc.getY()), 0, .1);
             } else {
-                distanceToMin = MathUtil.clamp(Math.abs(position.getX() - loc.getX()), 0, .4);
+                distanceToMin = MathUtil.clamp(Math.abs(position.getX() - loc.getX()), 0, .1);
             }
 
             // EJECTION RULE: Apply localized force profiles based on pocket state
