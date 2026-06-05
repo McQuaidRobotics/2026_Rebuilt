@@ -537,7 +537,7 @@ public class SecondBotRobotConsts extends RobotConsts {
                                     4.0, 0.0, 0.0, new TrapezoidProfile.Constraints(12, 24)))
                     .withSimClosedLoopController(
                             new ProfiledPIDController(
-                                    1, 0.05, 0.0, new TrapezoidProfile.Constraints(12, 24)))
+                                    2.0, 0.05, 0.0, new TrapezoidProfile.Constraints(12, 24)))
                     // Feedforward Constants
                     .withFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
                     .withSimFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
