@@ -547,7 +547,15 @@ public class SecondBotRobotConsts extends RobotConsts {
                     // In this example GearBox.fromReductionStages(3,4) is the same as
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
                     // your motor.
-                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(15)))
+                    .withGearing(
+                            new MechanismGearing(
+                                    GearBox.fromReductionStages(
+                                            360 / MOTOR_ROTS_TO_HOOD_DEGREES()))) // The motor
+                    // has to spin
+                    // 24 times to
+                    // do 1
+                    // rotation of
+                    // the hood
                     .withMotorInverted(true)
                     .withIdleMode(MotorMode.BRAKE)
                     .withStatorCurrentLimit(Amps.of(20))
@@ -558,6 +566,11 @@ public class SecondBotRobotConsts extends RobotConsts {
         @Override
         public double MOTOR_ROTS_TO_HOOD_DEGREES() {
             return 15.0;
+        }
+
+        @Override
+        public double MOTOR_ROTS_TO_HOOD_ROTS() {
+            return 15.0 / 360.0;
         }
 
         @Override

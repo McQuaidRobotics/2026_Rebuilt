@@ -30,7 +30,7 @@ public class RobotIdentity {
                         "THE SERIAL NUMBER OF THE ROBOT THAT THIS CODE IS DEPLOYED ON IS NOT IN"
                                 + " RobotIdentity.java",
                         true);
-                robot = Robots.SECOND_BOT; // will default to GEMINIKNIGHT
+                robot = Robots.SECOND_BOT; // will default to THIS ONE
             }
         }
         return robot;

@@ -538,12 +538,23 @@ public class GeminiRobotConsts extends RobotConsts {
                     // In this example GearBox.fromReductionStages(3,4) is the same as
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
                     // your motor.
-                    .withGearing(new MechanismGearing(GearBox.fromReductionStages(15)))
+                    .withGearing(
+                            new MechanismGearing(
+                                    GearBox.fromReductionStages(
+                                            360.0 / MOTOR_ROTS_TO_HOOD_DEGREES()))) // 24:1
                     .withMotorInverted(true)
                     .withIdleMode(MotorMode.BRAKE)
                     .withStatorCurrentLimit(Amps.of(20))
                     .withClosedLoopRampRate(Seconds.of(0.25))
                     .withOpenLoopRampRate(Seconds.of(0.25));
+        }
+
+        @Override
+        public double MOTOR_ROTS_TO_HOOD_ROTS() {
+            // 1 rotation of motor = 15 degrees of hood movement
+            // 15 degrees is 15/360 rotations
+            // 1 rotation of motor is 0.04 rotations
+            return 15.0 / 360.0;
         }
 
         @Override

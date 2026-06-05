@@ -14,7 +14,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
-import igknighters.constants.Conv;
 import yams.mechanisms.config.PivotConfig;
 import yams.mechanisms.config.SensorConfig;
 import yams.mechanisms.positional.Arm;
@@ -40,27 +39,23 @@ public class HoodFunctioning extends Hood {
 
     private final SmartMotorController hoodController =
             new TalonFXWrapper(hoodMotor, DCMotor.getKrakenX44(1), hoodConfig);
-    // i have configured the SMCC to have a ratio of 15 so when i want to set a limit it cant be 15
-    // degrees it must be 1 rotation and it will do the math
+    // EVERYTHING WILL BE DONE IN ROTATIONS
+    // THE SMC IS SET UP TO THE PID DRIVING TO ROTATIONS OF HOOD OUTPUT EG MECHANSIM FRAME
+    // ALL THESE LIMITS SHOULD BE STRAIGHT CONSTANTS FOR THE HOOD
     private PivotConfig pivotConfig =
             new PivotConfig(hoodController)
                     // Soft limit is applied to the SmartMotorControllers PID
                     .withMOI(Meters.of(0.25), Pounds.of(.5))
                     .withSoftLimits(
-                            Rotations.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()),
-                            Rotations.of(Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES()))
+                            Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()),
+                            Degrees.of(Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES()))
                     // Hard limit is applied to the simulation.
                     .withHardLimit(
-                            Rotations.of(
-                                    Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()
-                                            - 5), // in rotations
-                            Rotations.of(Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES() + 5))
+                            Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES() - 5),
+                            Degrees.of(Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES() + 5))
                     // Starting position is where your arm starts
                     .withStartingPosition(
-                            Rotations.of(
-                                    Conv.DEGREES_TO_ROTATIONS
-                                            * (Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()
-                                                    + 5)))
+                            Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES() + 5))
                     // Telemetry name and verbosity for the arm.
                     .withTelemetry("Shooter Hood", TelemetryVerbosity.HIGH);
 
@@ -87,7 +82,9 @@ public class HoodFunctioning extends Hood {
      * @return A command.
      */
     public Command targetAngle(Angle angle) {
-        return hood.run(Rotations.of(angle.in(Degrees)));
+        // input is something like 30
+        // all ready in the hood mechanism frame so just pass
+        return hood.run(angle);
     }
 
     /**
@@ -118,6 +115,11 @@ public class HoodFunctioning extends Hood {
 
     @Override
     public void zeroAt(Angle angle) {
+        // THE SMC ZEROS STUFF IN TERMS OF MECHANISM POSITION
+        // SEE TALONFX WRAPPER
+        // m_talonfx.setPosition(angle);
+        // it just calls this as well as doing anything with the encoder
+        // .setPosition() zeros in terms of mechansim rots
         hoodController.setEncoderPosition(angle);
     }
 
@@ -143,18 +145,8 @@ public class HoodFunctioning extends Hood {
     }
 
     public boolean isAt(Angle angle, Angle tolerance) {
-
-        // this will take a actuall angle like 30 and convert it to rotations with the conversion
-        // factor. The motor is told gear ratio of 1:1
-        return hood.isNear(
-                        Rotations.of(
-                                angle.in(Degrees)
-                                        / Robot.consts
-                                                .shooter()
-                                                .kHood()
-                                                .MOTOR_ROTS_TO_HOOD_DEGREES()),
-                        tolerance)
-                .getAsBoolean();
+        // in mechanism frame already bc gear ratio 24
+        return hood.isNear(angle, tolerance).getAsBoolean();
     }
 
     @Override

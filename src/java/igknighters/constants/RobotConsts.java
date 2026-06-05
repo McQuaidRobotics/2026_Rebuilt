@@ -115,6 +115,8 @@ public abstract class RobotConsts {
 
         double MOTOR_ROTS_TO_HOOD_DEGREES();
 
+        double MOTOR_ROTS_TO_HOOD_ROTS();
+
         SmartMotorControllerConfig getConfig(Subsystem subsystem);
 
         double MIN_ANGLE_DEGREES();
