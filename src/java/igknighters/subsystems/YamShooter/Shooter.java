@@ -58,15 +58,13 @@ public class Shooter {
 
     public boolean atGoal(
             AngularVelocity rpmTolerance, Angle hoodAngleTolerance, Angle turretAngleTolerance) {
-        boolean atRPM = Math.abs(flywheels.getVelocity().in(RPM) - goalRPM) < rpmTolerance.in(RPM);
-
-        boolean atHoodAngle =
-                Math.abs(hood.getAngle().in(Degrees) - goalHoodAngle)
-                        < hoodAngleTolerance.in(Degrees);
-
+        double rpm = flywheels.getVelocity().in(RPM);
+        boolean atRPM = Math.abs(rpm - goalRPM) < rpmTolerance.in(RPM);
+        double hoodAngle = hood.getAngle().in(Degrees);
+        boolean atHoodAngle = Math.abs(hoodAngle - goalHoodAngle) < hoodAngleTolerance.in(Degrees);
+        double turretAngle = turret.getAngle().in(Degrees);
         boolean atTurretAngle =
-                Math.abs(turret.getAngle().in(Degrees) - goalTurretAngle)
-                        < turretAngleTolerance.in(Degrees);
+                Math.abs(turretAngle - goalTurretAngle) < turretAngleTolerance.in(Degrees);
 
         return atRPM && atHoodAngle && atTurretAngle;
     }
