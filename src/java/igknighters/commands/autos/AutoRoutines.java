@@ -207,8 +207,8 @@ public class AutoRoutines extends AutoCommands {
 
     private AutoRoutine SQUOVAL(String direction) {
         AutoRoutine routine = autoFactory.newRoutine("SQUOVAL " + direction);
-        AutoTrajectory trajectory = routine.trajectory("SINGLE_DUMP_PASS_"+ direction +"_1.traj");
-        AutoTrajectory pass = routine.trajectory("SINGLE_DUMP_PASS_"+ direction +"_2.traj");
+        AutoTrajectory trajectory = routine.trajectory("SQUOVAL_"+ direction +"_1.traj");
+        AutoTrajectory pass = routine.trajectory("SQUOVAL_"+ direction +"_2.traj");
 
         routine.active()
                 .onTrue(Commands.sequence(trajectory.resetOdometry(), trajectory.spawnCmd()));
