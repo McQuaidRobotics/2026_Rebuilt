@@ -159,6 +159,10 @@ public class Robot extends LoggedRobot {
         autoChooser.addRoutine("Center Depot", routines::centerPreload);
         autoChooser.addRoutine("LEFT BUMP PASS TO SELF", routines::BUMP_PASS_TO_SELF_LEFT);
         autoChooser.addRoutine("RIGHT BUMP PASS TO SELF", routines::BUMP_PASS_TO_SELF_RIGHT);
+        autoChooser.addRoutine("SINGLE SWIPE LEFT", routines::SINGLE_SWIPE_LEFT);
+        autoChooser.addRoutine("SINGLE SWIPE RIGHT", routines::SINGLE_SWIPE_RIGHT);
+        autoChooser.addRoutine("RIGHT OUTPOST", routines::SINGLE_SWIPE_OUTPOST);
+        autoChooser.addRoutine("LEFT DEPO", routines::SINGLE_SWIPE_LEFT);
         autoChooser.addRoutine(
                 "Pass to Self Right with Depot and Human Player",
                 routines::PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER);
