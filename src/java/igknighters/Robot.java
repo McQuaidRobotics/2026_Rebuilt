@@ -161,6 +161,7 @@ public class Robot extends LoggedRobot {
         autoChooser.addRoutine(
                 "Pass to Self Right with Depot and Human Player",
                 routines::PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER);
+        autoChooser.addRoutine("mean", routines::meanRoutine);
         autoChooser.addRoutine("OP RIGHT", routines::OP_RIGHT);
         autoChooser.addRoutine("OP_LEFT", routines::OP_LEFT);
         autoChooser.addRoutine("SQUOVAL", routines::SQUOVAL);

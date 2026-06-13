@@ -7,6 +7,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.Robot;
 import igknighters.subsystems.intake.pivot.Pivot;
+import igknighters.subsystems.intake.pivot.PivotDisabled;
 import igknighters.subsystems.intake.pivot.PivotReal;
 import igknighters.subsystems.intake.pivot.PivotSim;
 import igknighters.subsystems.intake.rollers.Rollers;
