@@ -463,7 +463,7 @@ public class GeminiRobotConsts extends RobotConsts {
                             new LerpTableEntry(2.5, 2900),
                             new LerpTableEntry(3.5, 3200),
                             new LerpTableEntry(4.0, 3300),
-                            new LerpTableEntry(4.5, 3400),
+                            new LerpTableEntry(4.5, 3350),
                             new LerpTableEntry(5.2, 3680),
                             new LerpTableEntry(5.5, 3780),
                             new LerpTableEntry(6.0, 3800),
@@ -719,7 +719,7 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_ANGLE_DEGREES() {
-            return 52.855225;
+            return 48;
         }
 
         @Override
