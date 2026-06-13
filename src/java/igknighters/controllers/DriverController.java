@@ -163,7 +163,9 @@ public class DriverController {
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
         this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
         this.Y.onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.FULL_STOW));
-        this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
+        this.DPL.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
+        this.DPU.onTrue(AimingCommands.changeShotModifier(0.02));
+        this.DPD.onTrue(AimingCommands.changeShotModifier(-0.02));
         this.A.and(this.B).whileTrue(Wayfinder.driveToSafeSpot(swerve));
     }
 
