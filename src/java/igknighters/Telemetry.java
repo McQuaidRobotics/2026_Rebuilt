@@ -29,7 +29,7 @@ import java.util.Map;
 public class Telemetry {
     private final double MaxSpeed;
     private final Subsystems subsystems;
-    public SwerveDriveState latestState;
+    public SwerveDriveState latestState = new SwerveDriveState();
     private AprilTagLayout aprilTagLayout;
 
     // Create the Field2d instance
@@ -52,6 +52,15 @@ public class Telemetry {
 
         // Publish the Field2d widget to SmartDashboard so Glass/AdvantageScope can see it
         SmartDashboard.putData("Field", m_field);
+
+        latestState.ModuleStates =
+                new SwerveModuleState[] {
+                    new SwerveModuleState(),
+                    new SwerveModuleState(),
+                    new SwerveModuleState(),
+                    new SwerveModuleState()
+                };
+        latestState.Pose = new edu.wpi.first.math.geometry.Pose2d();
 
         SmartDashboard.putData(
                 "Swerve Drive",
