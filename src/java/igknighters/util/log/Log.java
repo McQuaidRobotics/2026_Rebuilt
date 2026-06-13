@@ -2,6 +2,7 @@ package igknighters.util.log;
 
 import static edu.wpi.first.units.Units.RPM;
 
+import com.ctre.phoenix6.CANBus.CANBusStatus;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -51,6 +52,13 @@ public class Log {
 
     public static void log(String path, double value) {
         Logger.recordOutput(path, value);
+    }
+
+    public static void log(String path, CANBusStatus status) {
+        Logger.recordOutput(path + "/UTILIZATION", status.BusUtilization);
+        Logger.recordOutput(path + "/OFF_COUNT", status.BusOffCount);
+        Logger.recordOutput(path + "/TRANSMIT ERROR COUNT", status.TEC);
+        Logger.recordOutput(path + "/RECEIVE ERROR COUNT", status.REC);
     }
 
     public static void log(String path, double[][] value) {

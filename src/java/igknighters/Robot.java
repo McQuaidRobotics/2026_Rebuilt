@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.*;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
+import com.ctre.phoenix6.CANBus.CANBusStatus;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -349,6 +350,10 @@ public class Robot extends LoggedRobot {
         } else {
             DrivingSharedState.getInstance().setUnderTrench(false);
         }
+
+        CANBusStatus status = consts.getSuperStructureBus().getStatus();
+
+        Log.log("ROBOT/SYSSTATS/SUPER_BUS", status);
         turret_pred.logTurretPose(
                 turret_pred.getTurretPoseFieldRelativeOffset(subsystems.swerve.getState().Pose));
         pose_pred_error.logPose(subsystems.swerve.getState().Pose);
