@@ -154,17 +154,20 @@ public class Robot extends LoggedRobot {
     public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsystems.swerve.createAutoFactory();
         final var routines = new AutoRoutines(subsystems, autoFactory, consts);
-        autoChooser.addRoutine("Right Orbit", routines::orbitRight);
+        autoChooser.addRoutine("Right Orbit", routines::ORBIT_RIGHT);
         autoChooser.addRoutine("Left Orbit", routines::ORBIT_LEFT);
         autoChooser.addRoutine("Center Depot", routines::centerPreload);
         autoChooser.addRoutine("LEFT BUMP PASS TO SELF", routines::BUMP_PASS_TO_SELF_LEFT);
+        autoChooser.addRoutine("RIGHT BUMP PASS TO SELF", routines::BUMP_PASS_TO_SELF_RIGHT);
         autoChooser.addRoutine(
                 "Pass to Self Right with Depot and Human Player",
                 routines::PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER);
-        autoChooser.addRoutine("mean", routines::meanRoutine);
+        autoChooser.addRoutine("Mean Left", routines::MEAN_LEFT);
+        autoChooser.addRoutine("Mean Right", routines::MEAN_RIGHT);
         autoChooser.addRoutine("OP RIGHT", routines::OP_RIGHT);
         autoChooser.addRoutine("OP_LEFT", routines::OP_LEFT);
-        autoChooser.addRoutine("SQUOVAL", routines::SQUOVAL);
+        autoChooser.addRoutine("SQUOVAL_LEFT", routines::SQUOVAL_LEFT);
+        autoChooser.addRoutine("SQUOVAL_RIGHT", routines::SQUOVAL_RIGHT);
 
         testChooser.addRoutine("Test Auto", routines::TEST);
 

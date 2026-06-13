@@ -26,7 +26,6 @@ import igknighters.constants.RobotConsts;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.intake.IntakeState;
 import igknighters.subsystems.shooter.ShooterState;
-import java.util.function.Supplier;
 
 public class AutoRoutines extends AutoCommands {
 
@@ -45,92 +44,11 @@ public class AutoRoutines extends AutoCommands {
         }
     }
 
-    public Supplier<Command> trajTest(String trajName) {
-        return () ->
-                Commands.sequence(
-                        autoFactory.resetOdometry(trajName), autoFactory.trajectoryCmd(trajName));
-    }
-
-    @FunctionalInterface
-    public interface DualSideAuto {
-        Command generate();
-    }
-
-    public static void addCmd(AutoChooser chooser, String name, DualSideAuto auto) {
-        chooser.addCmd(name, () -> auto.generate());
-    }
-
-    // public Command driveAround() {
-    //     return newAuto("shoot_then_pass")
-    //             .addDrivingTrajectory(
-    //                     Waypoints.STARTING_RIGHT, Waypoints.BUMP_LAND_RIGHT,
-    // Waypoints.BALLS_RIGHT)
-    //             .build();
-    // }
-
-    public AutoRoutine scoreThenPass() {
-        AutoRoutine routine = autoFactory.newRoutine("Score then pass");
-
-        AutoTrajectory moveTraj = routine.trajectory("ShootThenIntake.traj");
-
-        routine.active()
-                .onTrue(
-                        Commands.sequence(
-                                moveTraj.resetOdometry(),
-                                Commands.print("ODOMETRY RESET"),
-                                HigherOrderCommands.shootTillEmpty(subsystems, 5),
-                                Commands.print("ALL BALLS SHOT"),
-                                moveTraj.cmd()));
-
-        moveTraj.atTime("Intake")
-                .onTrue(
-                        Commands.sequence(
-                                Commands.print("INTAKE BALLS"),
-                                HigherOrderCommands.hippoShoot(subsystems)));
-
-        return routine;
-    }
-
-    public AutoRoutine rightNuetralHippo() {
-        AutoRoutine routine = autoFactory.newRoutine("Right Neutral Hippo");
-
-        AutoTrajectory moveTraj = routine.trajectory("RIGHT_NEUTRAL_HIPPO.traj");
-
-        routine.active()
-                .onTrue(
-                        Commands.sequence(
-                                        moveTraj.resetOdometry(),
-                                        HigherOrderCommands.shootTillEmpty(subsystems, 5),
-                                        Commands.parallel(
-                                                IntakeCommands.holdAtIntake(subsystems.intake),
-                                                Commands.sequence(
-                                                        Commands.runOnce(
-                                                                () ->
-                                                                        subsystems.shooter
-                                                                                .targetState(
-                                                                                        RPM.of(
-                                                                                                2000),
-                                                                                        Degrees.of(
-                                                                                                0.0),
-                                                                                        Degrees.of(
-                                                                                                Robot
-                                                                                                        .consts
-                                                                                                        .shooter()
-                                                                                                        .kHood()
-                                                                                                        .MIN_ANGLE_DEGREES()))),
-                                                        Commands.waitSeconds(1.0),
-                                                        HigherOrderCommands.rapidFireStream(
-                                                                subsystems)),
-                                                moveTraj.cmd()))
-                                .withName("RIGHT NUETRAL HIPPO"));
-        moveTraj.atTimeBeforeEnd(0.0).onTrue(SwerveCommands.stopDriving(swerve));
-        return routine;
-    }
 
     public AutoRoutine PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER() {
         AutoRoutine routine =
                 autoFactory.newRoutine("Pass to Self Right with Depot and Human Player");
-        AutoTrajectory trajectory = routine.trajectory("PASS_TO_SELF_RIGHT_1.traj");
+        AutoTrajectory trajectory = routine.trajectory("DO_IT_MYSELF.traj");
 
         routine.active()
                 .onTrue(
@@ -146,33 +64,38 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
-    public AutoRoutine ORBIT_LEFT() {
-        AutoRoutine routine = autoFactory.newRoutine("Orbit Left");
-        AutoTrajectory swipe1Out = routine.trajectory("ORBIT_LEFT_1.traj");
-        AutoTrajectory swipe1In = routine.trajectory("ORBIT_LEFT_2.traj");
-        AutoTrajectory loopDiDoop = routine.trajectory("ORBIT_LEFT_3.traj");
-
-        routine.active().onTrue(Commands.sequence(swipe1Out.resetOdometry(), swipe1Out.cmd()));
-
-        swipe1Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
-
-        swipe1Out.done().onTrue(swipe1In.spawnCmd());
-
-        swipe1In.done()
-                .onTrue(
-                        HigherOrderCommands.shootTillEmpty(subsystems, 4)
-                                .andThen(loopDiDoop.spawnCmd()));
-
-        loopDiDoop.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
-
-        loopDiDoop
-                .done()
-                .onTrue(
-                        SwerveCommands.stopDriving(swerve)
-                                .andThen(HigherOrderCommands.shootTillEmpty(subsystems, 6)));
-
-        return routine;
+    public AutoRoutine OP_RIGHT() {
+        return OP("RIGHT");
     }
+
+    public AutoRoutine OP_LEFT() {
+        return OP("LEFT");
+    }
+    public AutoRoutine SQUOVAL_RIGHT() {
+        return SQUOVAL("RIGHT");
+    }
+    public AutoRoutine SQUOVAL_LEFT() {
+        return SQUOVAL("LEFT");
+    }
+    public AutoRoutine ORBIT_RIGHT() {
+        return orbit("RIGHT");
+    }
+    public AutoRoutine ORBIT_LEFT() {
+        return orbit("LEFT");
+    }
+    public AutoRoutine BUMP_PASS_TO_SELF_LEFT() {
+        return bump_pass_to_self("LEFT");
+    }
+    public AutoRoutine BUMP_PASS_TO_SELF_RIGHT() {
+        return bump_pass_to_self("RIGHT");
+    }
+    public AutoRoutine MEAN_LEFT() {
+        return meanRoutine("LEFT");
+    }
+    public AutoRoutine MEAN_RIGHT() {
+        return meanRoutine("RIGHT");
+    }
+
 
     public AutoRoutine TEST() {
         AutoRoutine routine = autoFactory.newRoutine("Test Routine");
@@ -262,10 +185,10 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
-    public AutoRoutine SINGLE_DUMP_LEFT() {
-        AutoRoutine routine = autoFactory.newRoutine("SINGLE_DUMP_LEFT");
+    private AutoRoutine SINGLE_DUMP(String direction) {
+        AutoRoutine routine = autoFactory.newRoutine("SINGLE_DUMP " + direction);
 
-        AutoTrajectory firstLoop = routine.trajectory("SINGLE_DUMP.traj");
+        AutoTrajectory firstLoop = routine.trajectory("SINGLE_DUMP"+direction+".traj");
 
         routine.active().onTrue(Commands.sequence(firstLoop.resetOdometry(), firstLoop.spawnCmd()));
 
@@ -282,10 +205,10 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
-    public AutoRoutine SQUOVAL() {
-        AutoRoutine routine = autoFactory.newRoutine("SQUOVAL");
-        AutoTrajectory trajectory = routine.trajectory("SINGLE_DUMP_PASS_1.traj");
-        AutoTrajectory pass = routine.trajectory("SINGLE_DUMP_PASS_2.traj");
+    private AutoRoutine SQUOVAL(String direction) {
+        AutoRoutine routine = autoFactory.newRoutine("SQUOVAL " + direction);
+        AutoTrajectory trajectory = routine.trajectory("SINGLE_DUMP_PASS_"+ direction +"_1.traj");
+        AutoTrajectory pass = routine.trajectory("SINGLE_DUMP_PASS_"+ direction +"_2.traj");
 
         routine.active()
                 .onTrue(Commands.sequence(trajectory.resetOdometry(), trajectory.spawnCmd()));
@@ -304,47 +227,12 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
-    public AutoRoutine OP_LEFT() {
-        AutoRoutine routine = autoFactory.newRoutine("OP LEFT");
+    private AutoRoutine OP(String direction) {
+        AutoRoutine routine = autoFactory.newRoutine("OP " + direction);
 
-        AutoTrajectory firstLoop = routine.trajectory("OP_LEFT_1.traj");
-        AutoTrajectory transitionToSecondLoop = routine.trajectory("OP_LEFT_2.traj");
-        AutoTrajectory secondLoop = routine.trajectory("OP_LEFT_3.traj");
-
-        routine.active().onTrue(Commands.sequence(firstLoop.resetOdometry(), firstLoop.spawnCmd()));
-
-        firstLoop.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
-
-        firstLoop
-                .atTime("PROTECT")
-                .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
-
-        firstLoop
-                .done()
-                .onTrue(
-                        Commands.parallel(
-                                HigherOrderCommands.shootTillEmpty(subsystems, 4.0),
-                                transitionToSecondLoop.cmd()));
-
-        transitionToSecondLoop.done().onTrue(secondLoop.spawnCmd());
-
-        secondLoop.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
-
-        secondLoop
-                .atTime("PROTECT_INTAKE_2")
-                .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
-        secondLoop.atTime("SHOOT_2").onTrue(HigherOrderCommands.shootTillEmpty(subsystems, 5));
-        secondLoop.done().onTrue(HigherOrderCommands.shootTillEmpty(subsystems, 10));
-
-        return routine;
-    }
-
-    public AutoRoutine OP_RIGHT() {
-        AutoRoutine routine = autoFactory.newRoutine("OP RIGHT");
-
-        AutoTrajectory firstLoop = routine.trajectory("OP_RIGHT_1.traj");
-        AutoTrajectory transitionToSecondLoop = routine.trajectory("OP_RIGHT_2.traj");
-        AutoTrajectory secondLoop = routine.trajectory("OP_RIGHT_3.traj");
+        AutoTrajectory firstLoop = routine.trajectory("OP_"+ direction + "_1.traj");
+        AutoTrajectory transitionToSecondLoop = routine.trajectory("OP_"+ direction + "_2.traj");
+        AutoTrajectory secondLoop = routine.trajectory("OP_"+ direction + "_3.traj");
 
         routine.active().onTrue(Commands.sequence(firstLoop.resetOdometry(), firstLoop.spawnCmd()));
 
@@ -374,48 +262,11 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
-    public AutoRoutine BUMP_PASS_TO_SELF_LEFT() {
-        AutoRoutine routine = autoFactory.newRoutine("Bump Pass to Self Left");
+    private AutoRoutine bump_pass_to_self(String direction) {
+        AutoRoutine routine = autoFactory.newRoutine("Orbit Pass to Self " + direction);
+        AutoTrajectory trajectory = routine.trajectory("PASS_TO_SELF_BUMP_" + direction + "_1.traj");
 
-        AutoTrajectory trajectory = routine.trajectory("BUMP_PASS_TO_SELF_LEFT_1.traj");
-
-        routine.active()
-                .onTrue(
-                        Commands.sequence(
-                                trajectory.resetOdometry(),
-                                HigherOrderCommands.shootTillEmpty(subsystems, 3),
-                                trajectory.spawnCmd()));
-
-        trajectory.atTime("HIPPO").onTrue(HigherOrderCommands.hippoShoot(subsystems));
-
-        trajectory.atTime("JUST INTAKE").onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
-
-        trajectory
-                .atTime("PROTECT INTAKE")
-                .onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.partialStow));
-
-        trajectory
-                .atTime("START SHOOTING AGAIN")
-                .onTrue(HigherOrderCommands.hippoShoot(subsystems));
-        trajectory
-                .atTime("NO MUNCH HIPPO")
-                .onTrue(
-                        HigherOrderCommands.rapidFireStream(subsystems)
-                                .alongWith(IntakeCommands.holdAtIntake(subsystems.intake)));
-
-        trajectory
-                .done()
-                .onTrue(
-                        SwerveCommands.stopDriving(swerve)
-                                .andThen(HigherOrderCommands.shootTillEmpty(subsystems, 15)));
-        return routine;
-    }
-
-    public AutoRoutine ORBIT_PASS_TO_SELF_RIGHT() {
-        AutoRoutine routine = autoFactory.newRoutine("Orbit Pass to Self Right");
-        AutoTrajectory trajectory = routine.trajectory("PASS_TO_SELF_BUMP_1.traj");
-
-        routine.active().onTrue(Commands.sequence(trajectory.resetOdometry(), trajectory.cmd()));
+        routine.active().onTrue(Commands.sequence(trajectory.resetOdometry(), trajectory.spawnCmd()));
 
         trajectory.atTime("HIPPO").onTrue(HigherOrderCommands.hippoShoot(subsystems));
 
@@ -430,9 +281,9 @@ public class AutoRoutines extends AutoCommands {
      * facing other teams intake Will pass the first half and then will gather balls untill enter
      * trench Once under trench intake + score going to human player station
      */
-    public AutoRoutine meanRoutine() {
+    private AutoRoutine meanRoutine(String direction) {
         AutoRoutine routine = autoFactory.newRoutine("Mean Routine");
-        AutoTrajectory meanTrajectory = routine.trajectory("MEAN_AUTO_1.traj");
+        AutoTrajectory meanTrajectory = routine.trajectory("MEAN_AUTO_"+ direction +"_1.traj");
 
         routine.active()
                 .onTrue(
@@ -450,39 +301,11 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
-    public AutoRoutine singleSwipeLeft() {
-        AutoRoutine routine = autoFactory.newRoutine("Single Swipe Left");
+    private AutoRoutine singleSwipe(String direction) {
+        AutoRoutine routine = autoFactory.newRoutine("Single Swipe " + direction);
 
-        AutoTrajectory intakeTrajectory = routine.trajectory("LEFT_SINGLE_SWIPE_1.traj");
-        AutoTrajectory scoringTrajectory = routine.trajectory("LEFT_SINGLE_SWIPE_2.traj");
-
-        routine.active()
-                .onTrue(
-                        Commands.sequence(
-                                intakeTrajectory.resetOdometry(),
-                                HigherOrderCommands.shootTillEmpty(subsystems, 4),
-                                intakeTrajectory.cmd()));
-
-        intakeTrajectory.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
-
-        intakeTrajectory.done().onTrue(scoringTrajectory.cmd());
-
-        scoringTrajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
-
-        scoringTrajectory
-                .done()
-                .onTrue(
-                        SwerveCommands.stopDriving(swerve)
-                                .alongWith(HigherOrderCommands.hippoShoot(subsystems)));
-
-        return routine;
-    }
-
-    public AutoRoutine singleSwipeRight() {
-        AutoRoutine routine = autoFactory.newRoutine("Single Swipe Right");
-
-        AutoTrajectory intakeTrajectory = routine.trajectory("RIGHT_SINGLE_SWIPE_1.traj");
-        AutoTrajectory scoringTrajectory = routine.trajectory("RIGHT_SINGLE_SWIPE_2.traj");
+        AutoTrajectory intakeTrajectory = routine.trajectory("SINGLE_SWIPE_" + direction + "_1.traj");
+        AutoTrajectory scoringTrajectory = routine.trajectory("SINGLE_SWIPE_"+ direction + "_2.traj");
 
         intakeTrajectory
                 .active()
@@ -521,12 +344,12 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
-    public AutoRoutine orbitRight() {
-        AutoRoutine routine = autoFactory.newRoutine("Orbit Right");
+    private AutoRoutine orbit(String direction) {
+        AutoRoutine routine = autoFactory.newRoutine("Orbit " + direction);
 
-        AutoTrajectory swipe1Out = routine.trajectory("ORBIT_RIGHT_1.traj");
-        AutoTrajectory swipe1In = routine.trajectory("ORBIT_RIGHT_2.traj");
-        AutoTrajectory swipe2Loop = routine.trajectory("ORBIT_RIGHT_3.traj");
+        AutoTrajectory swipe1Out = routine.trajectory("ORBIT_" + direction +"_1.traj");
+        AutoTrajectory swipe1In = routine.trajectory("ORBIT_" + direction +"_2.traj");
+        AutoTrajectory swipe2Loop = routine.trajectory("ORBIT_" + direction +"_3.traj");
         routine.active().onTrue(Commands.sequence(swipe1Out.resetOdometry(), swipe1Out.cmd()));
 
         swipe1Out.active().onTrue(IntakeCommands.holdAtIntake(subsystems.intake));
@@ -553,9 +376,9 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
-    public AutoRoutine passToSelfLeft() {
-        AutoRoutine routine = autoFactory.newRoutine("Pass to Self Left");
-        AutoTrajectory PASS_TRAJECTORY = routine.trajectory("PASS_TO_SELF_LEFT_1.traj");
+    private AutoRoutine passToSelf(String direction) {
+        AutoRoutine routine = autoFactory.newRoutine("Pass to Self" + direction);
+        AutoTrajectory PASS_TRAJECTORY = routine.trajectory("PASS_TO_SELF_" + direction + "_1.traj");
 
         routine.active()
                 .onTrue(
@@ -647,10 +470,10 @@ public class AutoRoutines extends AutoCommands {
         return routine;
     }
 
-    public AutoRoutine leftNuetralHippo() {
-        AutoRoutine routine = autoFactory.newRoutine("New Left Neutral Hippo");
+    private AutoRoutine hippo(String direction) {
+        AutoRoutine routine = autoFactory.newRoutine(direction + "Neutral Hippo");
 
-        AutoTrajectory moveTraj = routine.trajectory("LEFT_NEUTRAL_HIPPO_1.traj");
+        AutoTrajectory moveTraj = routine.trajectory("NEUTRAL_HIPPO_" + direction + "_1.traj");
 
         routine.active()
                 .onTrue(
@@ -678,52 +501,9 @@ public class AutoRoutines extends AutoCommands {
                                                         Commands.waitSeconds(1.0),
                                                         HigherOrderCommands.rapidFireStream(
                                                                 subsystems)),
-                                                moveTraj.cmd()))
-                                .withName("LEFT NUETRAL HIPPO"));
+                                                moveTraj.spawnCmd()))
+                                .withName(direction + "NEUTRAL HIPPO"));
         moveTraj.atTimeBeforeEnd(0.0).onTrue(SwerveCommands.stopDriving(swerve));
         return routine;
     }
-
-    public AutoRoutine centerOutpostClimb() {
-        AutoRoutine routine = autoFactory.newRoutine("Center Outpost climb");
-
-        AutoTrajectory moveTraj = routine.trajectory("CENTER_OUTPOST_CLIMB.traj");
-
-        routine.active()
-                .onTrue(
-                        Commands.sequence(
-                                        moveTraj.resetOdometry(),
-                                        HigherOrderCommands.shootTillEmpty(subsystems, 2),
-                                        Commands.parallel(
-                                                HigherOrderCommands.rapidFireStream(subsystems),
-                                                moveTraj.cmd()))
-                                .withName("Move and Shoot"));
-        moveTraj.atTimeBeforeEnd(0.0).onTrue(SwerveCommands.stopDriving(swerve));
-        return routine;
-    }
-
-    //     public AutoRoutine centerDepotClimb() {
-    //         AutoRoutine routine = autoFactory.newRoutine("Center Depot climb");
-
-    //         AutoTrajectory moveTraj = routine.trajectory("CENTER_DEPOT_CLIMB.traj");
-
-    //         routine.active()
-    //                 .onTrue(
-    //                         Commands.sequence(
-    //                                 moveTraj.resetOdometry(),
-    //                                 Commands.print("ODOMETRY RESET"),
-    //                                 moveTraj.cmd()
-    //                                         .alongWith(
-    //                                                 HigherOrderCommands.hippoShoot(subsystems)
-    //                                                         .repeatedly(),
-    //                                                 Commands.print("IM PARELELING").repeatedly())
-    //                                         .withName("Intake and Shoot")));
-
-    //         moveTraj.done()
-    //                 .onTrue(
-    //                         Commands.sequence(
-    //                                 SwerveCommands.stopDriving(swerve),
-    //                                 HigherOrderCommands.prepToClimbFirstRung(subsystems)));
-    //         return routine;
-    //     }
 }
