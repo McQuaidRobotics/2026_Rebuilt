@@ -43,8 +43,9 @@ public class AimingCommands {
      * @return nothing it legit just increases the rpm of all shots
      */
     public static Command changeShotModifier(double changeValue) {
-         // THIS WAS THE PROBLEM.
-        // THE PRINT WAS WIERD. BECAUSE IT WAS A COMMAND IT FOUND WHAT THE MODIFIER WAS AND NEVER CHECKED AGAIN.
+        // THIS WAS THE PROBLEM.
+        // THE PRINT WAS WIERD. BECAUSE IT WAS A COMMAND IT FOUND WHAT THE MODIFIER WAS AND NEVER
+        // CHECKED AGAIN.
         // LIKE ALL COMANDS THE LAMDA IS THE SOLUTION
         return Commands.sequence(
                 Commands.runOnce(() -> shotModifier += changeValue),
