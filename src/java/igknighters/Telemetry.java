@@ -7,13 +7,14 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,7 +29,11 @@ import java.util.Map;
 public class Telemetry {
     private final double MaxSpeed;
     private final Subsystems subsystems;
+    public SwerveDriveState latestState;
     private AprilTagLayout aprilTagLayout;
+
+    // Create the Field2d instance
+    private final Field2d m_field = new Field2d();
 
     /**
      * Construct a telemetry object, with the specified max speed of the robot
@@ -41,10 +46,94 @@ public class Telemetry {
         try {
             aprilTagLayout = new AprilTagLayout();
         } catch (IOException e) {
-            //     System.out.println("Could not load AprilTag layout");
             e.printStackTrace();
         }
         SignalLogger.start();
+
+        // Publish the Field2d widget to SmartDashboard so Glass/AdvantageScope can see it
+        SmartDashboard.putData("Field", m_field);
+
+        SmartDashboard.putData(
+                "Swerve Drive",
+                new Sendable() {
+                    @Override
+                    public void initSendable(SendableBuilder builder) {
+                        builder.setSmartDashboardType("SwerveDrive");
+
+                        // Front Left (Index 0 in CTRE Phoenix 6)
+                        builder.addDoubleProperty(
+                                "Front Left Angle",
+                                () ->
+                                        latestState.ModuleStates != null
+                                                ? latestState.ModuleStates[0].angle.getDegrees()
+                                                : 0.0,
+                                null);
+                        builder.addDoubleProperty(
+                                "Front Left Velocity",
+                                () ->
+                                        latestState.ModuleStates != null
+                                                ? latestState.ModuleStates[0].speedMetersPerSecond
+                                                : 0.0,
+                                null);
+
+                        // Front Right (Index 1)
+                        builder.addDoubleProperty(
+                                "Front Right Angle",
+                                () ->
+                                        latestState.ModuleStates != null
+                                                ? latestState.ModuleStates[1].angle.getDegrees()
+                                                : 0.0,
+                                null);
+                        builder.addDoubleProperty(
+                                "Front Right Velocity",
+                                () ->
+                                        latestState.ModuleStates != null
+                                                ? latestState.ModuleStates[1].speedMetersPerSecond
+                                                : 0.0,
+                                null);
+
+                        // Back Left (Index 2)
+                        builder.addDoubleProperty(
+                                "Back Left Angle",
+                                () ->
+                                        latestState.ModuleStates != null
+                                                ? latestState.ModuleStates[2].angle.getDegrees()
+                                                : 0.0,
+                                null);
+                        builder.addDoubleProperty(
+                                "Back Left Velocity",
+                                () ->
+                                        latestState.ModuleStates != null
+                                                ? latestState.ModuleStates[2].speedMetersPerSecond
+                                                : 0.0,
+                                null);
+
+                        // Back Right (Index 3)
+                        builder.addDoubleProperty(
+                                "Back Right Angle",
+                                () ->
+                                        latestState.ModuleStates != null
+                                                ? latestState.ModuleStates[3].angle.getDegrees()
+                                                : 0.0,
+                                null);
+                        builder.addDoubleProperty(
+                                "Back Right Velocity",
+                                () ->
+                                        latestState.ModuleStates != null
+                                                ? latestState.ModuleStates[3].speedMetersPerSecond
+                                                : 0.0,
+                                null);
+
+                        // Heading / Gyro orientation
+                        builder.addDoubleProperty(
+                                "Robot Angle",
+                                () ->
+                                        latestState.Pose != null
+                                                ? latestState.Pose.getRotation().getDegrees()
+                                                : 0.0,
+                                null);
+                    }
+                });
     }
 
     /* What to publish over networktables for telemetry */
@@ -70,24 +159,6 @@ public class Telemetry {
             driveStateTable.getDoubleTopic("Timestamp").publish();
     private final DoublePublisher driveOdometryFrequency =
             driveStateTable.getDoubleTopic("OdometryFrequency").publish();
-
-    /* Robot pose for field positioning */
-    private final NetworkTable table = inst.getTable("Pose");
-    private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose").publish();
-    private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
-    private final DoubleArrayPublisher seenTagsPub =
-            table.getDoubleArrayTopic("seenTags").publish();
-    private final DoubleArrayPublisher unseenTagsPub =
-            table.getDoubleArrayTopic("unseenTags").publish();
-
-    private final DoubleArrayPublisher shootingTargetPosesPub =
-            table.getDoubleArrayTopic("shootingTargetPose").publish();
-
-    private final DoubleArrayPublisher drivingTargetPub =
-            table.getDoubleArrayTopic("drivingTargetPose").publish();
-
-    private final DoubleArrayPublisher detectedObjectsPub =
-            table.getDoubleArrayTopic("detectedObjects").publish();
 
     /* Mechanisms to represent the swerve module states */
     private final Mechanism2d[] m_moduleMechanisms =
@@ -151,6 +222,7 @@ public class Telemetry {
         driveModuleTargets.set(state.ModuleTargets);
         driveModulePositions.set(state.ModulePositions);
         driveTimestamp.set(state.Timestamp);
+        latestState = state;
         driveOdometryFrequency.set(1.0 / state.OdometryPeriod);
 
         /* Also write to log file */
@@ -169,44 +241,34 @@ public class Telemetry {
         SignalLogger.writeDoubleArray("DriveState/ModuleTargets", m_moduleTargetsArray);
         SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
 
-        /* Telemeterize the pose to a Field2d */
-        fieldTypePub.set("Field2d");
-        fieldPub.set(m_poseArray);
+        /* Update the main robot pose on our Field2d object */
+        FieldVisualizer.getInstance().updateRobotPose(state.Pose);
+
+        // Inside Telemetry.java -> telemeterize() method:
 
         if (aprilTagLayout != null) {
             List<Integer> visibleIds = subsystems.vision.getVisibleTagIds();
             Map<Integer, Pose3d> allTagPoses = aprilTagLayout.getTagPoses();
             List<Pose2d> seenTagPoses = new java.util.ArrayList<>();
-            List<Pose2d> unseenTagPoses = new java.util.ArrayList<>();
 
+            // Only collect the tags that are currently visible
             for (Map.Entry<Integer, Pose3d> entry : allTagPoses.entrySet()) {
                 if (visibleIds.contains(entry.getKey())) {
                     seenTagPoses.add(entry.getValue().toPose2d());
-                } else {
-                    unseenTagPoses.add(entry.getValue().toPose2d());
                 }
             }
 
-            double[] seenTagsArray = new double[seenTagPoses.size() * 3];
-            int i = 0;
-            for (Pose2d pose : seenTagPoses) {
-                seenTagsArray[i++] = pose.getX();
-                seenTagsArray[i++] = pose.getY();
-                seenTagsArray[i++] = pose.getRotation().getDegrees();
-            }
-            seenTagsPub.set(seenTagsArray);
+            // Dynamically split seen tags into groups of 8
+            List<List<Pose2d>> seenChunks = new java.util.ArrayList<>();
+            int totalSeen = seenTagPoses.size();
 
-            double[] unseenTagsArray = new double[unseenTagPoses.size() * 3];
-            i = 0;
-            for (Pose2d pose : unseenTagPoses) {
-                unseenTagsArray[i++] = pose.getX();
-                unseenTagsArray[i++] = pose.getY();
-                unseenTagsArray[i++] = pose.getRotation().getDegrees();
+            for (int i = 0; i < totalSeen; i += 8) {
+                int endIdx = Math.min(i + 8, totalSeen);
+                seenChunks.add(seenTagPoses.subList(i, endIdx));
             }
-            unseenTagsPub.set(unseenTagsArray);
-        } else {
-            //     System.out.println("APRIL TAG LAYOUT NOT FOUND");
-            //     System.out.println("APRIL TAGS NEED TO BE LOADED TO SHOW THE SEEN TAGS");
+
+            // Push the chunked seen tags to the field visualizer
+            FieldVisualizer.getInstance().updateSeenTagsSplit(seenChunks);
         }
 
         /* Telemeterize the module states to a Mechanism2d */
@@ -221,29 +283,14 @@ public class Telemetry {
     }
 
     public void addShootingTargetPose(Pose2d targetPose) {
-        double[] targetPoseArray = new double[3];
-        targetPoseArray[0] = targetPose.getX();
-        targetPoseArray[1] = targetPose.getY();
-        targetPoseArray[2] = targetPose.getRotation().getDegrees();
-        shootingTargetPosesPub.set(targetPoseArray);
+        m_field.getObject("ShootingTarget").setPose(targetPose);
     }
 
     public void addDrivingTargetPose(Pose2d targetPose) {
-        double[] targetPoseArray = new double[3];
-        targetPoseArray[0] = targetPose.getX();
-        targetPoseArray[1] = targetPose.getY();
-        targetPoseArray[2] = targetPose.getRotation().getDegrees();
-        drivingTargetPub.set(targetPoseArray);
+        m_field.getObject("DrivingTarget").setPose(targetPose);
     }
 
     public void publishDetectedObjects(List<Pose2d> objectPoses) {
-        double[] objectPosesArray = new double[objectPoses.size() * 3];
-        int i = 0;
-        for (Pose2d pose : objectPoses) {
-            objectPosesArray[i++] = pose.getX();
-            objectPosesArray[i++] = pose.getY();
-            objectPosesArray[i++] = pose.getRotation().getDegrees();
-        }
-        detectedObjectsPub.set(objectPosesArray);
+        m_field.getObject("DetectedObjects").setPoses(objectPoses);
     }
 }
