@@ -40,7 +40,7 @@ public class AimingCommands {
      * @param shooter
      * @param robotPoseSupplier
      * @param robotVelocitySupplier
-     * @return
+     * @return nothing it legit just increases the rpm of all shots
      */
     public static Command changeShotModifier(double changeValue) {
          // THIS WAS THE PROBLEM.
