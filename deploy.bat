@@ -2,7 +2,7 @@
 echo Select Target Robot:
 echo [1] Team 3173
 echo [2] Team 9999
-set /p bot="Enter choice (1 or 2): "
+set /p bot="Enter choice (1 (3173) or 2 (9999)) : "
 
 if "%bot%"=="1" (
     echo Deploying to 3173...
