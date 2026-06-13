@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.RPM;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
 import igknighters.commands.Shooter.ShooterCommands.shotType;
 import igknighters.constants.DrivingSharedState;
@@ -17,6 +18,8 @@ import igknighters.subsystems.shooter.solvers.Math.LerpSolveShot;
 import java.util.function.Supplier;
 
 public class AimingCommands {
+
+    public static double shotModifier = 1.0;
 
     public static Supplier<Pose2d> getShooterPoseWithOffset(Supplier<Pose2d> robotPose) {
         return () -> robotPose.get();
@@ -39,6 +42,15 @@ public class AimingCommands {
      * @param robotVelocitySupplier
      * @return
      */
+    public static Command changeShotModifier(double changeValue) {
+         // THIS WAS THE PROBLEM.
+        // THE PRINT WAS WIERD. BECAUSE IT WAS A COMMAND IT FOUND WHAT THE MODIFIER WAS AND NEVER CHECKED AGAIN.
+        // LIKE ALL COMANDS THE LAMDA IS THE SOLUTION
+        return Commands.sequence(
+                Commands.runOnce(() -> shotModifier += changeValue),
+                Commands.runOnce(() -> System.out.println("MODIFIER" + shotModifier)));
+    }
+
     public static Command idleCommand(Shooter shooter) {
 
         ShootInformation info = ShootInformation.getInstance();
@@ -105,7 +117,10 @@ public class AimingCommands {
 
         if (targetingData.flywheelSpeed.in(RPM) != 0) {
             // possible shot so follow its instructions
-            shooter.targetState(targetingData);
+            shooter.targetState(
+                    targetingData.flywheelSpeed.times(shotModifier),
+                    targetingData.turretAngle,
+                    targetingData.hoodAngle);
         } else {
             // shot is impossible so we should idle the shooter rpm at like 4000
             shooter.targetState(
