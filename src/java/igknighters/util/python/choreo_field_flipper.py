@@ -118,4 +118,4 @@ def bulk_mirror_trajectories(directory_path="."):
     print(f"Newly generated twins: {new_files_generated}")
 
 if __name__ == "__main__":
-    bulk_mirror_trajectories('.')
+    bulk_mirror_trajectories("C:\\Software\\FRC\\2026\\2026_Rebuilt\\src\\main\\deploy\choreo")
