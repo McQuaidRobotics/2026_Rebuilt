@@ -1,6 +1,9 @@
 package igknighters.constants;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -12,9 +15,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import igknighters.Robot;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
@@ -24,6 +25,7 @@ import igknighters.util.LerpTable;
 import igknighters.util.LerpTable.LerpTableEntry;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
+import yams.motorcontrollers.SmartMotorController.ClosedLoopControllerSlot;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
@@ -108,21 +110,14 @@ public class SecondBotRobotConsts extends RobotConsts {
                     .withControlMode(ControlMode.CLOSED_LOOP)
 
                     // Feedback Constants (PID Constants)
-                    .withClosedLoopController(
-                            45,
-                            0.0,
-                            0.0,
-                            RotationsPerSecond.of(12),
-                            RotationsPerSecondPerSecond.of(15))
-                    .withSimClosedLoopController(
-                            .2,
-                            0.05,
-                            0.0,
-                            RotationsPerSecond.of(24),
-                            RotationsPerSecondPerSecond.of(36))
+                    .withClosedLoopController(45, 0.0, 0.0, ClosedLoopControllerSlot.SLOT_0)
+                    .withTrapezoidalProfile(
+                            RotationsPerSecond.of(12), RotationsPerSecondPerSecond.of(15))
+                    .withSimClosedLoopController(.2, 0.05, 0.0, ClosedLoopControllerSlot.SLOT_0)
                     // Feedforward Constants
                     .withFeedforward(new ArmFeedforward(0.0, 0, 0.0, 0.0))
                     .withSimFeedforward(new ArmFeedforward(0.0, 0, 0.0, 0.0))
+                    .withSoftLimits(Degrees.of(0), Degrees.of(MAX_ANGLE_DEGREES()))
                     // Telemetry name and verbosity level
                     .withTelemetry("Intake Pivot Motor", TelemetryVerbosity.HIGH)
                     // Gearing from the motor rotor to final shaft.
@@ -409,13 +404,10 @@ public class SecondBotRobotConsts extends RobotConsts {
             return new SmartMotorControllerConfig(subsystem)
                     .withControlMode(ControlMode.CLOSED_LOOP)
                     // Feedback Constants (PID Constants)
-                    .withClosedLoopController(
-                            new ProfiledPIDController(
-                                    0.3, 0.1, 0.0, new TrapezoidProfile.Constraints(5800, 5800)))
+                    .withClosedLoopController(0.3, 0.1, 0.0, ClosedLoopControllerSlot.SLOT_0)
+                    .withSimClosedLoopController(0.3, 0.1, 0.0, ClosedLoopControllerSlot.SLOT_0)
+                    .withTrapezoidalProfile(RPM.of(5800), RotationsPerSecondPerSecond.of(5800))
                     .withFollowers(Pair.of(follower, true))
-                    .withSimClosedLoopController(
-                            new ProfiledPIDController(
-                                    0.3, 0.1, 0.0, new TrapezoidProfile.Constraints(5800, 5800)))
                     // Feedforward Constants
                     .withFeedforward(new SimpleMotorFeedforward(0.17, 0.1, 0.02))
                     .withSimFeedforward(new SimpleMotorFeedforward(0.17, 0.1, 0.02))
@@ -461,15 +453,16 @@ public class SecondBotRobotConsts extends RobotConsts {
                     .withControlMode(ControlMode.CLOSED_LOOP)
 
                     // Feedback Constants (PID Constants)
-                    .withClosedLoopController(
-                            new ProfiledPIDController(
-                                    45.0, 0.15, 0.0, new TrapezoidProfile.Constraints(200, 400)))
-                    .withSimClosedLoopController(
-                            new ProfiledPIDController(
-                                    4, 0.05, 0.0, new TrapezoidProfile.Constraints(200, 400)))
+                    .withClosedLoopController(45.0, 0.15, 0.0, ClosedLoopControllerSlot.SLOT_0)
+                    .withTrapezoidalProfile(
+                            RPM.of(200), RotationsPerSecondPerSecond.of(300.0 / 60.0))
+                    .withSimClosedLoopController(4, 0.05, 0.0, ClosedLoopControllerSlot.SLOT_0)
                     // Feedforward Constants
                     .withFeedforward(new ArmFeedforward(0.0, 0, 0.0, 0.0))
                     .withSimFeedforward(new ArmFeedforward(0.0, 0, 0.0, 0.0))
+                    .withSoftLimits(
+                            Degrees.of(MIN_ANGLE_DEGREES()), Degrees.of(MAX_ANGLE_DEGREES()))
+                    .withMomentOfInertia(Meters.of(1.0), Pounds.of(.15))
                     // Telemetry name and verbosity level
                     .withTelemetry("Turret Motor", TelemetryVerbosity.HIGH)
                     // Gearing from the motor rotor to final shaft.
@@ -532,15 +525,14 @@ public class SecondBotRobotConsts extends RobotConsts {
                     .withControlMode(ControlMode.CLOSED_LOOP)
 
                     // Feedback Constants (PID Constants)
-                    .withClosedLoopController(
-                            new ProfiledPIDController(
-                                    4.0, 0.0, 0.0, new TrapezoidProfile.Constraints(12, 24)))
-                    .withSimClosedLoopController(
-                            new ProfiledPIDController(
-                                    8.0, 0.05, 0.0, new TrapezoidProfile.Constraints(30, 50)))
+                    .withClosedLoopController(4.0, 0.0, 0.0, ClosedLoopControllerSlot.SLOT_0)
+                    .withTrapezoidalProfile(
+                            RotationsPerSecond.of(5), RotationsPerSecondPerSecond.of(10))
+                    .withSimClosedLoopController(8.0, 0.05, 0.0, ClosedLoopControllerSlot.SLOT_0)
                     // Feedforward Constants
                     .withFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
                     .withSimFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
+                    .withSoftLimits(Degrees.of(52.855225), Degrees.of(18.6))
                     // Telemetry name and verbosity level
                     .withTelemetry("Intake Pivot Motor", TelemetryVerbosity.HIGH)
                     // Gearing from the motor rotor to final shaft.
@@ -628,10 +620,10 @@ public class SecondBotRobotConsts extends RobotConsts {
                     new SmartMotorControllerConfig(subsystem)
                             .withControlMode(ControlMode.CLOSED_LOOP)
                             // Feedback Constants (PID Constants)
-                            .withClosedLoopController(
-                                    .5, 0, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
-                            .withSimClosedLoopController(
-                                    .5, 0, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
+                            .withClosedLoopController(.5, 0, 0, ClosedLoopControllerSlot.SLOT_0)
+                            .withTrapezoidalProfile(
+                                    RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
+                            .withSimClosedLoopController(.5, 0, 0, ClosedLoopControllerSlot.SLOT_0)
                             // Feedforward Constants
                             .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
                             .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
@@ -760,10 +752,11 @@ public class SecondBotRobotConsts extends RobotConsts {
                     new SmartMotorControllerConfig(subsystem)
                             .withControlMode(ControlMode.CLOSED_LOOP)
                             // Feedback Constants (PID Constants)
-                            .withClosedLoopController(
-                                    .3, 0.1, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
+                            .withClosedLoopController(.3, 0.1, 0, ClosedLoopControllerSlot.SLOT_0)
                             .withSimClosedLoopController(
-                                    .3, 0.1, 0, RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
+                                    .3, 0.1, 0, ClosedLoopControllerSlot.SLOT_0)
+                            .withTrapezoidalProfile(
+                                    RPM.of(5800), RotationsPerSecondPerSecond.of(3000))
                             // Feedforward Constants
                             .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
                             .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))

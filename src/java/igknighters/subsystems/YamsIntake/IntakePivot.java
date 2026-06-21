@@ -1,11 +1,6 @@
 package igknighters.subsystems.YamsIntake;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -15,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import yams.mechanisms.config.PivotConfig;
-import yams.mechanisms.positional.Arm;
 import yams.mechanisms.positional.Pivot;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
@@ -38,17 +32,12 @@ public class IntakePivot extends SubsystemBase {
 
     private PivotConfig pivotConfig =
             new PivotConfig(talonSmartMotorController)
-                    // Soft limit is applied to the SmartMotorControllers PID
-                    .withMOI(Meters.of(0.25), Pounds.of(.5))
-                    .withSoftLimits(
-                            Degrees.of(Robot.consts.intake().kPivot().MIN_ANGLE_DEGREES()),
-                            Degrees.of(Robot.consts.intake().kPivot().MAX_ANGLE_DEGREES()))
                     // Hard limit is applied to the simulation.
-                    .withHardLimit(
+                    .withHardLimits(
                             Degrees.of(Robot.consts.intake().kPivot().MIN_ANGLE_DEGREES() - 10),
                             Degrees.of(Robot.consts.intake().kPivot().MAX_ANGLE_DEGREES() + 10))
                     // Starting position is where your arm starts
-                    .withStartingPosition(
+                    .withSimStartingPosition(
                             Degrees.of(Robot.consts.intake().kPivot().STOWED_ANGLE_DEGREES()))
                     // Telemetry name and verbosity for the arm.
                     .withTelemetry("PivotArm", TelemetryVerbosity.HIGH);
@@ -96,10 +85,10 @@ public class IntakePivot extends SubsystemBase {
         return pivot.set(dutycycle);
     }
 
-    /** Run sysId on the {@link Arm} */
-    public Command sysId() {
-        return pivot.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
-    }
+    // /** Run sysId on the {@link Arm} */
+    // public Command sysId() {
+    //     return pivot.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
+    // }
 
     public Angle getAngle() {
         return pivot.getAngle();

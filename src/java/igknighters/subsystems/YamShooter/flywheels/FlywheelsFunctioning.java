@@ -2,7 +2,6 @@ package igknighters.subsystems.YamShooter.flywheels;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.RPM;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -53,8 +52,6 @@ public class FlywheelsFunctioning extends Flywheels {
                     .withDiameter(Inches.of(4))
                     // Mass of the flywheel.
                     .withMass(Pounds.of(3))
-                    // Maximum speed of the shooter.
-                    .withUpperSoftLimit(RPM.of(5800))
                     // Telemetry name and verbosity for the arm.
                     .withTelemetry("Flywheel Mechanism", TelemetryVerbosity.HIGH);
 

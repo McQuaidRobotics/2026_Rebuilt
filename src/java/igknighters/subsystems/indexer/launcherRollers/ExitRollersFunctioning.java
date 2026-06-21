@@ -2,7 +2,6 @@ package igknighters.subsystems.indexer.launcherRollers;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.RPM;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -37,7 +36,6 @@ public class ExitRollersFunctioning extends ExitRollersBase {
                         // Mass of the flywheel.
                         .withMass(Pounds.of(1))
                         // Maximum speed of the shooter.
-                        .withUpperSoftLimit(RPM.of(5000))
                         // Telemetry name and verbosity for the arm.
                         .withTelemetry("EXIT ROLLERS", TelemetryVerbosity.HIGH);
         shooter = new FlyWheel(shooterConfig);

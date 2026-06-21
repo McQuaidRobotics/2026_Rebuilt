@@ -6,7 +6,6 @@ package igknighters.subsystems.YamsIntake;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.RPM;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -39,7 +38,6 @@ public class Rollers extends SubsystemBase {
                     // Mass of the flywheel.
                     .withMass(Pounds.of(.15))
                     // Maximum speed of the shooter.
-                    .withUpperSoftLimit(RPM.of(5000))
                     // Telemetry name and verbosity for the arm.
                     .withTelemetry("IntakeRollers", TelemetryVerbosity.HIGH);
 
