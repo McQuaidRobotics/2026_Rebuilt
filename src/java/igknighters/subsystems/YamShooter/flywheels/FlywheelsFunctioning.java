@@ -1,7 +1,11 @@
 package igknighters.subsystems.YamShooter.flywheels;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -16,7 +20,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class FlywheelsFunctioning extends Flywheels {
+public class FlywheelsFunctioning extends Flywheels implements FlywheelIO{
 
     private TalonFX followerMotor =
             new TalonFX(
@@ -67,6 +71,17 @@ public class FlywheelsFunctioning extends Flywheels {
     public void simulationPeriodic() {
         // This method will be called once per scheduler run during simulation
         shooter.simIterate();
+    }
+
+    @Override
+    public void updateInputs(ShooterIOInputs inputs) {
+        inputs.velocityRotationsPerSec = talonSMC.getMechanismVelocity().in(RotationsPerSecond);
+    inputs.appliedVolts = talonSMC.getVoltage().in(Volts);
+    inputs.supplyCurrentAmps = talonSMC.getSupplyCurrent().map(c -> c.in(Amps)).orElse(0.0);
+    inputs.statorCurrentAmps = talonSMC.getStatorCurrent().in(Amps);
+    inputs.temperatureCelsius = talonSMC.getTemperature().in(Celsius);
+    inputs.targetVelocityRotationsPerSec = talonSMC.getMechanismSetpointVelocity()
+        .map(v -> v.in(RotationsPerSecond)).orElse(0.0);
     }
 
     /**

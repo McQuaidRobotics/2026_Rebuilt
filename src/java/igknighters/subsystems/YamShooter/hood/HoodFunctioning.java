@@ -1,7 +1,11 @@
 package igknighters.subsystems.YamShooter.hood;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -18,7 +22,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 import yams.motorcontrollers.simulation.Sensor;
 
-public class HoodFunctioning extends Hood {
+public class HoodFunctioning extends Hood implements HoodIO{
     private DigitalInput dio =
             new DigitalInput(Robot.consts.shooter().kHood().REVERSE_LIMIT_SWITCH_ID());
 
@@ -75,6 +79,18 @@ public class HoodFunctioning extends Hood {
         // input is something like 30
         // all ready in the hood mechanism frame so just pass
         return hood.run(angle);
+    }
+
+    @Override
+    public void updateInputs(ArmIOInputs inputs) {
+        inputs.positionRotations = hoodController.getMechanismPosition().in(Rotations);
+        inputs.velocityRotationsPerSec = hoodController.getMechanismVelocity().in(RotationsPerSecond);
+        inputs.appliedVolts = hoodController.getVoltage().in(Volts);
+        inputs.supplyCurrentAmps = hoodController.getSupplyCurrent().map(c -> c.in(Amps)).orElse(0.0);
+        inputs.statorCurrentAmps = hoodController.getStatorCurrent().in(Amps);
+        inputs.temperatureCelsius = hoodController.getTemperature().in(Celsius);
+        inputs.targetPositionRotations = hoodController.getMechanismPositionSetpoint()
+                .map(a -> a.in(Rotations)).orElse(0.0);
     }
 
     /**

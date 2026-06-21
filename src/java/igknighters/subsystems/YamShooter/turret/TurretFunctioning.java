@@ -1,6 +1,11 @@
 package igknighters.subsystems.YamShooter.turret;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -15,7 +20,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class TurretFunctioning extends Turret {
+public class TurretFunctioning extends Turret implements TurretIO{
     private final CANcoder turretCancoder =
             new CANcoder(
                     Robot.consts.shooter().kTurret().CANCODER_ID(),
@@ -40,7 +45,7 @@ public class TurretFunctioning extends Turret {
                     .withTelemetry("Turret Motor", TelemetryVerbosity.HIGH); // Telemetry;
 
     private final Pivot turret = new Pivot(pivotConfig);
-
+   
     @Override
     public Angle wrapAngle(Angle angle) {
         double ogDegrees = angle.in(Degrees);
@@ -53,6 +58,18 @@ public class TurretFunctioning extends Turret {
                 MIN_ANGLE_DEGREES + (((ogDegrees - MIN_ANGLE_DEGREES) % width + width) % width);
 
         return Degrees.of(newDegs);
+    }
+    // LOG ALL OF THE MOTORS OUTPUTS FOR REPLAY (MASON/KYLE IF YOU ARE READING THIS FOR A EXAMPLE DONT DO THIS YET)
+    @Override
+    public void updateInputs(ArmIOInputs inputs) {
+        inputs.positionRotations = turretController.getMechanismPosition().in(Rotations);
+    inputs.velocityRotationsPerSec = turretController.getMechanismVelocity().in(RotationsPerSecond);
+    inputs.appliedVolts = turretController.getVoltage().in(Volts);
+    inputs.supplyCurrentAmps = turretController.getSupplyCurrent().map(c -> c.in(Amps)).orElse(0.0);
+    inputs.statorCurrentAmps = turretController.getStatorCurrent().in(Amps);
+    inputs.temperatureCelsius = turretController.getTemperature().in(Celsius);
+    inputs.targetPositionRotations = turretController.getMechanismPositionSetpoint()
+        .map(a -> a.in(Rotations)).orElse(0.0);
     }
 
     /**
