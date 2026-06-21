@@ -37,7 +37,6 @@ public class ExitRollersFunctioning extends ExitRollersBase {
                         // Mass of the flywheel.
                         .withMass(Pounds.of(1))
                         // Maximum speed of the shooter.
-                        .withUpperSoftLimit(RPM.of(5000))
                         // Telemetry name and verbosity for the arm.
                         .withTelemetry("EXIT ROLLERS", TelemetryVerbosity.HIGH);
         shooter = new FlyWheel(shooterConfig);

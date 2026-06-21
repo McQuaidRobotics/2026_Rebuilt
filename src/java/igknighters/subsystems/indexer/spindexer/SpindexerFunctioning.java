@@ -35,7 +35,6 @@ public class SpindexerFunctioning extends SpindexerBase {
                     // Mass of the flywheel.
                     .withMass(Pounds.of(1))
                     // Maximum speed of the shooter.
-                    .withUpperSoftLimit(RPM.of(5000))
                     // Telemetry name and verbosity for the arm.
                     .withTelemetry("Spindexer Mechanism", TelemetryVerbosity.HIGH);
 

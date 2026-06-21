@@ -53,8 +53,6 @@ public class FlywheelsFunctioning extends Flywheels {
                     .withDiameter(Inches.of(4))
                     // Mass of the flywheel.
                     .withMass(Pounds.of(3))
-                    // Maximum speed of the shooter.
-                    .withUpperSoftLimit(RPM.of(5800))
                     // Telemetry name and verbosity for the arm.
                     .withTelemetry("Flywheel Mechanism", TelemetryVerbosity.HIGH);
 

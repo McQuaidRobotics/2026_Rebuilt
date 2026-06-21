@@ -39,7 +39,6 @@ public class Rollers extends SubsystemBase {
                     // Mass of the flywheel.
                     .withMass(Pounds.of(.15))
                     // Maximum speed of the shooter.
-                    .withUpperSoftLimit(RPM.of(5000))
                     // Telemetry name and verbosity for the arm.
                     .withTelemetry("IntakeRollers", TelemetryVerbosity.HIGH);
 

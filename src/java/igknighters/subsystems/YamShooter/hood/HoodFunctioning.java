@@ -45,16 +45,12 @@ public class HoodFunctioning extends Hood {
     private PivotConfig pivotConfig =
             new PivotConfig(hoodController)
                     // Soft limit is applied to the SmartMotorControllers PID
-                    .withMOI(Meters.of(0.25), Pounds.of(.5))
-                    .withSoftLimits(
-                            Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()),
-                            Degrees.of(Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES()))
                     // Hard limit is applied to the simulation.
-                    .withHardLimit(
+                    .withHardLimits(
                             Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES() - 5),
                             Degrees.of(Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES() + 5))
                     // Starting position is where your arm starts
-                    .withStartingPosition(
+                    .withSimStartingPosition(
                             Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES() + 5))
                     // Telemetry name and verbosity for the arm.
                     .withTelemetry("Shooter Hood", TelemetryVerbosity.HIGH);
@@ -132,10 +128,10 @@ public class HoodFunctioning extends Hood {
         return hood.set(dutycycle);
     }
 
-    /** Run sysId on the {@link Arm} */
-    public Command sysId() {
-        return hood.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
-    }
+    // /** Run sysId on the {@link Arm} */
+    // public Command sysId() {
+    //     return hood.sysid(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
+    // }
 
     public Angle getAngle() {
         // hood in rots

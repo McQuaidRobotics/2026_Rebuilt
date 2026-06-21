@@ -37,14 +37,12 @@ public class TurretFunctioning extends Turret {
 
     private final PivotConfig pivotConfig =
             new PivotConfig(turretController)
-                    .withStartingPosition(Degrees.of(0.0))
-                    .withSoftLimits(
-                            Degrees.of(Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES()),
-                            Degrees.of(Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES()))
-                    .withHardLimit(
+                    .withSimStartingPosition(Degrees.of(0.0))
+                    
+                    .withHardLimits(
                             Degrees.of(Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES() - 10),
                             Degrees.of(Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES() + 10))
-                    .withMOI(.15)
+                    
                     .withTelemetry("Turret Motor", TelemetryVerbosity.HIGH); // Telemetry;
 
     private final Pivot turret = new Pivot(pivotConfig);
@@ -103,10 +101,10 @@ public class TurretFunctioning extends Turret {
         return turret.set(dutycycle);
     }
 
-    /** Run sysId on the {@link Arm} */
-    public Command sysId() {
-        return turret.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
-    }
+    // /** Run sysId on the {@link Arm} */
+    // public Command sysId() {
+    //     return turret.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
+    // }
 
     public Angle getAngle() {
         return turret.getAngle();
