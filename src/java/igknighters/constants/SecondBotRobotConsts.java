@@ -106,6 +106,9 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public SmartMotorControllerConfig getConfig(CANcoder caNcoder, Subsystem subsystem) {
+            if (caNcoder == null) {
+                throw new IllegalArgumentException("CANcoder cannot be null for Intake Pivot");
+            }
             return new SmartMotorControllerConfig(subsystem)
                     .withControlMode(ControlMode.CLOSED_LOOP)
 
@@ -534,7 +537,7 @@ public class SecondBotRobotConsts extends RobotConsts {
                     .withSimFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
                     .withSoftLimits(Degrees.of(52.855225), Degrees.of(18.6))
                     // Telemetry name and verbosity level
-                    .withTelemetry("Intake Pivot Motor", TelemetryVerbosity.HIGH)
+                    .withTelemetry("Hood Motor", TelemetryVerbosity.HIGH)
                     // Gearing from the motor rotor to final shaft.
                     // In this example GearBox.fromReductionStages(3,4) is the same as
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to

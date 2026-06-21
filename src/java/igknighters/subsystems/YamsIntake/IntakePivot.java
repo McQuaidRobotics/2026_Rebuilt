@@ -26,7 +26,7 @@ public class IntakePivot extends SubsystemBase {
     private TalonFX pivotMotor =
             new TalonFX(Robot.consts.intake().kPivot().MOTOR_ID(), Robot.consts.intake().kCANBUS());
 
-    // Create our SmartMotorController from our Spark and config with the Kraken.
+    // Create our SmartMotorController from our Talon and config with the Kraken.
     private SmartMotorController talonSmartMotorController =
             new TalonFXWrapper(pivotMotor, DCMotor.getKrakenX60(1), smcConfig);
 
@@ -37,8 +37,8 @@ public class IntakePivot extends SubsystemBase {
                             Degrees.of(Robot.consts.intake().kPivot().MIN_ANGLE_DEGREES() - 10),
                             Degrees.of(Robot.consts.intake().kPivot().MAX_ANGLE_DEGREES() + 10))
                     // Starting position is where your arm starts
-                    .withSimStartingPosition(
-                            Degrees.of(Robot.consts.intake().kPivot().STOWED_ANGLE_DEGREES()))
+                    // .withSimStartingPosition(
+                    //         Degrees.of(Robot.consts.intake().kPivot().STOWED_ANGLE_DEGREES()))
                     // Telemetry name and verbosity for the arm.
                     .withTelemetry("PivotArm", TelemetryVerbosity.HIGH);
 
