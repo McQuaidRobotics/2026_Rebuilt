@@ -1,9 +1,6 @@
 package igknighters.subsystems.YamShooter.turret;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -12,7 +9,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
 import yams.mechanisms.config.PivotConfig;
-import yams.mechanisms.positional.Arm;
 import yams.mechanisms.positional.Pivot;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
@@ -38,11 +34,9 @@ public class TurretFunctioning extends Turret {
     private final PivotConfig pivotConfig =
             new PivotConfig(turretController)
                     .withSimStartingPosition(Degrees.of(0.0))
-                    
                     .withHardLimits(
                             Degrees.of(Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES() - 10),
                             Degrees.of(Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES() + 10))
-                    
                     .withTelemetry("Turret Motor", TelemetryVerbosity.HIGH); // Telemetry;
 
     private final Pivot turret = new Pivot(pivotConfig);

@@ -1,12 +1,7 @@
 package igknighters.subsystems.YamShooter.hood;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -16,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
 import yams.mechanisms.config.PivotConfig;
 import yams.mechanisms.config.SensorConfig;
-import yams.mechanisms.positional.Arm;
 import yams.mechanisms.positional.Pivot;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;

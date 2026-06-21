@@ -1,7 +1,6 @@
 package igknighters.constants;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
@@ -14,9 +13,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import igknighters.Robot;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
@@ -26,8 +23,8 @@ import igknighters.util.LerpTable;
 import igknighters.util.LerpTable.LerpTableEntry;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
-import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorController.ClosedLoopControllerSlot;
+import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
@@ -114,11 +111,15 @@ public class GeminiRobotConsts extends RobotConsts {
                     .withControlMode(ControlMode.CLOSED_LOOP)
 
                     // Feedback Constants (PID Constants)
-                    .withClosedLoopController(
-                                    45.0, 0.0, 0.0, ClosedLoopControllerSlot.SLOT_0)
+                    .withClosedLoopController(45.0, 0.0, 0.0, ClosedLoopControllerSlot.SLOT_0)
                     .withSimClosedLoopController(
-                            .2, 0.05, 0.0, ClosedLoopControllerSlot.SLOT_0) // these values are just for simulation and should
-                    .withTrapezoidalProfile(RotationsPerSecond.of(20), RotationsPerSecondPerSecond.of(40))
+                            .2,
+                            0.05,
+                            0.0,
+                            ClosedLoopControllerSlot
+                                    .SLOT_0) // these values are just for simulation and should
+                    .withTrapezoidalProfile(
+                            RotationsPerSecond.of(20), RotationsPerSecondPerSecond.of(40))
                     // Feedforward Constants
                     .withFeedforward(new ArmFeedforward(0.0, 0, 0.0, 0.0))
                     .withSimFeedforward(new ArmFeedforward(0.0, 0, 0.0, 0.0))
@@ -129,7 +130,8 @@ public class GeminiRobotConsts extends RobotConsts {
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
                     // your motor.
                     .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
-                    .withSoftLimits(Degrees.of(MIN_ANGLE_DEGREES()), Degrees.of(MAX_ANGLE_DEGREES()))
+                    .withSoftLimits(
+                            Degrees.of(MIN_ANGLE_DEGREES()), Degrees.of(MAX_ANGLE_DEGREES()))
                     .withMotorInverted(true)
                     .withIdleMode(MotorMode.BRAKE)
                     .withExternalEncoder(caNcoder)
@@ -404,14 +406,11 @@ public class GeminiRobotConsts extends RobotConsts {
             return new SmartMotorControllerConfig(subsystem)
                     .withControlMode(ControlMode.CLOSED_LOOP)
                     // Feedback Constants (PID Constants)
-                    .withClosedLoopController(
-                            
-                                    0.3, 0.1, 0.0, ClosedLoopControllerSlot.SLOT_0)
-                    .withTrapezoidalProfile(RPM.of(5800), RotationsPerSecondPerSecond.of(5800.0/60.0 * 1.5))
+                    .withClosedLoopController(0.3, 0.1, 0.0, ClosedLoopControllerSlot.SLOT_0)
+                    .withTrapezoidalProfile(
+                            RPM.of(5800), RotationsPerSecondPerSecond.of(5800.0 / 60.0 * 1.5))
                     .withFollowers(Pair.of(follower, true))
-                    .withSimClosedLoopController(
-                            
-                                    0.3, 0.1, 0.0, ClosedLoopControllerSlot.SLOT_0)
+                    .withSimClosedLoopController(0.3, 0.1, 0.0, ClosedLoopControllerSlot.SLOT_0)
                     // Feedforward Constants
                     .withFeedforward(new SimpleMotorFeedforward(0.17, 0.1, 0.02))
                     .withSimFeedforward(new SimpleMotorFeedforward(0.17, 0.1, 0.02))
@@ -457,13 +456,12 @@ public class GeminiRobotConsts extends RobotConsts {
                     .withControlMode(ControlMode.CLOSED_LOOP)
 
                     // Feedback Constants (PID Constants)
-                    .withClosedLoopController(
-                            75.0, 0.15, 0.0, ClosedLoopControllerSlot.SLOT_0)       
-                    .withSimClosedLoopController(
-                            
-                                    4, 0.05, 0.0, ClosedLoopControllerSlot.SLOT_0)
-                        .withTrapezoidalProfile(RPM.of(200), RotationsPerSecondPerSecond.of(300.0 / 60.0))
-                    .withSoftLimits(Degrees.of(MIN_ANGLE_DEGREES()), Degrees.of(MAX_ANGLE_DEGREES()))
+                    .withClosedLoopController(75.0, 0.15, 0.0, ClosedLoopControllerSlot.SLOT_0)
+                    .withSimClosedLoopController(4, 0.05, 0.0, ClosedLoopControllerSlot.SLOT_0)
+                    .withTrapezoidalProfile(
+                            RPM.of(200), RotationsPerSecondPerSecond.of(300.0 / 60.0))
+                    .withSoftLimits(
+                            Degrees.of(MIN_ANGLE_DEGREES()), Degrees.of(MAX_ANGLE_DEGREES()))
                     // Feedforward Constants
                     .withFeedforward(new ArmFeedforward(0.0, 0, 0.0, 0.0))
                     .withSimFeedforward(new ArmFeedforward(0.0, 0, 0.0, 0.0))
@@ -529,18 +527,15 @@ public class GeminiRobotConsts extends RobotConsts {
                     .withControlMode(ControlMode.CLOSED_LOOP)
 
                     // Feedback Constants (PID Constants)
-                    .withClosedLoopController(
-                           
-                                    4.0, 0.0, 0.0, ClosedLoopControllerSlot.SLOT_0)
-                    .withSimClosedLoopController(
-                            
-                                    6, 0.05, 0.0)
+                    .withClosedLoopController(4.0, 0.0, 0.0, ClosedLoopControllerSlot.SLOT_0)
+                    .withSimClosedLoopController(6, 0.05, 0.0)
                     // Feedforward Constants
                     .withFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
                     .withSimFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
                     // Telemetry name and verbosity level
                     .withTelemetry("HOOD Motor", TelemetryVerbosity.HIGH)
-                    .withSoftLimits(Degrees.of(MIN_ANGLE_DEGREES()), Degrees.of(MAX_ANGLE_DEGREES()))
+                    .withSoftLimits(
+                            Degrees.of(MIN_ANGLE_DEGREES()), Degrees.of(MAX_ANGLE_DEGREES()))
                     // Gearing from the motor rotor to final shaft.
                     // In this example GearBox.fromReductionStages(3,4) is the same as
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
@@ -623,10 +618,8 @@ public class GeminiRobotConsts extends RobotConsts {
             return new SmartMotorControllerConfig(subsystem)
                     .withControlMode(ControlMode.CLOSED_LOOP)
                     // Feedback Constants (PID Constants)
-                    .withClosedLoopController(
-                            50, 0, 0, ClosedLoopControllerSlot.SLOT_0)
-                    .withSimClosedLoopController(
-                            50, 0, 0, ClosedLoopControllerSlot.SLOT_0)
+                    .withClosedLoopController(50, 0, 0, ClosedLoopControllerSlot.SLOT_0)
+                    .withSimClosedLoopController(50, 0, 0, ClosedLoopControllerSlot.SLOT_0)
                     // Feedforward Constants
                     .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
                     .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
@@ -751,10 +744,8 @@ public class GeminiRobotConsts extends RobotConsts {
             return new SmartMotorControllerConfig(subsystem)
                     .withControlMode(ControlMode.CLOSED_LOOP)
                     // Feedback Constants (PID Constants)
-                    .withClosedLoopController(
-                            50, 0, 0, ClosedLoopControllerSlot.SLOT_0)
-                    .withSimClosedLoopController(
-                            50, 0, 0, ClosedLoopControllerSlot.SLOT_0)
+                    .withClosedLoopController(50, 0, 0, ClosedLoopControllerSlot.SLOT_0)
+                    .withSimClosedLoopController(50, 0, 0, ClosedLoopControllerSlot.SLOT_0)
                     // Feedforward Constants
                     .withFeedforward(new SimpleMotorFeedforward(0, 0, 0))
                     .withSimFeedforward(new SimpleMotorFeedforward(0, 0, 0))
