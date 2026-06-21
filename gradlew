@@ -242,6 +242,25 @@ fi
 # an unmatched quote.
 #
 
+# ======================================================================
+# CUSTOM MOTOR ID CHECK
+# ======================================================================
+for arg in "$@"; do
+    if [ "$arg" = "deploy" ]; then
+        echo ""
+        echo "======================================================="
+        echo "HENRY I STG IF YOU DEPLOY TS ON THE ROBOT WITHOUT ENSURING THE IDS ARE CORRECT I WILL SLIME YOU OUT"
+        echo "REMEMBER WE CHANGED ALL THE IDS PLEASE FOR THE LOVE OF GOD MAKE SURE THAT YOU CHECK ALL THE CONSTANTS"
+        echo "======================================================="
+        echo ""
+        printf "Press [Enter] to continue deploying, or press Ctrl+C to cancel..."
+        read -r dummy_variable
+        echo ""
+        break
+    fi
+done
+# ======================================================================
+
 eval "set -- $(
         printf '%s\n' "$DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS" |
         xargs -n1 |
