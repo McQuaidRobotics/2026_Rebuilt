@@ -12,7 +12,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import yams.mechanisms.config.PivotConfig;
@@ -38,28 +37,28 @@ public class HoodIOTalonFX implements HoodIO {
 
     private final SmartMotorController hoodController;
     private PivotConfig pivotConfig;
-            
+
     private Pivot hood;
 
     public HoodIOTalonFX(SubsystemBase subsystem) {
         hoodConfig = Robot.consts.shooter().kHood().getConfig(subsystem);
         hoodController = new TalonFXWrapper(hoodMotor, DCMotor.getKrakenX44(1), hoodConfig);
-        pivotConfig = new PivotConfig(hoodController)
-                    // Soft limit is applied to the SmartMotorControllers PID
-                    // Hard limit is applied to the simulation.
-                    .withHardLimits(
-                            Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES() - 5),
-                            Degrees.of(Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES() + 5))
-                    // Starting position is where your arm starts
-                    .withSimStartingPosition(
-                            Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES() + 5))
-                    // Telemetry name and verbosity for the arm.
-                    .withTelemetry("Shooter Hood", TelemetryVerbosity.HIGH);
+        pivotConfig =
+                new PivotConfig(hoodController)
+                        // Soft limit is applied to the SmartMotorControllers PID
+                        // Hard limit is applied to the simulation.
+                        .withHardLimits(
+                                Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES() - 5),
+                                Degrees.of(Robot.consts.shooter().kHood().MAX_ANGLE_DEGREES() + 5))
+                        // Starting position is where your arm starts
+                        .withSimStartingPosition(
+                                Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES() + 5))
+                        // Telemetry name and verbosity for the arm.
+                        .withTelemetry("Shooter Hood", TelemetryVerbosity.HIGH);
 
         hood = new Pivot(pivotConfig);
-
-
     }
+
     // EVERYTHING WILL BE DONE IN ROTATIONS
     // THE SMC IS SET UP TO THE PID DRIVING TO ROTATIONS OF HOOD OUTPUT EG MECHANSIM FRAME
     // ALL THESE LIMITS SHOULD BE STRAIGHT CONSTANTS FOR THE HOOD
@@ -185,5 +184,4 @@ public class HoodIOTalonFX implements HoodIO {
     public Pivot getHood() {
         return hood;
     }
-
 }

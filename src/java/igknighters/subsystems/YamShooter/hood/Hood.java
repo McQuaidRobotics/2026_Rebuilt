@@ -2,11 +2,10 @@ package igknighters.subsystems.YamShooter.hood;
 
 import static edu.wpi.first.units.Units.Rotations;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 
 public class Hood extends SubsystemBase {
 
@@ -24,23 +23,19 @@ public class Hood extends SubsystemBase {
         Logger.processInputs("SHOOTER_HOOD", inputs);
     }
 
-        /**
-     * Command to move the arm to a target angle.
-     * Uses run() for continuous control.
-     */
+    /** Command to move the arm to a target angle. Uses run() for continuous control. */
     public Command goToAngleDontStop(Angle angle) {
-        return run(() -> io.setTargetAngle(angle))
-            .withName("Arm.setAngle(" + angle + ")");
+        return run(() -> io.setTargetAngle(angle)).withName("Arm.setAngle(" + angle + ")");
     }
 
     /**
-     * Command to move the arm to a target angle and finish when reached.
-     * Uses runTo() pattern - be careful with default commands!
+     * Command to move the arm to a target angle and finish when reached. Uses runTo() pattern - be
+     * careful with default commands!
      */
     public Command goToAngleThenStop(Angle angle) {
         return run(() -> io.setTargetAngle(angle))
-            .until(() -> isNear(angle, Rotations.of(0.01)))
-            .withName("Arm.goToAngle(" + angle + ")");
+                .until(() -> isNear(angle, Rotations.of(0.01)))
+                .withName("Arm.goToAngle(" + angle + ")");
     }
 
     public boolean isNear(Angle target, Angle tolerance) {
@@ -60,6 +55,7 @@ public class Hood extends SubsystemBase {
     public void setVoltage(double voltage) {
         io.setVoltage(voltage);
     }
+
     public boolean isLimitSwitchTripped() {
         return io.isLimitSwitchTripped();
     }

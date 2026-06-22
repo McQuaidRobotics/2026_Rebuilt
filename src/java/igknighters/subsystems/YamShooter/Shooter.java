@@ -35,7 +35,7 @@ public class Shooter {
     }
 
     public Shooter() {
-        if(Robot.isReplay()) {
+        if (Robot.isReplay()) {
             hood = new Hood(new HoodIOReplay());
         } else {
             hood = new Hood(new HoodIOTalonFX(hood));

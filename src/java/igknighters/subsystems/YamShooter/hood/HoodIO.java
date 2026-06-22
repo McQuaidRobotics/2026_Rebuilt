@@ -1,8 +1,7 @@
 package igknighters.subsystems.YamShooter.hood;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.units.measure.Angle;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface HoodIO {
     /**
@@ -26,7 +25,6 @@ public interface HoodIO {
 
     /** Set the target angle for the arm. */
     default void setTargetAngle(Angle angle) {}
-
 
     default void zeroAt(Angle angle) {}
 
