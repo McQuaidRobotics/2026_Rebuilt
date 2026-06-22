@@ -28,6 +28,14 @@ public class Hood extends SubsystemBase {
         Logger.processInputs("SHOOTER_HOOD", inputs);
     }
 
+    @Override
+    public void simulationPeriodic() {
+        io.simIterate();
+        io.zeroHoodCheck();
+        io.updateInputs(inputs);
+        Logger.processInputs("SHOOTER_HOOD", inputs);
+    }
+
     /** Command to move the arm to a target angle. Uses run() for continuous control. */
     public Command goToAngleDontStop(Angle angle) {
         return run(() -> io.setTargetAngle(angle)).withName("Arm.setAngle(" + angle + ")");

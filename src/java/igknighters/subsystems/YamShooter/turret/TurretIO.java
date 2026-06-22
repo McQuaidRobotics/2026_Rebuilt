@@ -1,5 +1,8 @@
 package igknighters.subsystems.YamShooter.turret;
 
+import static edu.wpi.first.units.Units.Degrees;
+
+import edu.wpi.first.units.measure.Angle;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface TurretIO {
@@ -22,8 +25,17 @@ public interface TurretIO {
     default void updateInputs(TurretIOInputs inputs) {}
 
     /** Set the target angle for the arm. */
-    default void setTargetAngle(double rotations) {}
+    default void setAngleSetpoint(Angle angle) {}
 
-    /** Stop the arm motor. */
-    default void stop() {}
+    default Angle getAngle() {
+        return Degrees.of(0.0);
+    }
+
+    default Angle wrapAngle(Angle angle) {
+        return angle;
+    }
+
+    default void updateTelemetry() {}
+
+    default void simIterate() {}
 }

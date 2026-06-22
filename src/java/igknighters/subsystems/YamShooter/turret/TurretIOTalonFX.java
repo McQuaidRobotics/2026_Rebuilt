@@ -11,9 +11,8 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
-import org.littletonrobotics.junction.Logger;
 import yams.mechanisms.config.PivotConfig;
 import yams.mechanisms.positional.Pivot;
 import yams.motorcontrollers.SmartMotorController;
@@ -21,32 +20,39 @@ import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class TurretFunctioning extends Turret implements TurretIO {
-    private TurretIOInputsAutoLogged inputs = new TurretIOInputsAutoLogged();
+public class TurretIOTalonFX implements TurretIO {
     private final CANcoder turretCancoder =
             new CANcoder(
                     Robot.consts.shooter().kTurret().CANCODER_ID(),
                     Robot.consts.shooter().kCANBUS());
 
-    private final SmartMotorControllerConfig turretConfig =
-            Robot.consts.shooter().kTurret().getConfig(this, turretCancoder);
+    private final SmartMotorControllerConfig turretConfig;
 
     private final TalonFX turretMotor =
             new TalonFX(
                     Robot.consts.shooter().kTurret().MOTOR_ID(), Robot.consts.shooter().kCANBUS());
 
-    private final SmartMotorController turretController =
-            new TalonFXWrapper(turretMotor, DCMotor.getKrakenX60(1), turretConfig);
+    private final SmartMotorController turretController;
 
-    private final PivotConfig pivotConfig =
-            new PivotConfig(turretController)
-                    .withSimStartingPosition(Degrees.of(0.0))
-                    .withHardLimits(
-                            Degrees.of(Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES() - 10),
-                            Degrees.of(Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES() + 10))
-                    .withTelemetry("Turret Motor", TelemetryVerbosity.HIGH); // Telemetry;
+    private final PivotConfig pivotConfig;
 
-    private final Pivot turret = new Pivot(pivotConfig);
+    private final Pivot turret;
+
+    public TurretIOTalonFX(SubsystemBase subsystem) {
+
+        turretConfig = Robot.consts.shooter().kTurret().getConfig(subsystem, turretCancoder);
+        turretController = new TalonFXWrapper(turretMotor, DCMotor.getKrakenX60(1), turretConfig);
+        pivotConfig =
+                new PivotConfig(turretController)
+                        .withSimStartingPosition(Degrees.of(0.0))
+                        .withHardLimits(
+                                Degrees.of(
+                                        Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES() - 10),
+                                Degrees.of(
+                                        Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES() + 10))
+                        .withTelemetry("Turret Motor", TelemetryVerbosity.HIGH); // Telemetry;
+        turret = new Pivot(pivotConfig);
+    }
 
     @Override
     public Angle wrapAngle(Angle angle) {
@@ -82,92 +88,31 @@ public class TurretFunctioning extends Turret implements TurretIO {
     }
 
     /**
-     * Set the angle of the arm, does not stop when the arm reaches the setpoint.
-     *
-     * @param angle Angle to go to.
-     * @return A command.
-     */
-    public Command targetAngle(Angle angle) {
-        return turret.run(angle);
-    }
-
-    /**
-     * Set the angle of the arm, ends the command but does not stop the arm when the arm reaches the
-     * setpoint.
-     *
-     * @param angle Angle to go to.
-     * @param tolerance Angle tolerance for completion.
-     * @return A Command
-     */
-    public Command setAngleAndStop(Angle angle, Angle tolerance) {
-        return turret.runTo(angle, tolerance);
-    }
-
-    /**
      * Set arm closed loop controller to go to the specified mechanism position.
      *
      * @param angle Angle to go to.
      */
+    @Override
     public void setAngleSetpoint(Angle angle) {
         turret.setMechanismPositionSetpoint(angle);
     }
 
     /**
-     * Move the arm up and down.
-     *
-     * @param dutycycle [-1, 1] speed to set the arm too.
+     * @return The current angle of the turret.
      */
-    public Command set(double dutycycle) {
-        return turret.set(dutycycle);
-    }
-
-    // /** Run sysId on the {@link Arm} */
-    // public Command sysId() {
-    //     return turret.sysId(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
-    // }
-
+    @Override
     public Angle getAngle() {
         return turret.getAngle();
     }
 
-    public boolean isAt(Angle angle, Angle tolerance) {
-        return turret.isNear(angle, tolerance).getAsBoolean();
-    }
-
-    /**
-     * Example command factory method.
-     *
-     * @return a command
-     */
-    public Command exampleMethodCommand() {
-        // Inline construction of command goes here.
-        // Subsystem::RunOnce implicitly requires `this` subsystem.
-        return runOnce(
-                () -> {
-                    /* one-time action goes here */
-                });
-    }
-
-    /**
-     * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-     *
-     * @return value of some boolean subsystem state, such as a digital sensor.
-     */
-    public boolean exampleCondition() {
-        // Query some boolean state, such as a digital sensor.
-        return false;
-    }
-
     @Override
-    public void periodic() {
+    public void updateTelemetry() {
         // This method will be called once per scheduler run
         turret.updateTelemetry();
-        updateInputs(inputs);
-        Logger.processInputs("TURRET INPUTS", inputs);
     }
 
     @Override
-    public void simulationPeriodic() {
+    public void simIterate() {
         // This method will be called once per scheduler run during simulation
         turret.simIterate();
     }

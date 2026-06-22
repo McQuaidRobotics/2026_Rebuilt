@@ -10,11 +10,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import igknighters.Robot;
 import igknighters.constants.ShootInformation;
 import igknighters.subsystems.YamShooter.flywheels.Flywheels;
-import igknighters.subsystems.YamShooter.flywheels.FlywheelsFunctioning;
 import igknighters.subsystems.YamShooter.hood.Hood;
 import igknighters.subsystems.YamShooter.solvers.Math.LerpSolveShot;
 import igknighters.subsystems.YamShooter.turret.Turret;
-import igknighters.subsystems.YamShooter.turret.TurretFunctioning;
 
 public class Shooter {
     public Hood hood;
@@ -35,8 +33,8 @@ public class Shooter {
     public Shooter() {
 
         hood = new Hood();
-        flywheels = new FlywheelsFunctioning();
-        turret = new TurretFunctioning();
+        flywheels = new Flywheels();
+        turret = new Turret();
     }
 
     public void targetState(ShooterState state) {

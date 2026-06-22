@@ -63,6 +63,7 @@ public class HoodIOTalonFX implements HoodIO {
                         .withField(
                                 "Switch", dio::get,
                                 false) // Add a Field to the sensor named "Beam" whose value is
+                        // default false
                         .withSimulatedValue(
                                 "Switch",
                                 hood.isNear(

@@ -11,7 +11,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
@@ -20,14 +20,19 @@ import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class FlywheelsFunctioning extends Flywheels implements FlywheelIO {
+public class FlywheelsIOTalonFX implements FlywheelIO {
 
     private TalonFX followerMotor =
             new TalonFX(
                     Robot.consts.shooter().kFlywheels().FOLLOWER_MOTOR_ID(),
                     Robot.consts.shooter().kCANBUS());
-    private SmartMotorControllerConfig smcConfig =
-            Robot.consts.shooter().kFlywheels().getConfig(this, followerMotor);
+    private SmartMotorControllerConfig smcConfig;
+
+    private SmartMotorController talonSMC;
+
+    private final FlyWheelConfig shooterConfig;
+
+    private FlyWheel shooter;
 
     private TalonFX leaderMotor =
             new TalonFX(
@@ -43,35 +48,30 @@ public class FlywheelsFunctioning extends Flywheels implements FlywheelIO {
         return config;
     }
 
-    public FlywheelsFunctioning() {
+    public FlywheelsIOTalonFX(SubsystemBase subsystem) {
         followerMotor.getConfigurator().apply(getConfig()); // give folower current limits
-    }
+        smcConfig = Robot.consts.shooter().kFlywheels().getConfig(subsystem, followerMotor);
+        talonSMC = new TalonFXWrapper(leaderMotor, DCMotor.getKrakenX60(1), smcConfig);
+        shooterConfig =
+                new FlyWheelConfig(talonSMC)
+                        // Diameter of the flywheel.
+                        .withDiameter(Inches.of(4))
+                        // Mass of the flywheel.
+                        .withMass(Pounds.of(3))
+                        // Telemetry name and verbosity for the arm.
+                        .withTelemetry("Flywheel Mechanism", TelemetryVerbosity.HIGH);
 
-    private SmartMotorController talonSMC =
-            new TalonFXWrapper(leaderMotor, DCMotor.getKrakenX60(1), smcConfig);
-
-    private final FlyWheelConfig shooterConfig =
-            new FlyWheelConfig(talonSMC)
-                    // Diameter of the flywheel.
-                    .withDiameter(Inches.of(4))
-                    // Mass of the flywheel.
-                    .withMass(Pounds.of(3))
-                    // Telemetry name and verbosity for the arm.
-                    .withTelemetry("Flywheel Mechanism", TelemetryVerbosity.HIGH);
-
-    private FlyWheel shooter = new FlyWheel(shooterConfig);
-
-    @Override
-    public void periodic() {
-        // This method will be called once per scheduler run
-        shooter.updateTelemetry();
-        updateInputs(null);
+        shooter = new FlyWheel(shooterConfig);
     }
 
     @Override
-    public void simulationPeriodic() {
-        // This method will be called once per scheduler run during simulation
+    public void simIterate() {
         shooter.simIterate();
+    }
+
+    @Override
+    public void updateTelemetry() {
+        shooter.updateTelemetry();
     }
 
     @Override
@@ -92,6 +92,7 @@ public class FlywheelsFunctioning extends Flywheels implements FlywheelIO {
      *
      * @return Shooter velocity.
      */
+    @Override
     public AngularVelocity getVelocity() {
         return shooter.getSpeed();
     }
@@ -102,31 +103,12 @@ public class FlywheelsFunctioning extends Flywheels implements FlywheelIO {
     }
 
     /**
-     * Set the shooter velocity.
-     *
-     * @param speed Speed to set.
-     * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
-     */
-    public Command setVelocity(AngularVelocity speed) {
-        return shooter.run(speed);
-    }
-
-    /**
      * Set the shooter velocity setpoint.
      *
      * @param speed Speed to set
      */
+    @Override
     public void setVelocitySetpoint(AngularVelocity speed) {
         shooter.setMechanismVelocitySetpoint(speed);
-    }
-
-    /**
-     * Set the dutycycle of the shooter.
-     *
-     * @param dutyCycle DutyCycle to set.
-     * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
-     */
-    public Command set(double dutyCycle) {
-        return shooter.set(dutyCycle);
     }
 }
