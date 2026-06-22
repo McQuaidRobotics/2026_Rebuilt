@@ -42,7 +42,7 @@ public class HoodIOTalonFX implements HoodIO {
     private Pivot hood;
 
     public HoodIOTalonFX(SubsystemBase subsystem) {
-        hoodConfig = Robot.consts.shooter().kHood().getConfig(subsystem).withSubsystem(subsystem);
+        hoodConfig = Robot.consts.shooter().kHood().getConfig(subsystem);
         hoodController = new TalonFXWrapper(hoodMotor, DCMotor.getKrakenX44(1), hoodConfig);
         pivotConfig =
                 new PivotConfig(hoodController)
@@ -123,7 +123,7 @@ public class HoodIOTalonFX implements HoodIO {
      *
      * @param angle Angle to go to.
      */
-    public void setAngleSetpoint(Angle angle) {
+    public void setTargetAngle(Angle angle) {
 
         // Angle goalAngle =
         //         Rotations.of(

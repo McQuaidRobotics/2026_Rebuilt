@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.HigherOrderCommands;
@@ -151,7 +152,9 @@ public class DriverController {
 
         this.LT.whileTrue(subsystems.intake.targetState(YamIntakeState.DEPLOYED));
         this.RT
-                .whileTrue(HigherOrderCommands.rapidFireStream(subsystems))
+                .whileTrue(
+                        Commands.print("YOU PRESSED RT")
+                                .andThen(HigherOrderCommands.rapidFireStream(subsystems)))
                 .onFalse(HigherOrderCommands.IdleShooter(subsystems));
         this.DPR.whileTrue(IndexerCommands.unBlock(subsystems.indexer));
         this.RB.whileTrue(HigherOrderCommands.forceDispense(subsystems));

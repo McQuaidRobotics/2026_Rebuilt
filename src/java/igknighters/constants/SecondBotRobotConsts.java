@@ -524,13 +524,13 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public SmartMotorControllerConfig getConfig(Subsystem subsystem) {
-            return new SmartMotorControllerConfig()
+            return new SmartMotorControllerConfig(subsystem)
                     .withControlMode(ControlMode.CLOSED_LOOP)
 
                     // Feedback Constants (PID Constants)
                     .withClosedLoopController(4.0, 0.0, 0.0, ClosedLoopControllerSlot.SLOT_0)
-                    .withTrapezoidalProfile(
-                            RotationsPerSecond.of(5), RotationsPerSecondPerSecond.of(10))
+                    // .withTrapezoidalProfile(
+                    //         RotationsPerSecond.of(5), RotationsPerSecondPerSecond.of(10))
                     .withSimClosedLoopController(8.0, 0.05, 0.0, ClosedLoopControllerSlot.SLOT_0)
                     // Feedforward Constants
                     .withFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
