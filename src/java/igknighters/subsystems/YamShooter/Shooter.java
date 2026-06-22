@@ -12,7 +12,7 @@ import igknighters.constants.ShootInformation;
 import igknighters.subsystems.YamShooter.flywheels.Flywheels;
 import igknighters.subsystems.YamShooter.flywheels.FlywheelsFunctioning;
 import igknighters.subsystems.YamShooter.hood.Hood;
-import igknighters.subsystems.YamShooter.hood.HoodFunctioning;
+import igknighters.subsystems.YamShooter.hood.HoodIOTalonFX;
 import igknighters.subsystems.YamShooter.solvers.Math.LerpSolveShot;
 import igknighters.subsystems.YamShooter.turret.Turret;
 import igknighters.subsystems.YamShooter.turret.TurretFunctioning;
@@ -34,7 +34,7 @@ public class Shooter {
     }
 
     public Shooter() {
-        hood = new HoodFunctioning();
+        hood = new Hood(new HoodIOTalonFX(hood));
         flywheels = new FlywheelsFunctioning();
         turret = new TurretFunctioning();
     }
@@ -108,7 +108,7 @@ public class Shooter {
     // IDLE DEFAULT COMMANDS
     public Command idleHoodCommand(Shooter shooter) {
         return shooter.hood
-                .targetAngle(Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()))
+                .goToAngleDontStop(Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()))
                 .withName("IDLE THE HOOD : DEFAULT COMMAND");
     }
 

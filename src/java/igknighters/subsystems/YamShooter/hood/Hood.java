@@ -1,24 +1,74 @@
 package igknighters.subsystems.YamShooter.hood;
 
+import static edu.wpi.first.units.Units.Rotations;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public abstract class Hood extends SubsystemBase {
+public class Hood extends SubsystemBase {
 
-    public abstract Command targetAngle(Angle angle);
+    private final HoodIO io;
+    private final HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
 
-    public abstract Command setAngleAndStop(Angle angle, Angle tolerance);
+    public Hood(HoodIO io) {
+        this.io = io;
+    }
 
-    public abstract void setAngleSetpoint(Angle angle);
+    @Override
+    public void periodic() {
+        io.zeroHoodCheck();
+        io.updateInputs(inputs);
+        Logger.processInputs("SHOOTER_HOOD", inputs);
+    }
 
-    public abstract Angle getAngle();
+        /**
+     * Command to move the arm to a target angle.
+     * Uses run() for continuous control.
+     */
+    public Command goToAngleDontStop(Angle angle) {
+        return run(() -> io.setTargetAngle(angle))
+            .withName("Arm.setAngle(" + angle + ")");
+    }
 
-    public abstract boolean isAt(Angle angle, Angle tolerance);
+    /**
+     * Command to move the arm to a target angle and finish when reached.
+     * Uses runTo() pattern - be careful with default commands!
+     */
+    public Command goToAngleThenStop(Angle angle) {
+        return run(() -> io.setTargetAngle(angle))
+            .until(() -> isNear(angle, Rotations.of(0.01)))
+            .withName("Arm.goToAngle(" + angle + ")");
+    }
 
-    public abstract void zeroAt(Angle angle);
+    public boolean isNear(Angle target, Angle tolerance) {
+        return Rotations.of(inputs.positionRotations).isNear(target, tolerance);
+    }
 
-    public abstract boolean isLimitSwitchTripped();
+    /** Returns true if the arm is within tolerance of a target position using WPILib's isNear(). */
+    public boolean isAt(Angle target, Angle tolerance) {
+        return Rotations.of(inputs.positionRotations).isNear(target, tolerance);
+    }
 
-    public abstract void setVoltage(double voltage);
+    /** Returns the current arm position in rotations. */
+    public Angle getAngle() {
+        return Rotations.of(inputs.positionRotations);
+    }
+
+    public void setVoltage(double voltage) {
+        io.setVoltage(voltage);
+    }
+    public boolean isLimitSwitchTripped() {
+        return io.isLimitSwitchTripped();
+    }
+
+    public void setAngleSetpoint(Angle angle) {
+        io.setTargetAngle(angle);
+    }
+
+    public void zeroAt(Angle angle) {
+        io.zeroAt(angle);
+    }
 }

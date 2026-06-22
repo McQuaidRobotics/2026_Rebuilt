@@ -12,6 +12,8 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
 import yams.mechanisms.config.PivotConfig;
 import yams.mechanisms.config.SensorConfig;
@@ -22,26 +24,27 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 import yams.motorcontrollers.simulation.Sensor;
 
-public class HoodFunctioning extends Hood implements HoodIO{
+public class HoodIOTalonFX implements HoodIO {
     private DigitalInput dio =
             new DigitalInput(Robot.consts.shooter().kHood().REVERSE_LIMIT_SWITCH_ID());
 
     boolean hasZeroed = false;
 
-    private final SmartMotorControllerConfig hoodConfig =
-            Robot.consts.shooter().kHood().getConfig(this);
+    private final SmartMotorControllerConfig hoodConfig;
 
     private final TalonFX hoodMotor =
             new TalonFX(
                     Robot.consts.shooter().kHood().MOTOR_ID(), Robot.consts.shooter().kCANBUS());
 
-    private final SmartMotorController hoodController =
-            new TalonFXWrapper(hoodMotor, DCMotor.getKrakenX44(1), hoodConfig);
-    // EVERYTHING WILL BE DONE IN ROTATIONS
-    // THE SMC IS SET UP TO THE PID DRIVING TO ROTATIONS OF HOOD OUTPUT EG MECHANSIM FRAME
-    // ALL THESE LIMITS SHOULD BE STRAIGHT CONSTANTS FOR THE HOOD
-    private PivotConfig pivotConfig =
-            new PivotConfig(hoodController)
+    private final SmartMotorController hoodController;
+    private PivotConfig pivotConfig;
+            
+    private Pivot hood;
+
+    public HoodIOTalonFX(SubsystemBase subsystem) {
+        hoodConfig = Robot.consts.shooter().kHood().getConfig(subsystem);
+        hoodController = new TalonFXWrapper(hoodMotor, DCMotor.getKrakenX44(1), hoodConfig);
+        pivotConfig = new PivotConfig(hoodController)
                     // Soft limit is applied to the SmartMotorControllers PID
                     // Hard limit is applied to the simulation.
                     .withHardLimits(
@@ -53,7 +56,13 @@ public class HoodFunctioning extends Hood implements HoodIO{
                     // Telemetry name and verbosity for the arm.
                     .withTelemetry("Shooter Hood", TelemetryVerbosity.HIGH);
 
-    private Pivot hood = new Pivot(pivotConfig);
+        hood = new Pivot(pivotConfig);
+
+
+    }
+    // EVERYTHING WILL BE DONE IN ROTATIONS
+    // THE SMC IS SET UP TO THE PID DRIVING TO ROTATIONS OF HOOD OUTPUT EG MECHANSIM FRAME
+    // ALL THESE LIMITS SHOULD BE STRAIGHT CONSTANTS FOR THE HOOD
 
     private final Sensor limitSwitch =
             new SensorConfig("Hood Limit Switch") // Name of the sensor
@@ -82,15 +91,18 @@ public class HoodFunctioning extends Hood implements HoodIO{
     }
 
     @Override
-    public void updateInputs(ArmIOInputs inputs) {
+    public void updateInputs(HoodIOInputs inputs) {
         inputs.positionRotations = hoodController.getMechanismPosition().in(Rotations);
-        inputs.velocityRotationsPerSec = hoodController.getMechanismVelocity().in(RotationsPerSecond);
+        inputs.velocityRotationsPerSec =
+                hoodController.getMechanismVelocity().in(RotationsPerSecond);
         inputs.appliedVolts = hoodController.getVoltage().in(Volts);
-        inputs.supplyCurrentAmps = hoodController.getSupplyCurrent().map(c -> c.in(Amps)).orElse(0.0);
+        inputs.supplyCurrentAmps =
+                hoodController.getSupplyCurrent().map(c -> c.in(Amps)).orElse(0.0);
         inputs.statorCurrentAmps = hoodController.getStatorCurrent().in(Amps);
         inputs.temperatureCelsius = hoodController.getTemperature().in(Celsius);
-        inputs.targetPositionRotations = hoodController.getMechanismPositionSetpoint()
-                .map(a -> a.in(Rotations)).orElse(0.0);
+        inputs.targetPositionRotations =
+                hoodController.getMechanismPositionSetpoint().map(a -> a.in(Rotations)).orElse(0.0);
+        inputs.limitSwitchTripped = limitSwitch.getAsBoolean("Switch");
     }
 
     /**
@@ -138,11 +150,6 @@ public class HoodFunctioning extends Hood implements HoodIO{
         return hood.set(dutycycle);
     }
 
-    // /** Run sysId on the {@link Arm} */
-    // public Command sysId() {
-    //     return hood.sysid(Volts.of(7), Volts.of(2).per(Second), Seconds.of(4));
-    // }
-
     public Angle getAngle() {
         // hood in rots
         return hood.getAngle();
@@ -158,26 +165,13 @@ public class HoodFunctioning extends Hood implements HoodIO{
         return limitSwitch.getAsBoolean("Switch");
     }
 
-    /** Creates a new ExampleSubsystem. */
-    public HoodFunctioning() {}
-
-    /**
-     * An example method querying a boolean state of the subsystem (for example, a digital sensor).
-     *
-     * @return value of some boolean subsystem state, such as a digital sensor.
-     */
-    public boolean exampleCondition() {
-        // Query some boolean state, such as a digital sensor.
-        return false;
-    }
-
     @Override
     public void setVoltage(double voltage) {
         hood.set(voltage / 12.0);
     }
 
     @Override
-    public void periodic() {
+    public void zeroHoodCheck() {
 
         if (limitSwitch.getAsBoolean("Switch") && !hasZeroed) {
             hasZeroed = true;
@@ -186,13 +180,10 @@ public class HoodFunctioning extends Hood implements HoodIO{
             hasZeroed =
                     false; // to ensure no spaming config aplies. Only becomes false once off sensor
         }
-        // This method will be called once per scheduler run
-        hood.updateTelemetry();
     }
 
-    @Override
-    public void simulationPeriodic() {
-        // This method will be called once per scheduler run during simulation
-        hood.simIterate();
+    public Pivot getHood() {
+        return hood;
     }
+
 }

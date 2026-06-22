@@ -20,7 +20,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class FlywheelsFunctioning extends Flywheels implements FlywheelIO{
+public class FlywheelsFunctioning extends Flywheels implements FlywheelIO {
 
     private TalonFX followerMotor =
             new TalonFX(
@@ -65,6 +65,7 @@ public class FlywheelsFunctioning extends Flywheels implements FlywheelIO{
     public void periodic() {
         // This method will be called once per scheduler run
         shooter.updateTelemetry();
+        updateInputs(null);
     }
 
     @Override
@@ -74,14 +75,16 @@ public class FlywheelsFunctioning extends Flywheels implements FlywheelIO{
     }
 
     @Override
-    public void updateInputs(ShooterIOInputs inputs) {
+    public void updateInputs(FlywheelIOInputs inputs) {
         inputs.velocityRotationsPerSec = talonSMC.getMechanismVelocity().in(RotationsPerSecond);
-    inputs.appliedVolts = talonSMC.getVoltage().in(Volts);
-    inputs.supplyCurrentAmps = talonSMC.getSupplyCurrent().map(c -> c.in(Amps)).orElse(0.0);
-    inputs.statorCurrentAmps = talonSMC.getStatorCurrent().in(Amps);
-    inputs.temperatureCelsius = talonSMC.getTemperature().in(Celsius);
-    inputs.targetVelocityRotationsPerSec = talonSMC.getMechanismSetpointVelocity()
-        .map(v -> v.in(RotationsPerSecond)).orElse(0.0);
+        inputs.appliedVolts = talonSMC.getVoltage().in(Volts);
+        inputs.supplyCurrentAmps = talonSMC.getSupplyCurrent().map(c -> c.in(Amps)).orElse(0.0);
+        inputs.statorCurrentAmps = talonSMC.getStatorCurrent().in(Amps);
+        inputs.temperatureCelsius = talonSMC.getTemperature().in(Celsius);
+        inputs.targetVelocityRotationsPerSec =
+                talonSMC.getMechanismSetpointVelocity()
+                        .map(v -> v.in(RotationsPerSecond))
+                        .orElse(0.0);
     }
 
     /**

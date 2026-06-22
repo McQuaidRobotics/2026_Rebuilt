@@ -2,28 +2,39 @@ package igknighters.subsystems.YamShooter.hood;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.units.measure.Angle;
+
 public interface HoodIO {
     /**
-   * Inputs that will be logged and replayed.
-   * The @AutoLog annotation generates ArmIOInputsAutoLogged class.
-   */
-  @AutoLog
-  public static class ArmIOInputs {
-    public double positionRotations = 0.0;
-    public double velocityRotationsPerSec = 0.0;
-    public double appliedVolts = 0.0;
-    public double supplyCurrentAmps = 0.0;
-    public double statorCurrentAmps = 0.0;
-    public double temperatureCelsius = 0.0;
-    public double targetPositionRotations = 0.0;
-  }
+     * Inputs that will be logged and replayed. The @AutoLog annotation generates
+     * HoodIOInputsAutoLogged class.
+     */
+    @AutoLog
+    public static class HoodIOInputs {
+        public double positionRotations = 0.0;
+        public double velocityRotationsPerSec = 0.0;
+        public double appliedVolts = 0.0;
+        public double supplyCurrentAmps = 0.0;
+        public double statorCurrentAmps = 0.0;
+        public double temperatureCelsius = 0.0;
+        public double targetPositionRotations = 0.0;
+        public boolean limitSwitchTripped = false;
+    }
 
-  /** Update the inputs from hardware. Called every loop cycle. */
-  default void updateInputs(ArmIOInputs inputs) {}
+    /** Update the inputs from hardware. Called every loop cycle. */
+    default void updateInputs(HoodIOInputs inputs) {}
 
-  /** Set the target angle for the arm. */
-  default void setTargetAngle(double rotations) {}
+    /** Set the target angle for the arm. */
+    default void setTargetAngle(Angle angle) {}
 
-  /** Stop the arm motor. */
-  default void stop() {}
+
+    default void zeroAt(Angle angle) {}
+
+    default boolean isLimitSwitchTripped() {
+        return false;
+    }
+
+    default void setVoltage(double voltage) {}
+
+    default void zeroHoodCheck() {}
 }
