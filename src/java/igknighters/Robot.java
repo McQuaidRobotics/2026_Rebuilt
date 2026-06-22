@@ -615,4 +615,8 @@ public class Robot extends LoggedRobot {
             return true;
         }
     }
+
+    public static boolean isReplay() {
+        return false; // change to true to replay matches
+    }
 }
