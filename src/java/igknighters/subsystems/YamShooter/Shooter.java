@@ -12,8 +12,6 @@ import igknighters.constants.ShootInformation;
 import igknighters.subsystems.YamShooter.flywheels.Flywheels;
 import igknighters.subsystems.YamShooter.flywheels.FlywheelsFunctioning;
 import igknighters.subsystems.YamShooter.hood.Hood;
-import igknighters.subsystems.YamShooter.hood.HoodIOReplay;
-import igknighters.subsystems.YamShooter.hood.HoodIOTalonFX;
 import igknighters.subsystems.YamShooter.solvers.Math.LerpSolveShot;
 import igknighters.subsystems.YamShooter.turret.Turret;
 import igknighters.subsystems.YamShooter.turret.TurretFunctioning;
@@ -35,12 +33,8 @@ public class Shooter {
     }
 
     public Shooter() {
-        if (Robot.isReplay()) {
-            hood = new Hood(new HoodIOReplay());
-        } else {
-            hood = new Hood(new HoodIOTalonFX(hood));
-        }
-        hood = new Hood(new HoodIOTalonFX(hood));
+
+        hood = new Hood();
         flywheels = new FlywheelsFunctioning();
         turret = new TurretFunctioning();
     }

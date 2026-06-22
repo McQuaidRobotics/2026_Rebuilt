@@ -35,13 +35,14 @@ public class HoodIOTalonFX implements HoodIO {
             new TalonFX(
                     Robot.consts.shooter().kHood().MOTOR_ID(), Robot.consts.shooter().kCANBUS());
 
+    private final Sensor limitSwitch;
     private final SmartMotorController hoodController;
     private PivotConfig pivotConfig;
 
     private Pivot hood;
 
     public HoodIOTalonFX(SubsystemBase subsystem) {
-        hoodConfig = Robot.consts.shooter().kHood().getConfig(subsystem);
+        hoodConfig = Robot.consts.shooter().kHood().getConfig(subsystem).withSubsystem(subsystem);
         hoodController = new TalonFXWrapper(hoodMotor, DCMotor.getKrakenX44(1), hoodConfig);
         pivotConfig =
                 new PivotConfig(hoodController)
@@ -57,25 +58,25 @@ public class HoodIOTalonFX implements HoodIO {
                         .withTelemetry("Shooter Hood", TelemetryVerbosity.HIGH);
 
         hood = new Pivot(pivotConfig);
+        limitSwitch =
+                new SensorConfig("Hood Limit Switch") // Name of the sensor
+                        .withField(
+                                "Switch", dio::get,
+                                false) // Add a Field to the sensor named "Beam" whose value is
+                        .withSimulatedValue(
+                                "Switch",
+                                hood.isNear(
+                                        Rotations.of(
+                                                Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()),
+                                        Rotations.of(.01)),
+                                true) // Change "Beam" field to true when the arm is near 40deg +-
+                        // 2deg
+                        .getSensor(); // Get the sensor.
     }
 
     // EVERYTHING WILL BE DONE IN ROTATIONS
     // THE SMC IS SET UP TO THE PID DRIVING TO ROTATIONS OF HOOD OUTPUT EG MECHANSIM FRAME
     // ALL THESE LIMITS SHOULD BE STRAIGHT CONSTANTS FOR THE HOOD
-
-    private final Sensor limitSwitch =
-            new SensorConfig("Hood Limit Switch") // Name of the sensor
-                    .withField(
-                            "Switch", dio::get,
-                            false) // Add a Field to the sensor named "Beam" whose value is
-                    .withSimulatedValue(
-                            "Switch",
-                            hood.isNear(
-                                    Rotations.of(
-                                            Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()),
-                                    Rotations.of(.01)),
-                            true) // Change "Beam" field to true when the arm is near 40deg +- 2deg
-                    .getSensor(); // Get the sensor.
 
     /**
      * Set the angle of the arm, does not stop when the arm reaches the setpoint.
@@ -183,5 +184,15 @@ public class HoodIOTalonFX implements HoodIO {
 
     public Pivot getHood() {
         return hood;
+    }
+
+    @Override
+    public void simIterate() {
+        hood.simIterate();
+    }
+
+    @Override
+    public void updateTelemetry() {
+        hood.updateTelemetry();
     }
 }

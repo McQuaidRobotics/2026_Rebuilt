@@ -524,7 +524,7 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public SmartMotorControllerConfig getConfig(Subsystem subsystem) {
-            return new SmartMotorControllerConfig(subsystem)
+            return new SmartMotorControllerConfig()
                     .withControlMode(ControlMode.CLOSED_LOOP)
 
                     // Feedback Constants (PID Constants)

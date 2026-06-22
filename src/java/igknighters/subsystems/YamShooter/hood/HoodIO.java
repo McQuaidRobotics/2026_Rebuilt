@@ -35,4 +35,8 @@ public interface HoodIO {
     default void setVoltage(double voltage) {}
 
     default void zeroHoodCheck() {}
+
+    default void updateTelemetry() {}
+
+    default void simIterate() {}
 }

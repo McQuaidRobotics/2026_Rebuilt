@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import igknighters.Robot;
 import org.littletonrobotics.junction.Logger;
 
 public class Hood extends SubsystemBase {
@@ -12,8 +13,12 @@ public class Hood extends SubsystemBase {
     private final HoodIO io;
     private final HoodIOInputsAutoLogged inputs = new HoodIOInputsAutoLogged();
 
-    public Hood(HoodIO io) {
-        this.io = io;
+    public Hood() {
+        if (Robot.isReplay()) {
+            io = new HoodIOReplay();
+        } else {
+            io = new HoodIOTalonFX(this);
+        }
     }
 
     @Override
