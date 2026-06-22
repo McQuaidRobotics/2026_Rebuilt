@@ -72,6 +72,10 @@ public class ShooterCommands {
                 .withName("Target Shooter State");
     }
 
+    public static Command voltHood(Shooter shooter, double voltage) {
+        return shooter.hood.run(() -> shooter.hood.setVoltage(voltage)).withName("Voltage Hood");
+    }
+
     public static Command homeHood(Shooter shooter) {
         // return Commands.run(() -> shooter.setHoodVoltage(-1)).until(()
         // ->shooter.isHoodSensorHit());

@@ -162,6 +162,8 @@ public class DriverController {
         this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
         this.DPD.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
         this.A.and(this.B).whileTrue(Wayfinder.driveToSafeSpot(swerve));
+        this.X.whileTrue(ShooterCommands.voltHood(subsystems.shooter, 5));
+        this.Y.whileTrue(ShooterCommands.voltHood(subsystems.shooter, -5));
     }
 
     private DoubleSupplier deadbandSupplier(DoubleSupplier supplier, double deadband) {

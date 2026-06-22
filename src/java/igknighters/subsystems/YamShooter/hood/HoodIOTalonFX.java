@@ -107,28 +107,13 @@ public class HoodIOTalonFX implements HoodIO {
     }
 
     /**
-     * Set the angle of the arm, ends the command but does not stop the arm when the arm reaches the
-     * setpoint.
-     *
-     * @param angle Angle to go to.
-     * @param tolerance Angle tolerance for completion.
-     * @return A Command
-     */
-    public Command setAngleAndStop(Angle angle, Angle tolerance) {
-        return hood.runTo(angle, tolerance); // force to rotations
-    }
-
-    /**
      * Set arm closed loop controller to go to the specified mechanism position.
      *
      * @param angle Angle to go to.
      */
+    @Override
     public void setTargetAngle(Angle angle) {
 
-        // Angle goalAngle =
-        //         Rotations.of(
-        //                 angle.in(Degrees)
-        //                         / Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES());
         hood.setMechanismPositionSetpoint(angle);
     }
 
@@ -142,16 +127,8 @@ public class HoodIOTalonFX implements HoodIO {
         hoodController.setEncoderPosition(angle);
     }
 
-    /**
-     * Move the arm up and down.
-     *
-     * @param dutycycle [-1, 1] speed to set the arm too.
-     */
-    public Command set(double dutycycle) {
-        return hood.set(dutycycle);
-    }
-
-    public Angle getAngle() {
+    @Override
+    public Angle getHoodAngle() {
         // hood in rots
         return hood.getAngle();
     }
@@ -181,10 +158,6 @@ public class HoodIOTalonFX implements HoodIO {
             hasZeroed =
                     false; // to ensure no spaming config aplies. Only becomes false once off sensor
         }
-    }
-
-    public Pivot getHood() {
-        return hood;
     }
 
     @Override

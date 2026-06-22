@@ -161,7 +161,7 @@ public class GeminiRobotConsts extends RobotConsts {
 
         @Override
         public int CANCODER_ID() {
-            return 21;
+            return 50;
         }
 
         @Override

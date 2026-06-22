@@ -1,5 +1,7 @@
 package igknighters.subsystems.YamShooter.hood;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.units.measure.Angle;
 import org.littletonrobotics.junction.AutoLog;
 
@@ -30,6 +32,10 @@ public interface HoodIO {
 
     default boolean isLimitSwitchTripped() {
         return false;
+    }
+
+    default Angle getHoodAngle() {
+        return Degrees.of(0.0);
     }
 
     default void setVoltage(double voltage) {}

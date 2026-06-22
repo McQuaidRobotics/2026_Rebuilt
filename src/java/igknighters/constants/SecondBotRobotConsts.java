@@ -531,7 +531,7 @@ public class SecondBotRobotConsts extends RobotConsts {
                     .withClosedLoopController(4.0, 0.0, 0.0, ClosedLoopControllerSlot.SLOT_0)
                     // .withTrapezoidalProfile(
                     //         RotationsPerSecond.of(5), RotationsPerSecondPerSecond.of(10))
-                    .withSimClosedLoopController(8.0, 0.05, 0.0, ClosedLoopControllerSlot.SLOT_0)
+                    .withSimClosedLoopController(100.0, 0.05, 0.0, ClosedLoopControllerSlot.SLOT_0)
                     // Feedforward Constants
                     .withFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
                     .withSimFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
@@ -553,6 +553,7 @@ public class SecondBotRobotConsts extends RobotConsts {
                     // the hood
                     .withMotorInverted(true)
                     .withIdleMode(MotorMode.BRAKE)
+                    .withMomentOfInertia(Meters.of(.2), Pounds.of(.1))
                     .withStatorCurrentLimit(Amps.of(20))
                     .withClosedLoopRampRate(Seconds.of(0.25))
                     .withOpenLoopRampRate(Seconds.of(0.25));
