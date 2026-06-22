@@ -531,11 +531,11 @@ public class SecondBotRobotConsts extends RobotConsts {
                     .withClosedLoopController(4.0, 0.0, 0.0, ClosedLoopControllerSlot.SLOT_0)
                     // .withTrapezoidalProfile(
                     //         RotationsPerSecond.of(5), RotationsPerSecondPerSecond.of(10))
-                    .withSimClosedLoopController(100.0, 0.05, 0.0, ClosedLoopControllerSlot.SLOT_0)
+                    .withSimClosedLoopController(8.0, 0.05, 0.0, ClosedLoopControllerSlot.SLOT_0)
                     // Feedforward Constants
                     .withFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
-                    .withSimFeedforward(new ArmFeedforward(0.27, 0, 0.0, 0.0))
-                    .withSoftLimits(Degrees.of(52.855225), Degrees.of(18.6))
+                    .withSimFeedforward(new ArmFeedforward(0.0, 0, 0.0, 0.0))
+                    .withSoftLimits(Degrees.of(18.6), Degrees.of(52.855225))
                     // Telemetry name and verbosity level
                     .withTelemetry("Hood Motor", TelemetryVerbosity.HIGH)
                     // Gearing from the motor rotor to final shaft.
