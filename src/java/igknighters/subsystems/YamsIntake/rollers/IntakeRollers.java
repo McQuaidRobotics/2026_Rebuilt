@@ -1,6 +1,7 @@
 package igknighters.subsystems.YamsIntake.rollers;
 
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,11 +27,10 @@ public class IntakeRollers extends SubsystemBase {
         io.setVelocitySetpoint(velocity);
     }
 
-    public Command setVelocity(AngularVelocity velocity) {
+    public Command targetVelocity(AngularVelocity velocity) {
         return run(() -> io.setVelocitySetpoint(velocity))
-                .withName("Flywheels.setVelocity(" + velocity.in(RPM) + ")");
+                .withName("INTAKE_ROLLERS.setVelocity(" + velocity.in(RPM) + ")");
     }
-    ;
 
     public AngularVelocity getVelocity() {
         return io.getVelocity();
@@ -38,6 +38,10 @@ public class IntakeRollers extends SubsystemBase {
 
     public void setVoltage(double voltage) {
         io.setVoltage(voltage);
+    }
+
+    public boolean isNear(AngularVelocity target, AngularVelocity tolerance) {
+        return RotationsPerSecond.of(inputs.velocityRotationsPerSec).isNear(target, tolerance);
     }
 
     @Override

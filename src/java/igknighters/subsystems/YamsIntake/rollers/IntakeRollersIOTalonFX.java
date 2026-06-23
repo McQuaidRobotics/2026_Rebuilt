@@ -44,7 +44,7 @@ public class IntakeRollersIOTalonFX implements IntakeRollersIO {
                         // Mass of the flywheel.
                         .withMass(Pounds.of(3))
                         // Telemetry name and verbosity for the arm.
-                        .withTelemetry("Flywheel Mechanism", TelemetryVerbosity.HIGH);
+                        .withTelemetry("INTAKE_ROLLERS", TelemetryVerbosity.HIGH);
 
         shooter = new FlyWheel(shooterConfig);
     }

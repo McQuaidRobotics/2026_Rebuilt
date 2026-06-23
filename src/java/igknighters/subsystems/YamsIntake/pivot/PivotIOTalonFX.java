@@ -47,7 +47,7 @@ public class PivotIOTalonFX implements PivotIO {
                                 Degrees.of(Robot.consts.intake().kPivot().MAX_ANGLE_DEGREES() + 10))
                         .withSimStartingPosition(
                                 Degrees.of(Robot.consts.intake().kPivot().STOWED_ANGLE_DEGREES()))
-                        .withTelemetry("PivotArm", TelemetryVerbosity.HIGH);
+                        .withTelemetry("INTAKE_PIVOT", TelemetryVerbosity.HIGH);
         pivot = new Pivot(pivotConfig);
     }
 

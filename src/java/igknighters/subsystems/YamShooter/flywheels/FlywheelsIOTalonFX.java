@@ -59,7 +59,7 @@ public class FlywheelsIOTalonFX implements FlywheelIO {
                         // Mass of the flywheel.
                         .withMass(Pounds.of(3))
                         // Telemetry name and verbosity for the arm.
-                        .withTelemetry("Flywheel Mechanism", TelemetryVerbosity.HIGH);
+                        .withTelemetry("SHOOTER_FLYWHEELS", TelemetryVerbosity.HIGH);
 
         shooter = new FlyWheel(shooterConfig);
     }

@@ -6,14 +6,16 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import igknighters.subsystems.YamsIntake.pivot.IntakePivot;
+import igknighters.subsystems.YamsIntake.rollers.IntakeRollers;
 
 public class YamIntake {
     public final IntakePivot pivot;
-    public final Rollers rollers;
+    public final IntakeRollers rollers;
 
     public YamIntake() {
         this.pivot = new IntakePivot();
-        this.rollers = new Rollers();
+        this.rollers = new IntakeRollers();
     }
 
     public Command targetState(YamIntakeState state) {
@@ -40,7 +42,7 @@ public class YamIntake {
     }
 
     public boolean isAt(YamIntakeState state, Angle tolerance, AngularVelocity velocityTolerance) {
-        return this.pivot.isAt(state.pivotAngle, tolerance)
-                && this.rollers.isAt(state.rollerVelocity, velocityTolerance);
+        return this.pivot.isNear(state.pivotAngle, tolerance)
+                && this.rollers.isNear(state.rollerVelocity, velocityTolerance);
     }
 }

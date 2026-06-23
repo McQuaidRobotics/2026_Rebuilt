@@ -50,7 +50,7 @@ public class TurretIOTalonFX implements TurretIO {
                                         Robot.consts.shooter().kTurret().MIN_ANGLE_DEGREES() - 10),
                                 Degrees.of(
                                         Robot.consts.shooter().kTurret().MAX_ANGLE_DEGREES() + 10))
-                        .withTelemetry("Turret Motor", TelemetryVerbosity.HIGH); // Telemetry;
+                        .withTelemetry("SHOOTER_TURRET", TelemetryVerbosity.HIGH); // Telemetry;
         turret = new Pivot(pivotConfig);
     }
 

@@ -55,7 +55,7 @@ public class HoodIOTalonFX implements HoodIO {
                         .withSimStartingPosition(
                                 Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES() + 5))
                         // Telemetry name and verbosity for the arm.
-                        .withTelemetry("Shooter Hood", TelemetryVerbosity.HIGH);
+                        .withTelemetry("SHOOTER_HOOD", TelemetryVerbosity.HIGH);
 
         hood = new Pivot(pivotConfig);
         limitSwitch =
