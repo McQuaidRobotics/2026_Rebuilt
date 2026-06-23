@@ -26,7 +26,6 @@ public class Subsystems {
 
     public final Turret turret;
 
-
     /**
      * Array of subsystems that require exclusive access (Locked resources). Used for publishing
      * command data and managing command requirements.
@@ -47,6 +46,6 @@ public class Subsystems {
         this.led = led;
         this.luma = luma;
         this.lockedResources = new SubsystemBase[] {swerve, vision, led, luma};
-        this.turret=turret;
+        this.turret = turret;
     }
 }

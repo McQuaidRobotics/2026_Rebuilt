@@ -1,5 +1,7 @@
 package igknighters.controllers;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -9,9 +11,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.Wayfinder;
 import igknighters.commands.shooter.shooterComands;
 import igknighters.subsystems.Subsystems;
-
-import static edu.wpi.first.units.Units.Degrees;
-
 import java.util.function.DoubleSupplier;
 
 /**
