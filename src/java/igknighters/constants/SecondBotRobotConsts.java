@@ -415,7 +415,7 @@ public class SecondBotRobotConsts extends RobotConsts {
                     .withFeedforward(new SimpleMotorFeedforward(0.17, 0.1, 0.02))
                     .withSimFeedforward(new SimpleMotorFeedforward(0.17, 0.1, 0.02))
                     // Telemetry name and verbosity level
-                    .withTelemetry("Flywheels", TelemetryVerbosity.HIGH)
+                    .withTelemetry("Flywheel Motor", TelemetryVerbosity.HIGH)
                     .withGearing(new MechanismGearing(GearBox.fromReductionStages(1)))
                     // Motor properties to prevent over currenting.
                     .withMotorInverted(true)
