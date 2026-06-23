@@ -5,6 +5,7 @@ import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.swerve.Swerve;
+import igknighters.subsystems.turret.Turret;
 
 /**
  * Central container for all robot subsystems. This class facilitates easy access to subsystems from
@@ -23,6 +24,9 @@ public class Subsystems {
     /** The Luma subsystem for object detection. */
     public final Luma luma;
 
+    public final Turret turret;
+
+
     /**
      * Array of subsystems that require exclusive access (Locked resources). Used for publishing
      * command data and managing command requirements.
@@ -37,11 +41,12 @@ public class Subsystems {
      * @param led The LED subsystem.
      * @param luma The Luma subsystem.
      */
-    public Subsystems(Swerve swerve, LimeLightVision vision, Led led, Luma luma) {
+    public Subsystems(Swerve swerve, LimeLightVision vision, Led led, Luma luma, Turret turret) {
         this.swerve = swerve;
         this.vision = vision;
         this.led = led;
         this.luma = luma;
         this.lockedResources = new SubsystemBase[] {swerve, vision, led, luma};
+        this.turret=turret;
     }
 }
