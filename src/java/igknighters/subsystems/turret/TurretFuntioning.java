@@ -70,7 +70,8 @@ public class TurretFuntioning extends Turret {
 
   @Override
   public void targetAngle(Angle angle) {
-      shooter.setMeasurementPositionSetpoint();
+      // shooter.setMeasurementPositionSetpoint(); OG
+      shooter.setMechanismPositionSetpoint(angle); // fix
   }
 }
 
