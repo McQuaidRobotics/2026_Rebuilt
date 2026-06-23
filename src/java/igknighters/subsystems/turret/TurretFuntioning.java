@@ -30,32 +30,33 @@ import yams.motorcontrollers.local.SparkWrapper;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
 public class TurretFuntioning extends Turret {
-    private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
-  .withControlMode(ControlMode.CLOSED_LOOP)
-  // Feedback Constants (PID Constants)
-  .withClosedLoopController(50, 0, 0)
-  .withTrapezoidalProfile(DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
-  .withSimClosedLoopController(50, 0, 0)
-  // Feedforward Constants
-  .withFeedforward(new ArmFeedforward(0, 0, 0))
-  .withSimFeedforward(new ArmFeedforward(0, 0, 0))
-  // Telemetry name and verbosity level
-  .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
-  // Gearing from the motor rotor to final shaft.
-  // In this example GearBox.fromReductionStages(3,4) is the same as GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your motor.
-  // You could also use .withGearing(12) which does the same thing.
-  .withGearing(16.2)
-  // Motor properties to prevent over currenting.
-  .withMotorInverted(false)
-  .withIdleMode(MotorMode.BRAKE)
-  .withStatorCurrentLimit(Amps.of(40))
-  .withClosedLoopRampRate(Seconds.of(0.25))
-  .withOpenLoopRampRate(Seconds.of(0.25))
-  .withSoftLimits(Degrees.of(-270),Degrees.of(90))
-  .withMomentOfInertia(Meters.of(1),Pounds.of(.15))
-  .withClosedLoopRampRate(Seconds.of(0.25))
-  .withOpenLoopRampRate(Seconds.of(0.25))
-  .withStartingPosition(Degrees.of(0));
+  private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
+    .withControlMode(ControlMode.CLOSED_LOOP)
+    // Feedback Constants (PID Constants)
+    .withClosedLoopController(50, 0, 0)
+    .withTrapezoidalProfile(DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
+    .withSimClosedLoopController(50, 0, 0)
+    .withSoftLimits(Degrees.of(-180), Degrees.of(180)) // THE PID IS ONLY EFFECTED BY THESE SO IF NO LIMITS THINKS INFINITE ROTATION NO BUENO
+    // Feedforward Constants
+    .withFeedforward(new ArmFeedforward(0, 0, 0))
+    .withSimFeedforward(new ArmFeedforward(0, 0, 0))
+    // Telemetry name and verbosity level
+    .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
+    // Gearing from the motor rotor to final shaft.
+    // In this example GearBox.fromReductionStages(3,4) is the same as GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your motor.
+    // You could also use .withGearing(12) which does the same thing.
+    .withGearing(16.2)
+    // Motor properties to prevent over currenting.
+    .withMotorInverted(false)
+    .withIdleMode(MotorMode.BRAKE)
+    .withStatorCurrentLimit(Amps.of(40))
+    .withClosedLoopRampRate(Seconds.of(0.25))
+    .withOpenLoopRampRate(Seconds.of(0.25))
+    .withSoftLimits(Degrees.of(-270),Degrees.of(90))
+    .withMomentOfInertia(Meters.of(1),Pounds.of(.15))
+    .withClosedLoopRampRate(Seconds.of(0.25))
+    .withOpenLoopRampRate(Seconds.of(0.25))
+    .withStartingPosition(Degrees.of(0));
 
     private TalonFX talon = new TalonFX(4, SubsystemConstants.superStructure);
 
