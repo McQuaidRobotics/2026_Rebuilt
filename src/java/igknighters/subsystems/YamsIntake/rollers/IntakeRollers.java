@@ -6,12 +6,13 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.Robot;
+import org.littletonrobotics.junction.Logger;
 
 public class IntakeRollers extends SubsystemBase {
 
     IntakeRollersIO io;
 
-    // IntakeRollersIOAutoLogged inputs = new IntakeRollersIOAutoLogged();
+    IntakeRollersIOInputsAutoLogged inputs = new IntakeRollersIOInputsAutoLogged();
 
     public IntakeRollers() {
         if (Robot.isReplay()) {
@@ -42,14 +43,12 @@ public class IntakeRollers extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateTelemetry();
-        // io.updateInputs(inputs);
-        // Logger.processInputs("INTAKE_ROLLERS", inputs);
+        io.updateInputs(inputs);
+        Logger.processInputs("INTAKE_ROLLERS", inputs);
     }
 
     @Override
     public void simulationPeriodic() {
         io.simIterate();
-        // io.updateInputs(inputs);
-        // Logger.processInputs("INTAKE_ROLLERS", inputs);
     }
 }

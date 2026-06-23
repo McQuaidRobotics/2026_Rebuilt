@@ -31,9 +31,6 @@ public class Hood extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         io.simIterate();
-        io.zeroHoodCheck();
-        io.updateInputs(inputs);
-        Logger.processInputs("SHOOTER_HOOD", inputs);
     }
 
     /** Command to move the arm to a target angle. Uses run() for continuous control. */

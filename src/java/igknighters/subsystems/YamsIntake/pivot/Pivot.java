@@ -1,5 +1,7 @@
 package igknighters.subsystems.YamsIntake.pivot;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -19,12 +21,12 @@ public class Pivot extends SubsystemBase {
     public void periodic() {
         io.updateTelemetry();
         io.updateInputs(inputs);
+        Logger.processInputs("INTAKE_PIVOT", inputs);
     }
 
     @Override
     public void simulationPeriodic() {
         io.simIterate();
-        io.updateInputs(inputs);
     }
 
     public void setAngleSetpoint(Angle angle) {

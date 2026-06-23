@@ -49,7 +49,5 @@ public class Flywheels extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         io.simIterate();
-        io.updateInputs(inputs);
-        Logger.processInputs("SHOOTER_FLYWHEELS", inputs);
     }
 }

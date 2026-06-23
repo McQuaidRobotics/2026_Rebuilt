@@ -31,8 +31,6 @@ public class Turret extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         io.simIterate();
-        io.updateInputs(inputs);
-        Logger.processInputs("SHOOTER_TURRET", inputs);
     }
 
     public Command targetAngle(Angle angle) {
