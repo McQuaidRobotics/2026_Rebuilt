@@ -67,7 +67,10 @@ public class TurretFuntioning extends Turret {
                     .withMomentOfInertia(Meters.of(1), Pounds.of(.15))
                     .withClosedLoopRampRate(Seconds.of(0.25))
                     .withOpenLoopRampRate(Seconds.of(0.25))
-                    .withStartingPosition(Degrees.of(0));
+                    .withStartingPosition(Degrees.of(0))
+                    .withExternalEncoderInverted(true)
+                    .withExternalGearing(16.2)
+                    .withUseExternalFeedbackEncoder(true); 
 
     private TalonFX talon = new TalonFX(4, SubsystemConstants.superStructure);
 

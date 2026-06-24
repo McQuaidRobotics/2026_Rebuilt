@@ -5,7 +5,7 @@ import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.swerve.Swerve;
-import igknighters.subsystems.turret.Turret;
+import igknighters.subsystems.turret.TurretNoAbstract;
 
 /**
  * Central container for all robot subsystems. This class facilitates easy access to subsystems from
@@ -24,7 +24,7 @@ public class Subsystems {
     /** The Luma subsystem for object detection. */
     public final Luma luma;
 
-    public final Turret turret;
+    public final TurretNoAbstract turret;
 
     /**
      * Array of subsystems that require exclusive access (Locked resources). Used for publishing
@@ -40,7 +40,8 @@ public class Subsystems {
      * @param led The LED subsystem.
      * @param luma The Luma subsystem.
      */
-    public Subsystems(Swerve swerve, LimeLightVision vision, Led led, Luma luma, Turret turret) {
+    public Subsystems(
+            Swerve swerve, LimeLightVision vision, Led led, Luma luma, TurretNoAbstract turret) {
         this.swerve = swerve;
         this.vision = vision;
         this.led = led;
