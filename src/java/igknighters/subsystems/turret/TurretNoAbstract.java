@@ -28,33 +28,34 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-// TODOS ADD SOFT LIMITS TO THE TURRET AND MAKE SURE IT DOESNT BREAK
-// ADD ENCODER TO THE TURRET
-/**
- * SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig(this)
- * .withExternalEncoder(armMotor.getAbsoluteEncoder()) .withExternalEncoderInverted(true)
- * .withExternalGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
- * .withUseExternalFeedbackEncoder(true); EXAMPLE ENCODER CONFIG IT SHOULD HAVE RATIO 1:1
- */
-// READ THE ERROR IN TURRET FUNCTIONING IT NEEDS THE METHOD GET CURRENT ANGLE TO BE IMPLEMENTED IN
-// ORDER FOR THE TURRET TO WORK PROPERLY
-// PS JUST BUILD. YOU CAN NOT HURT STUFF IN SIMULATION. THE TURRET WILL NOT BREAK IN SIMULATION. IT
-// WILL BREAK ON ROBOT.
 public class TurretNoAbstract extends SubsystemBase {
 
-    CANcoder turretEncoder = new CANcoder(5, SubsystemConstants.superStructure);
+    CANcoder turretEncoder = new CANcoder(16, SubsystemConstants.superStructure);
+    // --------------------------------------------------------------------------------------------------
+    // HERE IS WHAT I DID KYLE
+    // YAMS IS THE GOAT OF THE ENTIRE WORLD
+    // BECAUSE YAMS IS THE BEST THING SINCE SLICED BREAD, BRISKET, AND RAMEN IT CARES ABOUT CANIDS
+    // 1-12 is reserved by swerve so when we had 4 and 5 we were double booking the same gear
+    // eg the turret encoder reading from swerve and swerve reading from turret motor
+    // regardless it was not tech in the slightest
+    // so simply changing the id to 15 and 16 fixed this issue
+    // This is why having a constant file is so usefull
+    // IM GOING TO F UP THE SUBSYSTEM CONSTANTS ID FILE SO THAT WE DONT HAVE TO WORRY ABOUT THIS IN
+    // THE FUTURE
+    // PLEASE NOTE THAT ALL THE IDS WILL HAVE TO BE RE SET WITH TUNER X
+    // THIS IS FOR THE BEST THOUGH BECAUSE IT WILL BE MORE ORGANIZED AND EASIER TO READ
+    // ALSO THE OFFSET NEEDS TO BE SET!! OR ELSE IT WILL BE WRONG ABOUT WHERE 0 IS
+    // ---------------------------------------------------------------------------------------------------
 
     private SmartMotorControllerConfig smcConfig =
             new SmartMotorControllerConfig(this)
                     .withControlMode(ControlMode.CLOSED_LOOP)
                     // Feedback Constants (PID Constants)
                     .withClosedLoopController(50, 0, 0)
+                    .withSimClosedLoopController(5, 0, 0)
                     .withTrapezoidalProfile(
                             DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
                     // ----------------------------------------------------------------
-                    // YOU NEED SOFT LIMITS IN HERE WITHOUT THEM THE TURRET WILL SPIN FOREVER AND
-                    // BREAK TODO: add
-
                     .withSoftLimits(Degrees.of(-270), Degrees.of(90))
                     // ----------------------------------------------------------------
                     .withSimClosedLoopController(50, 0, 0)
@@ -76,7 +77,7 @@ public class TurretNoAbstract extends SubsystemBase {
                     .withClosedLoopRampRate(Seconds.of(0.25))
                     .withOpenLoopRampRate(Seconds.of(0.25))
                     .withSoftLimits(Degrees.of(-270), Degrees.of(90))
-                    .withMomentOfInertia(Meters.of(1), Pounds.of(.15))
+                    .withMomentOfInertia(Meters.of(.1), Pounds.of(.15))
                     .withClosedLoopRampRate(Seconds.of(0.25))
                     .withOpenLoopRampRate(Seconds.of(0.25))
                     .withExternalEncoder(turretEncoder)
@@ -88,7 +89,7 @@ public class TurretNoAbstract extends SubsystemBase {
                     .withUseExternalFeedbackEncoder(true)
                     .withStartingPosition(Degrees.of(0));
 
-    private TalonFX talon = new TalonFX(4, SubsystemConstants.superStructure);
+    private TalonFX talon = new TalonFX(15, SubsystemConstants.superStructure);
 
     private SmartMotorController talonSmartMotorController =
             new TalonFXWrapper(talon, DCMotor.getFalcon500(1), smcConfig);
