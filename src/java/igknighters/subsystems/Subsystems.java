@@ -14,8 +14,8 @@ import igknighters.subsystems.YamsIntake.YamIntakeState;
 import igknighters.subsystems.YamsIntake.pivot.IntakePivot;
 import igknighters.subsystems.YamsIntake.rollers.IntakeRollers;
 import igknighters.subsystems.indexer.Indexer;
-import igknighters.subsystems.indexer.launcherRollers.ExitRollersBase;
-import igknighters.subsystems.indexer.spindexer.SpindexerBase;
+import igknighters.subsystems.indexer.launcherRollers.ExitRollers;
+import igknighters.subsystems.indexer.spindexer.Spindexer;
 import igknighters.subsystems.led.Led;
 import igknighters.subsystems.swerve.Swerve;
 
@@ -28,8 +28,8 @@ public class Subsystems {
     public final IntakePivot pivot;
     public final IntakeRollers rollers;
     public final YamIntake intake;
-    public final ExitRollersBase exitRollers;
-    public final SpindexerBase spindexer;
+    public final ExitRollers exitRollers;
+    public final Spindexer spindexer;
     public final Luma luma;
     public final Turret turret;
     public final Hood hood;
