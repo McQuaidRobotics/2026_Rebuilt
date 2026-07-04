@@ -1,4 +1,4 @@
-package igknighters.commands.teleop;
+package igknighters.commands.teleop.aiming;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -8,11 +8,13 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.Robot;
+import igknighters.commands.teleop.TeleopSwerveBaseCmd;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.log.Log;
 
-public class TeleopSwerveHeadingCmd extends TeleopSwerveBaseCmd {
+public class TeleopSwerveJoystickHeadingCmd extends TeleopSwerveBaseCmd {
+
     private final double heading;
     private final SwerveRequest.FieldCentric m_driveRequest =
             new SwerveRequest.FieldCentric()
@@ -27,7 +29,7 @@ public class TeleopSwerveHeadingCmd extends TeleopSwerveBaseCmd {
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
     private final PIDController rotationController;
 
-    public TeleopSwerveHeadingCmd(
+    public TeleopSwerveJoystickHeadingCmd(
             Swerve swerve,
             DriverController controller,
             double heading,

@@ -1,4 +1,4 @@
-package igknighters.commands.teleop;
+package igknighters.commands.teleop.aiming;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -7,14 +7,15 @@ import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.Robot;
+import igknighters.commands.teleop.TeleopSwerveBaseCmd;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.log.Log;
 
-public class TeleopSwerveTargetingFutureCmd extends TeleopSwerveBaseCmd {
+public class TeleopSwerveForwardTargetingCmd extends TeleopSwerveBaseCmd {
+
     private final Pose2d targetPose;
     private final SwerveRequest.FieldCentric m_driveRequest =
             new SwerveRequest.FieldCentric()
@@ -29,24 +30,20 @@ public class TeleopSwerveTargetingFutureCmd extends TeleopSwerveBaseCmd {
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
     private final PIDController rotationController;
 
-    private final double lookaheadTimeSeconds; // Lookahead time in seconds
-
-    // Make the PID controller handle wraparound automatically
-
-    public TeleopSwerveTargetingFutureCmd(
+    public TeleopSwerveForwardTargetingCmd(
             Swerve swerve,
             DriverController controller,
             Pose2d targetPose,
-            double lookaheadTimeSeconds,
             double kP,
             double kI,
             double kD) {
+
         super(swerve, controller);
-        this.targetPose = targetPose;
-        this.lookaheadTimeSeconds = lookaheadTimeSeconds;
         rotationController =
                 new PIDController(kP * 180.0 / Math.PI, kI * 180.0 / Math.PI, kD * 180.0 / Math.PI);
+        this.targetPose = targetPose;
         addRequirements(swerve);
+
         rotationController.enableContinuousInput(-Math.PI, Math.PI);
         rotationController.setTolerance(.0001);
     }
@@ -59,43 +56,33 @@ public class TeleopSwerveTargetingFutureCmd extends TeleopSwerveBaseCmd {
 
     @Override
     public void execute() {
-        // x y r
         final var currentPose = swerve.getState().Pose;
-        final var fieldSpeeds = swerve.getFieldRelativeSpeeds();
-        final Pose2d futurePose2d =
-                new Pose2d(
-                        currentPose.getX() + (fieldSpeeds.vxMetersPerSecond * lookaheadTimeSeconds),
-                        currentPose.getY() + (fieldSpeeds.vyMetersPerSecond * lookaheadTimeSeconds),
-                        new Rotation2d(
-                                currentPose.getRotation().getRadians()
-                                        + (fieldSpeeds.omegaRadiansPerSecond
-                                                * lookaheadTimeSeconds)));
 
-        double dx = targetPose.getX() - futurePose2d.getX();
-        double dy = targetPose.getY() - futurePose2d.getY();
+        double dx = targetPose.getX() - currentPose.getX();
+        double dy = targetPose.getY() - currentPose.getY();
 
         double desiredAngleRad = Math.atan2(dy, dx);
-        double futureAngleRad = futurePose2d.getRotation().getRadians();
+        double currentAngleRad = currentPose.getRotation().getRadians();
 
         // Wrap both angles explicitly
         desiredAngleRad = wrapAngleRadians(desiredAngleRad);
-        futureAngleRad = wrapAngleRadians(futureAngleRad);
+        currentAngleRad = wrapAngleRadians(currentAngleRad);
 
-        double error = wrapAngleRadians(desiredAngleRad - futureAngleRad);
+        double error = wrapAngleRadians(desiredAngleRad - currentAngleRad);
 
         if (!Robot.consts.disableAllLogs()) {
             Log.log(
-                    "ROBOT/Commands/Swerve/TeleopSwerveTargetingFutureCmd/Desired Angle (deg)",
+                    "ROBOT/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Desired Angle (deg)",
                     Math.toDegrees(desiredAngleRad));
             Log.log(
-                    "ROBOT/Commands/Swerve/TeleopSwerveTargetingFutureCmd/Current Angle (deg)",
-                    Math.toDegrees(futureAngleRad));
+                    "ROBOT/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Current Angle (deg)",
+                    Math.toDegrees(currentAngleRad));
             Log.log(
-                    "ROBOT/Commands/Swerve/TeleopSwerveTargetingFutureCmd/Wrapped Error (deg)",
+                    "ROBOT/Commands/Swerve/TeleopSwerveForwardTargetingCmd/Wrapped Error (deg)",
                     Math.toDegrees(error));
         }
 
-        double omega = rotationController.calculate(futureAngleRad, desiredAngleRad);
+        double omega = rotationController.calculate(currentAngleRad, desiredAngleRad);
 
         Translation2d vt = translationStick();
         double allianceFlipper = 1.0;

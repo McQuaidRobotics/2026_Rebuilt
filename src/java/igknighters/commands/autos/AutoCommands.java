@@ -5,7 +5,6 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import choreo.trajectory.Trajectory;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -15,9 +14,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WrapperCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.Robot;
-import igknighters.commands.HigherOrderCommands;
 import igknighters.commands.SwerveCommands;
-import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.log.Log;
@@ -71,18 +68,14 @@ public class AutoCommands {
         return new Trigger(() -> findSpeed(swerve.getState().Speeds) < speed);
     }
 
-    protected class RebuiltAuto {
+    protected class GenericAuto {
         private final AutoRoutine routine;
         private final ParallelCommandGroup headCommand = new ParallelCommandGroup();
         private final SequentialCommandGroup bodyCommand = new SequentialCommandGroup();
         private boolean trajectorybeenadded = false;
 
-        private RebuiltAuto(AutoRoutine routine) {
+        private GenericAuto(AutoRoutine routine) {
             this.routine = routine;
-        }
-
-        public Pose3d getHubTarget() {
-            return Robot.isBlue() ? FieldConstants.HUB.POSE3D_BLUE : FieldConstants.HUB.POSE3D_RED;
         }
 
         public Command build() {
@@ -115,55 +108,22 @@ public class AutoCommands {
 
         // public Command intakeTrajectory()
 
-        public RebuiltAuto shootThenMove(Waypoints start, Waypoints end, double timeout) {
+        public GenericAuto addDrivingTrajectory(Waypoints start, Waypoints end, double timeout) {
             AutoTrajectory traj = getTrajectory(start, end);
             if (!trajectorybeenadded) {
                 trajectorybeenadded = true;
                 headCommand.addCommands(traj.resetOdometry().withTimeout(0.1));
             }
             bodyCommand.addCommands(
-                    loggedCmd(
-                            Commands.sequence(
-                                            HigherOrderCommands.shootTillEmpty(subsystems, timeout)
-                                                    .withName("SHOOT_TILL_EMPTY"),
-                                            traj.cmd(),
-                                            SwerveCommands.stopDriving(swerve).withTimeout(.1))
-                                    .withName(traj.getRawTrajectory().name())));
+                    loggedCmd(traj.spawnCmd()).withName(traj.getRawTrajectory().name()));
             return this;
         }
 
-        public RebuiltAuto shootAndMove(Waypoints start, Waypoints end) {
-            AutoTrajectory traj = getTrajectory(start, end);
-
-            if (!trajectorybeenadded) {
-                trajectorybeenadded = true;
-                headCommand.addCommands(traj.resetOdometry().withTimeout(0.1));
-            }
-
-            bodyCommand.addCommands(
-                    loggedCmd(
-                            Commands.sequence(
-                                            Commands.parallel(
-                                                            HigherOrderCommands.shootTillEmpty(
-                                                                            subsystems, 3.0)
-                                                                    .withName("SHOOT_TILL_EMPTY"),
-                                                            traj.cmd()
-                                                                    .withName(
-                                                                            "FOLLOWING TRAJECTORY"))
-                                                    .withName("SHOOT THEN MOVE"),
-                                            SwerveCommands.stopDriving(swerve)
-                                                    .withTimeout(.1)
-                                                    .withName("Stop Driving"))
-                                    .withName("shoot and move command full thing")
-                                    .withName(traj.getRawTrajectory().name())));
-            return this;
-        }
-
-        public RebuiltAuto addDrivingTrajectory(Waypoints... waypoints) {
+        public GenericAuto addDrivingTrajectory(Waypoints... waypoints) {
             for (int i = 0; i < waypoints.length - 1; i += 1) {
                 bodyCommand.addCommands(
                         getTrajectory(waypoints[i], waypoints[i + 1])
-                                .cmd()
+                                .spawnCmd()
                                 .withName(
                                         "DRIVING FROM " + waypoints[i] + " TO " + waypoints[i + 1]),
                         SwerveCommands.stopDriving(swerve).withTimeout(.1));
@@ -172,10 +132,10 @@ public class AutoCommands {
         }
     }
 
-    protected RebuiltAuto newRebuiltAuto(String name) {
+    protected GenericAuto newRebuiltAuto(String name) {
         if (!Robot.consts.disableAllLogs()) {
             Log.log("ROBOT/Commands/Autos/Creation", "Creating new rebuilt auto: " + name);
         }
-        return new RebuiltAuto(autoFactory.newRoutine(name));
+        return new GenericAuto(autoFactory.newRoutine(name));
     }
 }

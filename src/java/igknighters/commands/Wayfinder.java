@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
-import igknighters.constants.FieldConstants;
 import igknighters.subsystems.swerve.Swerve;
 import java.util.Set;
 import vroom.Fields.REBUILT;
@@ -20,7 +19,8 @@ public class Wayfinder {
         if (Robot.isBlue()) {
             return new Pose2d(0.5, 1, new Rotation2d());
         } else {
-            return new Pose2d(FieldConstants.X_FIELD - .5, 0.5, new Rotation2d());
+            return new Pose2d(
+                    18 - .5, 0.5, new Rotation2d()); // 18 is a stand in for the x dimension
         }
     }
 

@@ -1,4 +1,4 @@
-package igknighters.commands.teleop;
+package igknighters.commands.teleop.aiming;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -6,15 +6,17 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import igknighters.Robot;
+import igknighters.commands.teleop.TeleopSwerveBaseCmd;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.log.Log;
 
-public class TeleopSwerveJoystickHeadingCmd extends TeleopSwerveJoystickRepulsor {
+public class TeleopSwerveReverseTargetingCmd extends TeleopSwerveBaseCmd {
 
-    private final double heading;
+    private final Pose2d targetPose;
     private final SwerveRequest.FieldCentric m_driveRequest =
             new SwerveRequest.FieldCentric()
                     .withDeadband(
@@ -28,36 +30,59 @@ public class TeleopSwerveJoystickHeadingCmd extends TeleopSwerveJoystickRepulsor
                     .withSteerRequestType(SwerveModule.SteerRequestType.MotionMagicExpo);
     private final PIDController rotationController;
 
-    public TeleopSwerveJoystickHeadingCmd(
+    public TeleopSwerveReverseTargetingCmd(
             Swerve swerve,
             DriverController controller,
-            double heading,
+            Pose2d targetPose,
             double kP,
             double kI,
             double kD) {
         super(swerve, controller);
-        rotationController = new PIDController(kP, kI, kD);
-        this.heading = heading;
-        rotationController.enableContinuousInput(-180, 180);
+        this.targetPose = targetPose;
         addRequirements(swerve);
+        rotationController =
+                new PIDController(kP * 180.0 / Math.PI, kI * 180.0 / Math.PI, kD * 180.0 / Math.PI);
+        rotationController.enableContinuousInput(-Math.PI, Math.PI);
+        rotationController.setTolerance(.0001);
+    }
+
+    private double wrapAngleRadians(double angle) {
+        while (angle > Math.PI) angle -= 2 * Math.PI;
+        while (angle < -Math.PI) angle += 2 * Math.PI;
+        return angle;
     }
 
     @Override
     public void execute() {
-        double omega =
-                rotationController.calculate(
-                        swerve.getState().Pose.getRotation().getDegrees(), heading);
+        final var currentPose = swerve.getState().Pose;
+
+        double dx = targetPose.getX() - currentPose.getX();
+        double dy = targetPose.getY() - currentPose.getY();
+
+        double desiredAngleRad = Math.atan2(dy, dx);
+        double currentAngleRad = currentPose.getRotation().getRadians();
+
+        // Wrap both angles explicitly
+        desiredAngleRad = wrapAngleRadians(desiredAngleRad);
+        currentAngleRad = wrapAngleRadians(currentAngleRad - Math.PI);
+
+        double error = wrapAngleRadians(desiredAngleRad - currentAngleRad);
+
         if (!Robot.consts.disableAllLogs()) {
             Log.log(
-                    "ROBOT/Commands/Swerve/TeleopSwerveHeadingCmd/Swerve Heading: ",
-                    (swerve.getState().Pose.getRotation().getDegrees()));
+                    "ROBOT/Commands/Swerve/TeleopSwerveReverseTargetingCmd/Desired Angle (deg)",
+                    Math.toDegrees(desiredAngleRad));
             Log.log(
-                    "ROBOT/Commands/Swerve/TeleopSwerveHeadingCmd/error: ",
-                    (swerve.getState().Pose.getRotation().getDegrees() - heading));
-            Log.log("ROBOT/Commands/Swerve/TeleopSwerveHeadingCmd/PID CALCULATION: ", omega);
+                    "ROBOT/Commands/Swerve/TeleopSwerveReverseTargetingCmd/Current Angle (deg)",
+                    Math.toDegrees(currentAngleRad));
+            Log.log(
+                    "ROBOT/Commands/Swerve/TeleopSwerveReverseTargetingCmd/Wrapped Error (deg)",
+                    Math.toDegrees(error));
         }
-        Translation2d vt = translationStick();
 
+        double omega = rotationController.calculate(currentAngleRad, desiredAngleRad);
+
+        Translation2d vt = translationStick();
         double allianceFlipper = 1.0;
         // if (AllianceSymmetry.isBlue()) {
         //     allianceFlipper = 1.0;
