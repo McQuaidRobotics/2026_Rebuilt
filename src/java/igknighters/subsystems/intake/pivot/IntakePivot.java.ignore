@@ -1,4 +1,4 @@
-package igknighters.subsystems.turret;
+package igknighters.subsystems.intake.pivot;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
@@ -17,6 +17,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.constants.SubsystemConstants;
+import igknighters.constants.SubsystemConstants.kIntake.kPivot;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.PivotConfig;
@@ -28,9 +29,9 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class TurretNoAbstract extends SubsystemBase {
+public class IntakePivot extends SubsystemBase {
 
-    CANcoder turretEncoder = new CANcoder(16, SubsystemConstants.superStructure);
+    CANcoder pivotCaNcoder = new CANcoder(16, SubsystemConstants.superStructure);
     // --------------------------------------------------------------------------------------------------
     // HERE IS WHAT I DID KYLE
     // YAMS IS THE GOAT OF THE ENTIRE WORLD
@@ -51,7 +52,7 @@ public class TurretNoAbstract extends SubsystemBase {
             new SmartMotorControllerConfig(this)
                     .withControlMode(ControlMode.CLOSED_LOOP)
                     // Feedback Constants (PID Constants)
-                    .withClosedLoopController(50, 0, 0)
+                    .withClosedLoopController(kPivot.kP, kPivot.kI, kPivot.kD)
                     .withSimClosedLoopController(5, 0, 0)
                     .withTrapezoidalProfile(
                             DegreesPerSecond.of(90), DegreesPerSecondPerSecond.of(45))
@@ -63,7 +64,7 @@ public class TurretNoAbstract extends SubsystemBase {
                     .withFeedforward(new ArmFeedforward(0, 0, 0))
                     .withSimFeedforward(new ArmFeedforward(0, 0, 0))
                     // Telemetry name and verbosity level
-                    .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
+                    .withTelemetry("PivotMotor", TelemetryVerbosity.HIGH)
                     // Gearing from the motor rotor to final shaft.
                     // In this example GearBox.fromReductionStages(3,4) is the same as
                     // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to
@@ -80,7 +81,7 @@ public class TurretNoAbstract extends SubsystemBase {
                     .withMomentOfInertia(Meters.of(.1), Pounds.of(.15))
                     .withClosedLoopRampRate(Seconds.of(0.25))
                     .withOpenLoopRampRate(Seconds.of(0.25))
-                    .withExternalEncoder(turretEncoder)
+                    .withExternalEncoder(pivotCaNcoder)
                     .withExternalEncoderInverted(true)
                     .withExternalEncoderGearing(
                             new MechanismGearing(GearBox.fromReductionStages(1)))
@@ -94,38 +95,40 @@ public class TurretNoAbstract extends SubsystemBase {
     private SmartMotorController talonSmartMotorController =
             new TalonFXWrapper(talon, DCMotor.getFalcon500(1), smcConfig);
 
-    private final PivotConfig shooterConfig =
+    private final PivotConfig pivotConfig =
             new PivotConfig(talonSmartMotorController)
                     // Soft limit is applied to the SmartMotorControllers PID
 
-                    .withHardLimits(Degrees.of(-280), Degrees.of(100)) //
-                    .withTelemetry("SHOOTER_TURRET", TelemetryVerbosity.HIGH);
-    private Pivot shooter = new Pivot(shooterConfig);
+                    .withHardLimits(
+                            Degrees.of(kPivot.MIN_ANGLE_DEGREES),
+                            Degrees.of(kPivot.MAX_ANGLE_DEGREES)) //
+                    .withTelemetry("INTAKE_PIVOT", TelemetryVerbosity.HIGH);
+    private Pivot pivot = new Pivot(pivotConfig);
 
     public void targetAngle(Angle angle) {
         // shooter.setMeasurementPositionSetpoint(); OG
-        shooter.setMechanismPositionSetpoint(angle); // fix
+        pivot.setMechanismPositionSetpoint(angle); // fix
     }
 
     public Angle getCurrentAngle() {
-        return shooter.getAngle();
+        return pivot.getAngle();
     }
 
     public Command targetAngleCommand(Angle angle) {
-        return shooter.run(angle);
+        return pivot.run(angle);
     }
 
     public Command targetAngleAndEndWhenReached(Angle angle) {
-        return shooter.runTo(angle, Rotations.of(.05));
+        return pivot.runTo(angle, Rotations.of(.05));
     }
 
     @Override
     public void periodic() {
-        shooter.updateTelemetry();
+        pivot.updateTelemetry();
     }
 
     @Override
     public void simulationPeriodic() {
-        shooter.simIterate();
+        pivot.simIterate();
     }
 }
