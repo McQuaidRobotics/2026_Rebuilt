@@ -390,7 +390,14 @@ public class Robot extends LoggedRobot {
             double headingDeg = driveState.Pose.getRotation().getDegrees();
             double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
             Pose2d currentPose =
-                    subsystems.vision.getRobotPoseFromVision(headingDeg, omegaRps, 0, 0, 0, 0);
+                    subsystems.vision.getRobotPoseFromVision(
+                            headingDeg,
+                            omegaRps,
+                            0,
+                            0,
+                            0,
+                            0,
+                            Degrees.of(subsystems.shooter.getTurretAngleDegrees()));
 
             if (currentPose != null) {
                 subsystems.swerve.addVisionMeasurement(
