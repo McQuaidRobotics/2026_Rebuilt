@@ -126,7 +126,7 @@ public abstract class RobotConsts {
 
         InvertedValue MOTOR_INVERTED();
 
-        double TURRET_ROBOT_DISTANCE_FROM_CENTERS();
+        double TURRET_ROBOT_DISTANCE_FROM_CENTERS_INCHES();
 
         int CANCODER_ID();
 

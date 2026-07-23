@@ -3,6 +3,7 @@ package igknighters.subsystems.LimeLightVision.Cameras;
 import edu.wpi.first.math.geometry.Pose2d;
 import igknighters.subsystems.LimeLightVision.Helpers.VisionSimulator;
 import igknighters.util.Merging.PoseAverager;
+import igknighters.util.Prediction.VisionSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +61,28 @@ public class LimeLightVisionSim extends LimeLights {
             }
         }
         return PoseAverager.averagePose2ds(estimatedPoses);
+    }
+
+    @Override
+    public VisionSnapshot getVisionSnapshot(
+            double yaw,
+            double yawRate,
+            double pitch,
+            double pitchRate,
+            double roll,
+            double rollRate) {
+        ArrayList<Pose2d> poses = new ArrayList<>();
+        ArrayList<Double> timestamps = new ArrayList<>();
+
+        for (VisionSimulator simulator : visionSimulators) {
+            Pose2d estimatedPose = simulator.getEstimatedPose();
+            if (estimatedPose != null) {
+                poses.add(estimatedPose);
+                timestamps.add(simulator.getTime());
+            }
+        }
+
+        return new VisionSnapshot(poses.toArray(new Pose2d[0]), timestamps.toArray(new Double[0]));
     }
 
     @Override
