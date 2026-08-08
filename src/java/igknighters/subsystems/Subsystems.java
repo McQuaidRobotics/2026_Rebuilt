@@ -47,6 +47,6 @@ public class Subsystems {
         this.vision = vision;
         this.led = led;
         this.luma = luma;
-        this.lockedResources = new SubsystemBase[] {swerve, vision, led, luma};
+        this.lockedResources = new SubsystemBase[] {swerve, vision, led, luma, hood};
     }
 }
