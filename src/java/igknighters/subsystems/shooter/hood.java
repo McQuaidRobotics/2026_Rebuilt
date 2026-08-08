@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
-import igknighters.constants.SubsystemConstants.kShooter.kTurret;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.PivotConfig;
@@ -29,7 +28,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.remote.TalonFXWrapper;
 
-public class hood extends SubsystemBase {
+public class Hood extends SubsystemBase {
 
     private SmartMotorControllerConfig smcConfig =
             new SmartMotorControllerConfig(this)
@@ -60,69 +59,53 @@ public class hood extends SubsystemBase {
                     .withStatorCurrentLimit(Amps.of(40))
                     .withClosedLoopRampRate(Seconds.of(0.25))
                     .withOpenLoopRampRate(Seconds.of(0.25))
-                    .withSoftLimits(Degrees.of(-270), Degrees.of(90))
+                    .withSoftLimits(Degrees.of(kHood.MIN_ANGLE_DEGREES), Degrees.of(kHood.MAX_ANGLE_DEGREES))
                     .withMomentOfInertia(Meters.of(.1), Pounds.of(.15))
                     .withClosedLoopRampRate(Seconds.of(0.25))
                     .withOpenLoopRampRate(Seconds.of(0.25))
                     .withExternalEncoderInverted(false)
                     .withExternalEncoderGearing(
                             new MechanismGearing(GearBox.fromReductionStages(1)))
-                    .withExternalEncoderZeroOffset(
-                            Rotations.of(
-                                    kTurret.CANCODER_OFFSET_ROTATIONS)) // this is what allows you
-                    // to zero the encoder
-                    .withUseExternalFeedbackEncoder(true)
+                    .withUseExternalFeedbackEncoder(false)
                     .withStartingPosition(Degrees.of(0));
 
-    private TalonFX talon = new TalonFX(kTurret.MOTOR_ID, SubsystemConstants.superStructure);
+    private TalonFX talon = new TalonFX(kHood.MOTOR_ID, SubsystemConstants.superStructure);
 
     private SmartMotorController talonSmartMotorController =
             new TalonFXWrapper(talon, DCMotor.getFalcon500(1), smcConfig);
 
-    private final PivotConfig shooterConfig =
-            new PivotConfig(talonSmartMotorController)
+    private final PivotConfig hoodConfig =
+            new PivotConfig()
+            .withHardLimits(Degrees.of(kHood.MIN_ANGLE_DEGREES), Degrees.of(kHood.MAX_ANGLE_DEGREES))
+            .withTelemetry("PivotExample", TelemetryVerbosity.HIGH)
                     // Soft limit is applied to the SmartMotorControllers PID
 
-                    .withHardLimits(Degrees.of(-280), Degrees.of(100))
-                    .withTelemetry("SHOOTER_TURRET", TelemetryVerbosity.HIGH);
-    private Pivot shooter = new Pivot(shooterConfig);
+                    .withHardLimits(Degrees.of(kHood.MIN_ANGLE_DEGREES), Degrees.of(kHood.MAX_ANGLE_DEGREES))
+                    .withTelemetry("SHOOTER_HOOD", TelemetryVerbosity.HIGH);
+    private Pivot hood = new Pivot(hoodConfig, talonSmartMotorController);
 
-    public static Angle wrapAngle(Angle angle) {
-        double ogDegrees = angle.in(Degrees);
-        double maxDegrees = SubsystemConstants.kShooter.kTurret.MAX_ANGLE_DEGREES;
-        double MIN_ANGLE_DEGREES = SubsystemConstants.kShooter.kTurret.MIN_ANGLE_DEGREES;
-        double width = maxDegrees - MIN_ANGLE_DEGREES;
+    
 
-        double newDegs =
-                MIN_ANGLE_DEGREES + (((ogDegrees - MIN_ANGLE_DEGREES) % width + width) % width);
-
-        return Degrees.of(newDegs);
-    }
-
-    public void targetAngle(Angle angle) {
-        // shooter.setMeasurementPositionSetpoint(); OG
-        shooter.setMechanismPositionSetpoint(wrapAngle(angle)); // fix
-    }
 
     public Angle getCurrentAngle() {
-        return shooter.getAngle();
+        return hood.getAngle();
     }
 
     public Command targetAngleCommand(Angle angle) {
-        return shooter.run(angle);
+        return hood.run(angle);
     }
 
     public Command targetAngleAndEndWhenReached(Angle angle) {
-        return shooter.runTo(angle, Rotations.of(.05));
+        return hood.runTo(angle, Rotations.of(.05));
     }
 
     @Override
     public void periodic() {
-        shooter.updateTelemetry();
+        hood.updateTelemetry();
     }
 
     @Override
     public void simulationPeriodic() {
-        shooter.simIterate();
+        hood.simIterate();
     }
 }
