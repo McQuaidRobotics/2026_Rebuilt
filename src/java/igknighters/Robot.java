@@ -240,7 +240,7 @@ public class Robot extends LoggedRobot {
                         new Led(90, 2),
                         new Luma(true, "object-detection"),
                         new Hood());
-                        
+
         setUpSwerve(subsystems);
         publishCommandsAndSubystems(subsystems);
         setUpAutos(subsystems);
@@ -271,7 +271,7 @@ public class Robot extends LoggedRobot {
                         new Led(90, 2),
                         new Luma(true, "object-detection"),
                         new Hood());
-                        
+
         setUpSwerve(subsystems);
         pose_pred = new RobotPosePredictor(subsystems.swerve);
         publishCommandsAndSubystems(subsystems);
@@ -461,6 +461,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopInit() {
+        //
         subsystems.vision.enableCameras(0);
         subsystems.swerve.clearActiveTrajectory();
         if (fuelSim != null) {
