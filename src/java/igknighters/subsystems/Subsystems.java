@@ -7,7 +7,7 @@ import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.led.Led;
-import igknighters.subsystems.shooter.Hood;
+import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 
 /**
@@ -27,7 +27,7 @@ public class Subsystems {
     /** The Luma subsystem for object detection. */
     public final Luma luma;
 
-    public final Hood hood;
+    public final Shooter shooter;
 
     /**
      * Array of subsystems that require exclusive access (Locked resources). Used for publishing
@@ -44,13 +44,15 @@ public class Subsystems {
      * @param luma The Luma subsystem.
      * @param hood The Hood subsystem.
      */
-    public Subsystems(Swerve swerve, LimeLightVision vision, Led led, Luma luma, Hood hood) {
+    public Subsystems(Swerve swerve, LimeLightVision vision, Led led, Luma luma, Shooter shooter) {
         this.swerve = swerve;
-        this.hood = hood;
+        this.shooter = shooter;
         this.vision = vision;
         this.led = led;
         this.luma = luma;
-        this.lockedResources = new SubsystemBase[] {swerve, vision, led, luma, hood};
-        this.hood.setDefaultCommand(hood.targetAngleCommand(Degrees.of(kHood.MIN_ANGLE_DEGREES)));
+        this.lockedResources =
+                new SubsystemBase[] {swerve, vision, led, luma, shooter, shooter.hood};
+        this.shooter.hood.setDefaultCommand(
+                shooter.hood.targetAngleCommand(Degrees.of(kHood.MIN_ANGLE_DEGREES)));
     }
 }

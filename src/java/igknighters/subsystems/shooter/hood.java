@@ -17,9 +17,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import igknighters.Robot;
 import igknighters.constants.SubsystemConstants;
 import igknighters.constants.SubsystemConstants.kShooter.kHood;
 import igknighters.util.log.Log;
@@ -111,21 +109,31 @@ public class Hood extends SubsystemBase {
             new SensorConfig("hoodLimit") // Name of the sensor
                     .withField(
                             "Limit", dio::get,
-                            false) // Add a Field to the sensor named "Beam" whose value is
+                            false) // Add a Field to the sensor named "Limit" whose value is
                     // dio.get() and defaults to false
+                    //     .withSimulatedValue(
+                    //             "hoodLimit",
+                    //             Seconds.of(3),
+                    //             Seconds.of(4),
+                    //             true) // Change the "Beam" field to true between 3s and 4s into a
+                    // match
+                    // REMOVED IT BECAUSE IT MIGHT GIVE U A FALSE IMPRESSION THE CODE IS WORKING
                     .withSimulatedValue(
-                            "hoodLimit",
-                            Seconds.of(3),
-                            Seconds.of(4),
-                            true) // Change the "Beam" field to true between 3s and 4s into a match
-                    .withSimulatedValue(
-                            "hoodLimit",
+                            "Limit",
                             hood.isNear(Degrees.of(kHood.MIN_ANGLE_DEGREES), Degrees.of(2)),
-                            true) // Change "Beam" field to true when the arm is near 40deg +- 2deg
+                            true) // Change "Beam" field to true when the arm is near 18.6 +- 2deg
                     .getSensor(); // Get the sensor.
 
     public boolean getHoodLimit() {
+        Log.log("ROBOT/SUBSYSTEMS/SHOOTER/HOOD/LIMIT_HIT", hoodLimit.getAsBoolean("Limit"));
+        Log.log(
+                "ROBOT/SUBSYSTEMS/SHOOTER/HOOD/POSITION_ERROR",
+                hood.getAngle().minus(Degrees.of(kHood.MIN_ANGLE_DEGREES)).in(Degrees));
         return hoodLimit.getAsBoolean("Limit");
+    }
+
+    public void setHoodVoltage(double voltage) {
+        talonSmartMotorController.setVoltage(Volts.of(voltage));
     }
 
     public Angle getCurrentAngle() {
@@ -140,43 +148,15 @@ public class Hood extends SubsystemBase {
         return hood.runTo(angle, Rotations.of(.05));
     }
 
-    public boolean isZeroed = false;
+    public static boolean isZeroed = false;
 
-    
-    public static Command homeHood() {
-        // return Commands.run(() -> shooter.setHoodVoltage(-1)).until(()
-        // ->shooter.isHoodSensorHit());
-        if (isZeroed == true) {
-            pass;
-        }
-        return shooter.hood
-                .run(() -> shooter.hood.setVoltage(-1))
-                .until(() -> shooter.isHoodSensorTripped())
-                .withTimeout(3.0)
-                .withName("DRIVE DOWN HAS NOT HIT THE SENSOR YET HOME HOOD") // failsafe, can be
-                // deleted if needed,
-                // might be conflicting
-                // with the
-                // below code, needs testing on robot otherwise.
-                .andThen(
-                        Commands.runOnce(
-                                () -> {
-                                    shooter.hood.setVoltage(0);
-                                    shooter.hood.zeroAt(
-                                            Degrees.of(
-                                                    Robot.consts
-                                                            .shooter()
-                                                            .kHood()
-                                                            .MIN_ANGLE_DEGREES()));
-                                }))
-                .withName("HOOD IS DOWN ON SENSOR");
+    public void zeroAt(Angle angle) {
+        talonSmartMotorController.setPosition(angle);
     }
 
-    
-
-    public Command zeroHood() {
-        return hood.set(-.3).until(() -> getHoodLimit());
-    }
+    //     public Command zeroHood() {
+    //         return hood.set(-.3).until(() -> getHoodLimit());
+    //     }
 
     public void targetAngleNoCommand(Angle angle) {
         Log.log("ROBOT/Subsystems/Shooter/Hood/Target_Position", angle.in(Degrees));
@@ -186,18 +166,14 @@ public class Hood extends SubsystemBase {
     @Override
     public void periodic() {
         hood.updateTelemetry();
-        if (getHoodLimit()==false) {
+
+        if (getHoodLimit() == false) {
             isZeroed = false;
         }
-
-
-        if (getHoodLimit()==true && isZeroed==false) {
+        if (getHoodLimit() == true && isZeroed == false) {
             talonSmartMotorController.setPosition(Degrees.of(kHood.MIN_ANGLE_DEGREES));
             isZeroed = true;
         }
-
-        
-        
     }
 
     @Override
