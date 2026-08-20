@@ -54,16 +54,10 @@ public class Hood extends SubsystemBase {
                     // Feedforward Constants
                     .withFeedforward(new ArmFeedforward(0, 0, 0))
                     .withSimFeedforward(new ArmFeedforward(0, 0, 0))
-                    // Telemetry name and verbosity level
+     
                     .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
-                    // Gearing from the motor rotor to final shaft.
-                    // In this example GearBox.fromReductionStages(3,4) is the same as
-                    // GearBox.fromStages("3:1","4:1") which corresponds to the gearbox
-                    // attached to
-                    // your motor.
-                    // You could also use .withGearing(12) which does the same thing.
-                    .withGearing(360 / 15) // 24:1 gearing
-                    // Motor properties to prevent over currenting.
+                
+                    .withGearing(360 / 15)
                     .withMotorInverted(false)
                     .withIdleMode(MotorMode.BRAKE)
                     .withStatorCurrentLimit(Amps.of(40))
@@ -76,7 +70,7 @@ public class Hood extends SubsystemBase {
                     .withClosedLoopRampRate(Seconds.of(0.25))
                     .withOpenLoopRampRate(Seconds.of(0.25));
 
-    private DigitalInput dio = new DigitalInput(0); // Standard DIO
+    private DigitalInput dio = new DigitalInput(kHood.REVERSE_LIMIT_SWITCH_ID); 
 
     private TalonFX talon = new TalonFX(kHood.MOTOR_ID, SubsystemConstants.superStructure);
 
@@ -86,7 +80,7 @@ public class Hood extends SubsystemBase {
     MechanismPositionConfig hoodPosConfig =
             new MechanismPositionConfig()
                     .withRelativePosition(
-                            new Translation3d(0.2, 0.0, 0.3)) // 20 cm forward, 30 cm up
+                            new Translation3d(0.2, 0.0, 0.3)) 
                     .withMaxRobotLength(Meters.of(0.85))
                     .withMaxRobotHeight(Meters.of(1.20))
                     .withMovementPlane(MechanismPositionConfig.Plane.XZ);
@@ -109,20 +103,14 @@ public class Hood extends SubsystemBase {
             new SensorConfig("hoodLimit") // Name of the sensor
                     .withField(
                             "Limit", dio::get,
-                            false) // Add a Field to the sensor named "Limit" whose value is
-                    // dio.get() and defaults to false
-                    //     .withSimulatedValue(
-                    //             "hoodLimit",
-                    //             Seconds.of(3),
-                    //             Seconds.of(4),
-                    //             true) // Change the "Beam" field to true between 3s and 4s into a
-                    // match
-                    // REMOVED IT BECAUSE IT MIGHT GIVE U A FALSE IMPRESSION THE CODE IS WORKING
+                            false) // Add a Field to the sensor named "Limit" 
                     .withSimulatedValue(
                             "Limit",
                             hood.isNear(Degrees.of(kHood.MIN_ANGLE_DEGREES), Degrees.of(2)),
-                            true) // Change "Beam" field to true when the arm is near 18.6 +- 2deg
+                            true) 
                     .getSensor(); // Get the sensor.
+
+                    // This is a simulated and real sensor that will return true when the hood is near the minimum angle.
 
     public boolean getHoodLimit() {
         Log.log("ROBOT/SUBSYSTEMS/SHOOTER/HOOD/LIMIT_HIT", hoodLimit.getAsBoolean("Limit"));
@@ -154,10 +142,6 @@ public class Hood extends SubsystemBase {
         talonSmartMotorController.setPosition(angle);
     }
 
-    //     public Command zeroHood() {
-    //         return hood.set(-.3).until(() -> getHoodLimit());
-    //     }
-
     public void targetAngleNoCommand(Angle angle) {
         Log.log("ROBOT/Subsystems/Shooter/Hood/Target_Position", angle.in(Degrees));
         hood.setMechanismPositionSetpoint(angle);
@@ -166,12 +150,13 @@ public class Hood extends SubsystemBase {
     @Override
     public void periodic() {
         hood.updateTelemetry();
-
+        Log.log("ROBOT/SUBSYSTEMS/SHOOTER/HOOD/POSITION", hood.getAngle().in(Degrees));
+        Log.log("ROBOT/SUBSYSTEMS/SHOOTER/HOOD/LIMIT_NO_YAM", dio.get());
         if (getHoodLimit() == false) {
             isZeroed = false;
         }
         if (getHoodLimit() == true && isZeroed == false) {
-            talonSmartMotorController.setPosition(Degrees.of(kHood.MIN_ANGLE_DEGREES));
+            talon.setPosition(Degrees.of(kHood.MIN_ANGLE_DEGREES));
             isZeroed = true;
         }
     }

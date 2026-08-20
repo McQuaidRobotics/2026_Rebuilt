@@ -139,7 +139,7 @@ public class DriverController {
                 subsystems.shooter.hood.targetAngleCommand(Degrees.of(kHood.MAX_ANGLE_DEGREES)));
         this.DPD.whileTrue(
                 subsystems.shooter.hood.targetAngleCommand(Degrees.of(kHood.MIN_ANGLE_DEGREES)));
-        this.A.onTrue(ShooterCommands.homeHood(subsystems.shooter));
+        this.A.whileTrue(ShooterCommands.homeHood(subsystems.shooter));
         // Example: this.A.whileTrue(new MyCommand(subsystems.mySubsystem));
         // Swerve driving is handled by the default command set in Robot.java,
         // so no explicit bind is needed here for basic teleop driving.

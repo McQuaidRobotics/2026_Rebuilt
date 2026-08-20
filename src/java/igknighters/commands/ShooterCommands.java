@@ -11,11 +11,8 @@ public class ShooterCommands {
     public static Command homeHood(Shooter shooter) {
         // return Commands.run(() -> shooter.setHoodVoltage(-1)).until(()
         // ->shooter.isHoodSensorHit());
-        if (shooter.isHoodSensorHit()) {
-            return Commands.none();
-        }
         return shooter.hood
-                .run(() -> shooter.hood.setHoodVoltage(-1))
+                .run(() -> shooter.hood.setHoodVoltage(-3))
                 .until(() -> shooter.isHoodSensorHit())
                 .withTimeout(3.0)
                 .withName("DRIVE DOWN HAS NOT HIT THE SENSOR YET HOME HOOD")
