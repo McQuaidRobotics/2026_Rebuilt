@@ -627,7 +627,7 @@ public class SecondBotRobotConsts extends RobotConsts {
         @Override
         // Magnet offset zeroized and then get the absolute position in rotations
         public double CANCODER_OFFSET_ROTATIONS() {
-            return -0.208740; // -0.081298828125;  Changed with wire chain fix
+            return 0.1259765625; // -0.081298828125;  Changed with wire chain fix
         }
 
         @Override

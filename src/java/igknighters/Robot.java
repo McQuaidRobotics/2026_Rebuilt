@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.*;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
+import com.ctre.phoenix6.CANBus.CANBusStatus;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -160,6 +161,7 @@ public class Robot extends LoggedRobot {
         autoChooser.addRoutine(
                 "Pass to Self Right with Depot and Human Player",
                 routines::PASS_TO_SELF_RIGHT_WITH_DEPOT_AND_HUMAN_PLAYER);
+        autoChooser.addRoutine("mean", routines::meanRoutine);
         autoChooser.addRoutine("OP RIGHT", routines::OP_RIGHT);
         autoChooser.addRoutine("OP_LEFT", routines::OP_LEFT);
         autoChooser.addRoutine("SQUOVAL", routines::SQUOVAL);
@@ -349,6 +351,10 @@ public class Robot extends LoggedRobot {
         } else {
             DrivingSharedState.getInstance().setUnderTrench(false);
         }
+
+        CANBusStatus status = consts.getSuperStructureBus().getStatus();
+
+        Log.log("ROBOT/SYSSTATS/SUPER_BUS", status);
         turret_pred.logTurretPose(
                 turret_pred.getTurretPoseFieldRelativeOffset(subsystems.swerve.getState().Pose));
         pose_pred_error.logPose(subsystems.swerve.getState().Pose);
