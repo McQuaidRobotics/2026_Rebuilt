@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -43,12 +44,11 @@ import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.FuelSim;
-import igknighters.util.RobotPosePredError;
-import igknighters.util.RobotPosePredictor;
+import igknighters.util.Prediction.AparatusPosePredictor;
+import igknighters.util.Prediction.Localizer;
+import igknighters.util.Prediction.Logging.PredictedPoseLogger;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
-import igknighters.util.TurretPosePredError;
-import igknighters.util.TurretPosePredictor;
 import igknighters.util.log.Log;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -64,16 +64,46 @@ public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
 
     public static RobotConsts consts;
+
+    static {
+        // THE IDS WILL BE WRONG SINCE SN IS WRONG WILL DEFAULT TO SECOND BOT
+        if (RobotIdentity.isGemini()) {
+            consts = new GeminiRobotConsts();
+        } else if (RobotIdentity.isSecondBot()) {
+            consts = new SecondBotRobotConsts();
+        } else if (Robot.isReal()) {
+            throw new IllegalStateException(
+                    "Unknown robot identity ENSURE SERIAL NUMBERS MATCH"); // only problem irl
+        } else {
+            consts = new GeminiRobotConsts(); // in sim with unknown sn we should pick something
+        }
+    }
+
     private AutoFactory autoFactory;
     public final AutoChooser autoChooser = new AutoChooser();
     public final AutoChooser testChooser = new AutoChooser();
     double i = 0;
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
-    public static RobotPosePredictor pose_pred;
-    public static TurretPosePredictor turret_pred = new TurretPosePredictor();
-    public static RobotPosePredError pose_pred_error = new RobotPosePredError();
-    public static TurretPosePredError turret_pred_error = new TurretPosePredError();
+    public static Localizer localizer;
+    public static AparatusPosePredictor turret_pred =
+            new AparatusPosePredictor(
+                    new Translation2d(
+                            Conv.INCHES_TO_METERS
+                                    * -Robot.consts
+                                            .shooter()
+                                            .kTurret()
+                                            .TURRET_ROBOT_DISTANCE_FROM_CENTERS_INCHES()
+                                    * Math.sqrt(2)
+                                    / 2,
+                            Conv.INCHES_TO_METERS
+                                    * -Robot.consts
+                                            .shooter()
+                                            .kTurret()
+                                            .TURRET_ROBOT_DISTANCE_FROM_CENTERS_INCHES()
+                                    * Math.sqrt(2)
+                                    / 2));
+    // BACK RIGHT AREA
 
     private final DriverController driverController = new DriverController(0);
 
@@ -135,20 +165,20 @@ public class Robot extends LoggedRobot {
         }
     }
 
-    public void setUpRobotConsts() {
+    // public void setUpRobotConsts() {
 
-        // THE IDS WILL BE WRONG SINCE SN IS WRONG WILL DEFAULT TO SECOND BOT
-        if (RobotIdentity.isGemini()) {
-            consts = new GeminiRobotConsts();
-        } else if (RobotIdentity.isSecondBot()) {
-            consts = new SecondBotRobotConsts();
-        } else if (Robot.isReal()) {
-            throw new IllegalStateException(
-                    "Unknown robot identity ENSURE SERIAL NUMBERS MATCH"); // only problem irl
-        } else {
-            consts = new GeminiRobotConsts(); // in sim with unknown sn we should pick something
-        }
-    }
+    //     // THE IDS WILL BE WRONG SINCE SN IS WRONG WILL DEFAULT TO SECOND BOT
+    //     if (RobotIdentity.isGemini()) {
+    //         consts = new GeminiRobotConsts();
+    //     } else if (RobotIdentity.isSecondBot()) {
+    //         consts = new SecondBotRobotConsts();
+    //     } else if (Robot.isReal()) {
+    //         throw new IllegalStateException(
+    //                 "Unknown robot identity ENSURE SERIAL NUMBERS MATCH"); // only problem irl
+    //     } else {
+    //         consts = new GeminiRobotConsts(); // in sim with unknown sn we should pick something
+    //     }
+    // }
 
     public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsystems.swerve.createAutoFactory();
@@ -231,7 +261,7 @@ public class Robot extends LoggedRobot {
     }
 
     public Robot() {
-        setUpRobotConsts();
+        // setUpRobotConsts();
         setUpAdvantageScope();
         setUpCommandLogging();
         subsystems =
@@ -249,7 +279,7 @@ public class Robot extends LoggedRobot {
         setUpTest(subsystems);
         bindDriverController();
 
-        pose_pred = new RobotPosePredictor(subsystems.swerve);
+        localizer = Localizer.initialize(subsystems.swerve);
 
         subsystemTriggers.SetupTriggers(subsystems, driverController, poseSupplier());
 
@@ -259,7 +289,7 @@ public class Robot extends LoggedRobot {
     }
 
     public Robot(boolean isSwerveDisabled) {
-        setUpRobotConsts();
+        // setUpRobotConsts();
         setUpAdvantageScope();
         setUpCommandLogging();
         subsystems =
@@ -272,7 +302,7 @@ public class Robot extends LoggedRobot {
                         new Intake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
-        pose_pred = new RobotPosePredictor(subsystems.swerve);
+        localizer = Localizer.initialize(subsystems.swerve);
         publishCommandsAndSubystems(subsystems);
         setUpAutos(subsystems);
         setUpTest(subsystems);
@@ -316,7 +346,7 @@ public class Robot extends LoggedRobot {
     }
 
     boolean underTrench() {
-        Pose2d turretPredPose = turret_pred.getPredictedPose().get().toPose2d();
+        Pose2d turretPredPose = turret_pred.getPredictedPose(.05);
         Pose2d turretAccPose = subsystems.swerve.getState().Pose;
 
         double dx1Pred = Math.abs(turretPredPose.getX() - FieldConstants.BUMP.BUMP_1_X_METERS);
@@ -342,18 +372,14 @@ public class Robot extends LoggedRobot {
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
-        pose_pred.setVelocitiesAndPose();
+        localizer.update();
 
         if (underTrench()) {
             DrivingSharedState.getInstance().setUnderTrench(true);
         } else {
             DrivingSharedState.getInstance().setUnderTrench(false);
         }
-        turret_pred.logTurretPose(
-                turret_pred.getTurretPoseFieldRelativeOffset(subsystems.swerve.getState().Pose));
-        pose_pred_error.logPose(subsystems.swerve.getState().Pose);
-        turret_pred_error.logPose(
-                turret_pred.getTurretPoseFieldRelativeOffset(subsystems.swerve.getState().Pose));
+
         if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()
                     .updateTurret(
@@ -385,27 +411,16 @@ public class Robot extends LoggedRobot {
                     new Pose3d(0, 0, 0, new Rotation3d(0, 0.0, 0))
                 });
 
+        PredictedPoseLogger.logPredictedPose();
+        PredictedPoseLogger.logErrors();
+
         if (kUseLimelight) {
             var driveState = subsystems.swerve.getState();
             double headingDeg = driveState.Pose.getRotation().getDegrees();
             double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
-            Pose2d currentPose =
-                    subsystems.vision.getRobotPoseFromVision(headingDeg, omegaRps, 0, 0, 0, 0);
-
-            if (currentPose != null) {
-                subsystems.swerve.addVisionMeasurement(
-                        currentPose,
-                        subsystems.vision
-                                .getLastTimeStamp()); // trusts vision rotation less. Needs tuning
-                // increase the std devs to trust vision less
-                if (!Robot.consts.limelightVision().disableVisionLogs()) {
-                    Log.log("ROBOT/Subsystems/Vision/Null Pose", false);
-                }
-            } else {
-                if (!Robot.consts.limelightVision().disableVisionLogs()) {
-                    Log.log("ROBOT/Subsystems/Vision/Null Pose", true);
-                }
-            }
+            Localizer.getInstance()
+                    .updateVision(
+                            subsystems.vision.getVisionSnapshot(headingDeg, omegaRps, 0, 0, 0, 0));
         }
     }
 
@@ -583,7 +598,24 @@ public class Robot extends LoggedRobot {
                 length,
                 bumperHeight,
                 () -> subsystems.swerve.getState().Pose,
-                subsystems.swerve::getFieldRelativeSpeeds);
+                () ->
+                        Localizer.getInstance()
+                                .getInstantaneousTurretFieldSpeeds(
+                                        new Translation2d(
+                                                Conv.INCHES_TO_METERS
+                                                        * -Robot.consts
+                                                                .shooter()
+                                                                .kTurret()
+                                                                .TURRET_ROBOT_DISTANCE_FROM_CENTERS_INCHES()
+                                                        * Math.sqrt(2)
+                                                        / 2,
+                                                Conv.INCHES_TO_METERS
+                                                        * -Robot.consts
+                                                                .shooter()
+                                                                .kTurret()
+                                                                .TURRET_ROBOT_DISTANCE_FROM_CENTERS_INCHES()
+                                                        * Math.sqrt(2)
+                                                        / 2)));
 
         // Register a front intake zone (0.1m deep, 0.4m wide, centered in front of bumper)
         fuelSim.registerIntake(

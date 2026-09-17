@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import igknighters.Robot;
 import igknighters.subsystems.LimeLightVision.Helpers.LimelightHelpers;
 import igknighters.util.Merging.PoseAverager;
+import igknighters.util.Prediction.VisionSnapshot;
 import igknighters.util.log.Log;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,6 +114,68 @@ public class LimeLightVisionReal extends LimeLights {
         }
 
         return PoseAverager.averagePose2ds(poses);
+    }
+
+    @Override
+    public VisionSnapshot getVisionSnapshot(
+            double yaw,
+            double yawRate,
+            double pitch,
+            double pitchRate,
+            double roll,
+            double rollRate) {
+
+        ArrayList<Pose2d> poses = new ArrayList<>();
+        ArrayList<Double> timestamps = new ArrayList<>();
+
+        // TUNABLE FILTER BOUNDS
+        final double MAX_TRUSTED_DISTANCE_METERS = 4.5;
+        final double MIN_SINGLE_TAG_DISTANCE_METERS = 2.5; // Be stricter if we only see one tag
+
+        for (String cameraName : cameraNames) {
+            if (LimelightHelpers.getTV(cameraName) == false) {
+                continue;
+            }
+
+            // Sync orientation parameters for the MT2 engine
+            LimelightHelpers.SetRobotOrientation(
+                    cameraName, yaw, yawRate, pitch, pitchRate, roll, rollRate);
+
+            var mt2Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
+            var mt1Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
+
+            if (mt1Estimate == null || mt1Estimate.tagCount == 0) {
+                continue; // No tags visible from this lens
+            }
+
+            // --- VALID FIELDS FROM LIMELIGHT_TARGET_BOTPOSE ---
+            double distanceToTarget = mt1Estimate.avgTagDist;
+            int visibleTags = mt1Estimate.tagCount;
+
+            // Detect extreme high-frequency impact shaking
+            boolean gyroIsDoubtful = Math.abs(yawRate) > 12.0 || Math.abs(rollRate) > 5.0;
+
+            // --- SELECTION ENGINE ---
+            if (mt2Estimate != null && mt2Estimate.tagCount > 0 && !gyroIsDoubtful) {
+                // Scenario A: Everything is stable, trust perspective-corrected MT2
+                poses.add(mt2Estimate.pose);
+                timestamps.add(mt2Estimate.timestampSeconds);
+            } else {
+                // Scenario B: Gyro is compromised OR we want to fall back to MT1.
+                // We validate MT1 using tag count and raw physical distance to prevent flipping.
+                boolean isCloseMultiTag =
+                        (visibleTags >= 2 && distanceToTarget <= MAX_TRUSTED_DISTANCE_METERS);
+                boolean isVeryCloseSingleTag =
+                        (visibleTags == 1 && distanceToTarget <= MIN_SINGLE_TAG_DISTANCE_METERS);
+
+                if (isCloseMultiTag || isVeryCloseSingleTag) {
+                    poses.add(mt1Estimate.pose);
+                    timestamps.add(mt1Estimate.timestampSeconds);
+                }
+            }
+        }
+
+        return new VisionSnapshot(poses.toArray(new Pose2d[0]), timestamps.toArray(new Double[0]));
     }
 
     @Override
