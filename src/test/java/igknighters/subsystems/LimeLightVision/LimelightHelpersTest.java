@@ -1,11 +1,13 @@
 package igknighters.subsystems.LimeLightVision;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static org.junit.jupiter.api.Assertions.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import igknighters.subsystems.LimeLightVision.Cameras.LimeLightVisionReal;
+import igknighters.util.Vision.REAL.StaticCamera;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -23,7 +25,8 @@ public class LimelightHelpersTest {
         String cam2 = "limelight-cam2";
         double rot1 = 1;
         double rot2 = 359;
-        LimeLightVisionReal vision = new LimeLightVisionReal(cam1, cam2);
+        VisionOrchestrator vision =
+                new VisionOrchestrator(List.of(new StaticCamera(cam1), new StaticCamera(cam2)));
 
         // Fake botpose array: [x, y, z, roll, pitch, yaw, latency, tagCount, ...]
         double[] fakeBotpose1 = new double[18];
@@ -108,11 +111,11 @@ public class LimelightHelpersTest {
 
         System.out.println("Read back from NT Cam 2: " + Arrays.toString(cam2ReadBack));
 
-        Pose2d robotVisionPose = vision.getRobotPoseFromVision(40.0, 0, 0, 0, 0, 0);
+        Pose2d robotVisionPose = vision.getPose(40.0, 0, 0, 0, 0, 0, Degrees.of(0.0));
         for (int i = 0; i < 10; i++) {
             System.out.println("Retrying pose fetch... attempt " + (i + 1));
             if (robotVisionPose != null) break;
-            robotVisionPose = vision.getRobotPoseFromVision(40.0, 0, 0, 0, 0, 0);
+            robotVisionPose = vision.getPose(40.0, 0, 0, 0, 0, 0, Degrees.of(0.0));
             Thread.sleep(100);
         }
         double[] cam1Orientation =
