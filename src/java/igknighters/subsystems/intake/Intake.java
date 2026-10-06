@@ -7,10 +7,10 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.Robot;
 import igknighters.subsystems.intake.pivot.Pivot;
-import igknighters.subsystems.intake.pivot.PivotReal;
+import igknighters.subsystems.intake.pivot.PivotDisabled;
 import igknighters.subsystems.intake.pivot.PivotSim;
 import igknighters.subsystems.intake.rollers.Rollers;
-import igknighters.subsystems.intake.rollers.RollersReal;
+import igknighters.subsystems.intake.rollers.RollersDisabled;
 import igknighters.subsystems.intake.rollers.RollersSim;
 import igknighters.util.log.Log;
 import org.littletonrobotics.junction.Logger;
@@ -25,8 +25,8 @@ public class Intake extends AbstractIntake {
 
     public Intake() {
         if (Robot.isReal()) {
-            pivot = new PivotReal();
-            rollers = new RollersReal();
+            pivot = new PivotDisabled();
+            rollers = new RollersDisabled();
         } else {
             pivot = new PivotSim();
             rollers = new RollersSim();
