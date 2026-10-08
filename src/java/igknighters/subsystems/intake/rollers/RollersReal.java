@@ -2,6 +2,7 @@ package igknighters.subsystems.intake.rollers;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -15,6 +16,8 @@ public class RollersReal extends Rollers {
     private final TalonFX topMotor;
 
     private final TalonFX bottomMotor;
+    private final StatusSignal<AngularVelocity> topVelocity;
+    private final StatusSignal<AngularVelocity> bottomVelocity;
     private final MotionMagicVelocityVoltage velocityContorl =
             new MotionMagicVelocityVoltage(0.0).withSlot(0);
 
@@ -29,6 +32,8 @@ public class RollersReal extends Rollers {
                         Robot.consts.intake().kCANBUS());
         topMotor.getConfigurator().apply(getTopConfig());
         bottomMotor.getConfigurator().apply(getBottomConfiguration());
+        topVelocity = topMotor.getVelocity();
+        bottomVelocity = bottomMotor.getVelocity();
     }
 
     public TalonFXConfiguration getTopConfig() {
@@ -75,7 +80,7 @@ public class RollersReal extends Rollers {
 
     @Override
     public AngularVelocity getSpeed() {
-        return topMotor.getVelocity().getValue();
+        return topVelocity.refresh().getValue();
     }
 
     @Override
@@ -100,7 +105,7 @@ public class RollersReal extends Rollers {
             Log.log("ROBOT/Subsystems/Intake/Rollers/SpeedRPSTOP", getSpeed());
             Log.log(
                     "ROBOT/Subsystems/Intake/Rollers/SpeedRPSBOTTOM",
-                    bottomMotor.getVelocity().getValueAsDouble());
+                    bottomVelocity.refresh().getValueAsDouble());
         }
     }
 }
