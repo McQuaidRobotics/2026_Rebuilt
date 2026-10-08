@@ -105,7 +105,7 @@ public class FlywheelReal extends Flywheel {
 
     @Override
     public AngularVelocity getSpeed() {
-        return mainShooter.getVelocity().refresh().getValue();
+        return mainShooter.getVelocity().getValue();
     }
 
     @Override
@@ -119,14 +119,13 @@ public class FlywheelReal extends Flywheel {
             if (!useOneMotor) {
                 Log.log(
                         "ROBOT/Subsystems/Shooter/Flywheels/FollowerMotor/SPEED",
-                        followerShooter.getVelocity().refresh().getValue().in(RPM));
+                        followerShooter.getVelocity().getValue().in(RPM));
             }
         }
 
         iterations++;
         if (iterations > 1000) {
-            double mainShooterTemp =
-                    mainShooter.getDeviceTemp().refresh().getValue().in(Fahrenheit);
+            double mainShooterTemp = mainShooter.getDeviceTemp().getValue().in(Fahrenheit);
             if (mainShooterTemp > 200) {
                 DriverStation.reportWarning(
                         "THE MAIN SHOOTER IS OVER 200 DEGREES FARENHEIGT PLEASE DISABLE THE ROBOT",
@@ -134,7 +133,7 @@ public class FlywheelReal extends Flywheel {
             }
             if (!useOneMotor) {
                 double followerShooterTemp =
-                        followerShooter.getDeviceTemp().refresh().getValue().in(Fahrenheit);
+                        followerShooter.getDeviceTemp().getValue().in(Fahrenheit);
                 if (followerShooterTemp > 200) {
                     DriverStation.reportWarning(
                             "THE FOLLOWER SHOOTER IS OVER 200 DEGREES FARENHEIGT PLEASE DISABLE THE"

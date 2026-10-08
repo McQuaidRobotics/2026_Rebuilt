@@ -100,7 +100,7 @@ public class RollersReal extends Rollers {
             Log.log("ROBOT/Subsystems/Intake/Rollers/SpeedRPSTOP", getSpeed());
             Log.log(
                     "ROBOT/Subsystems/Intake/Rollers/SpeedRPSBOTTOM",
-                    bottomMotor.getVelocity().refresh().getValueAsDouble());
+                    bottomMotor.getVelocity().getValueAsDouble());
         }
     }
 }
