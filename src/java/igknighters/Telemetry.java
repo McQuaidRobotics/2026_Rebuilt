@@ -7,13 +7,16 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,16 +25,21 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import igknighters.subsystems.Subsystems;
 import igknighters.util.AprilTagLayout;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class Telemetry {
     private final double MaxSpeed;
     private final Subsystems subsystems;
+    // FL/FR/BL/BR angle (rad), FL/FR/BL/BR speed (m/s), heading (rad). Swapped as a whole array
+    // by the odometry thread so the main thread's dashboard reads never see a half-written tick.
+    private volatile double[] swerveWidget = new double[9];
     private AprilTagLayout aprilTagLayout;
-    private int[] tagIds;
-    private double[] tagXYDeg; // x, y, degrees per tag, same order as tagIds
-    private boolean[] tagSeen;
+    // Tag poses never change; flattened once instead of on every odometry tick.
+    private int[] tagIds = new int[0];
+    private Pose2d[] tagPoses = new Pose2d[0];
 
     /**
      * Construct a telemetry object, with the specified max speed of the robot
@@ -43,25 +51,37 @@ public class Telemetry {
         this.subsystems = subsystems;
         try {
             aprilTagLayout = new AprilTagLayout();
-            // Tag poses never change; flatten them once instead of on every odometry tick.
-            Map<Integer, Pose3d> tagPoses = aprilTagLayout.getTagPoses();
-            tagIds = new int[tagPoses.size()];
-            tagXYDeg = new double[tagPoses.size() * 3];
-            tagSeen = new boolean[tagPoses.size()];
+            Map<Integer, Pose3d> layoutPoses = aprilTagLayout.getTagPoses();
+            tagIds = new int[layoutPoses.size()];
+            tagPoses = new Pose2d[layoutPoses.size()];
             int t = 0;
-            for (Map.Entry<Integer, Pose3d> entry : tagPoses.entrySet()) {
-                Pose2d pose = entry.getValue().toPose2d();
+            for (Map.Entry<Integer, Pose3d> entry : layoutPoses.entrySet()) {
                 tagIds[t] = entry.getKey();
-                tagXYDeg[t * 3] = pose.getX();
-                tagXYDeg[t * 3 + 1] = pose.getY();
-                tagXYDeg[t * 3 + 2] = pose.getRotation().getDegrees();
+                tagPoses[t] = entry.getValue().toPose2d();
                 t++;
             }
         } catch (IOException e) {
-            //     System.out.println("Could not load AprilTag layout");
             e.printStackTrace();
         }
         SignalLogger.start();
+
+        SmartDashboard.putData(
+                "Swerve Drive",
+                new Sendable() {
+                    @Override
+                    public void initSendable(SendableBuilder builder) {
+                        builder.setSmartDashboardType("SwerveDrive");
+                        String[] names = {"Front Left", "Front Right", "Back Left", "Back Right"};
+                        for (int i = 0; i < 4; i++) {
+                            final int idx = i;
+                            builder.addDoubleProperty(
+                                    names[i] + " Angle", () -> swerveWidget[idx], null);
+                            builder.addDoubleProperty(
+                                    names[i] + " Velocity", () -> swerveWidget[idx + 4], null);
+                        }
+                        builder.addDoubleProperty("Robot Angle", () -> swerveWidget[8], null);
+                    }
+                });
         // Registered once; SmartDashboard.updateValues() keeps them current. Re-registering every
         // odometry tick contended with the main loop on SmartDashboard's lock.
         for (int i = 0; i < m_moduleMechanisms.length; ++i) {
@@ -92,24 +112,9 @@ public class Telemetry {
             driveStateTable.getDoubleTopic("Timestamp").publish();
     private final DoublePublisher driveOdometryFrequency =
             driveStateTable.getDoubleTopic("OdometryFrequency").publish();
-
-    /* Robot pose for field positioning */
-    private final NetworkTable table = inst.getTable("Pose");
-    private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose").publish();
-    private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
-    private final DoubleArrayPublisher seenTagsPub =
-            table.getDoubleArrayTopic("seenTags").publish();
-    private final DoubleArrayPublisher unseenTagsPub =
-            table.getDoubleArrayTopic("unseenTags").publish();
-
-    private final DoubleArrayPublisher shootingTargetPosesPub =
-            table.getDoubleArrayTopic("shootingTargetPose").publish();
-
-    private final DoubleArrayPublisher drivingTargetPub =
-            table.getDoubleArrayTopic("drivingTargetPose").publish();
-
-    private final DoubleArrayPublisher detectedObjectsPub =
-            table.getDoubleArrayTopic("detectedObjects").publish();
+    private final DoublePublisher matchTime = driveStateTable.getDoubleTopic("MatchTime").publish();
+    private final BooleanPublisher hubActive =
+            driveStateTable.getBooleanTopic("HubActive").publish();
 
     /* Mechanisms to represent the swerve module states */
     private final Mechanism2d[] m_moduleMechanisms =
@@ -168,11 +173,20 @@ public class Telemetry {
     public void telemeterize(SwerveDriveState state) {
         /* Telemeterize the swerve drive state */
         drivePose.set(state.Pose);
+        matchTime.set(DriverStation.getMatchTime());
+        hubActive.set(isHubActive());
         driveSpeeds.set(state.Speeds);
         driveModuleStates.set(state.ModuleStates);
         driveModuleTargets.set(state.ModuleTargets);
         driveModulePositions.set(state.ModulePositions);
         driveTimestamp.set(state.Timestamp);
+        double[] widget = new double[9];
+        for (int i = 0; i < 4; i++) {
+            widget[i] = state.ModuleStates[i].angle.getRadians();
+            widget[i + 4] = state.ModuleStates[i].speedMetersPerSecond;
+        }
+        widget[8] = state.Pose.getRotation().getRadians();
+        swerveWidget = widget;
         driveOdometryFrequency.set(1.0 / state.OdometryPeriod);
 
         /* Also write to log file */
@@ -191,36 +205,18 @@ public class Telemetry {
         SignalLogger.writeDoubleArray("DriveState/ModuleTargets", m_moduleTargetsArray);
         SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
 
-        /* Telemeterize the pose to a Field2d */
-        fieldTypePub.set("Field2d");
-        fieldPub.set(m_poseArray);
+        /* Update the main robot pose on our Field2d object */
+        FieldVisualizer.getInstance().updateRobotPose(state.Pose);
 
         if (aprilTagLayout != null) {
             List<Integer> visibleIds = subsystems.vision.getVisibleTagIds();
-            // Snapshot once: visibleIds is mutated by the main loop while this runs on the
-            // odometry thread, so it must not be re-read between sizing and filling the arrays.
-            int seen = 0;
+            List<Pose2d> seenTagPoses = new ArrayList<>();
             for (int t = 0; t < tagIds.length; t++) {
-                tagSeen[t] = visibleIds.contains(tagIds[t]);
-                if (tagSeen[t]) seen++;
-            }
-            double[] seenTagsArray = new double[seen * 3];
-            double[] unseenTagsArray = new double[(tagIds.length - seen) * 3];
-            int s = 0, u = 0;
-            for (int t = 0; t < tagIds.length; t++) {
-                if (tagSeen[t]) {
-                    System.arraycopy(tagXYDeg, t * 3, seenTagsArray, s, 3);
-                    s += 3;
-                } else {
-                    System.arraycopy(tagXYDeg, t * 3, unseenTagsArray, u, 3);
-                    u += 3;
+                if (visibleIds.contains(tagIds[t])) {
+                    seenTagPoses.add(tagPoses[t]);
                 }
             }
-            seenTagsPub.set(seenTagsArray);
-            unseenTagsPub.set(unseenTagsArray);
-        } else {
-            //     System.out.println("APRIL TAG LAYOUT NOT FOUND");
-            //     System.out.println("APRIL TAGS NEED TO BE LOADED TO SHOW THE SEEN TAGS");
+            FieldVisualizer.getInstance().updateSeenTags(seenTagPoses);
         }
 
         /* Telemeterize the module states to a Mechanism2d */
@@ -232,30 +228,64 @@ public class Telemetry {
         }
     }
 
-    public void addShootingTargetPose(Pose2d targetPose) {
-        double[] targetPoseArray = new double[3];
-        targetPoseArray[0] = targetPose.getX();
-        targetPoseArray[1] = targetPose.getY();
-        targetPoseArray[2] = targetPose.getRotation().getDegrees();
-        shootingTargetPosesPub.set(targetPoseArray);
-    }
-
-    public void addDrivingTargetPose(Pose2d targetPose) {
-        double[] targetPoseArray = new double[3];
-        targetPoseArray[0] = targetPose.getX();
-        targetPoseArray[1] = targetPose.getY();
-        targetPoseArray[2] = targetPose.getRotation().getDegrees();
-        drivingTargetPub.set(targetPoseArray);
-    }
-
-    public void publishDetectedObjects(List<Pose2d> objectPoses) {
-        double[] objectPosesArray = new double[objectPoses.size() * 3];
-        int i = 0;
-        for (Pose2d pose : objectPoses) {
-            objectPosesArray[i++] = pose.getX();
-            objectPosesArray[i++] = pose.getY();
-            objectPosesArray[i++] = pose.getRotation().getDegrees();
+    public boolean isHubActive() {
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        // If we have no alliance, we cannot be enabled, therefore no hub.
+        if (alliance.isEmpty()) {
+            return false;
         }
-        detectedObjectsPub.set(objectPosesArray);
+        // Hub is always enabled in autonomous.
+        if (DriverStation.isAutonomousEnabled()) {
+            return true;
+        }
+        // At this point, if we're not teleop enabled, there is no hub.
+        if (!DriverStation.isTeleopEnabled()) {
+            return false;
+        }
+
+        // We're teleop enabled, compute.
+        double matchTime = DriverStation.getMatchTime();
+        String gameData = DriverStation.getGameSpecificMessage();
+        // If we have no game data, we cannot compute, assume hub is active, as its likely early in
+        // teleop.
+        if (gameData.isEmpty()) {
+            return true;
+        }
+        boolean redInactiveFirst = false;
+        switch (gameData.charAt(0)) {
+            case 'R' -> redInactiveFirst = true;
+            case 'B' -> redInactiveFirst = false;
+            default -> {
+                // If we have invalid game data, assume hub is active.
+                return true;
+            }
+        }
+
+        // Shift was is active for blue if red won auto, or red if blue won auto.
+        boolean shift1Active =
+                switch (alliance.get()) {
+                    case Red -> !redInactiveFirst;
+                    case Blue -> redInactiveFirst;
+                };
+
+        if (matchTime > 130) {
+            // Transition shift, hub is active.
+            return true;
+        } else if (matchTime > 105) {
+            // Shift 1
+            return shift1Active;
+        } else if (matchTime > 80) {
+            // Shift 2
+            return !shift1Active;
+        } else if (matchTime > 55) {
+            // Shift 3
+            return shift1Active;
+        } else if (matchTime > 30) {
+            // Shift 4
+            return !shift1Active;
+        } else {
+            // End game, hub always active.
+            return true;
+        }
     }
 }
