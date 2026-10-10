@@ -25,14 +25,24 @@ def process_single_data(data):
         for wp in data["params"]["waypoints"]:
             wp["y"]["val"] = FIELD_HEIGHT_METERS - wp["y"]["val"]
             wp["heading"]["val"] = flip_angle(wp["heading"]["val"])
-            
-            if wp["y"]["exp"].strip().endswith("m"):
-                wp["y"]["exp"] = f"{wp['y']['val']} m"
-            if wp["heading"]["exp"].strip().endswith("rad"):
-                wp["heading"]["exp"] = f"{wp['heading']['val']} rad"
-            elif wp["heading"]["exp"].strip().endswith("deg"):
-                deg_val = math.degrees(wp["heading"]["val"])
-                wp["heading"]["exp"] = f"{deg_val} deg"
+            # Always rewrite exp: Choreo re-evaluates exp on regenerate, so a stale variable or
+            # formula would snap the waypoint back to the unflipped side.
+            wp["y"]["exp"] = f"{wp['y']['val']} m"
+            wp["heading"]["exp"] = f"{wp['heading']['val']} rad"
+
+    # 2b. Flip field-positioned constraints
+    if "params" in data and "constraints" in data["params"]:
+        for c in data["params"]["constraints"]:
+            props = c["data"].get("props", {})
+            if c["data"]["type"] == "KeepInRectangle":
+                # y is the bottom edge, so the mirrored bottom edge is H - (y + h)
+                props["y"]["val"] = FIELD_HEIGHT_METERS - props["y"]["val"] - props["h"]["val"]
+                props["y"]["exp"] = f"{props['y']['val']} m"
+            elif "y" in props:
+                # ponytail: assumes any other constraint with "y" is a point (circle, point-at);
+                # add a case here if Choreo adds another shape
+                props["y"]["val"] = FIELD_HEIGHT_METERS - props["y"]["val"]
+                props["y"]["exp"] = f"{props['y']['val']} m"
 
     # 3. Flip Trajectory Samples
     if "trajectory" in data and "samples" in data["trajectory"]:
@@ -45,8 +55,14 @@ def process_single_data(data):
             if "omega" in sample: sample["omega"] = -sample["omega"]
             if "alpha" in sample: sample["alpha"] = -sample["alpha"]
             
+            # Mirroring swaps the robot's left and right sides, so module order
+            # [FL, FR, BL, BR] becomes [FR, FL, BR, BL].
+            if "fx" in sample and isinstance(sample["fx"], list):
+                fx = sample["fx"]
+                sample["fx"] = [fx[1], fx[0], fx[3], fx[2]]
             if "fy" in sample and isinstance(sample["fy"], list):
-                sample["fy"] = [-force for force in sample["fy"]]
+                fy = sample["fy"]
+                sample["fy"] = [-fy[1], -fy[0], -fy[3], -fy[2]]
                 
     return data
 

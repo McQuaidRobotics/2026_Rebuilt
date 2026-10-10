@@ -125,28 +125,12 @@ public class FieldVisualizer {
     }
 
     /**
-     * Updates the field with seen tags dynamically split into numbered layers (max 8 per layer).
+     * Updates the AprilTags currently seen by vision on the field.
      *
-     * @param seenChunks A list containing split chunks of seen tag poses.
+     * @param seenTags Poses of the visible tags; empty to clear.
      */
-    public void updateSeenTagsSplit(List<List<Pose2d>> seenChunks) {
-        // 1. Loop through and dynamically update SeenTags1, SeenTags2, etc.
-        for (int i = 0; i < seenChunks.size(); i++) {
-            String layerName = "SeenTags" + (i + 1);
-            m_field.getObject(layerName).setPoses(seenChunks.get(i));
-        }
-
-        // 2. Clear out any leftover higher-numbered layers from previous cycles
-        int layerCheck = seenChunks.size() + 1;
-        while (true) {
-            var oldObj = m_field.getObject("SeenTags" + layerCheck);
-            if (oldObj.getPoses().size() > 0) {
-                oldObj.setPoses();
-                layerCheck++;
-            } else {
-                break;
-            }
-        }
+    public void updateSeenTags(List<Pose2d> seenTags) {
+        m_field.getObject("SeenTags").setPoses(seenTags);
     }
 
     /**

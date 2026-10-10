@@ -3,6 +3,7 @@ package igknighters.commands.Shooter;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -48,7 +49,8 @@ public class AimingCommands {
         // CHECKED AGAIN.
         // LIKE ALL COMANDS THE LAMDA IS THE SOLUTION
         return Commands.sequence(
-                Commands.runOnce(() -> shotModifier += changeValue),
+                Commands.runOnce(
+                        () -> shotModifier = MathUtil.clamp(shotModifier + changeValue, 0.8, 1.2)),
                 Commands.runOnce(() -> System.out.println("MODIFIER" + shotModifier)));
     }
 
@@ -168,7 +170,10 @@ public class AimingCommands {
                                     0.02);
 
                     if (targetingData.flywheelSpeed.in(RPM) != 0) {
-                        shooter.targetState(targetingData);
+                        shooter.targetState(
+                                targetingData.flywheelSpeed.times(shotModifier),
+                                targetingData.turretAngle,
+                                targetingData.hoodAngle);
                     } else {
                         // shot is imposible so we should idle the shooter rpm at like 4000 so it
                         // spins up faster

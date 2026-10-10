@@ -17,7 +17,6 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,6 +25,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import igknighters.subsystems.Subsystems;
 import igknighters.util.AprilTagLayout;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,11 +33,13 @@ import java.util.Optional;
 public class Telemetry {
     private final double MaxSpeed;
     private final Subsystems subsystems;
-    public SwerveDriveState latestState = new SwerveDriveState();
+    // FL/FR/BL/BR angle (rad), FL/FR/BL/BR speed (m/s), heading (rad). Swapped as a whole array
+    // by the odometry thread so the main thread's dashboard reads never see a half-written tick.
+    private volatile double[] swerveWidget = new double[9];
     private AprilTagLayout aprilTagLayout;
-
-    // Create the Field2d instance
-    private final Field2d m_field = new Field2d();
+    // Tag poses never change; flattened once instead of on every odometry tick.
+    private int[] tagIds = new int[0];
+    private Pose2d[] tagPoses = new Pose2d[0];
 
     /**
      * Construct a telemetry object, with the specified max speed of the robot
@@ -49,22 +51,19 @@ public class Telemetry {
         this.subsystems = subsystems;
         try {
             aprilTagLayout = new AprilTagLayout();
+            Map<Integer, Pose3d> layoutPoses = aprilTagLayout.getTagPoses();
+            tagIds = new int[layoutPoses.size()];
+            tagPoses = new Pose2d[layoutPoses.size()];
+            int t = 0;
+            for (Map.Entry<Integer, Pose3d> entry : layoutPoses.entrySet()) {
+                tagIds[t] = entry.getKey();
+                tagPoses[t] = entry.getValue().toPose2d();
+                t++;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
         SignalLogger.start();
-
-        // Publish the Field2d widget to SmartDashboard so Glass/AdvantageScope can see it
-        SmartDashboard.putData("Field", m_field);
-
-        latestState.ModuleStates =
-                new SwerveModuleState[] {
-                    new SwerveModuleState(),
-                    new SwerveModuleState(),
-                    new SwerveModuleState(),
-                    new SwerveModuleState()
-                };
-        latestState.Pose = new edu.wpi.first.math.geometry.Pose2d();
 
         SmartDashboard.putData(
                 "Swerve Drive",
@@ -72,79 +71,15 @@ public class Telemetry {
                     @Override
                     public void initSendable(SendableBuilder builder) {
                         builder.setSmartDashboardType("SwerveDrive");
-
-                        // Front Left (Index 0 in CTRE Phoenix 6)
-                        builder.addDoubleProperty(
-                                "Front Left Angle",
-                                () ->
-                                        latestState.ModuleStates != null
-                                                ? latestState.ModuleStates[0].angle.getDegrees()
-                                                : 0.0,
-                                null);
-                        builder.addDoubleProperty(
-                                "Front Left Velocity",
-                                () ->
-                                        latestState.ModuleStates != null
-                                                ? latestState.ModuleStates[0].speedMetersPerSecond
-                                                : 0.0,
-                                null);
-
-                        // Front Right (Index 1)
-                        builder.addDoubleProperty(
-                                "Front Right Angle",
-                                () ->
-                                        latestState.ModuleStates != null
-                                                ? latestState.ModuleStates[1].angle.getDegrees()
-                                                : 0.0,
-                                null);
-                        builder.addDoubleProperty(
-                                "Front Right Velocity",
-                                () ->
-                                        latestState.ModuleStates != null
-                                                ? latestState.ModuleStates[1].speedMetersPerSecond
-                                                : 0.0,
-                                null);
-
-                        // Back Left (Index 2)
-                        builder.addDoubleProperty(
-                                "Back Left Angle",
-                                () ->
-                                        latestState.ModuleStates != null
-                                                ? latestState.ModuleStates[2].angle.getDegrees()
-                                                : 0.0,
-                                null);
-                        builder.addDoubleProperty(
-                                "Back Left Velocity",
-                                () ->
-                                        latestState.ModuleStates != null
-                                                ? latestState.ModuleStates[2].speedMetersPerSecond
-                                                : 0.0,
-                                null);
-
-                        // Back Right (Index 3)
-                        builder.addDoubleProperty(
-                                "Back Right Angle",
-                                () ->
-                                        latestState.ModuleStates != null
-                                                ? latestState.ModuleStates[3].angle.getDegrees()
-                                                : 0.0,
-                                null);
-                        builder.addDoubleProperty(
-                                "Back Right Velocity",
-                                () ->
-                                        latestState.ModuleStates != null
-                                                ? latestState.ModuleStates[3].speedMetersPerSecond
-                                                : 0.0,
-                                null);
-
-                        // Heading / Gyro orientation
-                        builder.addDoubleProperty(
-                                "Robot Angle",
-                                () ->
-                                        latestState.Pose != null
-                                                ? latestState.Pose.getRotation().getRadians()
-                                                : 0.0,
-                                null);
+                        String[] names = {"Front Left", "Front Right", "Back Left", "Back Right"};
+                        for (int i = 0; i < 4; i++) {
+                            final int idx = i;
+                            builder.addDoubleProperty(
+                                    names[i] + " Angle", () -> swerveWidget[idx], null);
+                            builder.addDoubleProperty(
+                                    names[i] + " Velocity", () -> swerveWidget[idx + 4], null);
+                        }
+                        builder.addDoubleProperty("Robot Angle", () -> swerveWidget[8], null);
                     }
                 });
         // Registered once; SmartDashboard.updateValues() keeps them current. Re-registering every
@@ -245,7 +180,13 @@ public class Telemetry {
         driveModuleTargets.set(state.ModuleTargets);
         driveModulePositions.set(state.ModulePositions);
         driveTimestamp.set(state.Timestamp);
-        latestState = state;
+        double[] widget = new double[9];
+        for (int i = 0; i < 4; i++) {
+            widget[i] = state.ModuleStates[i].angle.getRadians();
+            widget[i + 4] = state.ModuleStates[i].speedMetersPerSecond;
+        }
+        widget[8] = state.Pose.getRotation().getRadians();
+        swerveWidget = widget;
         driveOdometryFrequency.set(1.0 / state.OdometryPeriod);
 
         /* Also write to log file */
@@ -267,31 +208,15 @@ public class Telemetry {
         /* Update the main robot pose on our Field2d object */
         FieldVisualizer.getInstance().updateRobotPose(state.Pose);
 
-        // Inside Telemetry.java -> telemeterize() method:
-
         if (aprilTagLayout != null) {
             List<Integer> visibleIds = subsystems.vision.getVisibleTagIds();
-            Map<Integer, Pose3d> allTagPoses = aprilTagLayout.getTagPoses();
-            List<Pose2d> seenTagPoses = new java.util.ArrayList<>();
-
-            // Only collect the tags that are currently visible
-            for (Map.Entry<Integer, Pose3d> entry : allTagPoses.entrySet()) {
-                if (visibleIds.contains(entry.getKey())) {
-                    seenTagPoses.add(entry.getValue().toPose2d());
+            List<Pose2d> seenTagPoses = new ArrayList<>();
+            for (int t = 0; t < tagIds.length; t++) {
+                if (visibleIds.contains(tagIds[t])) {
+                    seenTagPoses.add(tagPoses[t]);
                 }
             }
-
-            // Dynamically split seen tags into groups of 8
-            List<List<Pose2d>> seenChunks = new java.util.ArrayList<>();
-            int totalSeen = seenTagPoses.size();
-
-            for (int i = 0; i < totalSeen; i += 8) {
-                int endIdx = Math.min(i + 8, totalSeen);
-                seenChunks.add(seenTagPoses.subList(i, endIdx));
-            }
-
-            // Push the chunked seen tags to the field visualizer
-            FieldVisualizer.getInstance().updateSeenTagsSplit(seenChunks);
+            FieldVisualizer.getInstance().updateSeenTags(seenTagPoses);
         }
 
         /* Telemeterize the module states to a Mechanism2d */
@@ -362,17 +287,5 @@ public class Telemetry {
             // End game, hub always active.
             return true;
         }
-    }
-
-    public void addShootingTargetPose(Pose2d targetPose) {
-        m_field.getObject("ShootingTarget").setPose(targetPose);
-    }
-
-    public void addDrivingTargetPose(Pose2d targetPose) {
-        m_field.getObject("DrivingTarget").setPose(targetPose);
-    }
-
-    public void publishDetectedObjects(List<Pose2d> objectPoses) {
-        m_field.getObject("DetectedObjects").setPoses(objectPoses);
     }
 }
