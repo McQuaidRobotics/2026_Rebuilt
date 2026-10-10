@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj.Timer;
 import igknighters.Robot;
 import igknighters.constants.Conv;
 import igknighters.util.log.Log;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.function.Supplier;
 
 public class TurretPosePredictor {
@@ -35,10 +33,7 @@ public class TurretPosePredictor {
 
         Pose2d predRobotPose = Robot.pose_pred.getDynamicPredictedPose();
         Log.log("ROBOT/pose", predRobotPose);
-        double mostRecentTimestamp =
-                Collections.max(Arrays.stream(timestampHistory).boxed().toList());
-        int latestIdx =
-                Arrays.stream(timestampHistory).boxed().toList().indexOf(mostRecentTimestamp);
+        int latestIdx = RobotPosePredictor.argMax(timestampHistory);
         Pose3d predTurretPose = getTurretPoseFieldRelativeOffset(predRobotPose);
         Robot.turret_pred_error.findError(currentPose[latestIdx]);
         Log.log("ROBOT/TURRET_POSE_X", predTurretPose.getX());

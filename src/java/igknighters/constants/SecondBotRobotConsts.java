@@ -625,8 +625,9 @@ public class SecondBotRobotConsts extends RobotConsts {
         }
 
         @Override
+        // Magnet offset zeroized and then get the absolute position in rotations
         public double CANCODER_OFFSET_ROTATIONS() {
-            return -0.081298828125;
+            return -0.208740; // -0.081298828125;  Changed with wire chain fix
         }
 
         @Override
@@ -635,23 +636,25 @@ public class SecondBotRobotConsts extends RobotConsts {
         }
 
         @Override
+        // Clockwise maximum for wrap, intentional 10 degree overlap
         public double MAX_ANGLE_DEGREES() {
-            return 152.138672;
+            return 175.00; // 152.138672;
         }
 
         @Override
+        // Anti-Clockwise minimum for wrap, intentional 10 degree overlap
         public double MIN_ANGLE_DEGREES() {
-            return -360 + 152.138672;
+            return -360 + 165.00; // 152.138672;
         }
 
         @Override
         public double MAX_SPEED_RPM() {
-            return 200;
+            return 100; // 200;
         }
 
         @Override
         public double MAX_ACCELERATION_RPM() {
-            return 400;
+            return 200; // 400;
         }
 
         @Override

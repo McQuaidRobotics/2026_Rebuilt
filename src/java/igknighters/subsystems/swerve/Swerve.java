@@ -4,6 +4,7 @@ import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
 import choreo.trajectory.SwerveSample;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -12,6 +13,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,6 +32,10 @@ public class Swerve extends SubsystemBase {
     public CommonSwerveConsts commonSwerveConsts;
     boolean isSwerveDisabled = false;
     DummySwerve dummySwerve = new DummySwerve();
+    // Cached once: each getX() call on the Pigeon does a synchronized signal-map lookup.
+    private StatusSignal<LinearAcceleration> accelX, accelY;
+    private StatusSignal<AngularVelocity> yawRate;
+    private StatusSignal<Angle> yaw;
 
     public Swerve() {
         this(false);
@@ -37,6 +45,12 @@ public class Swerve extends SubsystemBase {
         this.isSwerveDisabled = isSwerveDisabled;
         if (!isSwerveDisabled) {
             drivetrain = Robot.consts.swerve().getCommonSwerveConsts().createDrivetrain(this);
+            commonSwerveConsts = Robot.consts.swerve().getCommonSwerveConsts();
+            var pigeon = drivetrain.getPigeon2();
+            accelX = pigeon.getAccelerationX();
+            accelY = pigeon.getAccelerationY();
+            yawRate = pigeon.getAngularVelocityZDevice();
+            yaw = pigeon.getYaw();
         }
         commonSwerveConsts = Robot.consts.swerve().getCommonSwerveConsts();
     }
@@ -48,7 +62,7 @@ public class Swerve extends SubsystemBase {
             if (Robot.isRobotTest()) {
                 Logger.recordOutput(
                         "ROBOT/TEST/SWERVE/CURRENT ROTATION DEGREES",
-                        drivetrain.getPigeon2().getYaw().getValueAsDouble());
+                        yaw.refresh().getValueAsDouble());
             }
         }
     }
@@ -164,7 +178,7 @@ public class Swerve extends SubsystemBase {
 
     public double getXAcceleration() {
         if (!isSwerveDisabled) {
-            return drivetrain.getPigeon2().getAccelerationX().getValueAsDouble();
+            return accelX.refresh().getValueAsDouble();
         } else {
             return 0.0;
         }
@@ -172,7 +186,7 @@ public class Swerve extends SubsystemBase {
 
     public double getYAcceleration() {
         if (!isSwerveDisabled) {
-            return drivetrain.getPigeon2().getAccelerationY().getValueAsDouble();
+            return accelY.refresh().getValueAsDouble();
         } else {
             return 0.0;
         }
@@ -180,8 +194,7 @@ public class Swerve extends SubsystemBase {
 
     public double getRotationalVelocity() {
         if (!isSwerveDisabled) {
-            return drivetrain.getPigeon2().getAngularVelocityZDevice().getValueAsDouble()
-                    * Conv.DEGREES_TO_RADIANS;
+            return yawRate.refresh().getValueAsDouble() * Conv.DEGREES_TO_RADIANS;
         } else {
             return 0.0;
         }

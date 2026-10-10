@@ -3,6 +3,7 @@ package igknighters.subsystems.intake.pivot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotation;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -17,6 +18,7 @@ import igknighters.util.log.Log;
 
 public class PivotReal extends Pivot {
     private TalonFX pivotMotor;
+    private StatusSignal<Angle> position;
     private CANcoder pivotEncoder;
     private PositionVoltage motionMagicControl;
     private double targetDegrees = 0.0;
@@ -27,6 +29,7 @@ public class PivotReal extends Pivot {
                 new TalonFX(
                         Robot.consts.intake().kPivot().MOTOR_ID(), Robot.consts.intake().kCANBUS());
         pivotMotor.getConfigurator().apply(getPivotConfig());
+        position = pivotMotor.getPosition();
 
         pivotEncoder =
                 new CANcoder(
@@ -116,7 +119,7 @@ public class PivotReal extends Pivot {
 
     @Override
     public Angle getAngle() {
-        return Rotation.of(pivotMotor.getPosition().getValueAsDouble());
+        return Rotation.of(position.refresh().getValueAsDouble());
     }
 
     @Override
