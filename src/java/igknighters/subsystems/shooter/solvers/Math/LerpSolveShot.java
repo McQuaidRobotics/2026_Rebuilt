@@ -50,7 +50,6 @@ public class LerpSolveShot {
 
         double actualDistance = vectorToGoal.getNorm();
         Log.log("ROBOT/COMMANDS/LERPSOLVE/TURRETDISTANCE", actualDistance);
-        Log.log("ROBOT/COMMANDS/LERPSOLVE/TURRETDISTANCE", actualDistance);
 
         // 1. Find the unit vector pointing straight at the goal
         Translation2d unitVectorToGoal =
@@ -76,9 +75,6 @@ public class LerpSolveShot {
 
         // Input is the magnitude of the tangential component
         double tangentialMultiplier = TANGENTIAL.lerp(tangentialVelocity.getNorm());
-        // --- UPDATED: Radial and Tangential Speed Inputs ---
-        Log.log("ROBOT/COMMANDS/LERPSOLVE/RADIAL VELO", radialVelocity.getNorm());
-        Log.log("ROBOT/COMMANDS/LERPSOLVE/TANGENTIAL VELO", tangentialVelocity.getNorm());
 
         double radialMultiplierToUse =
                 (radialVelocityMag >= 0) ? radialTowardsMultiplier : radialAwayMultiplier;

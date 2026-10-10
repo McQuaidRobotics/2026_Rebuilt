@@ -5,8 +5,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.Timer;
 import igknighters.Robot;
 import igknighters.util.log.Log;
-import java.util.Arrays;
-import java.util.Collections;
 
 public class TurretPosePredError {
     Pose3d[] predictionHistory = new Pose3d[2];
@@ -34,8 +32,7 @@ public class TurretPosePredError {
         if (actualPose == null) {
             return new double[] {0, 0, 0};
         }
-        double prevTimestamp = Collections.min(Arrays.stream(timestampHistory).boxed().toList());
-        int latestIdx = Arrays.stream(timestampHistory).boxed().toList().indexOf(prevTimestamp);
+        int latestIdx = RobotPosePredictor.argMin(timestampHistory);
         double actualOmega = actualPose.getZ();
         double predOmega = predictionHistory[latestIdx].getZ();
         double[] errors = new double[3];
