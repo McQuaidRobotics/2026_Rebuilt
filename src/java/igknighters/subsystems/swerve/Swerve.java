@@ -29,7 +29,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Swerve extends SubsystemBase {
     CommandSwerveDrivetrain drivetrain;
-    CommonSwerveConsts commonSwerveConsts;
+    public CommonSwerveConsts commonSwerveConsts;
     boolean isSwerveDisabled = false;
     DummySwerve dummySwerve = new DummySwerve();
     // Cached once: each getX() call on the Pigeon does a synchronized signal-map lookup.
@@ -52,6 +52,7 @@ public class Swerve extends SubsystemBase {
             yawRate = pigeon.getAngularVelocityZDevice();
             yaw = pigeon.getYaw();
         }
+        commonSwerveConsts = Robot.consts.swerve().getCommonSwerveConsts();
     }
 
     @Override
