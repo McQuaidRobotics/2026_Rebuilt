@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.util.struct.StructSerializable;
 import igknighters.constants.Conv;
+import java.util.stream.Stream;
 import monologue.ProceduralStructGenerator;
 import wayfinder.repulsorField.Obstacle;
 import wayfinder.repulsorField.Obstacle.HorizontalObstacle;
@@ -106,6 +107,12 @@ public class WAYFINDERFIELD2025 {
                     FieldConstants2025.POSE2D_CENTER,
                     FieldConstants2025.FIELD_LENGTH,
                     FieldConstants2025.FIELD_WIDTH);
+
+    public static final Obstacle[] ALL_OBSTACLES;
+
+    static {
+        ALL_OBSTACLES = Stream.of(WALL, REEF_LARGE).flatMap(Stream::of).toArray(Obstacle[]::new);
+    }
 
     public enum PathObstacles {
         CLOSE_LEFT_REEF(
