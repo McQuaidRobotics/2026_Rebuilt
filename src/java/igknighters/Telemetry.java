@@ -147,6 +147,11 @@ public class Telemetry {
                                 null);
                     }
                 });
+        // Registered once; SmartDashboard.updateValues() keeps them current. Re-registering every
+        // odometry tick contended with the main loop on SmartDashboard's lock.
+        for (int i = 0; i < m_moduleMechanisms.length; ++i) {
+            SmartDashboard.putData("Visualizers/Swerve/Module " + i, m_moduleMechanisms[i]);
+        }
     }
 
     /* What to publish over networktables for telemetry */
@@ -295,8 +300,6 @@ public class Telemetry {
             m_moduleDirections[i].setAngle(state.ModuleStates[i].angle);
             m_moduleSpeeds[i].setLength(
                     state.ModuleStates[i].speedMetersPerSecond / (2 * MaxSpeed));
-
-            SmartDashboard.putData("Visualizers/Swerve/Module " + i, m_moduleMechanisms[i]);
         }
     }
 

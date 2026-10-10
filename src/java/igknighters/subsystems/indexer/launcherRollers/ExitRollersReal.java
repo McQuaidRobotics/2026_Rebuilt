@@ -1,11 +1,12 @@
 package igknighters.subsystems.indexer.launcherRollers;
 
-import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.Robot;
 import igknighters.constants.Conv;
 import igknighters.util.log.Log;
@@ -15,7 +16,7 @@ public class ExitRollersReal extends ExitRollers {
     private final TalonFX exitRollerMotor;
     private final MotionMagicVelocityVoltage velocityControl;
     private final DutyCycleOut dutyCycleControl = new DutyCycleOut(0.0);
-    private BaseStatusSignal shooterVelocity;
+    private final StatusSignal<AngularVelocity> shooterVelocity;
 
     public TalonFXConfiguration getLeaderConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -80,7 +81,7 @@ public class ExitRollersReal extends ExitRollers {
 
     @Override
     public double getSpeedRPM() {
-        return exitRollerMotor.getVelocity().getValueAsDouble() * Conv.RPS_TO_RPM;
+        return shooterVelocity.refresh().getValueAsDouble() * Conv.RPS_TO_RPM;
     }
 
     @Override

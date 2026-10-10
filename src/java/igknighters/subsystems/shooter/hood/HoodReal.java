@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.Rotations;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -15,6 +16,7 @@ import igknighters.util.log.Log;
 
 public class HoodReal extends Hood {
     private final TalonFX motor;
+    private final StatusSignal<Angle> position;
 
     private final DigitalInput reverseLimitSwitch;
     private Angle targetAngle;
@@ -59,11 +61,12 @@ public class HoodReal extends Hood {
             Log.log("ROBOT/Subsystems/Shooter/Hood/Initialized", true);
         }
         motor.getConfigurator().apply(flapConfiguration());
+        position = motor.getPosition();
     }
 
     @Override
     public double getAngleDegrees() {
-        return motor.getPosition().getValueAsDouble()
+        return position.refresh().getValueAsDouble()
                 * Robot.consts.shooter().kHood().MOTOR_ROTS_TO_HOOD_DEGREES();
     }
 

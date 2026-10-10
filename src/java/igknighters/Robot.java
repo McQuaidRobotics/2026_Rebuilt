@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.*;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
-import com.ctre.phoenix6.CANBus.CANBusStatus;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -21,7 +20,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.commands.SubsystemTriggers;
@@ -317,9 +315,8 @@ public class Robot extends LoggedRobot {
         return hoodPosition;
     }
 
-    boolean underTrench() {
+    boolean underTrench(Pose2d turretAccPose) {
         Pose2d turretPredPose = turret_pred.getPredictedPose().get().toPose2d();
-        Pose2d turretAccPose = subsystems.swerve.getState().Pose;
 
         double dx1Pred = Math.abs(turretPredPose.getX() - FieldConstants.BUMP.BUMP_1_X_METERS);
         double dx2Pred = Math.abs(turretPredPose.getX() - FieldConstants.BUMP.BUMP_2_X_METERS);
@@ -345,26 +342,21 @@ public class Robot extends LoggedRobot {
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
         pose_pred.setVelocitiesAndPose();
+        // Swerve state is a JNI round trip; read it once per loop instead of ~7 times.
+        var driveState = subsystems.swerve.getState();
+        Pose2d robotPose = driveState.Pose;
 
-        if (underTrench()) {
+        if (underTrench(robotPose)) {
             DrivingSharedState.getInstance().setUnderTrench(true);
         } else {
             DrivingSharedState.getInstance().setUnderTrench(false);
         }
-
-        CANBusStatus status = consts.getSuperStructureBus().getStatus();
-
-        Log.log("ROBOT/SYSSTATS/SUPER_BUS", status);
-        turret_pred.logTurretPose(
-                turret_pred.getTurretPoseFieldRelativeOffset(subsystems.swerve.getState().Pose));
-        pose_pred_error.logPose(subsystems.swerve.getState().Pose);
-        turret_pred_error.logPose(
-                turret_pred.getTurretPoseFieldRelativeOffset(subsystems.swerve.getState().Pose));
+        turret_pred.logTurretPose(turret_pred.getTurretPoseFieldRelativeOffset(robotPose));
+        pose_pred_error.logPose(robotPose);
+        turret_pred_error.logPose(turret_pred.getTurretPoseFieldRelativeOffset(robotPose));
         if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()
-                    .updateTurret(
-                            subsystems.shooter.getTurretAngleDegrees(),
-                            subsystems.swerve.getState().Pose);
+                    .updateTurret(subsystems.shooter.getTurretAngleDegrees(), robotPose);
             Logger.recordOutput(
                     "componentPoses",
                     new Pose3d[] {
@@ -373,9 +365,7 @@ public class Robot extends LoggedRobot {
                     });
         } else {
             FieldVisualizer.getInstance()
-                    .updateTurret(
-                            subsystems.shooter.getTurretAngleDegrees(),
-                            subsystems.swerve.getState().Pose);
+                    .updateTurret(subsystems.shooter.getTurretAngleDegrees(), robotPose);
             Logger.recordOutput(
                     "componentPoses",
                     new Pose3d[] {
@@ -392,7 +382,6 @@ public class Robot extends LoggedRobot {
                 });
 
         if (kUseLimelight) {
-            var driveState = subsystems.swerve.getState();
             double headingDeg = driveState.Pose.getRotation().getDegrees();
             double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
             Pose2d currentPose =
@@ -519,7 +508,8 @@ public class Robot extends LoggedRobot {
     public void testExit() {}
 
     public static boolean isRobotTest() {
-        return RobotModeTriggers.test().getAsBoolean();
+        // Same check RobotModeTriggers.test() wraps, without allocating a Trigger every call.
+        return DriverStation.isTestEnabled();
     }
 
     @Override

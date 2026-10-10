@@ -2,6 +2,7 @@ package igknighters.util.log;
 
 import static edu.wpi.first.units.Units.RPM;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.CANBus.CANBusStatus;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,6 +21,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import igknighters.constants.Conv;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import org.littletonrobotics.junction.Logger;
 
 public class Log {
@@ -28,22 +31,38 @@ public class Log {
     // MOTORS
     // ==========================================
 
+    // [current, temp, velocity, position] per motor. Looking signals up via motor.getX() every loop
+    // is a synchronized map lookup per call, which showed up hot in the roboRIO profile.
+    private static final Map<TalonFX, BaseStatusSignal[]> motorSignals = new IdentityHashMap<>();
+
+    private static BaseStatusSignal[] signals(TalonFX motor) {
+        return motorSignals.computeIfAbsent(
+                motor,
+                m ->
+                        new BaseStatusSignal[] {
+                            m.getStatorCurrent(),
+                            m.getDeviceTemp(),
+                            m.getVelocity(),
+                            m.getPosition()
+                        });
+    }
+
     public static void logMotor(String path, TalonFX motor) {
-        Logger.recordOutput(path + "/OutputCurrent", motor.getStatorCurrent().getValueAsDouble());
-        Logger.recordOutput(path + "/Temperature", motor.getDeviceTemp().getValueAsDouble());
+        BaseStatusSignal[] s = signals(motor);
+        BaseStatusSignal.refreshAll(s);
+        Logger.recordOutput(path + "/OutputCurrent", s[0].getValueAsDouble());
+        Logger.recordOutput(path + "/Temperature", s[1].getValueAsDouble());
+        Logger.recordOutput(path + "/Velocity RPM", s[2].getValueAsDouble() * Conv.RPS_TO_RPM);
         Logger.recordOutput(
-                path + "/Velocity RPM", motor.getVelocity().getValueAsDouble() * Conv.RPS_TO_RPM);
-        Logger.recordOutput(
-                path + "/Position DEG",
-                motor.getPosition().refresh().getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES);
+                path + "/Position DEG", s[3].getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES);
     }
 
     public static void logMotorMinimal(String path, TalonFX motor) {
+        BaseStatusSignal[] s = signals(motor);
+        BaseStatusSignal.refreshAll(s[2], s[3]);
         Logger.recordOutput(
-                path + "/Position DEG",
-                motor.getPosition().getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES);
-        Logger.recordOutput(
-                path + "/Velocity RPM", motor.getVelocity().getValueAsDouble() * Conv.RPS_TO_RPM);
+                path + "/Position DEG", s[3].getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES);
+        Logger.recordOutput(path + "/Velocity RPM", s[2].getValueAsDouble() * Conv.RPS_TO_RPM);
     }
 
     // ==========================================
