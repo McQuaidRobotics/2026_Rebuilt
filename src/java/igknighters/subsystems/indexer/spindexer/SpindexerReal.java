@@ -1,10 +1,12 @@
 package igknighters.subsystems.indexer.spindexer;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import edu.wpi.first.units.measure.AngularVelocity;
 import igknighters.Robot;
 import igknighters.util.log.Log;
 
@@ -13,6 +15,7 @@ public class SpindexerReal extends Spindexer {
             new TalonFX(
                     Robot.consts.indexer().kSpindexer().LEADER_MOTOR_ID(),
                     Robot.consts.indexer().kCANBUS());
+    private final StatusSignal<AngularVelocity> velocity = spindexer.getVelocity();
 
     private final MotionMagicVelocityVoltage velocityControl;
     private final DutyCycleOut dutyCycleControl = new DutyCycleOut(0.0);
@@ -69,7 +72,7 @@ public class SpindexerReal extends Spindexer {
 
     @Override
     public double getRPM() {
-        return spindexer.getVelocity().getValueAsDouble() * 60;
+        return velocity.refresh().getValueAsDouble() * 60;
     }
 
     @Override

@@ -3,6 +3,7 @@ package igknighters.subsystems.shooter.turret;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotations;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -22,6 +23,7 @@ public class TurretReal extends Turret {
 
     private final TalonFX motor;
     private final CANcoder turretCaNcoder;
+    private final StatusSignal<Angle> position;
 
     private final TalonFXConfiguration turretConfiguration() {
         var cfg = new TalonFXConfiguration();
@@ -85,6 +87,7 @@ public class TurretReal extends Turret {
                         Robot.consts.shooter().kCANBUS());
         turretCaNcoder.getConfigurator().apply(turretCancoderConfig());
         motor.getConfigurator().apply(turretConfiguration());
+        position = motor.getPosition();
     }
 
     @Override
@@ -111,7 +114,7 @@ public class TurretReal extends Turret {
 
     @Override
     public double getAngleDegrees() {
-        return motor.getPosition().getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
+        return position.refresh().getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
     }
 
     @Override
@@ -122,6 +125,6 @@ public class TurretReal extends Turret {
             Log.log("ROBOT/Subsystems/Shooter/Turret/Target Degrees", super.targetDegrees);
         }
 
-        super.degrees = motor.getPosition().getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
+        super.degrees = position.refresh().getValueAsDouble() * Conv.ROTATIONS_TO_DEGREES;
     }
 }
