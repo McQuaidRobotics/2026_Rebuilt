@@ -234,15 +234,15 @@ public class Robot extends LoggedRobot {
         Logger.start();
     }
 
-    public void setupWayfinder(Subsystems subsystems) {
+    public void setupWayfinder(Subsystems subsystems, boolean deep_debug) {
         WayfinderManager.setup(
                 new PositionalController(
                         TranslationController.scurve(5.0, 0.0, 1, false, 0.1),
                         RotationalController.profiled(5.0, 0.0, false, 0.0)),
                 subsystems.swerve.commonSwerveConsts.createSetpointGenerator());
         WayfinderManager.addObstacles(WAYFINDERFIELD2026.ALL_OBSTACLES);
-        WayfinderManager.setArrowsEnabled(true);
-        WayfinderManager.setHeatMapEnabled(true);
+        WayfinderManager.setArrowsEnabled(deep_debug);
+        WayfinderManager.setHeatMapEnabled(deep_debug);
     }
 
     public Robot() {
@@ -260,7 +260,7 @@ public class Robot extends LoggedRobot {
                         new Intake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
-        setupWayfinder(subsystems);
+        setupWayfinder(subsystems, true);
         publishCommandsAndSubystems(subsystems);
         setUpAutos(subsystems);
         setUpTest(subsystems);
@@ -289,7 +289,7 @@ public class Robot extends LoggedRobot {
                         new Intake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
-        setupWayfinder(subsystems);
+        setupWayfinder(subsystems, true);
         pose_pred = new RobotPosePredictor(subsystems.swerve);
         publishCommandsAndSubystems(subsystems);
         setUpAutos(subsystems);
