@@ -2,8 +2,10 @@ package igknighters;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringPublisher;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableBoolean;
 import java.util.List;
@@ -15,12 +17,8 @@ import java.util.List;
  */
 public class FieldVisualizer {
 
-    // Create the single master Field2d instance
-    private final Field2d m_field = new Field2d();
-
     private FieldVisualizer() {
-        // Publish the unified field to SmartDashboard
-        SmartDashboard.putData("Field", m_field);
+        fieldTypePub.set("Field2d");
     }
 
     private static class SingletonHelper {
@@ -38,16 +36,24 @@ public class FieldVisualizer {
     private final TunableBoolean shouldShowDrivingTarget =
             TunableValues.getBoolean("FieldVisualizer/ShowDrivingTarget", true);
 
-    /**
-     * Updates the main robot pose on the field. Call this from your Telemetry loop.
-     *
-     * @param robotPose The current odometry pose of the robot.
-     */
-    public void updateRobotPose(Pose2d robotPose) {
-        if (robotPose != null) {
-            m_field.setRobotPose(robotPose);
-        }
-    }
+    private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    private final NetworkTable table = inst.getTable("Pose");
+    private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
+
+    private final DoubleArrayPublisher shootingTargetPub =
+            table.getDoubleArrayTopic("shootingTargetPose").publish();
+
+    private final DoubleArrayPublisher turretAnglePub =
+            table.getDoubleArrayTopic("turretAngle").publish();
+
+    private final DoubleArrayPublisher predictedFuturePose =
+            table.getDoubleArrayTopic("futurePose").publish();
+
+    private final DoubleArrayPublisher drivingTargetPub =
+            table.getDoubleArrayTopic("drivingTargetPose").publish();
+
+    private final DoubleArrayPublisher detectedObjectsPub =
+            table.getDoubleArrayTopic("detectedObjects").publish();
 
     /**
      * Updates the shooting target pose on the field.
@@ -55,25 +61,23 @@ public class FieldVisualizer {
      * @param target The pose of the shooting target, or null to clear.
      */
     public void updateShootingTarget(Pose2d target) {
-        var obj = m_field.getObject("ShootingTarget");
         if (target == null || !shouldShowShootingTarget.value()) {
-            obj.setPoses(); // Clears the object from the field
+            shootingTargetPub.set(new double[0]);
             return;
         }
-        obj.setPose(target);
+        shootingTargetPub.set(
+                new double[] {target.getX(), target.getY(), target.getRotation().getDegrees()});
     }
 
-    /**
-     * Updates the predicted future pose of the robot on the field. * @param pred_pose The predicted
-     * future pose, or null to clear.
-     */
     public void updatePredictedPose(Pose2d pred_pose) {
-        var obj = m_field.getObject("FuturePose");
         if (pred_pose == null) {
-            obj.setPoses();
+            predictedFuturePose.set(new double[0]);
             return;
         }
-        obj.setPose(pred_pose);
+        predictedFuturePose.set(
+                new double[] {
+                    pred_pose.getX(), pred_pose.getY(), pred_pose.getRotation().getDegrees()
+                });
     }
 
     /**
@@ -82,55 +86,44 @@ public class FieldVisualizer {
      * @param target The pose of the driving target, or null to clear.
      */
     public void updateDrivingTarget(Pose2d target) {
-        var obj = m_field.getObject("DrivingTarget");
         if (target == null || !shouldShowDrivingTarget.value()) {
-            obj.setPoses();
+            drivingTargetPub.set(new double[0]);
             return;
         }
-        obj.setPose(target);
+        drivingTargetPub.set(
+                new double[] {target.getX(), target.getY(), target.getRotation().getDegrees()});
     }
 
-    /**
-     * Updates the turret orientation relative to the field. * @param turretAngleDegrees The
-     * rotation of the turret relative to the robot chassis.
-     *
-     * @param robotPose The current position of the robot.
-     */
     public void updateTurret(double turretAngleDegrees, Pose2d robotPose) {
-        var obj = m_field.getObject("Turret");
-        if (robotPose == null) {
-            obj.setPoses();
-            return;
-        }
-        Pose2d turretPose =
+        Pose2d newPose =
                 new Pose2d(
                         robotPose.getX(),
                         robotPose.getY(),
-                        robotPose.getRotation().plus(Rotation2d.fromDegrees(turretAngleDegrees)));
-        obj.setPose(turretPose);
+                        robotPose
+                                .getRotation()
+                                .plus(new Rotation2d(Math.toRadians(turretAngleDegrees))));
+        turretAnglePub.set(
+                new double[] {newPose.getX(), newPose.getY(), newPose.getRotation().getDegrees()});
     }
 
     /**
-     * Updates the list of detected objects (e.g., game pieces) on the field.
+     * Updates the list of detected objects on the field.
      *
      * @param objects A list of poses for detected objects, or null/empty to clear.
      */
     public void updateDetectedObjects(List<Pose2d> objects) {
-        var obj = m_field.getObject("DetectedObjects");
         if (objects == null || objects.isEmpty() || !shouldShowBalls.value()) {
-            obj.setPoses();
+            detectedObjectsPub.set(new double[0]);
             return;
         }
-        obj.setPoses(objects);
-    }
-
-    /**
-     * Updates the AprilTags currently seen by vision on the field.
-     *
-     * @param seenTags Poses of the visible tags; empty to clear.
-     */
-    public void updateSeenTags(List<Pose2d> seenTags) {
-        m_field.getObject("SeenTags").setPoses(seenTags);
+        int i = 0;
+        double[] array = new double[objects.size() * 3];
+        for (Pose2d obj : objects) {
+            array[i++] = obj.getX();
+            array[i++] = obj.getY();
+            array[i++] = obj.getRotation().getDegrees();
+        }
+        detectedObjectsPub.set(array);
     }
 
     /**
