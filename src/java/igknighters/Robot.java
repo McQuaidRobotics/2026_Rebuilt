@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
@@ -34,6 +33,7 @@ import igknighters.constants.RobotIdentity;
 import igknighters.constants.SecondBotRobotConsts;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
+import igknighters.subsystems.LimeLightVision.LimeLightVision.pose_output;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
 import igknighters.subsystems.indexer.Indexer;
@@ -51,8 +51,12 @@ import igknighters.util.TurretPosePredictor;
 import igknighters.util.log.Log;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import limelight.networktables.AngularVelocity3d;
+import limelight.networktables.LimelightSettings.ImuMode;
+import limelight.networktables.Orientation3d;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -64,6 +68,9 @@ public class Robot extends LoggedRobot {
 
     public static RobotConsts consts;
     private AutoFactory autoFactory;
+    public static Orientation3d robotOrientation =
+            new Orientation3d(
+                    new Rotation3d(), new AngularVelocity3d(RPM.of(0), RPM.of(0), RPM.of(0)));
     public final AutoChooser autoChooser = new AutoChooser();
     public final AutoChooser testChooser = new AutoChooser();
     double i = 0;
@@ -344,6 +351,7 @@ public class Robot extends LoggedRobot {
         // Swerve state is a JNI round trip; read it once per loop instead of ~7 times.
         var driveState = subsystems.swerve.getState();
         Pose2d robotPose = driveState.Pose;
+        robotOrientation = subsystems.swerve.getRobotOrientation();
 
         if (underTrench(robotPose)) {
             DrivingSharedState.getInstance().setUnderTrench(true);
@@ -381,16 +389,13 @@ public class Robot extends LoggedRobot {
                 });
 
         if (kUseLimelight) {
-            double headingDeg = driveState.Pose.getRotation().getDegrees();
-            double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
-            Pose2d currentPose =
-                    subsystems.vision.getRobotPoseFromVision(headingDeg, omegaRps, 0, 0, 0, 0);
+            List<pose_output> vision_outputs = subsystems.vision.getRobotPoseFromVision();
 
-            if (currentPose != null) {
-                subsystems.swerve.addVisionMeasurement(
-                        currentPose,
-                        subsystems.vision
-                                .getLastTimeStamp()); // trusts vision rotation less. Needs tuning
+            if (vision_outputs != null) {
+                for (pose_output output : vision_outputs)
+                    subsystems.swerve.addVisionMeasurement(
+                            output.pose(),
+                            output.time().in(Seconds)); // trusts vision rotation less. Needs tuning
                 // increase the std devs to trust vision less
                 if (!Robot.consts.limelightVision().disableVisionLogs()) {
                     Log.log("ROBOT/Subsystems/Vision/Null Pose", false);
@@ -427,13 +432,13 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledExit() {
-        subsystems.vision.enableCameras(0);
+        subsystems.vision.enableCameras(ImuMode.ExternalImu);
     }
 
     @Override
     public void autonomousInit() {
 
-        subsystems.vision.enableCameras(0);
+        subsystems.vision.enableCameras(ImuMode.ExternalImu);
         Command autoCommand = autoChooser.selectedCommand();
         if (fuelSim != null) {
             fuelSim.start();
@@ -462,7 +467,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopInit() {
-        subsystems.vision.enableCameras(0);
+        subsystems.vision.enableCameras(ImuMode.ExternalImu);
         subsystems.swerve.clearActiveTrajectory();
         if (fuelSim != null) {
             fuelSim.start();

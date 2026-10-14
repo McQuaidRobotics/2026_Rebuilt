@@ -3,6 +3,7 @@ package igknighters.constants;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import edu.wpi.first.math.geometry.Pose3d;
 import igknighters.subsystems.swerve.swerveconstants.CommonSwerveConsts;
 import igknighters.util.LerpTable;
 
@@ -474,13 +475,21 @@ public abstract class RobotConsts {
     }
 
     public interface kLimelightVisionConsts {
-        String turretCam();
+        String primaryCam();
 
-        String intakeCam();
+        Pose3d primaryCamPose();
+
+        String frontCam();
+
+        Pose3d frontCamPose();
 
         String backCam();
 
-        String rightCam();
+        Pose3d backCamPose();
+
+        String leftCam();
+
+        Pose3d leftCamPose();
 
         boolean disableVisionLogs();
     }
