@@ -205,6 +205,7 @@ public class SubsystemTriggers {
         // DrivingSharedState.getInstance().setOnBump(false)));
 
         onBump.and(teleop)
+                .and(() -> !DrivingSharedState.getInstance().shouldDisableBumpProtection)
                 .whileTrue(
                         Commands.sequence(
                                 Commands.runOnce(
