@@ -15,7 +15,6 @@ import igknighters.Robot;
 import igknighters.constants.ShootInformation;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.util.*;
-import igknighters.util.Prediction.Localizer;
 import igknighters.util.log.Log;
 
 public class LerpSolveShot {
@@ -46,7 +45,8 @@ public class LerpSolveShot {
                         Robot.consts.shooter().kFlywheels().ShooterHeightMeters(),
                         new Rotation3d(turretPose.getRotation()));
 
-        ChassisSpeeds robotSpeeds = Localizer.getInstance().getPredictedVelocity(.05);
+        // Turret point velocity (chassis + omega x offset), not robot center.
+        ChassisSpeeds robotSpeeds = Robot.turret_pred.getPredictedSpeeds(.05);
         Translation2d rawRobotVelocity =
                 new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
         double kConversion = Robot.consts.shooter().kFlywheels().RPM_TO_METERS_PER_SECOND_FACTOR();
