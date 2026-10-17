@@ -42,14 +42,11 @@ public class LimeLightVisionReal extends LimeLights {
         visibleTagIds.clear();
         // mode breakdown
         // 1 = make internal match gyro
-        // Feed gyro to every Limelight (for MT2), then flush NT once instead of once per camera
         for (String cameraName : cameraNames) {
-            LimelightHelpers.SetRobotOrientation_NoFlush(
+            // Feed gyro to Limelight (for MT2)
+            LimelightHelpers.SetRobotOrientation(
                     cameraName, yaw, yawRate, pitch, pitchRate, roll, rollRate);
-        }
-        LimelightHelpers.Flush();
 
-        for (String cameraName : cameraNames) {
             // Get both MT2 and MT1 estimates
             var mt2Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
             var mt1Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
@@ -90,6 +87,18 @@ public class LimeLightVisionReal extends LimeLights {
                             "Subsystems/Vision/LimeLightVision/Source_" + cameraName,
                             (mt1Estimate.tagCount >= 2) ? "VISION_CORRECTION" : "ROBOT_GYRO_ONLY");
                 }
+            }
+
+            double timestamp = !poses.isEmpty() ? timestampSum / poses.size() : 0.0;
+            lastTimeStamp = timestamp;
+
+            if (!Robot.consts.limelightVision().disableVisionLogs()) {
+                Log.log(
+                        "ROBOT/Subsystems/Vision/LimeLightVision/TimeStampOfMeasurements",
+                        timestamp);
+                Log.log(
+                        "ROBOT/Subsystems/Vision/LimeLightVision/NumberOfTagsSeen",
+                        visibleTagIds.size());
             }
         }
 
