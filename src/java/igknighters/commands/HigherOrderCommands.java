@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
 import igknighters.commands.Shooter.AimingCommands;
-import igknighters.constants.DrivingSharedState;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.Subsystems;
 import java.util.function.Supplier;
@@ -59,7 +58,8 @@ public class HigherOrderCommands {
     public static Command IdleShooter(Subsystems subsystems) {
         return AimingCommands.idleCommand(subsystems.shooter)
                 .alongWith(IndexerCommands.jorkIt(subsystems.indexer).repeatedly())
-                .alongWith(Commands.runOnce(() -> DrivingSharedState.getInstance().setDetune(1.0)))
+                // .alongWith(Commands.runOnce(() ->
+                // DrivingSharedState.getInstance().setDetune(1.0)))
                 .withName("IDLING THE SHOOTER");
     }
 
