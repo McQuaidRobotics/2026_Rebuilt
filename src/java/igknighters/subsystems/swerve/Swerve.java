@@ -34,6 +34,7 @@ public class Swerve extends SubsystemBase {
     DummySwerve dummySwerve = new DummySwerve();
     // Cached once: each getX() call on the Pigeon does a synchronized signal-map lookup.
     private StatusSignal<LinearAcceleration> accelX, accelY;
+    private StatusSignal<Double> gravityX, gravityY;
     private StatusSignal<AngularVelocity> yawRate;
     private StatusSignal<Angle> yaw;
 
@@ -49,6 +50,8 @@ public class Swerve extends SubsystemBase {
             var pigeon = drivetrain.getPigeon2();
             accelX = pigeon.getAccelerationX();
             accelY = pigeon.getAccelerationY();
+            gravityX = pigeon.getGravityVectorX();
+            gravityY = pigeon.getGravityVectorY();
             yawRate = pigeon.getAngularVelocityZDevice();
             yaw = pigeon.getYaw();
         }
@@ -70,6 +73,24 @@ public class Swerve extends SubsystemBase {
         if (!isSwerveDisabled) {
             drivetrain.followPath(sample);
         }
+    }
+
+    /**
+     * Wraps a Choreo AutoTrajectory command with automatic lifecycle tracking. This automatically
+     * sets the active trajectory for the pose predictor when the path starts, and clears it safely
+     * when the path finishes or is interrupted.
+     *
+     * @param trajectory The Choreo trajectory to track and follow.
+     * @return A decorated command ready for autonomous compositions.
+     */
+    public Command followWithPrediction(AutoTrajectory trajectory) {
+        return trajectory
+                .cmd()
+                // 1. Before the path starts executing, update the predictor's active target path
+                .beforeStarting(() -> this.setActiveTrajectory(trajectory))
+
+                // 2. Regardless of a normal exit or an emergency interruption, clear the track
+                .finallyDo((interrupted) -> this.clearActiveTrajectory());
     }
 
     public void resetPose(Pose2d pose) {
@@ -175,9 +196,12 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    /** Robot-relative linear acceleration in m/s^2, gravity removed. */
     public double getXAcceleration() {
         if (!isSwerveDisabled) {
-            return accelX.refresh().getValueAsDouble();
+            // Pigeon reports g including gravity; strip the tilt component and convert to m/s^2.
+            return (accelX.refresh().getValueAsDouble() - gravityX.refresh().getValueAsDouble())
+                    * Conv.G_TO_METERS_PER_SECOND_SQUARED;
         } else {
             return 0.0;
         }
@@ -185,7 +209,8 @@ public class Swerve extends SubsystemBase {
 
     public double getYAcceleration() {
         if (!isSwerveDisabled) {
-            return accelY.refresh().getValueAsDouble();
+            return (accelY.refresh().getValueAsDouble() - gravityY.refresh().getValueAsDouble())
+                    * Conv.G_TO_METERS_PER_SECOND_SQUARED;
         } else {
             return 0.0;
         }

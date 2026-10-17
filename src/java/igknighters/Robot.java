@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -43,12 +44,11 @@ import igknighters.subsystems.led.Led;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.FuelSim;
-import igknighters.util.RobotPosePredError;
-import igknighters.util.RobotPosePredictor;
+import igknighters.util.Prediction.AparatusPosePredictor;
+import igknighters.util.Prediction.Localizer;
+import igknighters.util.Prediction.Logging.PredictedPoseLogger;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
-import igknighters.util.TurretPosePredError;
-import igknighters.util.TurretPosePredictor;
 import igknighters.util.log.Log;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -70,10 +70,8 @@ public class Robot extends LoggedRobot {
     double i = 0;
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
-    public static RobotPosePredictor pose_pred;
-    public static TurretPosePredictor turret_pred = new TurretPosePredictor();
-    public static RobotPosePredError pose_pred_error = new RobotPosePredError();
-    public static TurretPosePredError turret_pred_error = new TurretPosePredError();
+    public static Localizer localizer;
+    public static AparatusPosePredictor turret_pred;
 
     private final DriverController driverController = new DriverController(0);
     private final VisionDebugController visionDebugController = new VisionDebugController(1);
@@ -149,6 +147,17 @@ public class Robot extends LoggedRobot {
         } else {
             consts = new GeminiRobotConsts(); // in sim with unknown sn we should pick something
         }
+        turret_pred = new AparatusPosePredictor(turretOffset());
+    }
+
+    /** Turret position relative to robot center (back right area). Needs consts set. */
+    private static Translation2d turretOffset() {
+        double d =
+                Conv.INCHES_TO_METERS
+                        * -consts.shooter().kTurret().TURRET_ROBOT_DISTANCE_FROM_CENTERS_INCHES()
+                        * Math.sqrt(2)
+                        / 2;
+        return new Translation2d(d, d);
     }
 
     public void setUpAutos(Subsystems subsystems) {
@@ -252,7 +261,7 @@ public class Robot extends LoggedRobot {
         bindDriverController();
         visionDebugController.bind(subsystems.vision);
 
-        pose_pred = new RobotPosePredictor(subsystems.swerve);
+        localizer = Localizer.initialize(subsystems.swerve);
 
         subsystemTriggers.SetupTriggers(subsystems, driverController, poseSupplier());
 
@@ -275,7 +284,7 @@ public class Robot extends LoggedRobot {
                         new Intake(),
                         new Luma(true, "object-detection"));
         setUpSwerve(subsystems);
-        pose_pred = new RobotPosePredictor(subsystems.swerve);
+        localizer = Localizer.initialize(subsystems.swerve);
         publishCommandsAndSubystems(subsystems);
         setUpAutos(subsystems);
         setUpTest(subsystems);
@@ -320,7 +329,7 @@ public class Robot extends LoggedRobot {
     }
 
     boolean underTrench(Pose2d turretAccPose) {
-        Pose2d turretPredPose = turret_pred.getPredictedPose().get().toPose2d();
+        Pose2d turretPredPose = turret_pred.getPredictedPose(.05);
 
         double dx1Pred = Math.abs(turretPredPose.getX() - FieldConstants.BUMP.BUMP_1_X_METERS);
         double dx2Pred = Math.abs(turretPredPose.getX() - FieldConstants.BUMP.BUMP_2_X_METERS);
@@ -345,9 +354,10 @@ public class Robot extends LoggedRobot {
         // Log.log(
         //         "Subsystems/Vision/ObjectDetection/Closest Game Piece",
         //         subsystems.luma.getClosestGamePiece());
-        pose_pred.setVelocitiesAndPose();
-        // Swerve state is a JNI round trip; read it once per loop instead of ~7 times.
-        var driveState = subsystems.swerve.getState();
+        localizer.update();
+
+        // Swerve state is a JNI round trip; reuse the one the localizer just read.
+        var driveState = localizer.getSwerveState();
         Pose2d robotPose = driveState.Pose;
 
         if (underTrench(robotPose)) {
@@ -355,9 +365,7 @@ public class Robot extends LoggedRobot {
         } else {
             DrivingSharedState.getInstance().setUnderTrench(false);
         }
-        turret_pred.logTurretPose(turret_pred.getTurretPoseFieldRelativeOffset(robotPose));
-        pose_pred_error.logPose(robotPose);
-        turret_pred_error.logPose(turret_pred.getTurretPoseFieldRelativeOffset(robotPose));
+
         if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()
                     .updateTurret(subsystems.shooter.getTurretAngleDegrees(), robotPose);
@@ -385,26 +393,14 @@ public class Robot extends LoggedRobot {
                     new Pose3d(0, 0, 0, new Rotation3d(0, 0.0, 0))
                 });
 
+        PredictedPoseLogger.log(robotPose);
+
         if (kUseLimelight) {
             double headingDeg = driveState.Pose.getRotation().getDegrees();
-            double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
-            Pose2d currentPose =
-                    subsystems.vision.getRobotPoseFromVision(headingDeg, omegaRps, 0, 0, 0, 0);
-
-            if (currentPose != null) {
-                subsystems.swerve.addVisionMeasurement(
-                        currentPose,
-                        subsystems.vision
-                                .getLastTimeStamp()); // trusts vision rotation less. Needs tuning
-                // increase the std devs to trust vision less
-                if (!Robot.consts.limelightVision().disableVisionLogs()) {
-                    Log.log("ROBOT/Subsystems/Vision/Null Pose", false);
-                }
-            } else {
-                if (!Robot.consts.limelightVision().disableVisionLogs()) {
-                    Log.log("ROBOT/Subsystems/Vision/Null Pose", true);
-                }
-            }
+            // Limelight wants yaw rate in deg/s
+            double omegaDps = Units.radiansToDegrees(driveState.Speeds.omegaRadiansPerSecond);
+            localizer.updateVision(
+                    subsystems.vision.getVisionSnapshot(headingDeg, omegaDps, 0, 0, 0, 0));
         }
     }
 
@@ -583,7 +579,7 @@ public class Robot extends LoggedRobot {
                 length,
                 bumperHeight,
                 () -> subsystems.swerve.getState().Pose,
-                subsystems.swerve::getFieldRelativeSpeeds);
+                () -> Localizer.getInstance().getInstantaneousTurretFieldSpeeds(turretOffset()));
 
         // Register a front intake zone (0.1m deep, 0.4m wide, centered in front of bumper)
         fuelSim.registerIntake(

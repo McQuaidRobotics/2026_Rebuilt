@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Radians;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import igknighters.FieldVisualizer;
@@ -36,9 +37,16 @@ public class LerpSolveShot {
     public static ShooterState solve(
             Pose3d goalPose, double currentRPM, double latencyCompensation) {
 
-        Pose3d shooterPose = Robot.turret_pred.getPredictedPose().get();
+        Pose2d turretPose = Robot.turret_pred.getPredictedPose(.05);
+        Pose3d shooterPose =
+                new Pose3d(
+                        turretPose.getX(),
+                        turretPose.getY(),
+                        Robot.consts.shooter().kFlywheels().ShooterHeightMeters(),
+                        new Rotation3d(turretPose.getRotation()));
 
-        ChassisSpeeds robotSpeeds = Robot.pose_pred.getDynamicPredictedSpeeds();
+        // Turret point velocity (chassis + omega x offset), not robot center.
+        ChassisSpeeds robotSpeeds = Robot.turret_pred.getPredictedSpeeds(.05);
         Translation2d rawRobotVelocity =
                 new Translation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
         double kConversion = Robot.consts.shooter().kFlywheels().RPM_TO_METERS_PER_SECOND_FACTOR();

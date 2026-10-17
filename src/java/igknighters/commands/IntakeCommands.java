@@ -11,6 +11,7 @@ import igknighters.Robot;
 import igknighters.constants.FieldConstants;
 import igknighters.subsystems.intake.AbstractIntake;
 import igknighters.subsystems.intake.IntakeState;
+import igknighters.util.Prediction.Localizer;
 import igknighters.util.log.Log;
 import java.util.function.Supplier;
 
@@ -102,7 +103,8 @@ public class IntakeCommands {
         return intake.run(
                 () -> {
                     // if on bump we should be stowed
-                    if (FieldConstants.BUMP.isInside(Robot.pose_pred.getDynamicPredictedPose())) {
+                    if (FieldConstants.BUMP.isInside(
+                            Localizer.getInstance().getPredictedPose(.05))) {
                         Log.log("ROBOT/Commands/Protected Intake", "Inside BUMP, stowing intake");
                         holdAtStow(intake);
                     } else {
@@ -113,11 +115,11 @@ public class IntakeCommands {
     }
 
     public static Supplier<Double> getTimeDown() {
-        if (Robot.pose_pred == null) {
+        if (Robot.localizer == null) {
             return () -> 0.5;
         }
-        double vx = Robot.pose_pred.getPredictedVelos().vxMetersPerSecond;
-        double vy = Robot.pose_pred.getPredictedVelos().vyMetersPerSecond;
+        double vx = Localizer.getInstance().getPredictedVelocity(.05).vxMetersPerSecond;
+        double vy = Localizer.getInstance().getPredictedVelocity(.05).vyMetersPerSecond;
         double v = Math.hypot(vx, vy);
         // increase time as v increases
         return () -> Math.max(.5, v); // Replace with actual time calculation

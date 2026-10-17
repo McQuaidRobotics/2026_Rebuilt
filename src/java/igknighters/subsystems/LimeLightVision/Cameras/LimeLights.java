@@ -1,6 +1,7 @@
 package igknighters.subsystems.LimeLightVision.Cameras;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import igknighters.util.Prediction.VisionSnapshot;
 import java.util.List;
 
 public abstract class LimeLights {
@@ -55,4 +56,12 @@ public abstract class LimeLights {
     public abstract double timeSinceLastSample();
 
     public abstract List<Integer> getVisibleTagIds();
+
+    public abstract VisionSnapshot getVisionSnapshot(
+            double yaw,
+            double yawRate,
+            double pitch,
+            double pitchRate,
+            double roll,
+            double rollRate);
 }
