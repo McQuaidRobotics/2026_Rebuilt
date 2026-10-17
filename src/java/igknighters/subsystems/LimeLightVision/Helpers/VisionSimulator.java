@@ -5,8 +5,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.RobotController;
-import igknighters.Robot;
 import igknighters.util.AprilTagLayout;
+import igknighters.util.Prediction.Localizer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +72,7 @@ public class VisionSimulator {
 
         visibleTagIds.clear();
 
-        Pose2d truePose = Robot.pose_pred.getPredictedPose();
+        Pose2d truePose = Localizer.getInstance().getPredictedPose(.05);
         // 1. Random hardware dropout
         if (random.nextDouble() < dropoutRate) {
             return null;

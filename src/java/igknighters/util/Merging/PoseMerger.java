@@ -1,5 +1,6 @@
 package igknighters.util.Merging;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -33,9 +34,10 @@ public class PoseMerger {
         double y2 = pose2.getY();
         double theta2 = pose2.getRotation().getRadians();
 
-        double dx = x1 - x2;
-        double dy = y1 - y2;
-        double dtheta = theta1 - theta2;
+        // Point from pose1 toward pose2 so the merge pulls toward the second pose, not away.
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+        double dtheta = MathUtil.angleModulus(theta2 - theta1);
 
         double modifierX = dx * Math.exp(-Math.abs(dx));
         double modifierY = dy * Math.exp(-Math.abs(dy));
