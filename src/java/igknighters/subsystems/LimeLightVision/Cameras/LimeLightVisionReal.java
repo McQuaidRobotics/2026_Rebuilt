@@ -71,7 +71,7 @@ public class LimeLightVisionReal extends LimeLights {
                 continue;
             }
 
-            if (mt2Estimate != null && mt1Estimate != null && mt1Estimate.tagCount > 0) {
+            if (mt2Estimate != null && mt1Estimate != null && mt1Estimate.tagCount > 0 && mt1Estimate.avgTagDist < 4.0) {
 
                 // --- ROTATION SELECTION LOGIC ---
                 Rotation2d rotationToUse;
@@ -128,7 +128,7 @@ public class LimeLightVisionReal extends LimeLights {
         // disabled
         for (String cameraName : cameraNames) {
             LimelightHelpers.SetThrottle(cameraName, 10);
-            LimelightHelpers.SetIMUMode(cameraName, 1);
+            LimelightHelpers.SetIMUMode(cameraName, 0);
         }
     }
 
