@@ -1,17 +1,25 @@
 package igknighters.subsystems.LimeLightVision.Cameras;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import igknighters.Robot;
 import igknighters.subsystems.LimeLightVision.Helpers.LimelightHelpers;
+import igknighters.util.AprilTagLayout;
 import igknighters.util.Merging.PoseAverager;
 import igknighters.util.Prediction.VisionSnapshot;
 import igknighters.util.log.Log;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 public class LimeLightVisionReal extends LimeLights {
 
@@ -20,6 +28,8 @@ public class LimeLightVisionReal extends LimeLights {
     private double lastTimeStamp = 0.0;
     private final List<Integer> visibleTagIds = new ArrayList<>();
     private final Map<String, Double> lastFrameTimes = new HashMap<>();
+    private final Set<Integer> redHalfTags = new HashSet<>();
+    private final Set<Integer> blueHalfTags = new HashSet<>();
 
     public LimeLightVisionReal(String... cameraNames) {
         this.cameraNames = new ArrayList<>();
@@ -27,6 +37,32 @@ public class LimeLightVisionReal extends LimeLights {
             LimelightHelpers.SetIMUAssistAlpha(cameraName, 0.1);
             this.cameraNames.add(cameraName);
         }
+
+        // Field is mirrored, so the middle of the tag spread is the center line.
+        try {
+            Map<Integer, Pose3d> tags = new AprilTagLayout().getTagPoses();
+            double minX = Double.MAX_VALUE, maxX = -Double.MAX_VALUE;
+            for (Pose3d p : tags.values()) {
+                minX = Math.min(minX, p.getX());
+                maxX = Math.max(maxX, p.getX());
+            }
+            double centerX = (minX + maxX) / 2;
+            tags.forEach((id, p) -> (p.getX() > centerX ? redHalfTags : blueHalfTags).add(id));
+        } catch (IOException e) {
+            // No layout means no alliance filtering; distance gate still applies.
+            e.printStackTrace();
+        }
+    }
+
+    /** True if every tag is on our alliance's half. Unknown alliance or tag passes. */
+    private boolean usesOnlyOwnHalfTags(LimelightHelpers.RawFiducial[] fiducials) {
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        if (alliance.isEmpty()) return true;
+        Set<Integer> enemyTags = alliance.get() == Alliance.Red ? blueHalfTags : redHalfTags;
+        for (var fiducial : fiducials) {
+            if (enemyTags.contains(fiducial.id)) return false;
+        }
+        return true;
     }
 
     /**
@@ -156,7 +192,9 @@ public class LimeLightVisionReal extends LimeLights {
         }
         LimelightHelpers.Flush();
 
-        for (String cameraName : cameraNames) {
+        for (int i = 0; i < cameraNames.size(); i++) {
+            if (cameraDisabled[i]) continue; // toggled from the vision debug controller
+            String cameraName = cameraNames.get(i);
             if (LimelightHelpers.getTV(cameraName) == false) {
                 continue;
             }
@@ -178,32 +216,46 @@ public class LimeLightVisionReal extends LimeLights {
             }
             lastFrameTimes.put(cameraName, frameTime);
 
-            // --- VALID FIELDS FROM LIMELIGHT_TARGET_BOTPOSE ---
+            // Opposing-alliance tags are far away and noisy; drop any frame that uses one.
+            if (!usesOnlyOwnHalfTags(mt1Estimate.rawFiducials)) {
+                continue;
+            }
+
+            // Distance gate applies to MT2 and MT1 alike.
             double distanceToTarget = mt1Estimate.avgTagDist;
             int visibleTags = mt1Estimate.tagCount;
+            boolean isCloseMultiTag =
+                    (visibleTags >= 2 && distanceToTarget <= MAX_TRUSTED_DISTANCE_METERS);
+            boolean isVeryCloseSingleTag =
+                    (visibleTags == 1 && distanceToTarget <= MIN_SINGLE_TAG_DISTANCE_METERS);
+            if (!isCloseMultiTag && !isVeryCloseSingleTag) {
+                continue;
+            }
 
             // Detect extreme high-frequency impact shaking
             // yawRate/rollRate are deg/s (Limelight API convention)
             boolean gyroIsDoubtful =
                     Math.abs(yawRate) > MAX_MT2_YAW_RATE_DEG_PER_SEC || Math.abs(rollRate) > 5.0;
 
-            // --- SELECTION ENGINE ---
-            if (mt2Estimate != null && mt2Estimate.tagCount > 0 && !gyroIsDoubtful) {
+            // --- SELECTION ENGINE --- (poseMode is set from the vision debug controller)
+            boolean mt2Usable = mt2Estimate != null && mt2Estimate.tagCount > 0;
+            boolean useMt2 =
+                    switch (poseMode) {
+                        case PURE_MT1 -> false;
+                        case PURE_MT2 -> mt2Usable;
+                        case REGULAR -> mt2Usable && !gyroIsDoubtful;
+                    };
+            if (poseMode == PoseMode.PURE_MT2 && !useMt2) {
+                continue;
+            }
+            if (useMt2) {
                 // Scenario A: Everything is stable, trust perspective-corrected MT2
                 poses.add(mt2Estimate.pose);
                 timestamps.add(mt2Estimate.timestampSeconds);
             } else {
-                // Scenario B: Gyro is compromised OR we want to fall back to MT1.
-                // We validate MT1 using tag count and raw physical distance to prevent flipping.
-                boolean isCloseMultiTag =
-                        (visibleTags >= 2 && distanceToTarget <= MAX_TRUSTED_DISTANCE_METERS);
-                boolean isVeryCloseSingleTag =
-                        (visibleTags == 1 && distanceToTarget <= MIN_SINGLE_TAG_DISTANCE_METERS);
-
-                if (isCloseMultiTag || isVeryCloseSingleTag) {
-                    poses.add(mt1Estimate.pose);
-                    timestamps.add(mt1Estimate.timestampSeconds);
-                }
+                // Scenario B: Gyro is compromised, fall back to MT1.
+                poses.add(mt1Estimate.pose);
+                timestamps.add(mt1Estimate.timestampSeconds);
             }
         }
 

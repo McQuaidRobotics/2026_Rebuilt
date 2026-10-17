@@ -430,23 +430,25 @@ public class SecondBotRobotConsts extends RobotConsts {
     }
 
     public static class GeminiRPMConsts implements kRPMConsts {
+
+        static double diminisher = .96;
         static LerpTable RPM_LERP =
                 new LerpTable(
                         new LerpTableEntry[] {
-                            new LerpTableEntry(1.5, 2700),
-                            new LerpTableEntry(2.0, 2800),
-                            new LerpTableEntry(2.5, 2900),
-                            new LerpTableEntry(3.0, 2950),
-                            new LerpTableEntry(3.5, 3200),
-                            new LerpTableEntry(4.0, 3350),
-                            new LerpTableEntry(4.5, 3600),
-                            new LerpTableEntry(4.9, 3750),
-                            new LerpTableEntry(5.2, 3900),
-                            new LerpTableEntry(5.5, 4000),
-                            new LerpTableEntry(6.0, 4100),
-                            new LerpTableEntry(8.0, 4600),
-                            new LerpTableEntry(10.0, 5000),
-                            new LerpTableEntry(20, 6000)
+                            new LerpTableEntry(1.5, 2700 * diminisher),
+                            new LerpTableEntry(2.0, 2800 * diminisher),
+                            new LerpTableEntry(2.5, 2900 * diminisher),
+                            new LerpTableEntry(3.0, 2950 * diminisher),
+                            new LerpTableEntry(3.5, 3200 * diminisher),
+                            new LerpTableEntry(4.0, 3350 * diminisher),
+                            new LerpTableEntry(4.5, 3600 * diminisher),
+                            new LerpTableEntry(4.9, 3750 * diminisher),
+                            new LerpTableEntry(5.2, 3900 * diminisher),
+                            new LerpTableEntry(5.5, 4000 * diminisher),
+                            new LerpTableEntry(6.0, 4100 * diminisher),
+                            new LerpTableEntry(8.0, 4600 * diminisher),
+                            new LerpTableEntry(10.0, 5000 * diminisher),
+                            new LerpTableEntry(20, 6000 * diminisher)
                         });
 
         @Override

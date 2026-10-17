@@ -4,6 +4,7 @@ import choreo.auto.AutoTrajectory;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.Merging.PoseMerger;
+import igknighters.util.Prediction.VisionFuser.FusedVisionData;
 import java.util.Optional;
 
 public class Localizer {
@@ -74,13 +76,17 @@ public class Localizer {
     }
 
     public void updateVision(VisionSnapshot visionSnapshot) {
-        // One measurement per camera (same as the YALL branch); the Kalman filter weighs them.
-        Pose2d[] poses = visionSnapshot.getPose();
-        Double[] timestamps = visionSnapshot.getTimestamp();
-        if (poses == null || timestamps == null) return;
+        FusedVisionData fusedVisionData =
+                VisionFuser.getFusedVision(visionSnapshot, getSwerveState());
 
-        for (int i = 0; i < Math.min(poses.length, timestamps.length); i++) {
-            swerve.addVisionMeasurement(poses[i], timestamps[i]);
+        if (fusedVisionData != null) {
+            swerve.addVisionMeasurement(
+                    fusedVisionData.fusedPose,
+                    fusedVisionData.averageTimeStamp,
+                    VecBuilder.fill(
+                            fusedVisionData.stdDevs[0],
+                            fusedVisionData.stdDevs[1],
+                            fusedVisionData.stdDevs[2]));
         }
     }
 

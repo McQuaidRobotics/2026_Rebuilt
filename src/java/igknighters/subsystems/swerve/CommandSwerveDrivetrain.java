@@ -303,6 +303,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain {
             DriverStation.getAlliance()
                     .ifPresent(
                             allianceColor -> {
+                                // Pre-match sanity check: on red the robot starts facing PI, so
+                                // seed it once while disabled to make vision easy to validate.
+                                // Auto's resetOdometry overrides this anyway.
+                                if (!m_hasAppliedOperatorPerspective
+                                        && DriverStation.isDisabled()
+                                        && allianceColor == Alliance.Red) {
+                                    resetRotation(Rotation2d.kPi);
+                                }
                                 setOperatorPerspectiveForward(
                                         allianceColor == Alliance.Red
                                                 ? kRedAlliancePerspectiveRotation

@@ -50,8 +50,11 @@ import igknighters.util.Prediction.Logging.PredictedPoseLogger;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import igknighters.util.log.Log;
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -228,7 +231,10 @@ public class Robot extends LoggedRobot {
                                 System.getProperty("os.version"),
                                 System.getProperty("os.arch")));
         if (Robot.isReal()) {
-            Logger.addDataReceiver(new WPILOGWriter());
+            // USB stick if one is plugged in, otherwise the RIO's internal storage.
+            String logDir = new File("/U").isDirectory() ? "/U/logs" : "/home/lvuser/logs";
+            pruneOldLogs(logDir, 10);
+            Logger.addDataReceiver(new WPILOGWriter(logDir));
             Logger.addDataReceiver(new NT4Publisher());
         } else {
             Logger.addDataReceiver(new NT4Publisher());
@@ -239,6 +245,16 @@ public class Robot extends LoggedRobot {
 
         // Start AdvantageKit logger
         Logger.start();
+    }
+
+    /** Internal storage is small and a full disk breaks deploys, so keep only the newest logs. */
+    private static void pruneOldLogs(String dir, int keep) {
+        File[] logs = new File(dir).listFiles((d, name) -> name.endsWith(".wpilog"));
+        if (logs == null || logs.length <= keep) return;
+        Arrays.sort(logs, Comparator.comparingLong(File::lastModified));
+        for (int i = 0; i < logs.length - keep; i++) {
+            logs[i].delete();
+        }
     }
 
     public Robot() {
