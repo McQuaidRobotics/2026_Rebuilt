@@ -49,10 +49,27 @@ public class LimeLightVisionReal extends LimeLights {
         }
         LimelightHelpers.Flush();
 
-        for (String cameraName : cameraNames) {
+        for (int i = 0; i < cameraNames.size(); i++) {
+            if (cameraDisabled[i]) continue;
+            String cameraName = cameraNames.get(i);
             // Get both MT2 and MT1 estimates
             var mt2Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
             var mt1Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
+
+            if (poseMode != PoseMode.REGULAR) {
+                var est = poseMode == PoseMode.PURE_MT1 ? mt1Estimate : mt2Estimate;
+                // MT1 single-tag is ambiguous, require 2+
+                int minTags = poseMode == PoseMode.PURE_MT1 ? 2 : 1;
+                if (est != null && est.tagCount >= minTags) {
+                    poses.add(est.pose);
+                    timestampSum += est.timestampSeconds;
+                    for (var fiducial : est.rawFiducials) {
+                        visibleTagIds.add(fiducial.id);
+                    }
+                    previousSampleTime = RobotController.getFPGATime();
+                }
+                continue;
+            }
 
             if (mt2Estimate != null && mt1Estimate != null && mt1Estimate.tagCount > 0) {
 
@@ -110,7 +127,7 @@ public class LimeLightVisionReal extends LimeLights {
     public void saveCameras() {
         // disabled
         for (String cameraName : cameraNames) {
-            LimelightHelpers.SetThrottle(cameraName, 300);
+            LimelightHelpers.SetThrottle(cameraName, 10);
             LimelightHelpers.SetIMUMode(cameraName, 1);
         }
     }

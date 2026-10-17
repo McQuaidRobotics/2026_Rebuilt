@@ -436,7 +436,7 @@ public class SecondBotRobotConsts extends RobotConsts {
                             new LerpTableEntry(1.5, 2700),
                             new LerpTableEntry(2.0, 2800),
                             new LerpTableEntry(2.5, 2900),
-                            new LerpTableEntry(3.0, 3000),
+                            new LerpTableEntry(3.0, 2950),
                             new LerpTableEntry(3.5, 3200),
                             new LerpTableEntry(4.0, 3350),
                             new LerpTableEntry(4.5, 3600),

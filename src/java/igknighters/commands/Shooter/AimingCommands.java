@@ -54,7 +54,7 @@ public class AimingCommands {
                                     0.0);
 
                     shooter.targetState(
-                            RPM.of(3000),
+                            RPM.of(2800),
                             targetingData.turretAngle,
                             Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
                 });
@@ -109,7 +109,7 @@ public class AimingCommands {
         } else {
             // shot is impossible so we should idle the shooter rpm at like 4000
             shooter.targetState(
-                    RPM.of(3200),
+                    RPM.of(3000),
                     targetingData.turretAngle,
                     Degrees.of(Robot.consts.shooter().kHood().MIN_ANGLE_DEGREES()));
         }

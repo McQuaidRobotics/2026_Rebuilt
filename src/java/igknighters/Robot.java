@@ -33,6 +33,7 @@ import igknighters.constants.RobotConsts;
 import igknighters.constants.RobotIdentity;
 import igknighters.constants.SecondBotRobotConsts;
 import igknighters.controllers.DriverController;
+import igknighters.controllers.VisionDebugController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
 import igknighters.subsystems.Subsystems;
@@ -75,6 +76,7 @@ public class Robot extends LoggedRobot {
     public static TurretPosePredError turret_pred_error = new TurretPosePredError();
 
     private final DriverController driverController = new DriverController(0);
+    private final VisionDebugController visionDebugController = new VisionDebugController(1);
 
     public final Subsystems subsystems;
 
@@ -247,6 +249,7 @@ public class Robot extends LoggedRobot {
         setUpAutos(subsystems);
         setUpTest(subsystems);
         bindDriverController();
+        visionDebugController.bind(subsystems.vision);
 
         pose_pred = new RobotPosePredictor(subsystems.swerve);
 
@@ -276,6 +279,7 @@ public class Robot extends LoggedRobot {
         setUpAutos(subsystems);
         setUpTest(subsystems);
         bindDriverController();
+        visionDebugController.bind(subsystems.vision);
 
         subsystemTriggers.SetupTriggers(subsystems, driverController, poseSupplier());
     }
