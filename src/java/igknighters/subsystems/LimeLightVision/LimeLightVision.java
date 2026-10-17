@@ -7,6 +7,7 @@ import igknighters.constants.SubsystemConstants;
 import igknighters.subsystems.LimeLightVision.Cameras.LimeLightVisionReal;
 import igknighters.subsystems.LimeLightVision.Cameras.LimeLightVisionSim;
 import igknighters.subsystems.LimeLightVision.Cameras.LimeLights;
+import igknighters.util.Prediction.VisionSnapshot;
 import igknighters.util.log.Log;
 import java.util.List;
 
@@ -57,5 +58,15 @@ public class LimeLightVision extends SubsystemBase {
             Log.log("ROBOT/Subsystems/Vison/Limelight/ENABLED", true);
         }
         return vision.getRobotPoseFromVision(yaw, yawRate, pitch, pitchRate, roll, rollRate);
+    }
+
+    public VisionSnapshot getVisionSnapshot(
+            double yaw,
+            double yawRate,
+            double pitch,
+            double pitchRate,
+            double roll,
+            double rollRate) {
+        return vision.getVisionSnapshot(yaw, yawRate, pitch, pitchRate, roll, rollRate);
     }
 }

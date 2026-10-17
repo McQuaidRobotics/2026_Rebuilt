@@ -23,9 +23,9 @@ public class SpeedsMerger {
         double vy2 = speeds2.vyMetersPerSecond;
         double omega2 = speeds2.omegaRadiansPerSecond;
 
-        double dvx = vx1 - vx2;
-        double dvy = vy1 - vy2;
-        double domega = omega1 - omega2;
+        double dvx = vx2 - vx1;
+        double dvy = vy2 - vy1;
+        double domega = omega2 - omega1;
 
         double modifierVx = dvx * Math.exp(-Math.abs(dvx));
         double modifierVy = dvy * Math.exp(-Math.abs(dvy));

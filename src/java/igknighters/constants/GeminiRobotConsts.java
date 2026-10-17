@@ -616,7 +616,7 @@ public class GeminiRobotConsts extends RobotConsts {
         }
 
         @Override
-        public double TURRET_ROBOT_DISTANCE_FROM_CENTERS() {
+        public double TURRET_ROBOT_DISTANCE_FROM_CENTERS_INCHES() {
             return 7.0710678118655;
         }
 

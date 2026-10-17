@@ -14,6 +14,7 @@ import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.subsystems.shooter.ShootingData;
 import igknighters.subsystems.shooter.solvers.Math.LerpSolveShot;
+import igknighters.util.Prediction.Localizer;
 import java.util.function.Supplier;
 
 public class AimingCommands {
@@ -28,7 +29,7 @@ public class AimingCommands {
     }
 
     public static Pose2d getTurretPose() {
-        return getShooterPoseWithOffset(() -> Robot.pose_pred.getDynamicPredictedPose()).get();
+        return getShooterPoseWithOffset(() -> Localizer.getInstance().getPredictedPose(.05)).get();
     }
 
     /**
