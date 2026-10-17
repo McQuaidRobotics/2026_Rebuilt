@@ -73,12 +73,14 @@ public class LimeLightVisionSim extends LimeLights {
             double rollRate) {
         ArrayList<Pose2d> poses = new ArrayList<>();
         ArrayList<Double> timestamps = new ArrayList<>();
+        visibleTagIds.clear();
 
         for (VisionSimulator simulator : visionSimulators) {
             Pose2d estimatedPose = simulator.getEstimatedPose();
             if (estimatedPose != null) {
                 poses.add(estimatedPose);
                 timestamps.add(simulator.getTime());
+                visibleTagIds.addAll(simulator.getVisibleTagIds());
             }
         }
 

@@ -63,21 +63,6 @@ public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
 
     public static RobotConsts consts;
-
-    static {
-        // THE IDS WILL BE WRONG SINCE SN IS WRONG WILL DEFAULT TO SECOND BOT
-        if (RobotIdentity.isGemini()) {
-            consts = new GeminiRobotConsts();
-        } else if (RobotIdentity.isSecondBot()) {
-            consts = new SecondBotRobotConsts();
-        } else if (Robot.isReal()) {
-            throw new IllegalStateException(
-                    "Unknown robot identity ENSURE SERIAL NUMBERS MATCH"); // only problem irl
-        } else {
-            consts = new GeminiRobotConsts(); // in sim with unknown sn we should pick something
-        }
-    }
-
     private AutoFactory autoFactory;
     public final AutoChooser autoChooser = new AutoChooser();
     public final AutoChooser testChooser = new AutoChooser();
@@ -85,24 +70,7 @@ public class Robot extends LoggedRobot {
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     private final SubsystemTriggers subsystemTriggers = new SubsystemTriggers();
     public static Localizer localizer;
-    public static AparatusPosePredictor turret_pred =
-            new AparatusPosePredictor(
-                    new Translation2d(
-                            Conv.INCHES_TO_METERS
-                                    * -Robot.consts
-                                            .shooter()
-                                            .kTurret()
-                                            .TURRET_ROBOT_DISTANCE_FROM_CENTERS_INCHES()
-                                    * Math.sqrt(2)
-                                    / 2,
-                            Conv.INCHES_TO_METERS
-                                    * -Robot.consts
-                                            .shooter()
-                                            .kTurret()
-                                            .TURRET_ROBOT_DISTANCE_FROM_CENTERS_INCHES()
-                                    * Math.sqrt(2)
-                                    / 2));
-    // BACK RIGHT AREA
+    public static AparatusPosePredictor turret_pred;
 
     private final DriverController driverController = new DriverController(0);
 
@@ -164,20 +132,31 @@ public class Robot extends LoggedRobot {
         }
     }
 
-    // public void setUpRobotConsts() {
+    public void setUpRobotConsts() {
 
-    //     // THE IDS WILL BE WRONG SINCE SN IS WRONG WILL DEFAULT TO SECOND BOT
-    //     if (RobotIdentity.isGemini()) {
-    //         consts = new GeminiRobotConsts();
-    //     } else if (RobotIdentity.isSecondBot()) {
-    //         consts = new SecondBotRobotConsts();
-    //     } else if (Robot.isReal()) {
-    //         throw new IllegalStateException(
-    //                 "Unknown robot identity ENSURE SERIAL NUMBERS MATCH"); // only problem irl
-    //     } else {
-    //         consts = new GeminiRobotConsts(); // in sim with unknown sn we should pick something
-    //     }
-    // }
+        // THE IDS WILL BE WRONG SINCE SN IS WRONG WILL DEFAULT TO SECOND BOT
+        if (RobotIdentity.isGemini()) {
+            consts = new GeminiRobotConsts();
+        } else if (RobotIdentity.isSecondBot()) {
+            consts = new SecondBotRobotConsts();
+        } else if (Robot.isReal()) {
+            throw new IllegalStateException(
+                    "Unknown robot identity ENSURE SERIAL NUMBERS MATCH"); // only problem irl
+        } else {
+            consts = new GeminiRobotConsts(); // in sim with unknown sn we should pick something
+        }
+        turret_pred = new AparatusPosePredictor(turretOffset());
+    }
+
+    /** Turret position relative to robot center (back right area). Needs consts set. */
+    private static Translation2d turretOffset() {
+        double d =
+                Conv.INCHES_TO_METERS
+                        * -consts.shooter().kTurret().TURRET_ROBOT_DISTANCE_FROM_CENTERS_INCHES()
+                        * Math.sqrt(2)
+                        / 2;
+        return new Translation2d(d, d);
+    }
 
     public void setUpAutos(Subsystems subsystems) {
         autoFactory = subsystems.swerve.createAutoFactory();
@@ -260,7 +239,7 @@ public class Robot extends LoggedRobot {
     }
 
     public Robot() {
-        // setUpRobotConsts();
+        setUpRobotConsts();
         setUpAdvantageScope();
         setUpCommandLogging();
         subsystems =
@@ -288,7 +267,7 @@ public class Robot extends LoggedRobot {
     }
 
     public Robot(boolean isSwerveDisabled) {
-        // setUpRobotConsts();
+        setUpRobotConsts();
         setUpAdvantageScope();
         setUpCommandLogging();
         subsystems =
@@ -372,6 +351,10 @@ public class Robot extends LoggedRobot {
         //         subsystems.luma.getClosestGamePiece());
         localizer.update();
 
+        // Swerve state is a JNI round trip; reuse the one the localizer just read.
+        var driveState = localizer.getSwerveState();
+        Pose2d robotPose = driveState.Pose;
+
         if (underTrench(robotPose)) {
             DrivingSharedState.getInstance().setUnderTrench(true);
         } else {
@@ -405,15 +388,14 @@ public class Robot extends LoggedRobot {
                     new Pose3d(0, 0, 0, new Rotation3d(0, 0.0, 0))
                 });
 
-        PredictedPoseLogger.logPredictedPose();
-        PredictedPoseLogger.logErrors();
+        PredictedPoseLogger.log(robotPose);
 
         if (kUseLimelight) {
             double headingDeg = driveState.Pose.getRotation().getDegrees();
-            double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
-            Localizer.getInstance()
-                    .updateVision(
-                            subsystems.vision.getVisionSnapshot(headingDeg, omegaRps, 0, 0, 0, 0));
+            // Limelight wants yaw rate in deg/s
+            double omegaDps = Units.radiansToDegrees(driveState.Speeds.omegaRadiansPerSecond);
+            localizer.updateVision(
+                    subsystems.vision.getVisionSnapshot(headingDeg, omegaDps, 0, 0, 0, 0));
         }
     }
 
@@ -592,24 +574,7 @@ public class Robot extends LoggedRobot {
                 length,
                 bumperHeight,
                 () -> subsystems.swerve.getState().Pose,
-                () ->
-                        Localizer.getInstance()
-                                .getInstantaneousTurretFieldSpeeds(
-                                        new Translation2d(
-                                                Conv.INCHES_TO_METERS
-                                                        * -Robot.consts
-                                                                .shooter()
-                                                                .kTurret()
-                                                                .TURRET_ROBOT_DISTANCE_FROM_CENTERS_INCHES()
-                                                        * Math.sqrt(2)
-                                                        / 2,
-                                                Conv.INCHES_TO_METERS
-                                                        * -Robot.consts
-                                                                .shooter()
-                                                                .kTurret()
-                                                                .TURRET_ROBOT_DISTANCE_FROM_CENTERS_INCHES()
-                                                        * Math.sqrt(2)
-                                                        / 2)));
+                () -> Localizer.getInstance().getInstantaneousTurretFieldSpeeds(turretOffset()));
 
         // Register a front intake zone (0.1m deep, 0.4m wide, centered in front of bumper)
         fuelSim.registerIntake(

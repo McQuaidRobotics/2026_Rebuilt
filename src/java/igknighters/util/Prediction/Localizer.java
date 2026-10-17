@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.Merging.PoseMerger;
 import igknighters.util.Prediction.VisionFuser.FusedVisionData;
@@ -20,6 +22,13 @@ public class Localizer {
 
     private final Swerve swerve;
     private final InertialPosePredictor inertialPosePredictor = new InertialPosePredictor();
+
+    // Per-loop caches, cleared in update(). Callers all use the same lookahead.
+    private SwerveDriveState lastState;
+    private Pose2d cachedPose;
+    private double cachedPoseLookahead;
+    private ChassisSpeeds cachedVelocity;
+    private double cachedVelocityLookahead;
 
     /** Private constructor guarantees nobody can call 'new Localizer()' outside this class. */
     private Localizer(Swerve swerve) {
@@ -45,48 +54,30 @@ public class Localizer {
 
     /** Ticks the physics engine history. Call this in robotPeriodic(). */
     public void update() {
-        SwerveDriveState swerveState = swerve.getState();
+        // Swerve state is a JNI round trip; read it once per loop and reuse it everywhere.
+        lastState = swerve.getState();
+        cachedPose = null;
+        cachedVelocity = null;
 
-        // Convert microseconds directly to seconds
-        double timestampSeconds = swerveState.Timestamp;
-
-        // 1. Fetch raw ROBOT-CENTRIC accelerations from the IMU
-        double robotAccelX = swerve.getXAcceleration(); // Forward/backward relative to robot front
-        double robotAccelY = swerve.getYAcceleration(); // Left/right relative to robot left
-
-        // 2. Get the robot's current rotation heading
-        Rotation2d robotHeading = swerveState.Pose.getRotation();
-
-        // 3. Rotate the robot-centric acceleration vector into a FIELD-RELATIVE vector
-        // Formula:
-        // fieldX = robotX * cos(theta) - robotY * sin(theta)
-        // fieldY = robotX * sin(theta) + robotY * cos(theta)
-        double fieldAccelX =
-                (robotAccelX * robotHeading.getCos()) - (robotAccelY * robotHeading.getSin());
-        double fieldAccelY =
-                (robotAccelX * robotHeading.getSin()) + (robotAccelY * robotHeading.getCos());
-
-        double gyroOmega = swerve.getRotationalVelocity();
-        Pose2d currentPose = swerveState.Pose;
-        ChassisSpeeds robotSpeeds = swerve.getState().Speeds;
-
-        // 4. Pass the true field-relative accelerations into the predictor
+        // The predictor works in the ROBOT frame (Coriolis correction, encoder accel and
+        // Pose2d.exp all assume it), so the IMU accel goes in unrotated.
         inertialPosePredictor.update(
-                currentPose,
-                robotSpeeds,
-                fieldAccelX, // Fused correctly!
-                fieldAccelY, // Fused correctly!
-                gyroOmega,
-                timestampSeconds);
+                lastState.Pose,
+                lastState.Speeds,
+                swerve.getXAcceleration(),
+                swerve.getYAcceleration(),
+                swerve.getRotationalVelocity(),
+                lastState.Timestamp);
     }
 
+    /** The swerve state captured by the last {@link #update()}. */
     public SwerveDriveState getSwerveState() {
-        return swerve.getState();
+        return lastState != null ? lastState : swerve.getState();
     }
 
     public void updateVision(VisionSnapshot visionSnapshot) {
         FusedVisionData fusedVisionData =
-                VisionFuser.getFusedVision(visionSnapshot, swerve.getState());
+                VisionFuser.getFusedVision(visionSnapshot, getSwerveState());
 
         if (fusedVisionData != null) {
             swerve.addVisionMeasurement(
@@ -105,6 +96,14 @@ public class Localizer {
      * @param lookaheadTimeSeconds Future time horizon in SECONDS
      */
     public Pose2d getPredictedPose(double lookaheadTimeSeconds) {
+        if (cachedPose == null || cachedPoseLookahead != lookaheadTimeSeconds) {
+            cachedPose = computePredictedPose(lookaheadTimeSeconds);
+            cachedPoseLookahead = lookaheadTimeSeconds;
+        }
+        return cachedPose;
+    }
+
+    private Pose2d computePredictedPose(double lookaheadTimeSeconds) {
         Pose2d inertialPose = inertialPosePredictor.predict(lookaheadTimeSeconds);
         AutoTrajectory activeTraj = swerve.getActiveTrajectory();
 
@@ -114,7 +113,8 @@ public class Localizer {
 
         double futureTime = swerve.getAutoTime() + lookaheadTimeSeconds;
         Trajectory<SwerveSample> trajectory = activeTraj.getRawTrajectory();
-        Optional<SwerveSample> futureSampleOptional = trajectory.sampleAt(futureTime, true);
+        Optional<SwerveSample> futureSampleOptional =
+                trajectory.sampleAt(futureTime, isRedAlliance());
 
         Pose2d plannedFuturePose =
                 futureSampleOptional.map(SwerveSample::getPose).orElse(inertialPose);
@@ -122,8 +122,15 @@ public class Localizer {
         return PoseMerger.trustedMerge(inertialPose, plannedFuturePose);
     }
 
+    /** The AutoFactory flips paths for red, so samples must be mirrored to match. */
+    private static boolean isRedAlliance() {
+        return DriverStation.getAlliance().map(a -> a == Alliance.Red).orElse(false);
+    }
+
     public ChassisSpeeds getInstantaneousTurretFieldSpeeds(Translation2d turretPosition) {
-        ChassisSpeeds fieldRelativeCurrentRobotSpeeds = swerve.getFieldRelativeSpeeds();
+        SwerveDriveState state = swerve.getState();
+        ChassisSpeeds fieldRelativeCurrentRobotSpeeds =
+                ChassisSpeeds.fromRobotRelativeSpeeds(state.Speeds, state.Pose.getRotation());
         double omega = fieldRelativeCurrentRobotSpeeds.omegaRadiansPerSecond;
 
         // Field-centric linear velocity contributions from chassis translation
@@ -137,7 +144,7 @@ public class Localizer {
         // Rotate the robot-centric tangential velocity into the field-centric frame
         Translation2d tangentialVelocityRc = new Translation2d(tangentialVxRc, tangentialVyRc);
         Translation2d tangentialVelocityFc =
-                tangentialVelocityRc.rotateBy(swerve.getState().Pose.getRotation());
+                tangentialVelocityRc.rotateBy(state.Pose.getRotation());
 
         // Fuse field-centric translation and field-centric rotation velocities together
         double apparatusSpeedX = baseVxFc + tangentialVelocityFc.getX();
@@ -154,6 +161,14 @@ public class Localizer {
      * @param lookaheadTimeSeconds Future time horizon in SECONDS
      */
     public ChassisSpeeds getPredictedVelocity(double lookaheadTimeSeconds) {
+        if (cachedVelocity == null || cachedVelocityLookahead != lookaheadTimeSeconds) {
+            cachedVelocity = computePredictedVelocity(lookaheadTimeSeconds);
+            cachedVelocityLookahead = lookaheadTimeSeconds;
+        }
+        return cachedVelocity;
+    }
+
+    private ChassisSpeeds computePredictedVelocity(double lookaheadTimeSeconds) {
         // 1. Get the ROBOT-RELATIVE predicted velocity from our physics engine
         ChassisSpeeds robotRelativeInertialVelocity =
                 inertialPosePredictor.predictVelocity(lookaheadTimeSeconds);
@@ -177,7 +192,8 @@ public class Localizer {
 
         double futureTime = swerve.getAutoTime() + lookaheadTimeSeconds;
         Trajectory<SwerveSample> trajectory = activeTraj.getRawTrajectory();
-        Optional<SwerveSample> futureSampleOptional = trajectory.sampleAt(futureTime, true);
+        Optional<SwerveSample> futureSampleOptional =
+                trajectory.sampleAt(futureTime, isRedAlliance());
 
         if (futureSampleOptional.isPresent()) {
             SwerveSample sample = futureSampleOptional.get();

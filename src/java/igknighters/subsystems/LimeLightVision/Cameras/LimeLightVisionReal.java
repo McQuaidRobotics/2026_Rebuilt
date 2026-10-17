@@ -9,7 +9,9 @@ import igknighters.util.Merging.PoseAverager;
 import igknighters.util.Prediction.VisionSnapshot;
 import igknighters.util.log.Log;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LimeLightVisionReal extends LimeLights {
 
@@ -17,6 +19,7 @@ public class LimeLightVisionReal extends LimeLights {
     private final List<String> cameraNames;
     private double lastTimeStamp = 0.0;
     private final List<Integer> visibleTagIds = new ArrayList<>();
+    private final Map<String, Double> lastFrameTimes = new HashMap<>();
 
     public LimeLightVisionReal(String... cameraNames) {
         this.cameraNames = new ArrayList<>();
@@ -122,15 +125,21 @@ public class LimeLightVisionReal extends LimeLights {
         // TUNABLE FILTER BOUNDS
         final double MAX_TRUSTED_DISTANCE_METERS = 4.5;
         final double MIN_SINGLE_TAG_DISTANCE_METERS = 2.5; // Be stricter if we only see one tag
+        final double MAX_MT2_YAW_RATE_DEG_PER_SEC = 720.0; // MT2 smears above ~2 rot/s
+
+        visibleTagIds.clear();
+
+        // Sync orientation for the MT2 engine on every camera, then flush NT once.
+        for (String cameraName : cameraNames) {
+            LimelightHelpers.SetRobotOrientation_NoFlush(
+                    cameraName, yaw, yawRate, pitch, pitchRate, roll, rollRate);
+        }
+        LimelightHelpers.Flush();
 
         for (String cameraName : cameraNames) {
             if (LimelightHelpers.getTV(cameraName) == false) {
                 continue;
             }
-
-            // Sync orientation parameters for the MT2 engine
-            LimelightHelpers.SetRobotOrientation(
-                    cameraName, yaw, yawRate, pitch, pitchRate, roll, rollRate);
 
             var mt2Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
             var mt1Estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
@@ -138,13 +147,25 @@ public class LimeLightVisionReal extends LimeLights {
             if (mt1Estimate == null || mt1Estimate.tagCount == 0) {
                 continue; // No tags visible from this lens
             }
+            for (var fiducial : mt1Estimate.rawFiducials) {
+                visibleTagIds.add(fiducial.id);
+            }
+
+            // Skip frames we've already fused; the loop runs faster than the cameras.
+            double frameTime = mt1Estimate.timestampSeconds;
+            if (frameTime <= lastFrameTimes.getOrDefault(cameraName, Double.NEGATIVE_INFINITY)) {
+                continue;
+            }
+            lastFrameTimes.put(cameraName, frameTime);
 
             // --- VALID FIELDS FROM LIMELIGHT_TARGET_BOTPOSE ---
             double distanceToTarget = mt1Estimate.avgTagDist;
             int visibleTags = mt1Estimate.tagCount;
 
             // Detect extreme high-frequency impact shaking
-            boolean gyroIsDoubtful = Math.abs(yawRate) > 12.0 || Math.abs(rollRate) > 5.0;
+            // yawRate/rollRate are deg/s (Limelight API convention)
+            boolean gyroIsDoubtful =
+                    Math.abs(yawRate) > MAX_MT2_YAW_RATE_DEG_PER_SEC || Math.abs(rollRate) > 5.0;
 
             // --- SELECTION ENGINE ---
             if (mt2Estimate != null && mt2Estimate.tagCount > 0 && !gyroIsDoubtful) {
@@ -164,6 +185,24 @@ public class LimeLightVisionReal extends LimeLights {
                     timestamps.add(mt1Estimate.timestampSeconds);
                 }
             }
+        }
+
+        if (!poses.isEmpty()) {
+            previousSampleTime = RobotController.getFPGATime();
+            double sum = 0.0;
+            for (double t : timestamps) {
+                sum += t;
+            }
+            lastTimeStamp = sum / timestamps.size();
+        }
+
+        if (!Robot.consts.limelightVision().disableVisionLogs()) {
+            Log.log(
+                    "ROBOT/Subsystems/Vision/LimeLightVision/TimeStampOfMeasurements",
+                    lastTimeStamp);
+            Log.log(
+                    "ROBOT/Subsystems/Vision/LimeLightVision/NumberOfTagsSeen",
+                    visibleTagIds.size());
         }
 
         return new VisionSnapshot(poses.toArray(new Pose2d[0]), timestamps.toArray(new Double[0]));

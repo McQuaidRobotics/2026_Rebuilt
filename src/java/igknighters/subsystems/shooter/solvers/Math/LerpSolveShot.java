@@ -38,12 +38,13 @@ public class LerpSolveShot {
     public static ShooterState solve(
             Pose3d goalPose, double currentRPM, double latencyCompensation) {
 
+        Pose2d turretPose = Robot.turret_pred.getPredictedPose(.05);
         Pose3d shooterPose =
                 new Pose3d(
-                        Robot.turret_pred.getPredictedPose(.05).getX(),
-                        Robot.turret_pred.getPredictedPose(.05).getY(),
+                        turretPose.getX(),
+                        turretPose.getY(),
                         Robot.consts.shooter().kFlywheels().ShooterHeightMeters(),
-                        new Rotation3d(Robot.turret_pred.getPredictedPose(.05).getRotation()));
+                        new Rotation3d(turretPose.getRotation()));
 
         ChassisSpeeds robotSpeeds = Localizer.getInstance().getPredictedVelocity(.05);
         Translation2d rawRobotVelocity =
