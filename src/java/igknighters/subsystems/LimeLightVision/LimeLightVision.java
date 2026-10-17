@@ -38,11 +38,6 @@ public class LimeLightVision extends SubsystemBase {
         vision.saveCameras();
     }
 
-    /** Debug overrides (pose mode, per-camera disable) for the operator vision debug controller */
-    public LimeLights debug() {
-        return vision;
-    }
-
     public double getLastTimeStamp() {
         return vision.getLastTimeStamp();
     }
