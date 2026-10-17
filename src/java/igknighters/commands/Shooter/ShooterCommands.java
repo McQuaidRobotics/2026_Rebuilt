@@ -89,9 +89,9 @@ public class ShooterCommands {
         if (shooter.isHoodSensorHit()) {
             return shooter.runOnce(() -> shooter.resetHoodEncoder());
         }
-        return shooter.run(() -> shooter.setHoodVoltage(-1))
+        return shooter.run(() -> shooter.setHoodVoltage(-2.5))
                 .until(() -> shooter.isHoodSensorHit())
-                .withTimeout(3.0)
+                .withTimeout(5.0)
                 .withName("DRIVE DOWN HAS NOT HIT THE SENSOR YET HOME HOOD") // failsafe, can be
                 // deleted if needed,
                 // might be conflicting
