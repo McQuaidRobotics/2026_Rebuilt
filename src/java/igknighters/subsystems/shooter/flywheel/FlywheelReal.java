@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Fahrenheit;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
@@ -12,6 +13,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.wpilibj.DriverStation;
 import igknighters.Robot;
 import igknighters.util.log.Log;
@@ -20,6 +22,10 @@ public class FlywheelReal extends Flywheel {
     public boolean useOneMotor = false;
     private final TalonFX mainShooter;
     private final TalonFX followerShooter;
+    private final StatusSignal<AngularVelocity> mainVelocity;
+    private final StatusSignal<AngularVelocity> followerVelocity;
+    private final StatusSignal<Temperature> mainTemp;
+    private final StatusSignal<Temperature> followerTemp;
 
     private double iterations = 0;
     // we will check the temperatures of the motors every 5000 iterations or every 10 seconds and if
@@ -86,6 +92,10 @@ public class FlywheelReal extends Flywheel {
         }
 
         velocityControl = new MotionMagicVelocityVoltage(0.0).withSlot(0);
+        mainVelocity = mainShooter.getVelocity();
+        mainTemp = mainShooter.getDeviceTemp();
+        followerVelocity = useOneMotor ? null : followerShooter.getVelocity();
+        followerTemp = useOneMotor ? null : followerShooter.getDeviceTemp();
     }
 
     @Override
@@ -105,7 +115,7 @@ public class FlywheelReal extends Flywheel {
 
     @Override
     public AngularVelocity getSpeed() {
-        return mainShooter.getVelocity().refresh().getValue();
+        return mainVelocity.refresh().getValue();
     }
 
     @Override
@@ -119,22 +129,20 @@ public class FlywheelReal extends Flywheel {
             if (!useOneMotor) {
                 Log.log(
                         "ROBOT/Subsystems/Shooter/Flywheels/FollowerMotor/SPEED",
-                        followerShooter.getVelocity().refresh().getValue().in(RPM));
+                        followerVelocity.refresh().getValue().in(RPM));
             }
         }
 
         iterations++;
         if (iterations > 1000) {
-            double mainShooterTemp =
-                    mainShooter.getDeviceTemp().refresh().getValue().in(Fahrenheit);
+            double mainShooterTemp = mainTemp.refresh().getValue().in(Fahrenheit);
             if (mainShooterTemp > 200) {
                 DriverStation.reportWarning(
                         "THE MAIN SHOOTER IS OVER 200 DEGREES FARENHEIGT PLEASE DISABLE THE ROBOT",
                         false);
             }
             if (!useOneMotor) {
-                double followerShooterTemp =
-                        followerShooter.getDeviceTemp().refresh().getValue().in(Fahrenheit);
+                double followerShooterTemp = followerTemp.refresh().getValue().in(Fahrenheit);
                 if (followerShooterTemp > 200) {
                     DriverStation.reportWarning(
                             "THE FOLLOWER SHOOTER IS OVER 200 DEGREES FARENHEIGT PLEASE DISABLE THE"

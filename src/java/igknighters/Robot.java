@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import igknighters.commands.IndexerCommands;
 import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.commands.SubsystemTriggers;
@@ -345,9 +344,8 @@ public class Robot extends LoggedRobot {
         return hoodPosition;
     }
 
-    boolean underTrench() {
+    boolean underTrench(Pose2d turretAccPose) {
         Pose2d turretPredPose = turret_pred.getPredictedPose(.05);
-        Pose2d turretAccPose = subsystems.swerve.getState().Pose;
 
         double dx1Pred = Math.abs(turretPredPose.getX() - FieldConstants.BUMP.BUMP_1_X_METERS);
         double dx2Pred = Math.abs(turretPredPose.getX() - FieldConstants.BUMP.BUMP_2_X_METERS);
@@ -374,7 +372,7 @@ public class Robot extends LoggedRobot {
         //         subsystems.luma.getClosestGamePiece());
         localizer.update();
 
-        if (underTrench()) {
+        if (underTrench(robotPose)) {
             DrivingSharedState.getInstance().setUnderTrench(true);
         } else {
             DrivingSharedState.getInstance().setUnderTrench(false);
@@ -382,9 +380,7 @@ public class Robot extends LoggedRobot {
 
         if (Robot.isReal() && !consts.disableAllLogs()) {
             FieldVisualizer.getInstance()
-                    .updateTurret(
-                            subsystems.shooter.getTurretAngleDegrees(),
-                            subsystems.swerve.getState().Pose);
+                    .updateTurret(subsystems.shooter.getTurretAngleDegrees(), robotPose);
             Logger.recordOutput(
                     "componentPoses",
                     new Pose3d[] {
@@ -393,9 +389,7 @@ public class Robot extends LoggedRobot {
                     });
         } else {
             FieldVisualizer.getInstance()
-                    .updateTurret(
-                            subsystems.shooter.getTurretAngleDegrees(),
-                            subsystems.swerve.getState().Pose);
+                    .updateTurret(subsystems.shooter.getTurretAngleDegrees(), robotPose);
             Logger.recordOutput(
                     "componentPoses",
                     new Pose3d[] {
@@ -415,7 +409,6 @@ public class Robot extends LoggedRobot {
         PredictedPoseLogger.logErrors();
 
         if (kUseLimelight) {
-            var driveState = subsystems.swerve.getState();
             double headingDeg = driveState.Pose.getRotation().getDegrees();
             double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
             Localizer.getInstance()
@@ -528,7 +521,8 @@ public class Robot extends LoggedRobot {
     public void testExit() {}
 
     public static boolean isRobotTest() {
-        return RobotModeTriggers.test().getAsBoolean();
+        // Same check RobotModeTriggers.test() wraps, without allocating a Trigger every call.
+        return DriverStation.isTestEnabled();
     }
 
     @Override

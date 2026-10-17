@@ -29,6 +29,9 @@ public class Telemetry {
     private final double MaxSpeed;
     private final Subsystems subsystems;
     private AprilTagLayout aprilTagLayout;
+    private int[] tagIds;
+    private double[] tagXYDeg; // x, y, degrees per tag, same order as tagIds
+    private boolean[] tagSeen;
 
     /**
      * Construct a telemetry object, with the specified max speed of the robot
@@ -40,11 +43,30 @@ public class Telemetry {
         this.subsystems = subsystems;
         try {
             aprilTagLayout = new AprilTagLayout();
+            // Tag poses never change; flatten them once instead of on every odometry tick.
+            Map<Integer, Pose3d> tagPoses = aprilTagLayout.getTagPoses();
+            tagIds = new int[tagPoses.size()];
+            tagXYDeg = new double[tagPoses.size() * 3];
+            tagSeen = new boolean[tagPoses.size()];
+            int t = 0;
+            for (Map.Entry<Integer, Pose3d> entry : tagPoses.entrySet()) {
+                Pose2d pose = entry.getValue().toPose2d();
+                tagIds[t] = entry.getKey();
+                tagXYDeg[t * 3] = pose.getX();
+                tagXYDeg[t * 3 + 1] = pose.getY();
+                tagXYDeg[t * 3 + 2] = pose.getRotation().getDegrees();
+                t++;
+            }
         } catch (IOException e) {
             //     System.out.println("Could not load AprilTag layout");
             e.printStackTrace();
         }
         SignalLogger.start();
+        // Registered once; SmartDashboard.updateValues() keeps them current. Re-registering every
+        // odometry tick contended with the main loop on SmartDashboard's lock.
+        for (int i = 0; i < m_moduleMechanisms.length; ++i) {
+            SmartDashboard.putData("Visualizers/Swerve/Module " + i, m_moduleMechanisms[i]);
+        }
     }
 
     /* What to publish over networktables for telemetry */
@@ -175,34 +197,26 @@ public class Telemetry {
 
         if (aprilTagLayout != null) {
             List<Integer> visibleIds = subsystems.vision.getVisibleTagIds();
-            Map<Integer, Pose3d> allTagPoses = aprilTagLayout.getTagPoses();
-            List<Pose2d> seenTagPoses = new java.util.ArrayList<>();
-            List<Pose2d> unseenTagPoses = new java.util.ArrayList<>();
-
-            for (Map.Entry<Integer, Pose3d> entry : allTagPoses.entrySet()) {
-                if (visibleIds.contains(entry.getKey())) {
-                    seenTagPoses.add(entry.getValue().toPose2d());
+            // Snapshot once: visibleIds is mutated by the main loop while this runs on the
+            // odometry thread, so it must not be re-read between sizing and filling the arrays.
+            int seen = 0;
+            for (int t = 0; t < tagIds.length; t++) {
+                tagSeen[t] = visibleIds.contains(tagIds[t]);
+                if (tagSeen[t]) seen++;
+            }
+            double[] seenTagsArray = new double[seen * 3];
+            double[] unseenTagsArray = new double[(tagIds.length - seen) * 3];
+            int s = 0, u = 0;
+            for (int t = 0; t < tagIds.length; t++) {
+                if (tagSeen[t]) {
+                    System.arraycopy(tagXYDeg, t * 3, seenTagsArray, s, 3);
+                    s += 3;
                 } else {
-                    unseenTagPoses.add(entry.getValue().toPose2d());
+                    System.arraycopy(tagXYDeg, t * 3, unseenTagsArray, u, 3);
+                    u += 3;
                 }
             }
-
-            double[] seenTagsArray = new double[seenTagPoses.size() * 3];
-            int i = 0;
-            for (Pose2d pose : seenTagPoses) {
-                seenTagsArray[i++] = pose.getX();
-                seenTagsArray[i++] = pose.getY();
-                seenTagsArray[i++] = pose.getRotation().getDegrees();
-            }
             seenTagsPub.set(seenTagsArray);
-
-            double[] unseenTagsArray = new double[unseenTagPoses.size() * 3];
-            i = 0;
-            for (Pose2d pose : unseenTagPoses) {
-                unseenTagsArray[i++] = pose.getX();
-                unseenTagsArray[i++] = pose.getY();
-                unseenTagsArray[i++] = pose.getRotation().getDegrees();
-            }
             unseenTagsPub.set(unseenTagsArray);
         } else {
             //     System.out.println("APRIL TAG LAYOUT NOT FOUND");
@@ -215,8 +229,6 @@ public class Telemetry {
             m_moduleDirections[i].setAngle(state.ModuleStates[i].angle);
             m_moduleSpeeds[i].setLength(
                     state.ModuleStates[i].speedMetersPerSecond / (2 * MaxSpeed));
-
-            SmartDashboard.putData("Visualizers/Swerve/Module " + i, m_moduleMechanisms[i]);
         }
     }
 
