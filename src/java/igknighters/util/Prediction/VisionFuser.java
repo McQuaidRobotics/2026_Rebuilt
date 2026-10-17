@@ -13,9 +13,11 @@ public class VisionFuser {
     private static final double TRANSLATION_TOLERANCE_METERS = 0.5;
     private static final double ROTATION_TOLERANCE_RADIANS = 0.2;
 
-    // --- BASE STANDARD DEVIATIONS ---
-    private static final double BASE_XY_STD_DEV = 0.9;
-    private static final double BASE_THETA_STD_DEV = 0.9;
+    // --- STANDARD DEVIATIONS ---
+    // Never trust vision XY more than this (WPILib's default is 0.9; odometry is 0.1).
+    private static final double MIN_XY_STD_DEV = 0.3;
+    // Same idea for heading from multi-tag MT1 (radians); the Pigeon stays the main source.
+    private static final double MIN_THETA_STD_DEV = 0.3;
 
     /** Container for the fused result to feed into your PoseEstimator. */
     public static class FusedVisionData {
@@ -63,9 +65,14 @@ public class VisionFuser {
             }
         }
 
-        // 2. Cluster Rotations (Theta) by tracking their array indices
+        // 2. Cluster Rotations (Theta) by tracking their array indices. Only cameras that actually
+        // measured heading vote; MT2 headings are our own gyro echoed back and would outvote them.
+        double[] cameraThetaStdDevs = snapshot.getThetaStdDev();
         List<List<Integer>> rotClusters = new ArrayList<>();
         for (int i = 0; i < poses.length; i++) {
+            if (cameraThetaStdDevs[i] >= VisionSnapshot.UNTRUSTED_THETA_STD_DEV) {
+                continue;
+            }
             boolean added = false;
             for (List<Integer> cluster : rotClusters) {
                 Rotation2d clusterFirstRot = poses[cluster.get(0)].getRotation();
@@ -87,11 +94,18 @@ public class VisionFuser {
         List<Integer> bestTransCluster =
                 getBestTranslationCluster(transClusters, currentState.Pose.getTranslation(), poses);
         List<Integer> bestRotCluster =
-                getBestRotationCluster(rotClusters, currentState.Pose.getRotation(), poses);
+                rotClusters.isEmpty()
+                        ? List.of()
+                        : getBestRotationCluster(
+                                rotClusters, currentState.Pose.getRotation(), poses);
 
         // 4. Calculate Averages of Winning Clusters
         Translation2d averagedTranslation = averageTranslations(bestTransCluster, poses);
-        Rotation2d averagedRotation = averageRotations(bestRotCluster, poses);
+        // No heading measurement: echo odometry (its std dev below means it's ignored anyway)
+        Rotation2d averagedRotation =
+                bestRotCluster.isEmpty()
+                        ? currentState.Pose.getRotation()
+                        : averageRotations(bestRotCluster, poses);
 
         // 5. Calculate Timestamps
         // We use the timestamps from the winning translation cluster
@@ -102,8 +116,14 @@ public class VisionFuser {
         double averageTimestamp = timestampSum / bestTransCluster.size();
 
         // 6. Calculate Trust (Standard Deviations)
-        double xyStdDev = BASE_XY_STD_DEV / Math.pow(bestTransCluster.size(), 2);
-        double thetaStdDev = BASE_THETA_STD_DEV / Math.pow(bestRotCluster.size(), 2);
+        double xyStdDev =
+                Math.max(MIN_XY_STD_DEV, combinedStdDev(bestTransCluster, snapshot.getXyStdDev()));
+        double thetaStdDev =
+                bestRotCluster.isEmpty()
+                        ? VisionSnapshot.UNTRUSTED_THETA_STD_DEV
+                        : Math.max(
+                                MIN_THETA_STD_DEV,
+                                combinedStdDev(bestRotCluster, cameraThetaStdDevs));
 
         Pose2d finalPose = new Pose2d(averagedTranslation, averagedRotation);
         double[] finalStdDevs = new double[] {xyStdDev, xyStdDev, thetaStdDev};
@@ -113,6 +133,16 @@ public class VisionFuser {
     }
 
     // --- HELPER METHODS ---
+
+    /** Averaging n independent cameras shrinks error by sqrt(n), not n^2. */
+    private static double combinedStdDev(List<Integer> indices, double[] stdDevs) {
+        double sum = 0;
+        for (int index : indices) {
+            sum += stdDevs[index];
+        }
+        int n = indices.size();
+        return sum / n / Math.sqrt(n);
+    }
 
     private static List<Integer> getBestTranslationCluster(
             List<List<Integer>> clusters, Translation2d currentTranslation, Pose2d[] poses) {

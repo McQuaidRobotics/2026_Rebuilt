@@ -177,8 +177,11 @@ public class LimeLightVisionReal extends LimeLights {
 
         ArrayList<Pose2d> poses = new ArrayList<>();
         ArrayList<Double> timestamps = new ArrayList<>();
+        ArrayList<Double> xyStdDevs = new ArrayList<>();
+        ArrayList<Double> thetaStdDevs = new ArrayList<>();
 
         // TUNABLE FILTER BOUNDS
+        final double STD_DEV_REFERENCE_DISTANCE_METERS = 2.0;
         final double MAX_TRUSTED_DISTANCE_METERS = 4.5;
         final double MIN_SINGLE_TAG_DISTANCE_METERS = 2.5; // Be stricter if we only see one tag
         final double MAX_MT2_YAW_RATE_DEG_PER_SEC = 720.0; // MT2 smears above ~2 rot/s
@@ -248,15 +251,25 @@ public class LimeLightVisionReal extends LimeLights {
             if (poseMode == PoseMode.PURE_MT2 && !useMt2) {
                 continue;
             }
-            if (useMt2) {
-                // Scenario A: Everything is stable, trust perspective-corrected MT2
-                poses.add(mt2Estimate.pose);
-                timestamps.add(mt2Estimate.timestampSeconds);
-            } else {
-                // Scenario B: Gyro is compromised, fall back to MT1.
-                poses.add(mt1Estimate.pose);
-                timestamps.add(mt1Estimate.timestampSeconds);
-            }
+            // WPILib default (0.9) for one tag at 2 m; error grows with distance^2, shrinks
+            // with more tags.
+            double d = distanceToTarget / STD_DEV_REFERENCE_DISTANCE_METERS;
+            double stdDev = VisionSnapshot.DEFAULT_XY_STD_DEV * d * d / visibleTags;
+
+            // Translation: MT2 when stable (Scenario A), MT1 when the gyro is compromised (B).
+            var translationEstimate = useMt2 ? mt2Estimate : mt1Estimate;
+            // Heading: only MT1 with 2+ tags actually measures it. MT2 echoes our gyro and
+            // single-tag MT1 can flip, so those carry no heading information.
+            boolean headingMeasured = visibleTags >= 2;
+            Rotation2d heading =
+                    headingMeasured
+                            ? mt1Estimate.pose.getRotation()
+                            : translationEstimate.pose.getRotation();
+
+            poses.add(new Pose2d(translationEstimate.pose.getTranslation(), heading));
+            timestamps.add(translationEstimate.timestampSeconds);
+            xyStdDevs.add(stdDev);
+            thetaStdDevs.add(headingMeasured ? stdDev : VisionSnapshot.UNTRUSTED_THETA_STD_DEV);
         }
 
         if (!poses.isEmpty()) {
@@ -277,7 +290,11 @@ public class LimeLightVisionReal extends LimeLights {
                     visibleTagIds.size());
         }
 
-        return new VisionSnapshot(poses.toArray(new Pose2d[0]), timestamps.toArray(new Double[0]));
+        return new VisionSnapshot(
+                poses.toArray(new Pose2d[0]),
+                timestamps.toArray(new Double[0]),
+                xyStdDevs.stream().mapToDouble(Double::doubleValue).toArray(),
+                thetaStdDevs.stream().mapToDouble(Double::doubleValue).toArray());
     }
 
     @Override
