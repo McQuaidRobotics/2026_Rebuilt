@@ -434,7 +434,12 @@ public class AutoRoutines extends AutoCommands {
         AutoRoutine routine = autoFactory.newRoutine("Mean Routine");
         AutoTrajectory meanTrajectory = routine.trajectory("MEAN_AUTO_1.traj");
 
-        routine.active().onTrue(meanTrajectory.resetOdometry().andThen(meanTrajectory.cmd()));
+        routine.active()
+                .onTrue(
+                        Commands.sequence(
+                                meanTrajectory.resetOdometry(),
+                                HigherOrderCommands.shootTillEmpty(subsystems, 5),
+                                meanTrajectory.spawnCmd()));
         // steal balls from them we shouldnt get too many bc intake backwards but any balls shot is
         // better then none
         meanTrajectory.active().onTrue(HigherOrderCommands.hippoShoot(subsystems));
