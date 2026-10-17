@@ -49,7 +49,6 @@ import igknighters.util.TunableValues.TunableDouble;
 import igknighters.util.TurretPosePredError;
 import igknighters.util.TurretPosePredictor;
 import igknighters.util.log.Log;
-
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
