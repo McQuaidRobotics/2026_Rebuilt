@@ -128,7 +128,7 @@ public class LimeLightVisionReal extends LimeLights {
     @Override
     public void enableCameras(int imu_mode) {
         for (String name : cameraNames) {
-            LimelightHelpers.SetThrottle(name, 0);
+            LimelightHelpers.SetThrottle(name, 300);
             LimelightHelpers.SetIMUMode(name, imu_mode);
         }
     }

@@ -97,9 +97,9 @@ public class DemoController {
         subsystems.shooter.setDefaultCommand(
                 ShooterCommands.manualAim(
                         subsystems.shooter,
-                        () -> controller.getRawAxis(0),
-                        () -> -controller.getRawAxis(1),
-                        () -> -controller.getRawAxis(2)));
+                        deadbandSupplier(() -> -controller.getRawAxis(0), .1),
+                        deadbandSupplier(() -> -controller.getRawAxis(1), .1),
+                        deadbandSupplier(() -> -controller.getRawAxis(2), .1)));
         this.A.whileTrue(IndexerCommands.dispense(subsystems.indexer).repeatedly());
     }
 

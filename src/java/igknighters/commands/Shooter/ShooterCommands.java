@@ -97,10 +97,10 @@ public class ShooterCommands {
                             //     goal[0] = Math.max(0, goal[0] + rpmAmt.getAsDouble() * 2000 *
                             // 0.02);
                             goal[0] = MathUtil.clamp(3000 + rpmAmt.getAsDouble() * 3000, 0, 6000);
-                            goal[1] += turretAmt.getAsDouble() * 30.0 * 0.02;
+                            goal[1] += turretAmt.getAsDouble() * 100.0 * 0.02;
                             goal[2] =
                                     MathUtil.clamp(
-                                            goal[2] + hoodAmt.getAsDouble() * 10.0 * 0.02,
+                                            goal[2] + hoodAmt.getAsDouble() * 20.0 * 0.02,
                                             kHood.MIN_ANGLE_DEGREES(),
                                             kHood.MAX_ANGLE_DEGREES());
                             shooter.targetState(
