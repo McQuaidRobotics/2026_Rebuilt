@@ -32,6 +32,7 @@ import igknighters.constants.GeminiRobotConsts;
 import igknighters.constants.RobotConsts;
 import igknighters.constants.RobotIdentity;
 import igknighters.constants.SecondBotRobotConsts;
+import igknighters.controllers.DemoController;
 import igknighters.controllers.DriverController;
 import igknighters.subsystems.LimeLightVision.LimeLightVision;
 import igknighters.subsystems.Luma.Luma;
@@ -75,6 +76,11 @@ public class Robot extends LoggedRobot {
     public static TurretPosePredError turret_pred_error = new TurretPosePredError();
 
     private final DriverController driverController = new DriverController(0);
+
+    /** true = driver on port 0 drives/feeds, DemoController on port 1 aims the shooter. */
+    private static final boolean DEMO_MODE = true;
+
+    private final DemoController demoController = new DemoController(1);
 
     public final Subsystems subsystems;
 
@@ -405,7 +411,12 @@ public class Robot extends LoggedRobot {
     }
 
     public void bindDriverController() {
-        driverController.bind(subsystems);
+        if (DEMO_MODE) {
+            driverController.bind(subsystems, DriverController.DebugType.DEMO);
+            demoController.bindDemo(subsystems);
+        } else {
+            driverController.bind(subsystems);
+        }
     }
 
     @Override

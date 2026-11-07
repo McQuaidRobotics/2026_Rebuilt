@@ -3,14 +3,17 @@ package igknighters.commands.Shooter;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
 import igknighters.subsystems.shooter.Shooter;
 import igknighters.subsystems.shooter.ShooterState;
 import igknighters.subsystems.shooter.solvers.Math.LerpSolveShot;
 import igknighters.util.TunableValues;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class ShooterCommands {
@@ -69,6 +72,42 @@ public class ShooterCommands {
                                         Degrees.of(turretAngleDegrees),
                                         Degrees.of(hoodAngleDegrees)))
                 .withName("Target Shooter State");
+    }
+
+    /**
+     * Manual aim: each supplier is -1..1, integrated into a held goal. One command owns turret,
+     * hood and rpm, so they all move together; feed balls with the indexer (separate subsystem).
+     */
+    public static Command manualAim(
+            Shooter shooter,
+            DoubleSupplier turretAmt,
+            DoubleSupplier hoodAmt,
+            DoubleSupplier rpmAmt) {
+        double[] goal = new double[3]; // rpm, turret deg, hood deg
+        var kHood = Robot.consts.shooter().kHood();
+        return Commands.startRun(
+                        () -> {
+                            ShooterState s = shooter.getCurrentState();
+                            goal[0] = 0.0; // start with flywheel off
+                            goal[1] = s.turretAngle.in(Degrees);
+                            goal[2] = s.hoodAngle.in(Degrees);
+                        },
+                        () -> {
+                            // rates per second, scaled to a 20ms loop. tune these
+                            //     goal[0] = Math.max(0, goal[0] + rpmAmt.getAsDouble() * 2000 *
+                            // 0.02);
+                            goal[0] = MathUtil.clamp(3000 + rpmAmt.getAsDouble() * 3000, 0, 6000);
+                            goal[1] += turretAmt.getAsDouble() * 30.0 * 0.02;
+                            goal[2] =
+                                    MathUtil.clamp(
+                                            goal[2] + hoodAmt.getAsDouble() * 10.0 * 0.02,
+                                            kHood.MIN_ANGLE_DEGREES(),
+                                            kHood.MAX_ANGLE_DEGREES());
+                            shooter.targetState(
+                                    RPM.of(goal[0]), Degrees.of(goal[1]), Degrees.of(goal[2]));
+                        },
+                        shooter)
+                .withName("Manual Aim");
     }
 
     public static double getRPM(

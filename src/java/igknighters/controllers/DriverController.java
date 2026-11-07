@@ -104,7 +104,9 @@ public class DriverController {
         SWERVE,
         INTAKE,
         INDEXER,
-        CLIMBER;
+        CLIMBER,
+        /** Normal driving, but nothing that touches the shooter (DemoController aims it). */
+        DEMO;
     }
 
     public void bind(final Subsystems subsystems, DebugType debugType) {
@@ -131,6 +133,14 @@ public class DriverController {
             // this.DPU.whileTrue(ShooterCommands.targetState(shooter, 0, 0,
             // kHood.MIN_ANGLE_DEGREES));
 
+        } else if (debugType == DebugType.DEMO) {
+            // this.RT.whileTrue(IndexerCommands.dispense(indexer).repeatedly());
+            this.LT.whileTrue(IntakeCommands.holdAtIntake(subsystems.intake));
+            this.LB.whileTrue(IntakeCommands.intakeWhileSlightJorking(subsystems.intake));
+            this.DPR.whileTrue(IndexerCommands.unBlock(indexer));
+            this.X.whileTrue(IntakeCommands.expell(subsystems.intake));
+            this.Y.onTrue(IntakeCommands.holdAtState(subsystems.intake, IntakeState.FULL_STOW));
+            this.Start.onTrue(SwerveCommands.zeroGyro(swerve));
         } else if (debugType == DebugType.INDEXER) {
             this.A.onTrue(IndexerCommands.dispense(indexer));
             this.B.onTrue(IndexerCommands.justStop(indexer));
