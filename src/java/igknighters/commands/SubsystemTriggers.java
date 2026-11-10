@@ -163,7 +163,7 @@ public class SubsystemTriggers {
 
     public Command getLEDCommandByMode(Led led) {
         return Commands.either(
-                teleopLED(led), Commands.either(disabledLED(led), autoLED(led), disabled), teleop);
+                autoLED(led), Commands.either(disabledLED(led), autoLED(led), disabled), teleop);
     }
 
     private Command teleopLED(Led led) {
@@ -216,7 +216,7 @@ public class SubsystemTriggers {
 
         autonomous.onTrue(autoLED(led));
 
-        teleop.whileTrue(teleopLED(led));
+        teleop.whileTrue(autoLED(led));
 
         // Get the AbleToShootSharedState singleton
         ShootInformation ableToShootState = ShootInformation.getInstance();
