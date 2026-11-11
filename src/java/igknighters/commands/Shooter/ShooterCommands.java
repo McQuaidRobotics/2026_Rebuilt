@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.RPM;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import igknighters.Robot;
@@ -89,7 +90,7 @@ public class ShooterCommands {
                         () -> {
                             ShooterState s = shooter.getCurrentState();
                             goal[0] = 0.0; // start with flywheel off
-                            goal[1] = s.turretAngle.in(Degrees);
+                            goal[1] = s.turretAngle.in(Degrees) + robotHeading().getDegrees();
                             goal[2] = s.hoodAngle.in(Degrees);
                         },
                         () -> {
@@ -97,17 +98,30 @@ public class ShooterCommands {
                             //     goal[0] = Math.max(0, goal[0] + rpmAmt.getAsDouble() * 2000 *
                             // 0.02);
                             goal[0] = MathUtil.clamp(3000 + rpmAmt.getAsDouble() * 3000, 0, 6000);
-                            goal[1] += turretAmt.getAsDouble() * 100.0 * 0.02;
+                            goal[1] +=
+                                    turretAmt.getAsDouble()
+                                            * 100.0
+                                            * 0.02; // amt to shift field oriented angle
                             goal[2] =
                                     MathUtil.clamp(
                                             goal[2] + hoodAmt.getAsDouble() * 20.0 * 0.02,
                                             kHood.MIN_ANGLE_DEGREES(),
                                             kHood.MAX_ANGLE_DEGREES());
+                            // goal[1] is field relative; convert to robot relative like
+                            // LerpSolveShot
+                            double turretDeg =
+                                    Rotation2d.fromDegrees(goal[1])
+                                            .minus(robotHeading())
+                                            .getDegrees();
                             shooter.targetState(
-                                    RPM.of(goal[0]), Degrees.of(goal[1]), Degrees.of(goal[2]));
+                                    RPM.of(goal[0]), Degrees.of(turretDeg), Degrees.of(goal[2]));
                         },
                         shooter)
                 .withName("Manual Aim");
+    }
+
+    private static Rotation2d robotHeading() {
+        return Robot.pose_pred.getPredictedPose().getRotation();
     }
 
     public static double getRPM(

@@ -648,12 +648,12 @@ public class SecondBotRobotConsts extends RobotConsts {
 
         @Override
         public double MAX_SPEED_RPM() {
-            return 200; // 200;
+            return 150; // 200;
         }
 
         @Override
         public double MAX_ACCELERATION_RPM() {
-            return 400; // 400;
+            return 300; // 400;
         }
 
         @Override
