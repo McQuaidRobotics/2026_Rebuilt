@@ -8,7 +8,9 @@ public class ControllerConstants {
             new LerpTable(
                     new LerpTableEntry(0.0, 0.0),
                     new LerpTableEntry(0.03, 0.0), // deadzone
-                    new LerpTableEntry(0.4, .3),
+                    new LerpTableEntry(.5, .2),
+                    new LerpTableEntry(0.6, .3),
+                    new LerpTableEntry(0.7, 0.6),
                     new LerpTableEntry(1.0, 1.0));
 
     public static final LerpTable TELEOP_ROTATION_AXIS_CURVE =
