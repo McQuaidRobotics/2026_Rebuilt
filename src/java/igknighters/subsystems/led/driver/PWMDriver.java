@@ -26,6 +26,11 @@ public class PWMDriver implements Logged {
         previousBuffer = new AddressableLEDBuffer(length);
     }
 
+    /** Frees the PWM port so another Robot (tests) can claim it. */
+    public void close() {
+        led.close();
+    }
+
     /**
      * will apply a buffer to the LED if its a new one to take up as little resources as possible
      *

@@ -1,0 +1,15 @@
+{
+  "_fake": true,
+  "fiducial_family": "apriltag3_36h11",
+  "fiducial_idfilters": "",
+  "image_flip": 0,
+  "pipeline_type": "fiducial",
+  "robot_pose": [
+    -0.2992,
+    0.3088,
+    0.2026,
+    180,
+    15,
+    -64.841
+  ]
+}

@@ -45,6 +45,7 @@ import igknighters.subsystems.swerve.Swerve;
 import igknighters.util.FuelSim;
 import igknighters.util.RobotPosePredError;
 import igknighters.util.RobotPosePredictor;
+import igknighters.util.SentrySim;
 import igknighters.util.TunableValues;
 import igknighters.util.TunableValues.TunableDouble;
 import igknighters.util.TurretPosePredError;
@@ -85,6 +86,7 @@ public class Robot extends LoggedRobot {
     public final Subsystems subsystems;
 
     private FuelSim fuelSim;
+    SentrySim sentrySim; // package-private for SentryDemoTest
     private double lastShotTime = 0.0;
 
     private final boolean kUseLimelight = true;
@@ -285,6 +287,9 @@ public class Robot extends LoggedRobot {
         bindDriverController();
 
         subsystemTriggers.SetupTriggers(subsystems, driverController, poseSupplier());
+        if (isSimulation()) {
+            configureFuelSim();
+        }
     }
 
     public Pose3d getTurretPose(double turretAngleDegrees) {
@@ -527,6 +532,7 @@ public class Robot extends LoggedRobot {
     public void simulationPeriodic() {
         if (fuelSim != null) {
             fuelSim.updateSim();
+            if (sentrySim != null) sentrySim.update();
 
             // Logic to launch fuel when dispensing and shooter is ready
             double currentTime = RobotController.getFPGATime() / 1.0e6;
@@ -577,6 +583,13 @@ public class Robot extends LoggedRobot {
         fuelSim.enableAirResistance();
 
         configureFuelSimRobot();
+        if (DEMO_MODE) {
+            sentrySim =
+                    new SentrySim(
+                            fuelSim,
+                            () -> subsystems.swerve.getState().Pose,
+                            subsystems.swerve::resetPose);
+        }
     }
 
     private void configureFuelSimRobot() {
@@ -600,6 +613,12 @@ public class Robot extends LoggedRobot {
                 0.2,
                 () -> true,
                 () -> Log.log("ROBOT/Simulation/FuelIntaked", true));
+    }
+
+    @Override
+    public void close() {
+        subsystems.led.pwm1.close(); // only tests close a Robot; lets the next one reuse the port
+        super.close();
     }
 
     public static boolean isBlue() {
