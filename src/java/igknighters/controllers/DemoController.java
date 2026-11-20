@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import igknighters.commands.IndexerCommands;
+import igknighters.commands.Shooter.Sentry;
 import igknighters.commands.Shooter.ShooterCommands;
 import igknighters.subsystems.Subsystems;
 import java.util.function.DoubleSupplier;
@@ -101,6 +102,14 @@ public class DemoController {
                         deadbandSupplier(() -> -controller.getRawAxis(1), .1),
                         deadbandSupplier(() -> -controller.getRawAxis(2), .1)));
         this.A.whileTrue(IndexerCommands.dispense(subsystems.indexer).repeatedly());
+        // B toggles sentry; X = hop to another kid; stick X hard left/right = leftmost/rightmost.
+        // A (manual feed) also cancels it since it takes the indexer.
+        this.B.toggleOnTrue(
+                new Sentry(
+                        subsystems.shooter,
+                        subsystems.indexer,
+                        () -> controller.getRawAxis(0),
+                        this.X));
     }
 
     /** Two buttons -> -1/0/1. Swap for controller.getRawAxis(n) on a flight stick. */
